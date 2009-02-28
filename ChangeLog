@@ -1,0 +1,5 @@
+2009-02-28  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/task.py (added):
+	  Add a task abstraction.
+
