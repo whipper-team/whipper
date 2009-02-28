@@ -58,7 +58,7 @@ class Cue:
         self._path = path
         self._rems = {}
         self._messages = []
-        self._tracks = []
+        self.tracks = []
 
     def parse(self):
         state = 'HEADER'
@@ -100,7 +100,7 @@ class Cue:
                 trackMode = m.expand('\\2')
 
                 currentTrack = Track(trackNumber)
-                self._tracks.append(currentTrack)
+                self.tracks.append(currentTrack)
                 continue
 
             # look for INDEX lines
@@ -116,9 +116,9 @@ class Cue:
                 seconds = int(m.expand('\\3'))
                 frames = int(m.expand('\\4'))
 
-                totalFrames = frames + seconds * 75 + minutes * 75 * 60
-                currentTrack.index(indexNumber, totalFrames, currentFile)
-                print 'index %d, offset %d of track %r' % (indexNumber, totalFrames, currentTrack)
+                frameOffset = frames + seconds * 75 + minutes * 75 * 60
+                currentTrack.index(indexNumber, frameOffset, currentFile)
+                # print 'index %d, offset %d of track %r' % (indexNumber, frameOffset, currentTrack)
                 continue
 
             
@@ -130,6 +130,24 @@ class Cue:
         @param number: line number, counting from 0.
         """
         self._messages.append((number + 1, message))
+
+    def getTrackLength(self, track):
+        # returns track length in frames, or -1 if can't be determined and
+        # complete file should be assumed
+        # FIXME: this assumes a track can only be in one file; is this true ?
+        i = self.tracks.index(track)
+        if i == len(self.tracks) - 1:
+            # last track, so no length known
+            return -1
+
+        thisIndex = track._indexes[1] # FIXME: could be more
+        nextIndex = self.tracks[i + 1]._indexes[1] # FIXME: could be 0
+
+        if thisIndex[1] == nextIndex[1]: # same file
+            return nextIndex[0] - thisIndex[0]
+
+        # FIXME: more logic
+        return -1
 
 class File:
     """

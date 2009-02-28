@@ -28,7 +28,7 @@ def main(path):
     cuefile = cue.Cue(path)
     cuefile.parse()
 
-    print cuefile._tracks
+    print cuefile.tracks
 
 path = 'test.cue'
 
