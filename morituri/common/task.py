@@ -21,6 +21,7 @@
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import sys
 import zlib
 
 import gobject
@@ -37,6 +38,7 @@ class Task(object):
 
     def debug(self, *args, **kwargs):
         print args, kwargs
+        sys.stdout.flush()
         pass
 
     def start(self):
@@ -97,7 +99,9 @@ class CRCTask(Task):
         sink = self._pipeline.get_by_name('sink')
 
         if self._frameEnd == -1:
-            (self._frameEnd, _) = sink.query_duration(gst.FORMAT_DEFAULT)
+            length, _ = sink.query_duration(gst.FORMAT_DEFAULT)
+            self._frameEnd = length - 1
+            self.debug('last frame is', self._frameEnd)
 
         self.debug('event')
 
@@ -106,10 +110,11 @@ class CRCTask(Task):
         event = gst.event_new_seek(1.0, gst.FORMAT_DEFAULT,
             gst.SEEK_FLAG_FLUSH,
             gst.SEEK_TYPE_SET, self._frameStart,
-            gst.SEEK_TYPE_SET, self._frameEnd)
+            gst.SEEK_TYPE_SET, self._frameEnd + 1) # half-inclusive interval
+        # FIXME: sending it with frameEnd set screws up the seek, we don't get everything
         result = sink.send_event(event)
-        self.debug('event sent')
-        self.debug(result)
+        #self.debug('event sent')
+        #self.debug(result)
         sink.connect('new-buffer', self._new_buffer_cb)
         sink.connect('eos', self._eos_cb)
 
@@ -119,6 +124,8 @@ class CRCTask(Task):
 
     def _new_buffer_cb(self, sink):
         buffer = sink.emit('pull-buffer')
+        gst.debug('received new buffer at offset %r with length %r' % (
+            buffer.offset, buffer.size))
         if self._first is None:
             self._first = buffer.offset
             self.debug('first sample is', self._first)
@@ -135,6 +142,8 @@ class CRCTask(Task):
         self._crc = zlib.crc32(buffer, self._crc)
 
     def _eos_cb(self, sink):
+        # get the last one; FIXME: why does this not get to us before ?
+        #self._new_buffer_cb(sink)
         self.debug('setting state to NULL')
         gobject.timeout_add(0L, self.stop)
 
@@ -142,8 +151,31 @@ class CRCTask(Task):
         self._pipeline.set_state(gst.STATE_NULL)
         self.debug('stopping')
         self._crc = self._crc % 2 ** 32
-        self.debug("last sample:", self._last.offset + len(self._last) / 4 - 1)
+        last = self._last.offset + len(self._last) / 4 - 1
+        self.debug("last sample:", last)
+        self.debug("frame end:", self._frameEnd)
         self.debug("CRC: %08X" % self._crc)
         self.debug("bytes: %d" % self._bytes)
+        if self._frameEnd != last:
+            print 'ERROR: did not get all frames, %d missing' % (self._frameEnd - last)
         self.crc = self._crc
         Task.stop(self)
+
+class SyncRunner:
+    def __init__(self, task):
+        self._task = task
+
+    def run(self):
+        self._loop = gobject.MainLoop()
+        self._task.addListener(self)
+        self._task.start()
+        self._loop.run()
+
+    def start(self):
+        pass
+
+    def progress(self, value):
+        pass
+
+    def stop(self):
+        self._loop.quit()
