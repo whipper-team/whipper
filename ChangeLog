@@ -1,3 +1,9 @@
+2009-03-22  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* examples/ARcue.py:
+	* morituri/common/task.py:
+	  First version that seems to get some AccurateRip checksums right.
+
 2009-02-28  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/image/cue.py:

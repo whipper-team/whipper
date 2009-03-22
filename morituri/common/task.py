@@ -22,6 +22,7 @@
 
 import os
 import sys
+import struct
 import zlib
 
 import gobject
@@ -37,8 +38,8 @@ class Task(object):
     _listeners = None
 
     def debug(self, *args, **kwargs):
-        print args, kwargs
-        sys.stdout.flush()
+        #print args, kwargs
+        #sys.stdout.flush()
         pass
 
     def start(self):
@@ -70,13 +71,22 @@ class CRCTask(Task):
     # this object needs a main loop to stop
     description = 'Calculating CRC checksum...'
 
-    def __init__(self, path, frameStart=0, frameEnd=-1):
+    def __init__(self, path, frameStart=0, frameLength=-1):
+        """
+        A frame is considered a set of samples for each channel;
+        ie 16 bit stereo is 4 bytes per frame.
+        If frameLength < 0 it is treated as 'unknown' and calculated.
+
+        @type  frameStart: int
+        @param frameStart: the frame to start at
+        """
         if not os.path.exists(path):
             raise IndexError, '%s does not exist' % path
 
         self._path = path
         self._frameStart = frameStart
-        self._frameEnd = frameEnd
+        self._frameLength = frameLength
+        self._frameEnd = None
         self._crc = 0
         self._bytes = 0
         self._first = None
@@ -98,10 +108,13 @@ class CRCTask(Task):
         self.debug('query duration')
         sink = self._pipeline.get_by_name('sink')
 
-        if self._frameEnd == -1:
+        if self._frameLength < 0:
             length, _ = sink.query_duration(gst.FORMAT_DEFAULT)
-            self._frameEnd = length - 1
-            self.debug('last frame is', self._frameEnd)
+            print 'total length', length
+            self._frameLength = length - self._frameStart
+            self.debug('frame length is', self._frameLength)
+            print 'frame length is', self._frameLength
+        self._frameEnd = self._frameStart + self._frameLength - 1
 
         self.debug('event')
 
@@ -111,7 +124,8 @@ class CRCTask(Task):
             gst.SEEK_FLAG_FLUSH,
             gst.SEEK_TYPE_SET, self._frameStart,
             gst.SEEK_TYPE_SET, self._frameEnd + 1) # half-inclusive interval
-        # FIXME: sending it with frameEnd set screws up the seek, we don't get everything
+        # FIXME: sending it with frameEnd set screws up the seek, we don't get
+        # everything for flac; fixed in recent -good
         result = sink.send_event(event)
         #self.debug('event sent')
         #self.debug(result)
@@ -132,14 +146,21 @@ class CRCTask(Task):
         self._last = buffer
 
         assert len(buffer) % 4 == 0, "buffer is not a multiple of 4 bytes"
-        self._bytes += len(buffer)
         
         # update progress
         frame = self._first + self._bytes / 4
-        progress = float((frame - self._frameStart)) / float((self._frameEnd - self._frameStart))
+        framesDone = frame - self._frameStart
+        progress = float(framesDone) / float((self._frameLength))
         self.setProgress(progress)
 
-        self._crc = zlib.crc32(buffer, self._crc)
+        self._crc = self.do_crc_buffer(buffer, self._crc)
+        self._bytes += len(buffer)
+
+    def do_crc_buffer(self, buffer, crc):
+        """
+        Subclasses should implement this.
+        """
+        raise NotImplementedError
 
     def _eos_cb(self, sink):
         # get the last one; FIXME: why does this not get to us before ?
@@ -153,13 +174,33 @@ class CRCTask(Task):
         self._crc = self._crc % 2 ** 32
         last = self._last.offset + len(self._last) / 4 - 1
         self.debug("last sample:", last)
-        self.debug("frame end:", self._frameEnd)
+        self.debug("frame length:", self._frameLength)
         self.debug("CRC: %08X" % self._crc)
         self.debug("bytes: %d" % self._bytes)
         if self._frameEnd != last:
-            print 'ERROR: did not get all frames, %d missing' % (self._frameEnd - last)
+            print 'ERROR: did not get all frames, %d missing' % (
+                self._frameEnd - last)
         self.crc = self._crc
         Task.stop(self)
+
+class CRC32Task(CRCTask):
+    """
+    I do a simple CRC32 check.
+    """
+    def do_crc_buffer(self, buffer, crc):
+        return zlib.crc32(buffer, crc)
+
+class CRCAudioRipTask(CRCTask):
+    def do_crc_buffer(self, buffer, crc):
+        values = struct.unpack("<%dI" % (len(buffer) / 4), buffer)
+        for i, value in enumerate(values):
+            crc += (self._bytes / 4 + i + 1) * value
+            crc &= 0xFFFFFFFF
+            offset = self._bytes / 4 + i + 1
+            #if offset % 588 == 0:
+            #    print 'THOMAS: frame %d, offset %d, value %d, CRC %d' % (
+            #        offset / 588, offset, value, crc)
+        return crc
 
 class SyncRunner:
     def __init__(self, task):
@@ -175,7 +216,11 @@ class SyncRunner:
         pass
 
     def progress(self, value):
-        pass
+        sys.stdout.write('Progress: %3d %%\r' % (value * 100.0))
+        sys.stdout.flush()
+
+        if value >= 1.0:
+            print 'Progress: 100 %'
 
     def stop(self):
         self._loop.quit()

@@ -35,7 +35,9 @@ def main(path):
 
     for track in cuefile.tracks:
         index = track._indexes[1]
+        length = cuefile.getTrackLength(track)
         file = index[1]
+        offset = index[0]
 
         # find an actual potential file
         crctask = None
@@ -46,12 +48,13 @@ def main(path):
         for ext in ['wav', 'flac']:
             path = '%s.%s' % (noext, ext)
             if os.path.exists(path):
-                crctask = task.CRCTask(path)
+                crctask = task.CRCAudioRipTask(path, offset * 588,
+                    length * 588)
 
         if not crctask:
             print 'error: path %s not found' % file.path
 
-        print 'Analyzing', file.path
+        print 'Analyzing', file.path, "from CD frame ", offset, length, "CD frames"
         runner = task.SyncRunner(crctask)
         runner.run()
 
