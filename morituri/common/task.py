@@ -38,8 +38,8 @@ class Task(object):
     _listeners = None
 
     def debug(self, *args, **kwargs):
-        #print args, kwargs
-        #sys.stdout.flush()
+        print args, kwargs
+        sys.stdout.flush()
         pass
 
     def start(self):
@@ -91,6 +91,8 @@ class CRCTask(Task):
         self._bytes = 0
         self._first = None
         self._last = None
+        self._adapter = gst.Adapter()
+        self._lake = ''
 
         self.crc = None # result
 
@@ -99,6 +101,7 @@ class CRCTask(Task):
         self._pipeline = gst.parse_launch('''
             filesrc location="%s" !
             decodebin ! audio/x-raw-int !
+            queue !
             appsink name=sink sync=False emit-signals=True''' % self._path)
         self.debug('pausing')
         self._pipeline.set_state(gst.STATE_PAUSED)
@@ -109,11 +112,15 @@ class CRCTask(Task):
         sink = self._pipeline.get_by_name('sink')
 
         if self._frameLength < 0:
-            length, _ = sink.query_duration(gst.FORMAT_DEFAULT)
+            length, format = sink.query_duration(gst.FORMAT_DEFAULT)
+            # wavparse 0.10.14 returns in bytes
+            if format == gst.FORMAT_BYTES:
+                self.debug('query returned in BYTES format')
+                length /= 4
             print 'total length', length
             self._frameLength = length - self._frameStart
-            self.debug('frame length is', self._frameLength)
-            print 'frame length is', self._frameLength
+            self.debug('audio frame length is', self._frameLength)
+            print 'audio frame length is', self._frameLength
         self._frameEnd = self._frameStart + self._frameLength - 1
 
         self.debug('event')
@@ -147,14 +154,33 @@ class CRCTask(Task):
 
         assert len(buffer) % 4 == 0, "buffer is not a multiple of 4 bytes"
         
-        # update progress
-        frame = self._first + self._bytes / 4
-        framesDone = frame - self._frameStart
-        progress = float(framesDone) / float((self._frameLength))
-        self.setProgress(progress)
+        # FIXME: gst-python 0.10.14.1 doesn't have adapter_peek/_take wrapped
+        # see http://bugzilla.gnome.org/show_bug.cgi?id=576505
+        self._adapter.push(buffer)
 
-        self._crc = self.do_crc_buffer(buffer, self._crc)
-        self._bytes += len(buffer)
+        while self._adapter.available() >= 588 * 4:
+            # FIXME: in 0.10.14.1, take_buffer leaks a ref
+            buffer = self._adapter.take_buffer(588 * 4)
+
+#        self._lake += str(buffer)
+#        i = 0
+#        while len(self._lake) >= (i + 1) * 2532:
+#            block = self._lake[i * 2532:(i + 1) * 2532]
+
+            # update progress
+            frame = self._first + self._bytes / 4
+            framesDone = frame - self._frameStart
+            progress = float(framesDone) / float((self._frameLength))
+            self.setProgress(progress)
+
+            self._crc = self.do_crc_buffer(buffer, self._crc)
+            self._bytes += len(buffer)
+            print 'after crc', buffer.__grefcount__
+            sys.stdout.flush()
+            del buffer
+#            i += 1
+#        if i > 0:
+#            self._lake = self._lake[i * 2532:]
 
     def do_crc_buffer(self, buffer, crc):
         """
@@ -191,15 +217,42 @@ class CRC32Task(CRCTask):
         return zlib.crc32(buffer, crc)
 
 class CRCAudioRipTask(CRCTask):
+    def __init__(self, path, trackNumber, trackCount, frameStart=0, frameLength=-1):
+        CRCTask.__init__(self, path, frameStart, frameLength)
+        self._trackNumber = trackNumber
+        self._trackCount = trackCount
+        self._frameCounter = 0
+
     def do_crc_buffer(self, buffer, crc):
+        self._frameCounter += 1
+
+        # on first track ...
+        if self._trackNumber == 1:
+            # ... skip first 4 CD frames
+            if self._frameCounter <= 4:
+                self.debug('skipping frame %d' % self._frameCounter)
+                return crc
+            # ... on 5th frame, only use last value
+            elif self._frameCounter == 5:
+                values = struct.unpack("<I" % buffer[-4:])
+                crc += 588 * 5 * value
+                crc &= 0xFFFFFFFF
+ 
+        # on last track, skip last 6 CD frames
+        if self._trackNumber == self._trackCount:
+            if self._frameCounter >= self._frameLength + 6:
+                self.debug('skipping frame %d' % self._frameCounter)
+                return crc
+
+
         values = struct.unpack("<%dI" % (len(buffer) / 4), buffer)
         for i, value in enumerate(values):
             crc += (self._bytes / 4 + i + 1) * value
             crc &= 0xFFFFFFFF
             offset = self._bytes / 4 + i + 1
-            #if offset % 588 == 0:
-            #    print 'THOMAS: frame %d, offset %d, value %d, CRC %d' % (
-            #        offset / 588, offset, value, crc)
+            if offset % 588 == 0:
+                print 'THOMAS: frame %d, offset %d, value %d, CRC %d' % (
+                    offset / 588, offset, value, crc)
         return crc
 
 class SyncRunner:

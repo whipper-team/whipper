@@ -33,7 +33,7 @@ def main(path):
     cuefile = cue.Cue(path)
     cuefile.parse()
 
-    for track in cuefile.tracks:
+    for trackIndex, track in enumerate(cuefile.tracks):
         index = track._indexes[1]
         length = cuefile.getTrackLength(track)
         file = index[1]
@@ -48,8 +48,10 @@ def main(path):
         for ext in ['wav', 'flac']:
             path = '%s.%s' % (noext, ext)
             if os.path.exists(path):
-                crctask = task.CRCAudioRipTask(path, offset * 588,
-                    length * 588)
+                print 'CRCing %s from CD frame %r for %r' % (path, offset, length)
+                crctask = task.CRCAudioRipTask(path,
+                    trackNumber=trackIndex + 1, trackCount=len(cuefile.tracks),
+                    frameStart=offset * 588, frameLength=length * 588)
 
         if not crctask:
             print 'error: path %s not found' % file.path
