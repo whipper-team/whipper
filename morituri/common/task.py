@@ -28,6 +28,9 @@ import zlib
 import gobject
 import gst
 
+FRAMES_PER_DISC_FRAME = 588
+SAMPLES_PER_DISC_FRAME = FRAMES_PER_DISC_FRAME * 4
+
 class Task(object):
     description = 'I am doing something.'
 
@@ -158,9 +161,9 @@ class CRCTask(Task):
         # see http://bugzilla.gnome.org/show_bug.cgi?id=576505
         self._adapter.push(buffer)
 
-        while self._adapter.available() >= 588 * 4:
+        while self._adapter.available() >= SAMPLES_PER_DISC_FRAME:
             # FIXME: in 0.10.14.1, take_buffer leaks a ref
-            buffer = self._adapter.take_buffer(588 * 4)
+            buffer = self._adapter.take_buffer(SAMPLES_PER_DISC_FRAME)
 
 #        self._lake += str(buffer)
 #        i = 0
@@ -175,9 +178,6 @@ class CRCTask(Task):
 
             self._crc = self.do_crc_buffer(buffer, self._crc)
             self._bytes += len(buffer)
-            print 'after crc', buffer.__grefcount__
-            sys.stdout.flush()
-            del buffer
 #            i += 1
 #        if i > 0:
 #            self._lake = self._lake[i * 2532:]
@@ -221,38 +221,40 @@ class CRCAudioRipTask(CRCTask):
         CRCTask.__init__(self, path, frameStart, frameLength)
         self._trackNumber = trackNumber
         self._trackCount = trackCount
-        self._frameCounter = 0
+        self._discFrameCounter = 0
+        print 'TOMAS: track %d of %d' % (trackNumber, trackCount)
+        print 'THOMAS: frame Length: %d' % self._frameLength
 
     def do_crc_buffer(self, buffer, crc):
-        self._frameCounter += 1
+        self._discFrameCounter += 1
 
         # on first track ...
         if self._trackNumber == 1:
             # ... skip first 4 CD frames
-            if self._frameCounter <= 4:
-                self.debug('skipping frame %d' % self._frameCounter)
+            if self._discFrameCounter <= 4:
+                self.debug('skipping frame %d' % self._discFrameCounter)
                 return crc
             # ... on 5th frame, only use last value
-            elif self._frameCounter == 5:
-                values = struct.unpack("<I" % buffer[-4:])
-                crc += 588 * 5 * value
+            elif self._discFrameCounter == 5:
+                values = struct.unpack("<I", buffer[-4:])
+                crc += FRAMES_PER_DISC_FRAME * 5 * values[0]
                 crc &= 0xFFFFFFFF
  
-        # on last track, skip last 6 CD frames
+        # on last track, skip last 5 CD frames
         if self._trackNumber == self._trackCount:
-            if self._frameCounter >= self._frameLength + 6:
-                self.debug('skipping frame %d' % self._frameCounter)
+            discFrameLength = self._frameLength / FRAMES_PER_DISC_FRAME
+            if self._discFrameCounter > discFrameLength - 5:
+                self.debug('skipping frame %d' % self._discFrameCounter)
                 return crc
-
 
         values = struct.unpack("<%dI" % (len(buffer) / 4), buffer)
         for i, value in enumerate(values):
             crc += (self._bytes / 4 + i + 1) * value
             crc &= 0xFFFFFFFF
             offset = self._bytes / 4 + i + 1
-            if offset % 588 == 0:
+            if offset % FRAMES_PER_DISC_FRAME == 0:
                 print 'THOMAS: frame %d, offset %d, value %d, CRC %d' % (
-                    offset / 588, offset, value, crc)
+                    offset / FRAMES_PER_DISC_FRAME, offset, value, crc)
         return crc
 
 class SyncRunner:

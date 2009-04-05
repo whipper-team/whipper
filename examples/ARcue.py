@@ -51,7 +51,8 @@ def main(path):
                 print 'CRCing %s from CD frame %r for %r' % (path, offset, length)
                 crctask = task.CRCAudioRipTask(path,
                     trackNumber=trackIndex + 1, trackCount=len(cuefile.tracks),
-                    frameStart=offset * 588, frameLength=length * 588)
+                    frameStart=offset * task.FRAMES_PER_DISC_FRAME,
+                    frameLength=length * task.FRAMES_PER_DISC_FRAME)
 
         if not crctask:
             print 'error: path %s not found' % file.path
