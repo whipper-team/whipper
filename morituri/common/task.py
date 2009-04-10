@@ -222,8 +222,6 @@ class CRCAudioRipTask(CRCTask):
         self._trackNumber = trackNumber
         self._trackCount = trackCount
         self._discFrameCounter = 0
-        print 'TOMAS: track %d of %d' % (trackNumber, trackCount)
-        print 'THOMAS: frame Length: %d' % self._frameLength
 
     def do_crc_buffer(self, buffer, crc):
         self._discFrameCounter += 1
@@ -252,9 +250,9 @@ class CRCAudioRipTask(CRCTask):
             crc += (self._bytes / 4 + i + 1) * value
             crc &= 0xFFFFFFFF
             offset = self._bytes / 4 + i + 1
-            if offset % FRAMES_PER_DISC_FRAME == 0:
-                print 'THOMAS: frame %d, offset %d, value %d, CRC %d' % (
-                    offset / FRAMES_PER_DISC_FRAME, offset, value, crc)
+            # if offset % FRAMES_PER_DISC_FRAME == 0:
+            #    print 'THOMAS: frame %d, offset %d, value %d, CRC %d' % (
+            #        offset / FRAMES_PER_DISC_FRAME, offset, value, crc)
         return crc
 
 class SyncRunner:
