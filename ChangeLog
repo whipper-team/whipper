@@ -1,5 +1,14 @@
 2009-04-11  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* examples/ARcue.py:
+	* morituri/common/task.py:
+	* morituri/image/image.py (added):
+	  Add an object for handling an Image based on a .cue file.
+	  Create a Task for CRC'ing the whole Image.
+	  Make the example use this new task instead.
+
+2009-04-11  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* examples/gtkcrc.py:
 	* morituri/common/task.py:
 	  Add task object to listener interface methods.

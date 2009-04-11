@@ -113,21 +113,31 @@ class TaskRunner:
         """
 
 class SyncRunner(TaskRunner):
-    def run(self, task):
+    """
+    I run the task synchronously in a gobject MainLoop.
+    """
+    def run(self, task, verbose=True, skip=False):
         self._task = task
+        self._verbose = verbose
+        self._skip = skip
+
         self._loop = gobject.MainLoop()
         self._task.addListener(self)
         self._task.start()
         self._loop.run()
 
     def progressed(self, task, value):
+        if not self._verbose:
+            return
+
         sys.stdout.write('%s %3d %%\r' % (
             self._task.description, value * 100.0))
         sys.stdout.flush()
 
         if value >= 1.0:
-            sys.stdout.write('%s %3d %%\n' % (
-                self._task.description, 100.0))
+            if self._skip:
+                sys.stdout.write('%s %3d %%\n' % (
+                    self._task.description, 100.0))
 
     def stopped(self, task):
         self._loop.quit()

@@ -23,45 +23,22 @@
 import os
 import sys
 
-from morituri.image import cue
+from morituri.image import image
 from morituri.common import task, crc
 
 import gobject
 gobject.threads_init()
 
 def main(path):
-    cuefile = cue.Cue(path)
-    cuefile.parse()
+    cueImage = image.Image(path)
 
-    for trackIndex, track in enumerate(cuefile.tracks):
-        index = track._indexes[1]
-        length = cuefile.getTrackLength(track)
-        file = index[1]
-        offset = index[0]
+    runner = task.SyncRunner()
+    cuetask = image.AudioRipCRCTask(cueImage)
 
-        # find an actual potential file
-        crctask = None
+    runner.run(cuetask)
 
-        # .cue FILE statements have Windows-style path separators
-        path = os.path.join(*file.path.split('\\'))
-        noext, _ = os.path.splitext(path)
-        for ext in ['wav', 'flac']:
-            path = '%s.%s' % (noext, ext)
-            if os.path.exists(path):
-                print 'CRCing %s from CD frame %r for %r' % (path, offset, length)
-                crctask = crc.CRCAudioRipTask(path,
-                    trackNumber=trackIndex + 1, trackCount=len(cuefile.tracks),
-                    frameStart=offset * crc.FRAMES_PER_DISC_FRAME,
-                    frameLength=length * crc.FRAMES_PER_DISC_FRAME)
-
-        if not crctask:
-            print 'ERROR: path %s not found' % file.path
-            continue
-
-        runner = task.SyncRunner()
-        runner.run(crctask)
-
-        print "%08x" % crctask.crc
+    for i, crc in enumerate(cuetask.crcs):
+        print "Track %2d: %08x" % (i, crc)
 
 path = 'test.cue'
 
