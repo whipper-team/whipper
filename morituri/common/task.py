@@ -138,6 +138,11 @@ class SyncRunner(TaskRunner):
             if self._skip:
                 sys.stdout.write('%s %3d %%\n' % (
                     self._task.description, 100.0))
+            else:
+                # clear with whitespace
+                text = '%s %3d %%' % (
+                    self._task.description, 100.0)
+                sys.stdout.write("%s\r" % (' ' * len(text), ))
 
     def stopped(self, task):
         self._loop.quit()
