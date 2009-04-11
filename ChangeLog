@@ -1,5 +1,14 @@
 2009-04-11  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/test/track-separate.cue (added):
+	* morituri/test/track.flac (added):
+	* morituri/test/Makefile (added):
+	* morituri/test/track-single.cue (added):
+	  Add a simple 10 frame flac file, and two .cue files
+	  using it.
+
+2009-04-11  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/image/image.py:
 	  If paths are relative, make them relative to cue file.
 

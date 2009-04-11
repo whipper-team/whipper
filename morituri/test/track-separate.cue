@@ -1,0 +1,12 @@
+FILE "track.flac" WAVE
+  TRACK 01 AUDIO
+    INDEX 01 00:00:00
+FILE "track.flac" WAVE
+  TRACK 02 AUDIO
+    INDEX 01 00:00:00
+FILE "track.flac" WAVE
+  TRACK 03 AUDIO
+    INDEX 01 00:00:00
+FILE "track.flac" WAVE
+  TRACK 04 AUDIO
+    INDEX 01 00:00:00
