@@ -1,4 +1,4 @@
-# -*- Mode: Python; test-case-name: morituri.test.test_common_task -*-
+# -*- Mode: Python; test-case-name: morituri.test.test_common_crc -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
 # Morituri - for those about to RIP
@@ -28,55 +28,12 @@ import zlib
 import gobject
 import gst
 
+from morituri.common import task
+
 FRAMES_PER_DISC_FRAME = 588
 SAMPLES_PER_DISC_FRAME = FRAMES_PER_DISC_FRAME * 4
 
-class Task(object):
-    """
-    I wrap a task in an asynchronous interface.
-    I can be listened to for starting, stopping, and progress updates.
-
-    @ivar  description: what am I doing
-    """
-    description = 'I am doing something.'
-
-    progress = 0.0
-    increment = 0.01
-    running = False
-
-    _listeners = None
-
-    def debug(self, *args, **kwargs):
-        return
-        print args, kwargs
-        sys.stdout.flush()
-
-    def start(self):
-        self.running = True
-        self._notifyListeners('started')
-
-    def stop(self):
-        self.debug('stopping')
-        self.running = False
-        self._notifyListeners('stopped')
-
-    def setProgress(self, value):
-        if value - self.progress > self.increment or value >= 1.0:
-            self.progress = value
-            self._notifyListeners('progressed', value)
-            self.debug('notifying progress', value)
-        
-    def addListener(self, listener):
-        if not self._listeners:
-            self._listeners = []
-        self._listeners.append(listener)
-
-    def _notifyListeners(self, methodName, *args, **kwargs):
-            if self._listeners:
-                for l in self._listeners:
-                    getattr(l, methodName)(*args, **kwargs)
-
-class CRCTask(Task):
+class CRCTask(task.Task):
     # this object needs a main loop to stop
     description = 'Calculating CRC checksum...'
 
@@ -105,7 +62,7 @@ class CRCTask(Task):
         self.crc = None # result
 
     def start(self):
-        Task.start(self)
+        task.Task.start(self)
         self._pipeline = gst.parse_launch('''
             filesrc location="%s" !
             decodebin ! audio/x-raw-int !
@@ -223,7 +180,7 @@ class CRCTask(Task):
 
         # publicize and stop
         self.crc = self._crc
-        Task.stop(self)
+        task.Task.stop(self)
 
 class CRC32Task(CRCTask):
     """
@@ -270,56 +227,3 @@ class CRCAudioRipTask(CRCTask):
             #    print 'THOMAS: frame %d, offset %d, value %d, CRC %d' % (
             #        offset / FRAMES_PER_DISC_FRAME, offset, value, crc)
         return crc
-
-class TaskRunner:
-    """
-    I am a base class for task runners.
-    Task runners should be reusable.
-    """
-
-    def run(self, task):
-        """
-        Run the given task.
-
-        @type  task: Task
-        """
-        raise NotImplementedError
-
-    # listener callbacks
-    def progressed(self, value):
-        """
-        Implement me to be informed about progress.
-
-        @type  value: float
-        @param value: progress, from 0.0 to 1.0
-        """
-
-    def started(self):
-        """
-        Implement me to be informed about the task starting.
-        """
-
-    def stopped(self):
-        """
-        Implement me to be informed about the task starting.
-        """
-
-class SyncRunner(TaskRunner):
-    def run(self, task):
-        self._task = task
-        self._loop = gobject.MainLoop()
-        self._task.addListener(self)
-        self._task.start()
-        self._loop.run()
-
-    def progressed(self, value):
-        sys.stdout.write('%s %3d %%\r' % (
-            self._task.description, value * 100.0))
-        sys.stdout.flush()
-
-        if value >= 1.0:
-            sys.stdout.write('%s %3d %%\n' % (
-                self._task.description, 100.0))
-
-    def stopped(self):
-        self._loop.quit()

@@ -24,7 +24,7 @@ import os
 import sys
 
 from morituri.image import cue
-from morituri.common import task
+from morituri.common import task, crc
 
 import gobject
 gobject.threads_init()
@@ -49,10 +49,10 @@ def main(path):
             path = '%s.%s' % (noext, ext)
             if os.path.exists(path):
                 print 'CRCing %s from CD frame %r for %r' % (path, offset, length)
-                crctask = task.CRCAudioRipTask(path,
+                crctask = crc.CRCAudioRipTask(path,
                     trackNumber=trackIndex + 1, trackCount=len(cuefile.tracks),
-                    frameStart=offset * task.FRAMES_PER_DISC_FRAME,
-                    frameLength=length * task.FRAMES_PER_DISC_FRAME)
+                    frameStart=offset * crc.FRAMES_PER_DISC_FRAME,
+                    frameLength=length * crc.FRAMES_PER_DISC_FRAME)
 
         if not crctask:
             print 'ERROR: path %s not found' % file.path

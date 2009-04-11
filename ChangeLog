@@ -1,5 +1,13 @@
 2009-04-11  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* examples/ARcue.py:
+	* examples/gtkcrc.py:
+	* morituri/common/crc.py:
+	* morituri/common/task.py:
+	  Split out generic task/runner from CRC tasks.
+
+2009-04-11  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/crc.py (added):
 	  Copy from task.py before splitting.
 

@@ -30,7 +30,7 @@ gobject.threads_init()
 
 import gtk
 
-from morituri.common import task
+from morituri.common import task, crc
 
 class TaskProgress(gtk.VBox, task.TaskRunner):
     __gsignals__ = {
@@ -89,7 +89,7 @@ try:
 except:
     pass
 
-crctask = task.CRC32Task(path, start, end)
+crctask = crc.CRC32Task(path, start, end)
 
 # this is a Dummy task that can be used if this works at all
 class DummyTask(task.Task):
