@@ -58,8 +58,8 @@ def main(path):
             print 'ERROR: path %s not found' % file.path
             continue
 
-        runner = task.SyncRunner(crctask)
-        runner.run()
+        runner = task.SyncRunner()
+        runner.run(crctask)
 
         print "%08x" % crctask.crc
 

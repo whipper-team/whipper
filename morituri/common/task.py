@@ -32,6 +32,12 @@ FRAMES_PER_DISC_FRAME = 588
 SAMPLES_PER_DISC_FRAME = FRAMES_PER_DISC_FRAME * 4
 
 class Task(object):
+    """
+    I wrap a task in an asynchronous interface.
+    I can be listened to for starting, stopping, and progress updates.
+
+    @ivar  description: what am I doing
+    """
     description = 'I am doing something.'
 
     progress = 0.0
@@ -41,24 +47,24 @@ class Task(object):
     _listeners = None
 
     def debug(self, *args, **kwargs):
-        return
+        #return
         print args, kwargs
         sys.stdout.flush()
         pass
 
     def start(self):
         self.running = True
-        self._notifyListeners('start')
+        self._notifyListeners('started')
 
     def stop(self):
         self.debug('stopping')
         self.running = False
-        self._notifyListeners('stop')
+        self._notifyListeners('stopped')
 
     def setProgress(self, value):
         if value - self.progress > self.increment or value >= 1.0:
             self.progress = value
-            self._notifyListeners('progress', value)
+            self._notifyListeners('progressed', value)
             self.debug('notifying progress', value)
         
     def addListener(self, listener):
@@ -171,7 +177,8 @@ class CRCTask(Task):
             frame = self._first + self._bytes / 4
             framesDone = frame - self._frameStart
             progress = float(framesDone) / float((self._frameLength))
-            self.setProgress(progress)
+            # marshall to the main thread
+            gobject.timeout_add(0L, self.setProgress, progress)
 
 
     def do_crc_buffer(self, buffer, crc):
@@ -256,25 +263,55 @@ class CRCAudioRipTask(CRCTask):
             #        offset / FRAMES_PER_DISC_FRAME, offset, value, crc)
         return crc
 
-class SyncRunner:
-    def __init__(self, task):
-        self._task = task
+class TaskRunner:
+    """
+    I am a base class for task runners.
+    Task runners should be reusable.
+    """
 
-    def run(self):
+    def run(self, task):
+        """
+        Run the given task.
+
+        @type  task: Task
+        """
+        raise NotImplementedError
+
+    # listener callbacks
+    def progressed(self, value):
+        """
+        Implement me to be informed about progress.
+
+        @type  value: float
+        @param value: progress, from 0.0 to 1.0
+        """
+
+    def started(self):
+        """
+        Implement me to be informed about the task starting.
+        """
+
+    def stopped(self):
+        """
+        Implement me to be informed about the task starting.
+        """
+
+class SyncRunner(TaskRunner):
+    def run(self, task):
+        self._task = task
         self._loop = gobject.MainLoop()
         self._task.addListener(self)
         self._task.start()
         self._loop.run()
 
-    def start(self):
-        pass
-
-    def progress(self, value):
-        sys.stdout.write('Progress: %3d %%\r' % (value * 100.0))
+    def progressed(self, value):
+        sys.stdout.write('%s %3d %%\r' % (
+            self._task.description, value * 100.0))
         sys.stdout.flush()
 
         if value >= 1.0:
-            print 'Progress: 100 %'
+            sys.stdout.write('%s %3d %%\n' % (
+                self._task.description, 100.0))
 
-    def stop(self):
+    def stopped(self):
         self._loop.quit()

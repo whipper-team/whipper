@@ -1,5 +1,14 @@
 2009-04-11  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* examples/ARcue.py:
+	* examples/gtkcrc.py:
+	* morituri/common/task.py:
+	  Make a real Task interface and use it.
+	  Make runners reusable for multiple tasks.
+	  gtkcrc.py seems to be blocking updates however.
+
+2009-04-11  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/test (added):
 	* morituri/test/test_image_cue.py (added):
 	* morituri/test/kings-single.cue (added):

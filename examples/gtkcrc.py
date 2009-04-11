@@ -1,4 +1,4 @@
-# -*- Mode: Python; test-case-name: morituri.test.test_header -*-
+# -*- Mode: Python -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
 # Morituri - for those about to RIP
@@ -32,32 +32,46 @@ import gtk
 
 from morituri.common import task
 
-class TaskProgress(gtk.VBox):
+class TaskProgress(gtk.VBox, task.TaskRunner):
     __gsignals__ = {
         'stop': (gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE, ())
     }
 
-    def __init__(self, task):
+    def __init__(self):
+        gst.info('__init__')
         gtk.VBox.__init__(self)
         self.set_border_width(6)
         self.set_spacing(6)
 
-        label = gtk.Label(task.description)
-        self.add(label)
+        self._label = gtk.Label()
+        self.add(self._label)
 
         self._progress = gtk.ProgressBar()
         self.add(self._progress)
 
+    def run(self, task):
+        self._task = task
+        self._label.set_text(task.description)
         task.addListener(self)
+        while gtk.events_pending():
+            gtk.main_iteration()
+        task.start()
 
-    def start(self):
+    def started(self):
         pass
 
-    def stop(self):
+    def stopped(self):
         self.emit('stop')
+        # self._task.removeListener(self)
 
-    def progress(self, value):
+    def progressed(self, value):
+        gst.info('progressed')
+        # FIXME: why is this not painting the progress bar ?
+        print 'progress', value
         self._progress.set_fraction(value)
+        while gtk.events_pending():
+            gtk.main_iteration()
+
 
 path = 'test.flac'
 
@@ -78,15 +92,33 @@ try:
 except:
     pass
 
-crctask = task.CRCTask(path, start, end)
+crctask = task.CRC32Task(path, start, end)
+
+class DummTask(task.Task):
+    def start(self):
+        task.Task.start(self)
+        gobject.timeout_add(1000L, self._wind)
+
+    def _wind(self):
+        self.setProgress(min(self.progress + 0.1, 1.0))
+
+        if self.progress >= 1.0:
+            self.stop()
+            return
+
+        gobject.timeout_add(1000L, self._wind)
+
+#crctask = DummyTask()
 
 window = gtk.Window()
-progress = TaskProgress(crctask)
+progress = TaskProgress()
 progress.connect('stop', lambda _: gtk.main_quit())
 window.add(progress)
 window.show_all()
 
-crctask.start()
+progress.run(crctask)
+
+print 'going main'
 
 gtk.main()
 
