@@ -1,5 +1,10 @@
 2009-04-11  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/image/image.py:
+	  If paths are relative, make them relative to cue file.
+
+2009-04-11  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/task.py:
 	  clear with whitespace.
 

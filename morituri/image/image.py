@@ -45,8 +45,12 @@ class Image:
         if os.path.exists(path):
             return path
 
-        # .cue FILE statements have Windows-style path separators
+        # .cue FILE statements have Windows-style path separators, so convert
         tpath = os.path.join(*path.split('\\'))
+        # if the path is relative, make it absolute relative to the cue file
+        if tpath != os.path.abspath(tpath):
+            tpath = os.path.join(os.path.dirname(self._path), tpath)
+
         noext, _ = os.path.splitext(tpath)
         for ext in ['wav', 'flac']:
             cpath = '%s.%s' % (noext, ext)
