@@ -47,10 +47,9 @@ class Task(object):
     _listeners = None
 
     def debug(self, *args, **kwargs):
-        #return
+        return
         print args, kwargs
         sys.stdout.flush()
-        pass
 
     def start(self):
         self.running = True
@@ -147,7 +146,16 @@ class CRCTask(Task):
         sink.connect('eos', self._eos_cb)
 
         self.debug('scheduling setting to play')
-        gobject.timeout_add(0L, self._pipeline.set_state, gst.STATE_PLAYING)
+        # since set_state returns non-False, adding it as timeout_add
+        # will repeatedly call it, and block the main loop; so
+        #   gobject.timeout_add(0L, self._pipeline.set_state, gst.STATE_PLAYING)
+        # would not work.
+
+        def play():
+            self._pipeline.set_state(gst.STATE_PLAYING)
+            return False
+        gobject.timeout_add(0L, play)
+
         #self._pipeline.set_state(gst.STATE_PLAYING)
         self.debug('scheduled setting to play')
 

@@ -67,10 +67,7 @@ class TaskProgress(gtk.VBox, task.TaskRunner):
     def progressed(self, value):
         gst.info('progressed')
         # FIXME: why is this not painting the progress bar ?
-        print 'progress', value
         self._progress.set_fraction(value)
-        while gtk.events_pending():
-            gtk.main_iteration()
 
 
 path = 'test.flac'
@@ -94,7 +91,8 @@ except:
 
 crctask = task.CRC32Task(path, start, end)
 
-class DummTask(task.Task):
+# this is a Dummy task that can be used if this works at all
+class DummyTask(task.Task):
     def start(self):
         task.Task.start(self)
         gobject.timeout_add(1000L, self._wind)
@@ -117,8 +115,6 @@ window.add(progress)
 window.show_all()
 
 progress.run(crctask)
-
-print 'going main'
 
 gtk.main()
 
