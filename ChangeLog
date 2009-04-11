@@ -1,3 +1,11 @@
+2009-04-11  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/task.py:
+	  Remove queue to avoid race.
+	  Remove prints.
+	  Clean up debug.
+	  Update progress after handling buffers.
+
 2009-04-05  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/task.py:

@@ -41,6 +41,7 @@ class Task(object):
     _listeners = None
 
     def debug(self, *args, **kwargs):
+        return
         print args, kwargs
         sys.stdout.flush()
         pass
@@ -55,7 +56,7 @@ class Task(object):
         self._notifyListeners('stop')
 
     def setProgress(self, value):
-        if value - self.progress > self.increment or value == 1.0:
+        if value - self.progress > self.increment or value >= 1.0:
             self.progress = value
             self._notifyListeners('progress', value)
             self.debug('notifying progress', value)
@@ -104,7 +105,6 @@ class CRCTask(Task):
         self._pipeline = gst.parse_launch('''
             filesrc location="%s" !
             decodebin ! audio/x-raw-int !
-            queue !
             appsink name=sink sync=False emit-signals=True''' % self._path)
         self.debug('pausing')
         self._pipeline.set_state(gst.STATE_PAUSED)
@@ -120,10 +120,9 @@ class CRCTask(Task):
             if format == gst.FORMAT_BYTES:
                 self.debug('query returned in BYTES format')
                 length /= 4
-            print 'total length', length
+            self.debug('total length', length)
             self._frameLength = length - self._frameStart
             self.debug('audio frame length is', self._frameLength)
-            print 'audio frame length is', self._frameLength
         self._frameEnd = self._frameStart + self._frameLength - 1
 
         self.debug('event')
@@ -142,9 +141,10 @@ class CRCTask(Task):
         sink.connect('new-buffer', self._new_buffer_cb)
         sink.connect('eos', self._eos_cb)
 
-        self.debug('setting to play')
-        self._pipeline.set_state(gst.STATE_PLAYING)
-        self.debug('set to play')
+        self.debug('scheduling setting to play')
+        gobject.timeout_add(0L, self._pipeline.set_state, gst.STATE_PLAYING)
+        #self._pipeline.set_state(gst.STATE_PLAYING)
+        self.debug('scheduled setting to play')
 
     def _new_buffer_cb(self, sink):
         buffer = sink.emit('pull-buffer')
@@ -170,17 +170,18 @@ class CRCTask(Task):
 #        while len(self._lake) >= (i + 1) * 2532:
 #            block = self._lake[i * 2532:(i + 1) * 2532]
 
+            self._crc = self.do_crc_buffer(buffer, self._crc)
+            self._bytes += len(buffer)
+#            i += 1
+#        if i > 0:
+#            self._lake = self._lake[i * 2532:]
+
             # update progress
             frame = self._first + self._bytes / 4
             framesDone = frame - self._frameStart
             progress = float(framesDone) / float((self._frameLength))
             self.setProgress(progress)
 
-            self._crc = self.do_crc_buffer(buffer, self._crc)
-            self._bytes += len(buffer)
-#            i += 1
-#        if i > 0:
-#            self._lake = self._lake[i * 2532:]
 
     def do_crc_buffer(self, buffer, crc):
         """
@@ -191,21 +192,30 @@ class CRCTask(Task):
     def _eos_cb(self, sink):
         # get the last one; FIXME: why does this not get to us before ?
         #self._new_buffer_cb(sink)
-        self.debug('setting state to NULL')
+        self.debug('eos, scheduling stop')
         gobject.timeout_add(0L, self.stop)
 
     def stop(self):
-        self._pipeline.set_state(gst.STATE_NULL)
         self.debug('stopping')
-        self._crc = self._crc % 2 ** 32
-        last = self._last.offset + len(self._last) / 4 - 1
-        self.debug("last sample:", last)
-        self.debug("frame length:", self._frameLength)
-        self.debug("CRC: %08X" % self._crc)
-        self.debug("bytes: %d" % self._bytes)
-        if self._frameEnd != last:
-            print 'ERROR: did not get all frames, %d missing' % (
-                self._frameEnd - last)
+        self.debug('setting state to NULL')
+        self._pipeline.set_state(gst.STATE_NULL)
+
+        if not self._last:
+            # see http://bugzilla.gnome.org/show_bug.cgi?id=578612
+            print 'ERROR: not a single buffer gotten'
+            raise
+        else:
+            self._crc = self._crc % 2 ** 32
+            last = self._last.offset + len(self._last) / 4 - 1
+            self.debug("last sample:", last)
+            self.debug("frame length:", self._frameLength)
+            self.debug("CRC: %08X" % self._crc)
+            self.debug("bytes: %d" % self._bytes)
+            if self._frameEnd != last:
+                print 'ERROR: did not get all frames, %d missing' % (
+                    self._frameEnd - last)
+
+        # publicize and stop
         self.crc = self._crc
         Task.stop(self)
 
