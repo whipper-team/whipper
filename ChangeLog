@@ -1,5 +1,10 @@
 2009-04-11  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/crc.py (added):
+	  Copy from task.py before splitting.
+
+2009-04-11  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* examples/gtkcrc.py:
 	* morituri/common/task.py:
 	  Don't block the main loop by infinitely scheduling
