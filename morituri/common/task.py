@@ -96,7 +96,6 @@ class CRCTask(Task):
         self._first = None
         self._last = None
         self._adapter = gst.Adapter()
-        self._lake = ''
 
         self.crc = None # result
 
@@ -165,16 +164,8 @@ class CRCTask(Task):
             # FIXME: in 0.10.14.1, take_buffer leaks a ref
             buffer = self._adapter.take_buffer(SAMPLES_PER_DISC_FRAME)
 
-#        self._lake += str(buffer)
-#        i = 0
-#        while len(self._lake) >= (i + 1) * 2532:
-#            block = self._lake[i * 2532:(i + 1) * 2532]
-
             self._crc = self.do_crc_buffer(buffer, self._crc)
             self._bytes += len(buffer)
-#            i += 1
-#        if i > 0:
-#            self._lake = self._lake[i * 2532:]
 
             # update progress
             frame = self._first + self._bytes / 4

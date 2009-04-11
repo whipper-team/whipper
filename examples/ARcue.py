@@ -55,9 +55,9 @@ def main(path):
                     frameLength=length * task.FRAMES_PER_DISC_FRAME)
 
         if not crctask:
-            print 'error: path %s not found' % file.path
+            print 'ERROR: path %s not found' % file.path
+            continue
 
-        print 'Analyzing', file.path, "from CD frame ", offset, length, "CD frames"
         runner = task.SyncRunner(crctask)
         runner.run()
 
