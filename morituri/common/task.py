@@ -39,19 +39,29 @@ class Task(object):
 
     _listeners = None
 
-    def debug(self, *args, **kwargs):
-        return
-        print args, kwargs
-        sys.stdout.flush()
 
+    ### subclass methods
     def start(self):
+        """
+        Subclasses should chain up to me at the beginning.
+        """
+        self.progress = 0.0
         self.running = True
         self._notifyListeners('started')
 
     def stop(self):
+        """
+        Subclasses should chain up to me at the end.
+        """
         self.debug('stopping')
         self.running = False
         self._notifyListeners('stopped')
+
+    ### base class methods
+    def debug(self, *args, **kwargs):
+        return
+        print self, args, kwargs
+        sys.stdout.flush()
 
     def setProgress(self, value):
         if value - self.progress > self.increment or value >= 1.0:

@@ -1,5 +1,10 @@
 2009-04-11  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/task.py:
+	  Move methods around.
+
+2009-04-11  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* examples/ARcue.py:
 	* examples/gtkcrc.py:
 	* morituri/common/crc.py:
