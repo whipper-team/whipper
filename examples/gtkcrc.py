@@ -57,14 +57,14 @@ class TaskProgress(gtk.VBox, task.TaskRunner):
             gtk.main_iteration()
         task.start()
 
-    def started(self):
+    def started(self, task):
         pass
 
-    def stopped(self):
+    def stopped(self, task):
         self.emit('stop')
         # self._task.removeListener(self)
 
-    def progressed(self, value):
+    def progressed(self, task, value):
         gst.info('progressed')
         # FIXME: why is this not painting the progress bar ?
         self._progress.set_fraction(value)

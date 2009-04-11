@@ -77,7 +77,7 @@ class Task(object):
     def _notifyListeners(self, methodName, *args, **kwargs):
             if self._listeners:
                 for l in self._listeners:
-                    getattr(l, methodName)(*args, **kwargs)
+                    getattr(l, methodName)(self, *args, **kwargs)
 
 class TaskRunner:
     """
@@ -94,7 +94,7 @@ class TaskRunner:
         raise NotImplementedError
 
     # listener callbacks
-    def progressed(self, value):
+    def progressed(self, task, value):
         """
         Implement me to be informed about progress.
 
@@ -102,12 +102,12 @@ class TaskRunner:
         @param value: progress, from 0.0 to 1.0
         """
 
-    def started(self):
+    def started(self, task):
         """
         Implement me to be informed about the task starting.
         """
 
-    def stopped(self):
+    def stopped(self, task):
         """
         Implement me to be informed about the task starting.
         """
@@ -120,7 +120,7 @@ class SyncRunner(TaskRunner):
         self._task.start()
         self._loop.run()
 
-    def progressed(self, value):
+    def progressed(self, task, value):
         sys.stdout.write('%s %3d %%\r' % (
             self._task.description, value * 100.0))
         sys.stdout.flush()
@@ -129,5 +129,5 @@ class SyncRunner(TaskRunner):
             sys.stdout.write('%s %3d %%\n' % (
                 self._task.description, 100.0))
 
-    def stopped(self):
+    def stopped(self, task):
         self._loop.quit()
