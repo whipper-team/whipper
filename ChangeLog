@@ -1,5 +1,10 @@
 2009-04-12  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/task.py:
+	  Update the docs.
+
+2009-04-12  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/test/test_image_image.py (added):
 	  Add tests for AudioRip CRC'ing images.
 

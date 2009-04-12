@@ -43,6 +43,8 @@ class Task(object):
     ### subclass methods
     def start(self):
         """
+        Start the task.
+
         Subclasses should chain up to me at the beginning.
         """
         self.progress = 0.0
@@ -51,6 +53,8 @@ class Task(object):
 
     def stop(self):
         """
+        Stop the task.
+
         Subclasses should chain up to me at the end.
         """
         self.debug('stopping')
@@ -64,12 +68,21 @@ class Task(object):
         sys.stdout.flush()
 
     def setProgress(self, value):
+        """
+        Notify about progress changes bigger than the increment.
+        Called by subclass implementations as the task progresses.
+        """
         if value - self.progress > self.increment or value >= 1.0:
             self.progress = value
             self._notifyListeners('progressed', value)
             self.debug('notifying progress', value)
         
     def addListener(self, listener):
+        """
+        Add a listener for task status changes.
+
+        Listeners should implement started, stopped, and progressed.
+        """
         if not self._listeners:
             self._listeners = []
         self._listeners.append(listener)
