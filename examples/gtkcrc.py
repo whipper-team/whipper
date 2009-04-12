@@ -30,14 +30,14 @@ import gtk
 from morituri.common import task, crc
 
 def main(path, start, end):
-    crctask = crc.CRC32Task(path, start, end)
-
-    window = gtk.Window()
     progress = task.GtkProgressRunner()
     progress.connect('stop', lambda _: gtk.main_quit())
+
+    window = gtk.Window()
     window.add(progress)
     window.show_all()
 
+    crctask = crc.CRC32Task(path, start, end)
     progress.run(crctask)
 
     gtk.main()
