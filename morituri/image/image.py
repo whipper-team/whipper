@@ -39,6 +39,7 @@ class Image:
         self._path = path
         self.cue = cue.Cue(path)
         self.cue.parse()
+        self._lengths = []
 
     def getRealPath(self, path):
         """
@@ -65,6 +66,17 @@ class Image:
         """
         Do initial setup, like figuring out track lengths.
         """
+        verify = ImageVerifyTask(self)
+        runner.run(verify)
+        self._lengths = verify.lengths
+
+    def getTrackLength(self, track):
+        length = self.cue.getTrackLength(track)
+        if length != -1:
+            return length
+
+        i = self.cue.tracks.index(track)
+        return self._lengths[i + 1]
 
 class MultiTask(task.Task):
     """
@@ -85,7 +97,7 @@ class MultiTask(task.Task):
 
         # initialize task tracking
         self._task = 0
-        self._tasks = self.tasks[:]
+        self.__tasks = self.tasks[:]
         self._generic = self.description
 
         self._next()
@@ -93,8 +105,8 @@ class MultiTask(task.Task):
     def _next(self):
         # start next task
         self.progress = 0.0 # reset progress for each task
-        task = self._tasks[0]
-        del self._tasks[0]
+        task = self.__tasks[0]
+        del self.__tasks[0]
         self._task += 1
         self.description = "%s (%d of %d) ..." % (
             self._generic, self._task, len(self.tasks))
@@ -109,7 +121,7 @@ class MultiTask(task.Task):
         self.setProgress(value)
 
     def stopped(self, task):
-        if not self._tasks:
+        if not self.__tasks:
             self.stop()
             return
 
@@ -129,7 +141,6 @@ class AudioRipCRCTask(MultiTask):
         cue = image.cue
         self.crcs = []
 
-        tasks = []
         for trackIndex, track in enumerate(cue.tracks):
             index = track._indexes[1]
             length = cue.getTrackLength(track)
@@ -188,3 +199,40 @@ class AudioLengthTask(task.Task):
         self._pipeline.set_state(gst.STATE_NULL)
         
         self.stop()
+
+class ImageVerifyTask(MultiTask):
+    """
+    I verify a disk image and get the necessary track lengths.
+    """
+    
+    description = "Checking tracks"
+    lengths = None
+
+    def __init__(self, image):
+        self._image = image
+        cue = image.cue
+        self._tasks = []
+        self.lengths = {}
+
+        for trackIndex, track in enumerate(cue.tracks):
+            index = track._indexes[1]
+            offset = index[0]
+            length = cue.getTrackLength(track)
+            file = index[1]
+
+            if length == -1:
+                path = image.getRealPath(file.path)
+                taskk = AudioLengthTask(path)
+                self.addTask(taskk)
+                self._tasks.append((trackIndex + 1, track, taskk))
+
+    def stop(self):
+        for trackIndex, track, taskk in self._tasks:
+            # print '%d has length %d' % (trackIndex, taskk.length)
+            index = track._indexes[1]
+            offset = index[0]
+            assert taskk.length % crc.FRAMES_PER_DISC_FRAME == 0
+            end = taskk.length / crc.FRAMES_PER_DISC_FRAME
+            self.lengths[trackIndex] = end - offset
+
+        MultiTask.stop(self)

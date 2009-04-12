@@ -17,11 +17,12 @@ class TrackSingleTestCase(unittest.TestCase):
     def setUp(self):
         self.image = image.Image(os.path.join(os.path.dirname(__file__),
             'track-single.cue'))
+        self.runner = task.SyncRunner()
+        self.image.setup(self.runner)
 
     def testAudioRipCRC(self):
         crctask = image.AudioRipCRCTask(self.image) 
-        runner = task.SyncRunner()
-        runner.run(crctask, verbose=False)
+        self.runner.run(crctask, verbose=False)
 
         self.assertEquals(len(crctask.crcs), 4)
         self.assertEquals(h(crctask.crcs[0]), '0x00000000')
@@ -29,21 +30,36 @@ class TrackSingleTestCase(unittest.TestCase):
         self.assertEquals(h(crctask.crcs[2]), '0x8dd37c26')
         self.assertEquals(h(crctask.crcs[3]), '0x00000000')
 
-class KingsSeparateTestCase(unittest.TestCase):
+    def testLength(self):
+        tracks = self.image.cue.tracks
+        self.assertEquals(self.image.getTrackLength(tracks[0]), 2)
+        self.assertEquals(self.image.getTrackLength(tracks[1]), 2)
+        self.assertEquals(self.image.getTrackLength(tracks[2]), 2)
+        self.assertEquals(self.image.getTrackLength(tracks[3]), 4)
+
+class TracSeparateTestCase(unittest.TestCase):
     def setUp(self):
         self.image = image.Image(os.path.join(os.path.dirname(__file__),
             'track-separate.cue'))
+        self.runner = task.SyncRunner()
+        self.image.setup(self.runner)
 
     def testAudioRipCRC(self):
         crctask = image.AudioRipCRCTask(self.image) 
-        runner = task.SyncRunner()
-        runner.run(crctask, verbose=False)
+        self.runner.run(crctask, verbose=False)
 
         self.assertEquals(len(crctask.crcs), 4)
         self.assertEquals(h(crctask.crcs[0]), '0xaf18681e')
         self.assertEquals(h(crctask.crcs[1]), '0xd63dc2d2')
         self.assertEquals(h(crctask.crcs[2]), '0xd63dc2d2')
         self.assertEquals(h(crctask.crcs[3]), '0x7271db39')
+
+    def testLength(self):
+        tracks = self.image.cue.tracks
+        self.assertEquals(self.image.getTrackLength(tracks[0]), 10)
+        self.assertEquals(self.image.getTrackLength(tracks[1]), 10)
+        self.assertEquals(self.image.getTrackLength(tracks[2]), 10)
+        self.assertEquals(self.image.getTrackLength(tracks[3]), 10)
 
 class AudioLengthTestCase(unittest.TestCase):
     def testLength(self):

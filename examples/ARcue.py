@@ -67,11 +67,14 @@ def main(argv):
         pass
 
     cueImage = image.Image(path)
+    verifytask = image.ImageVerifyTask(cueImage)
     cuetask = image.AudioRipCRCTask(cueImage)
 
     if options.runner == 'cli':
+        climain(verifytask)
         climain(cuetask)
     elif options.runner == 'gtk':
+        gtkmain(verifytask)
         gtkmain(cuetask)
 
     for i, crc in enumerate(cuetask.crcs):
