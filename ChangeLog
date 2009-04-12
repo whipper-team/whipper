@@ -1,5 +1,12 @@
 2009-04-12  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/task.py:
+	  Schedule the start from the main loop, otherwise the
+	  task might complete before we're in the main loop,
+	  and then the loop.quit() doesn't work.
+
+2009-04-12  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* examples/ARcue.py:
 	* examples/gtkcrc.py:
 	  Rework both examples to look more similar.

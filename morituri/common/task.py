@@ -169,7 +169,9 @@ class SyncRunner(TaskRunner):
 
         self._loop = gobject.MainLoop()
         self._task.addListener(self)
-        self._task.start(self)
+        # only start the task after going into the mainloop,
+        # otherwise the task might complete before we are in it
+        gobject.timeout_add(0L, self._task.start, self)
         self._loop.run()
 
     def schedule(self, delta, callable, *args, **kwargs):
@@ -242,6 +244,7 @@ class GtkProgressRunner(gtk.VBox, TaskRunner):
         # self._task.removeListener(self)
 
     def progressed(self, task, value):
+        self._label.set_text(task.description)
         self._progress.set_fraction(value)
 
 
