@@ -37,6 +37,9 @@ class TrackSingleTestCase(unittest.TestCase):
         self.assertEquals(self.image.getTrackLength(tracks[2]), 2)
         self.assertEquals(self.image.getTrackLength(tracks[3]), 4)
 
+    def testCDDB(self):
+        self.assertEquals(self.image.cddbDiscId(), "08000004")
+
 class TracSeparateTestCase(unittest.TestCase):
     def setUp(self):
         self.image = image.Image(os.path.join(os.path.dirname(__file__),
@@ -60,6 +63,9 @@ class TracSeparateTestCase(unittest.TestCase):
         self.assertEquals(self.image.getTrackLength(tracks[1]), 10)
         self.assertEquals(self.image.getTrackLength(tracks[2]), 10)
         self.assertEquals(self.image.getTrackLength(tracks[3]), 10)
+
+    def testCDDB(self):
+        self.assertEquals(self.image.cddbDiscId(), "08000004")
 
 class AudioLengthTestCase(unittest.TestCase):
     def testLength(self):

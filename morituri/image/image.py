@@ -39,7 +39,8 @@ class Image:
         self._path = path
         self.cue = cue.Cue(path)
         self.cue.parse()
-        self._lengths = []
+        self._offsets = [] # 0 .. trackCount - 1
+        self._lengths = [] # 0 .. trackCount - 1
 
     def getRealPath(self, path):
         """
@@ -68,15 +69,52 @@ class Image:
         """
         verify = ImageVerifyTask(self)
         runner.run(verify)
-        self._lengths = verify.lengths
+
+        # calculate offset and length for each track
+
+        # CD's have a standard lead-in time of 2 seconds
+        offset = 2 * crc.DISC_FRAMES_PER_SECOND \
+            + self.cue.tracks[0].getIndex(1)[0]
+
+        for i in range(len(self.cue.tracks)):
+            self._offsets.append(offset)
+            length = self.cue.getTrackLength(self.cue.tracks[i])
+            if length == -1:
+                length = verify.lengths[i + 1]
+            self._lengths.append(length)
+
+            offset += length
+
+    def getTrackOffset(self, track):
+        return self._offsets[self.cue.tracks.index(track)]
 
     def getTrackLength(self, track):
-        length = self.cue.getTrackLength(track)
-        if length != -1:
-            return length
+        return self._lengths[self.cue.tracks.index(track)]
 
-        i = self.cue.tracks.index(track)
-        return self._lengths[i + 1]
+    def _cddbSum(self, i):
+        ret = 0
+        while i > 0:
+            ret += (i % 10)
+            i /= 10
+
+        return ret
+
+    def cddbDiscId(self):
+        n = 0
+
+        for track in self.cue.tracks:
+            offset = self.getTrackOffset(track)
+            seconds = offset / crc.DISC_FRAMES_PER_SECOND
+            n += self._cddbSum(seconds)
+
+        last = self.cue.tracks[-1]
+        leadout = self.getTrackOffset(last) + self.getTrackLength(last)
+        frameLength = leadout - self.getTrackOffset(self.cue.tracks[0])
+        t = frameLength / crc.DISC_FRAMES_PER_SECOND
+
+        value = (n % 0xff) << 24 | t << 8 | len(self.cue.tracks)
+        
+        return "%08x" % value
 
 class MultiTask(task.Task):
     """

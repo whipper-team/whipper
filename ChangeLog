@@ -1,6 +1,15 @@
 2009-04-12  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* examples/ARcue.py:
+	* morituri/common/crc.py:
+	* morituri/image/image.py:
+	* morituri/test/test_image_image.py:
+	  Calculate CDDB disc id.
+	  Tested on my Kings Of Leon CD.
+
+2009-04-12  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* examples/ARcue.py:
 	* morituri/image/image.py:
 	* morituri/test/test_image_image.py:
 	  Add a task to verify a disk image, which also calculates

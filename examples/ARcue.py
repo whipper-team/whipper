@@ -30,21 +30,18 @@ import gtk
 from morituri.image import image
 from morituri.common import task, crc
 
-def gtkmain(taskk):
-    progress = task.GtkProgressRunner()
-    progress.connect('stop', lambda _: gtk.main_quit())
+def gtkmain(runner, taskk):
+    runner.connect('stop', lambda _: gtk.main_quit())
 
     window = gtk.Window()
     window.add(progress)
     window.show_all()
 
-    progress.run(taskk)
+    runner.run(taskk)
 
     gtk.main()
 
-def climain(taskk):
-    runner = task.SyncRunner()
-
+def climain(runner, taskk):
     runner.run(taskk)
 
 
@@ -71,13 +68,20 @@ def main(argv):
     cuetask = image.AudioRipCRCTask(cueImage)
 
     if options.runner == 'cli':
-        climain(verifytask)
-        climain(cuetask)
+        runner = task.SyncRunner()
+        cueImage.setup(runner)
+        print "CDDB disc id", cueImage.cddbDiscId()
+        climain(runner, verifytask)
+        climain(runner, cuetask)
     elif options.runner == 'gtk':
-        gtkmain(verifytask)
-        gtkmain(cuetask)
+        runner = task.GtkProgressRunner()
+        cueImage.setup(runner)
+        print "CDDB disc id", cueImage.cddbDiscId()
+        gtkmain(runner, verifytask)
+        gtkmain(runner, cuetask)
 
     for i, crc in enumerate(cuetask.crcs):
         print "Track %2d: %08x" % (i + 1, crc)
+
 
 main(sys.argv)

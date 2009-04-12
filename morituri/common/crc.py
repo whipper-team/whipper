@@ -32,6 +32,7 @@ from morituri.common import task
 
 FRAMES_PER_DISC_FRAME = 588
 SAMPLES_PER_DISC_FRAME = FRAMES_PER_DISC_FRAME * 4
+DISC_FRAMES_PER_SECOND = 75
 
 class CRCTask(task.Task):
     # this object needs a main loop to stop
