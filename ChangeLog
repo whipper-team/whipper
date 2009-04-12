@@ -1,5 +1,11 @@
 2009-04-12  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* examples/ARcue.py:
+	* examples/gtkcrc.py:
+	  Rework both examples to look more similar.
+
+2009-04-12  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* examples/gtkcrc.py:
 	* morituri/common/task.py:
 	  Move the gtk-based progress bar to task.

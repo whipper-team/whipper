@@ -20,14 +20,13 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
 import sys
-
-from morituri.image import image
-from morituri.common import task, crc
 
 import gobject
 gobject.threads_init()
+
+from morituri.image import image
+from morituri.common import task, crc
 
 def main(path):
     cueImage = image.Image(path)
