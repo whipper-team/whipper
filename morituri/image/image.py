@@ -66,44 +66,38 @@ class Image:
         Do initial setup, like figuring out track lengths.
         """
 
-class AudioRipCRCTask(task.Task):
+class MultiTask(task.Task):
     """
-    I calculate the AudioRip CRC's of all tracks.
+    I perform multiple tasks.
+    I track progress of each individual task, going back to 0 for each task.
     """
-    def __init__(self, image):
-        self._image = image
-        cue = image.cue
-        self._tasks = []
-        self._track = 0
-        self._tracks = len(cue.tracks)
-        self.description = "CRC'ing %d tracks..." % len(cue.tracks)
-        self.crcs = []
 
-        for trackIndex, track in enumerate(cue.tracks):
-            index = track._indexes[1]
-            length = cue.getTrackLength(track)
-            file = index[1]
-            offset = index[0]
+    description = 'Doing various tasks'
+    tasks = None
 
-            path = image.getRealPath(file.path)
-            crctask = crc.CRCAudioRipTask(path,
-                trackNumber=trackIndex + 1, trackCount=len(cue.tracks),
-                frameStart=offset * crc.FRAMES_PER_DISC_FRAME,
-                frameLength=length * crc.FRAMES_PER_DISC_FRAME)
-
-            self._tasks.append(crctask)
+    def addTask(self, task):
+        if self.tasks is None:
+            self.tasks = []
+        self.tasks.append(task)
 
     def start(self, runner):
         task.Task.start(self, runner)
+
+        # initialize task tracking
+        self._task = 0
+        self._tasks = self.tasks[:]
+        self._generic = self.description
+
         self._next()
 
     def _next(self):
         # start next task
+        self.progress = 0.0 # reset progress for each task
         task = self._tasks[0]
         del self._tasks[0]
-        self._track += 1
-        self.description = "CRC'ing track %2d of %d..." % (
-            self._track, self._tracks)
+        self._task += 1
+        self.description = "%s (%d of %d) ..." % (
+            self._generic, self._task, len(self.tasks))
         task.addListener(self)
         task.start(self.runner)
         
@@ -115,13 +109,43 @@ class AudioRipCRCTask(task.Task):
         self.setProgress(value)
 
     def stopped(self, task):
-        self.crcs.append(task.crc)
         if not self._tasks:
             self.stop()
             return
 
         # pick another
-        self.start(self.runner)
+        self._next()
+
+
+class AudioRipCRCTask(MultiTask):
+    """
+    I calculate the AudioRip CRC's of all tracks.
+    """
+    
+    description = "CRC'ing tracks"
+
+    def __init__(self, image):
+        self._image = image
+        cue = image.cue
+        self.crcs = []
+
+        tasks = []
+        for trackIndex, track in enumerate(cue.tracks):
+            index = track._indexes[1]
+            length = cue.getTrackLength(track)
+            file = index[1]
+            offset = index[0]
+
+            path = image.getRealPath(file.path)
+            crctask = crc.CRCAudioRipTask(path,
+                trackNumber=trackIndex + 1, trackCount=len(cue.tracks),
+                frameStart=offset * crc.FRAMES_PER_DISC_FRAME,
+                frameLength=length * crc.FRAMES_PER_DISC_FRAME)
+            self.addTask(crctask)
+
+    def stop(self):
+        self.crcs = [t.crc for t in self.tasks]
+        MultiTask.stop(self)
 
 class AudioLengthTask(task.Task):
     """

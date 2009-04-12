@@ -1,6 +1,12 @@
 2009-04-12  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/image/image.py:
+	  Create a MultiTask base class, and make AudioRipCRCTask
+	  use it.
+
+2009-04-12  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/image/image.py:
 	* morituri/test/test_image_image.py:
 	  Add a task for calculating frame length of an audio file.
 	  Add a test for it.
