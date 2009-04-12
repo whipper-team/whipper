@@ -26,6 +26,8 @@ Wrap on-disk CD images based on the .cue file.
 
 import os
 
+import gst
+
 from morituri.common import task, crc
 from morituri.image import cue
 
@@ -120,3 +122,45 @@ class AudioRipCRCTask(task.Task):
 
         # pick another
         self.start(self.runner)
+
+class AudioLengthTask(task.Task):
+    """
+    I calculate the length of a track in audio frames.
+
+    @ivar  length: length of the decoded audio file, in audio frames.
+    """
+
+    length = None
+
+    def __init__(self, path):
+        self._path = path
+
+    def debug(self, *args, **kwargs):
+        return
+        print args, kwargs
+
+    def start(self, runner):
+        task.Task.start(self, runner)
+        self._pipeline = gst.parse_launch('''
+            filesrc location="%s" !
+            decodebin ! audio/x-raw-int !
+            fakesink name=sink''' % self._path)
+        self.debug('pausing')
+        self._pipeline.set_state(gst.STATE_PAUSED)
+        self._pipeline.get_state()
+        self.debug('paused')
+
+        self.debug('query duration')
+        sink = self._pipeline.get_by_name('sink')
+        assert sink, 'Error constructing pipeline'
+
+        length, format = sink.query_duration(gst.FORMAT_DEFAULT)
+        # wavparse 0.10.14 returns in bytes
+        if format == gst.FORMAT_BYTES:
+            self.debug('query returned in BYTES format')
+            length /= 4
+        self.debug('total length', length)
+        self.length = length
+        self._pipeline.set_state(gst.STATE_NULL)
+        
+        self.stop()

@@ -45,4 +45,13 @@ class KingsSeparateTestCase(unittest.TestCase):
         self.assertEquals(h(crctask.crcs[2]), '0xd63dc2d2')
         self.assertEquals(h(crctask.crcs[3]), '0x7271db39')
 
+class AudioLengthTestCase(unittest.TestCase):
+    def testLength(self):
+        path = os.path.join(os.path.dirname(__file__), 'track.flac')
+        t = image.AudioLengthTask(path)
+        runner = task.SyncRunner()
+        runner.run(t, verbose=False)
+        self.assertEquals(t.length, 5880)
+        
+
 
