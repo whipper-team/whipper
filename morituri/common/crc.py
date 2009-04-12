@@ -61,8 +61,8 @@ class CRCTask(task.Task):
 
         self.crc = None # result
 
-    def start(self):
-        task.Task.start(self)
+    def start(self, runner):
+        task.Task.start(self, runner)
         self._pipeline = gst.parse_launch('''
             filesrc location="%s" !
             decodebin ! audio/x-raw-int !
@@ -111,7 +111,7 @@ class CRCTask(task.Task):
         def play():
             self._pipeline.set_state(gst.STATE_PLAYING)
             return False
-        gobject.timeout_add(0L, play)
+        self.runner.schedule(0, play)
 
         #self._pipeline.set_state(gst.STATE_PLAYING)
         self.debug('scheduled setting to play')
@@ -143,8 +143,7 @@ class CRCTask(task.Task):
             framesDone = frame - self._frameStart
             progress = float(framesDone) / float((self._frameLength))
             # marshall to the main thread
-            gobject.timeout_add(0L, self.setProgress, progress)
-
+            self.runner.schedule(0, self.setProgress, progress)
 
     def do_crc_buffer(self, buffer, crc):
         """
@@ -156,7 +155,7 @@ class CRCTask(task.Task):
         # get the last one; FIXME: why does this not get to us before ?
         #self._new_buffer_cb(sink)
         self.debug('eos, scheduling stop')
-        gobject.timeout_add(0L, self.stop)
+        self.runner.schedule(0, self.stop)
 
     def stop(self):
         self.debug('stopping')

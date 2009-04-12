@@ -1,5 +1,16 @@
 2009-04-12  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* examples/gtkcrc.py:
+	* morituri/common/crc.py:
+	* morituri/common/task.py:
+	* morituri/image/image.py:
+	  Add a 'schedule' call to the TaskRunner class, so that we can
+	  abstract things like gobject.timeout_add and reactor.callLater
+	  Pass the runner to the task in Task.start() so a task can call
+	  schedule.
+
+2009-04-12  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/task.py:
 	  Update the docs.
 

@@ -36,12 +36,13 @@ class Task(object):
     progress = 0.0
     increment = 0.01
     running = False
+    runner = None
 
     _listeners = None
 
 
     ### subclass methods
-    def start(self):
+    def start(self, runner):
         """
         Start the task.
 
@@ -49,6 +50,7 @@ class Task(object):
         """
         self.progress = 0.0
         self.running = True
+        self.runner = runner
         self._notifyListeners('started')
 
     def stop(self):
@@ -59,6 +61,7 @@ class Task(object):
         """
         self.debug('stopping')
         self.running = False
+        self.runner = None
         self._notifyListeners('stopped')
 
     ### base class methods
@@ -106,7 +109,19 @@ class TaskRunner:
         """
         raise NotImplementedError
 
-    # listener callbacks
+    ### methods for tasks to call
+    def schedule(self, delta, callable, *args, **kwargs):
+        """
+        Schedule a single future call.
+
+        Subclasses should implement this.
+
+        @type  delta: float
+        @param delta: time in the future to schedule call for, in seconds.
+        """
+        raise NotImplementedError
+
+    ### listener callbacks
     def progressed(self, task, value):
         """
         Implement me to be informed about progress.
@@ -125,6 +140,7 @@ class TaskRunner:
         Implement me to be informed about the task starting.
         """
 
+
 class SyncRunner(TaskRunner):
     """
     I run the task synchronously in a gobject MainLoop.
@@ -136,8 +152,14 @@ class SyncRunner(TaskRunner):
 
         self._loop = gobject.MainLoop()
         self._task.addListener(self)
-        self._task.start()
+        self._task.start(self)
         self._loop.run()
+
+    def schedule(self, delta, callable, *args, **kwargs):
+        def c():
+            callable(*args, **kwargs)
+            return False
+        gobject.timeout_add(int(delta * 1000L), c)
 
     def progressed(self, task, value):
         if not self._verbose:

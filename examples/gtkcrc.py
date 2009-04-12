@@ -55,7 +55,13 @@ class TaskProgress(gtk.VBox, task.TaskRunner):
         task.addListener(self)
         while gtk.events_pending():
             gtk.main_iteration()
-        task.start()
+        task.start(self)
+
+    def schedule(self, delta, callable, *args, **kwargs):
+        def c():
+            callable(*args, **kwargs)
+            return False
+        gobject.timeout_add(int(delta * 1000L), c)
 
     def started(self, task):
         pass

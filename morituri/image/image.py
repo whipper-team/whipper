@@ -91,8 +91,8 @@ class AudioRipCRCTask(task.Task):
 
             self._tasks.append(crctask)
 
-    def start(self):
-        task.Task.start(self)
+    def start(self, runner):
+        task.Task.start(self, runner)
         self._next()
 
     def _next(self):
@@ -103,7 +103,7 @@ class AudioRipCRCTask(task.Task):
         self.description = "CRC'ing track %2d of %d..." % (
             self._track, self._tracks)
         task.addListener(self)
-        task.start()
+        task.start(self.runner)
         
     ### listener methods
     def started(self, task):
@@ -119,4 +119,4 @@ class AudioRipCRCTask(task.Task):
             return
 
         # pick another
-        self.start()
+        self.start(self.runner)
