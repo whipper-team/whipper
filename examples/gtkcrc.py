@@ -32,50 +32,6 @@ import gtk
 
 from morituri.common import task, crc
 
-class TaskProgress(gtk.VBox, task.TaskRunner):
-    __gsignals__ = {
-        'stop': (gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE, ())
-    }
-
-    def __init__(self):
-        gst.info('__init__')
-        gtk.VBox.__init__(self)
-        self.set_border_width(6)
-        self.set_spacing(6)
-
-        self._label = gtk.Label()
-        self.add(self._label)
-
-        self._progress = gtk.ProgressBar()
-        self.add(self._progress)
-
-    def run(self, task):
-        self._task = task
-        self._label.set_text(task.description)
-        task.addListener(self)
-        while gtk.events_pending():
-            gtk.main_iteration()
-        task.start(self)
-
-    def schedule(self, delta, callable, *args, **kwargs):
-        def c():
-            callable(*args, **kwargs)
-            return False
-        gobject.timeout_add(int(delta * 1000L), c)
-
-    def started(self, task):
-        pass
-
-    def stopped(self, task):
-        self.emit('stop')
-        # self._task.removeListener(self)
-
-    def progressed(self, task, value):
-        gst.info('progressed')
-        # FIXME: why is this not painting the progress bar ?
-        self._progress.set_fraction(value)
-
-
 path = 'test.flac'
 
 start = 0
@@ -97,25 +53,8 @@ except:
 
 crctask = crc.CRC32Task(path, start, end)
 
-# this is a Dummy task that can be used if this works at all
-class DummyTask(task.Task):
-    def start(self):
-        task.Task.start(self)
-        gobject.timeout_add(1000L, self._wind)
-
-    def _wind(self):
-        self.setProgress(min(self.progress + 0.1, 1.0))
-
-        if self.progress >= 1.0:
-            self.stop()
-            return
-
-        gobject.timeout_add(1000L, self._wind)
-
-#crctask = DummyTask()
-
 window = gtk.Window()
-progress = TaskProgress()
+progress = task.GtkProgressRunner()
 progress.connect('stop', lambda _: gtk.main_quit())
 window.add(progress)
 window.show_all()
