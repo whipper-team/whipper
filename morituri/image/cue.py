@@ -121,8 +121,6 @@ class Cue:
                 # print 'index %d, offset %d of track %r' % (indexNumber, frameOffset, currentTrack)
                 continue
 
-            
-
     def message(self, number, message):
         """
         Add a message about a given line in the cue file.
@@ -177,7 +175,7 @@ class Track:
             raise IndexError, "Track number must be from 1 to 99"
 
         self.number = number
-        self._indexes = {} # index number -> (sector, path)
+        self._indexes = {} # index number -> (sector, File)
 
         self.title = None
         self.performer = None
@@ -199,3 +197,8 @@ class Track:
 
         self._indexes[number] = (sector, file)
 
+    def getIndex(self, number):
+        """
+        @rtype: tuple of (int, File)
+        """
+        return self._indexes[number]
