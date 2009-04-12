@@ -29,11 +29,11 @@ from morituri.image import image
 from morituri.common import task, crc
 
 def main(path):
+    runner = task.SyncRunner()
+
     cueImage = image.Image(path)
 
-    runner = task.SyncRunner()
     cuetask = image.AudioRipCRCTask(cueImage)
-
     runner.run(cuetask)
 
     for i, crc in enumerate(cuetask.crcs):
