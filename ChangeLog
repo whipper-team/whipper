@@ -1,5 +1,10 @@
 2009-04-12  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* examples/ARcue.py:
+	  Add option to run either command-line or gtk.
+
+2009-04-12  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/image/image.py:
 	  Create a MultiTask base class, and make AudioRipCRCTask
 	  use it.

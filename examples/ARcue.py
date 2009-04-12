@@ -21,29 +21,60 @@
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
+import optparse
 
 import gobject
 gobject.threads_init()
+import gtk
 
 from morituri.image import image
 from morituri.common import task, crc
 
-def main(path):
+def gtkmain(taskk):
+    progress = task.GtkProgressRunner()
+    progress.connect('stop', lambda _: gtk.main_quit())
+
+    window = gtk.Window()
+    window.add(progress)
+    window.show_all()
+
+    progress.run(taskk)
+
+    gtk.main()
+
+def climain(taskk):
     runner = task.SyncRunner()
 
-    cueImage = image.Image(path)
+    runner.run(taskk)
 
+
+def main(argv):
+    parser = optparse.OptionParser()
+
+    default = 'cli'
+    parser.add_option('-r', '--runner',
+        action="store", dest="runner",
+        help="runner ('cli' or 'gtk', defaults to %s)" % default,
+        default=default)
+
+    options, args = parser.parse_args(argv[1:])
+
+    path = 'test.cue'
+
+    try:
+        path = sys.argv[1]
+    except IndexError:
+        pass
+
+    cueImage = image.Image(path)
     cuetask = image.AudioRipCRCTask(cueImage)
-    runner.run(cuetask)
+
+    if options.runner == 'cli':
+        climain(cuetask)
+    elif options.runner == 'gtk':
+        gtkmain(cuetask)
 
     for i, crc in enumerate(cuetask.crcs):
-        print "Track %2d: %08x" % (i, crc)
+        print "Track %2d: %08x" % (i + 1, crc)
 
-path = 'test.cue'
-
-try:
-    path = sys.argv[1]
-except IndexError:
-    pass
-
-main(path)
+main(sys.argv)
