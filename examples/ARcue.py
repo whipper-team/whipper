@@ -70,13 +70,15 @@ def main(argv):
     if options.runner == 'cli':
         runner = task.SyncRunner()
         cueImage.setup(runner)
-        print "CDDB disc id", cueImage.cddbDiscId()
+        print "CDDB disc id", cueImage.getCDDBDiscId()
+        print "AccurateRip URL", cueImage.getAccurateRipURL()
         climain(runner, verifytask)
         climain(runner, cuetask)
     elif options.runner == 'gtk':
         runner = task.GtkProgressRunner()
         cueImage.setup(runner)
-        print "CDDB disc id", cueImage.cddbDiscId()
+        print "CDDB disc id", cueImage.getCDDBDiscId()
+        print "AccurateRip URL", cueImage.getAccurateRipURL()
         gtkmain(runner, verifytask)
         gtkmain(runner, cuetask)
 

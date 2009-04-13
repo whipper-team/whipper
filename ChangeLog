@@ -1,3 +1,13 @@
+2009-04-13  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/image/image.py:
+	  Add the 150 frames for the leadin only to the CDDB calculation.
+	  Add methods to calculate AccurateRip id's and URL.
+	* morituri/test/test_image_image.py:
+	  Add tests for it.
+	* examples/ARcue.py:
+	  Show AccurateRip URL.
+
 2009-04-12  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* examples/ARcue.py:

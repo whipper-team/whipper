@@ -72,9 +72,9 @@ class Image:
 
         # calculate offset and length for each track
 
-        # CD's have a standard lead-in time of 2 seconds
-        offset = 2 * crc.DISC_FRAMES_PER_SECOND \
-            + self.cue.tracks[0].getIndex(1)[0]
+        # CD's have a standard lead-in time of 2 seconds;
+        # checksums that use it should add it there
+        offset = self.cue.tracks[0].getIndex(1)[0]
 
         for i in range(len(self.cue.tracks)):
             self._offsets.append(offset)
@@ -99,11 +99,13 @@ class Image:
 
         return ret
 
-    def cddbDiscId(self):
+    def getCDDBDiscId(self):
         n = 0
 
         for track in self.cue.tracks:
-            offset = self.getTrackOffset(track)
+            # CD's have a standard lead-in time of 2 seconds
+            # which gets added for CDDB disc id's
+            offset = self.getTrackOffset(track) + 2 * crc.DISC_FRAMES_PER_SECOND
             seconds = offset / crc.DISC_FRAMES_PER_SECOND
             n += self._cddbSum(seconds)
 
@@ -115,6 +117,37 @@ class Image:
         value = (n % 0xff) << 24 | t << 8 | len(self.cue.tracks)
         
         return "%08x" % value
+
+    def getAccurateRipIds(self):
+        """
+        @rtype: two-tuple of (str, str)
+        """
+        discId1 = 0
+        discId2 = 0
+
+        for i, track in enumerate(self.cue.tracks):
+            offset = self.getTrackOffset(track)
+            discId1 += offset
+            discId2 += (offset or 1) * (i + 1)
+
+        # also add end offsets
+        last = self.cue.tracks[-1]
+        leadout = self.getTrackOffset(last) + self.getTrackLength(last)
+        discId1 += leadout
+        discId2 += leadout * (len(self.cue.tracks) + 1)
+
+        discId1 &= 0xffffffff
+        discId2 &= 0xffffffff
+
+        return ("%08x" % discId1, "%08x" % discId2)
+
+    def getAccurateRipURL(self):
+        discId1, discId2 = self.getAccurateRipIds()
+
+        return "http://www.accuraterip.com/accuraterip/" \
+            "%s/%s/%s/dBAR-%.3d-%s-%s-%s.bin" % ( 
+                discId1[-1], discId1[-2], discId1[-3],
+                len(self.cue.tracks), discId1, discId2, self.getCDDBDiscId())
 
 class MultiTask(task.Task):
     """
