@@ -1,6 +1,14 @@
 2009-04-13  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/image/image.py:
+	  Add an object to parse the response of AccurateRip.
+	* morituri/test/test_image_image.py:
+	* morituri/test/dBAR-011-0010e284-009228a3-9809ff0b.bin (added):
+	  Add a test for it, based on my Kings Of Leon CD.
+
+2009-04-13  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/image/image.py:
 	  Add the 150 frames for the leadin only to the CDDB calculation.
 	  Add methods to calculate AccurateRip id's and URL.
 	* morituri/test/test_image_image.py:

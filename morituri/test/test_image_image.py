@@ -82,6 +82,20 @@ class AudioLengthTestCase(unittest.TestCase):
         runner = task.SyncRunner()
         runner.run(t, verbose=False)
         self.assertEquals(t.length, 5880)
-        
 
+class AccurateRipResponseTestCase(unittest.TestCase):
+    def testResponse(self):
+        path = os.path.join(os.path.dirname(__file__),
+            'dBAR-011-0010e284-009228a3-9809ff0b.bin')
+        data = open(path, "rb").read()
+        response = image.AccurateRipResponse(data)
 
+        self.assertEquals(response.trackCount, 11)
+        self.assertEquals(response.discId1, "0010e284")
+        self.assertEquals(response.discId2, "009228a3")
+        self.assertEquals(response.cddbDiscId, "9809ff0b")
+
+        for i in range(11):
+            self.assertEquals(response.confidences[i], 35)
+        self.assertEquals(response.crcs[0], "beea32c8")
+        self.assertEquals(response.crcs[10], "acee98ca")

@@ -25,6 +25,7 @@ Wrap on-disk CD images based on the .cue file.
 """
 
 import os
+import struct
 
 import gst
 
@@ -307,3 +308,32 @@ class ImageVerifyTask(MultiTask):
             self.lengths[trackIndex] = end - offset
 
         MultiTask.stop(self)
+
+class AccurateRipResponse(object):
+    """
+    I represent the response of the AccurateRip online database.
+    """
+
+    trackCount = None
+    discId1 = ""
+    discId2 = ""
+    cddbDiscId = ""
+    confidences = None
+    crcs = None
+
+    def __init__(self, data):
+        self.trackCount = struct.unpack("B", data[0])[0]
+        self.discId1 = "%08x" % struct.unpack("<L", data[1:5])[0]
+        self.discId2 = "%08x" % struct.unpack("<L", data[5:9])[0]
+        self.cddbDiscId = "%08x" % struct.unpack("<L", data[9:13])[0]
+
+        self.confidences = []
+        self.crcs = []
+
+        pos = 13
+        for i in range(self.trackCount):
+            confidence = struct.unpack("B", data[pos])[0]
+            crc = "%08x" % struct.unpack("<L", data[pos + 1:pos + 5])[0]
+            pos += 9
+            self.confidences.append(confidence)
+            self.crcs.append(crc)
