@@ -20,6 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 import sys
 import optparse
 
@@ -69,21 +70,32 @@ def main(argv):
 
     if options.runner == 'cli':
         runner = task.SyncRunner()
-        cueImage.setup(runner)
-        print "CDDB disc id", cueImage.getCDDBDiscId()
-        print "AccurateRip URL", cueImage.getAccurateRipURL()
-        climain(runner, verifytask)
-        climain(runner, cuetask)
+        function = climain
     elif options.runner == 'gtk':
         runner = task.GtkProgressRunner()
-        cueImage.setup(runner)
-        print "CDDB disc id", cueImage.getCDDBDiscId()
-        print "AccurateRip URL", cueImage.getAccurateRipURL()
-        gtkmain(runner, verifytask)
-        gtkmain(runner, cuetask)
+        function = gtkmain
+
+    cueImage.setup(runner)
+    print "CDDB disc id", cueImage.getCDDBDiscId()
+    url = cueImage.getAccurateRipURL()
+    print "AccurateRip URL", url
+
+    # FIXME: download url as a task too
+    import urllib
+    (filename, headers) = urllib.urlretrieve(url) 
+    data = open(filename, 'rb').read()
+    os.unlink(filename)
+    response = image.AccurateRipResponse(data)
+
+    function(runner, verifytask)
+    function(runner, cuetask)
 
     for i, crc in enumerate(cuetask.crcs):
-        print "Track %2d: %08x" % (i + 1, crc)
+        status = '   rip accurate       '
+        if "%08x" % crc != response.crcs[i]:
+            status = '** rip not accurate **'
+        print "Track %2d: %s (confidence %d) [%08x] [%s]" % (
+            i + 1, status, response.confidences[i], crc, response.crcs[i])
 
 
 main(sys.argv)

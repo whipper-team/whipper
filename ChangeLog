@@ -1,5 +1,11 @@
 2009-04-13  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* examples/ARcue.py:
+	  Make output a bit nicer, mentioning whether tracks were
+	  accurately ripped.
+
+2009-04-13  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/image/image.py:
 	  Add an object to parse the response of AccurateRip.
 	* morituri/test/test_image_image.py:
