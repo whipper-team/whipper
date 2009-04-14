@@ -94,7 +94,7 @@ def main(argv):
         status = '   rip accurate       '
         if "%08x" % crc != response.crcs[i]:
             status = '** rip not accurate **'
-        print "Track %2d: %s (confidence %d) [%08x] [%s]" % (
+        print "Track %2d: %s (confidence %3d) mine [%08x] AR [%s]" % (
             i + 1, status, response.confidences[i], crc, response.crcs[i])
 
 
