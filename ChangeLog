@@ -1,3 +1,10 @@
+2009-04-14  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/crc.py:
+	  Actually return the CRC when checking frame 5.
+	* morituri/test/test_image_image.py:
+	  Update test for this fix.
+
 2009-04-13  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/image/image.py:

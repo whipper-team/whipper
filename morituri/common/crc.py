@@ -55,7 +55,7 @@ class CRCTask(task.Task):
         self._frameLength = frameLength
         self._frameEnd = None
         self._crc = 0
-        self._bytes = 0
+        self._bytes = 0 # number of bytes received
         self._first = None
         self._last = None
         self._adapter = gst.Adapter()
@@ -95,6 +95,9 @@ class CRCTask(task.Task):
             gst.SEEK_FLAG_FLUSH,
             gst.SEEK_TYPE_SET, self._frameStart,
             gst.SEEK_TYPE_SET, self._frameEnd + 1) # half-inclusive interval
+        gst.debug('CRCing %s from sector %d to sector %d' % (
+            self._path, self._frameStart / FRAMES_PER_DISC_FRAME,
+            (self._frameEnd + 1) / FRAMES_PER_DISC_FRAME))
         # FIXME: sending it with frameEnd set screws up the seek, we don't get
         # everything for flac; fixed in recent -good
         result = sink.send_event(event)
@@ -119,7 +122,7 @@ class CRCTask(task.Task):
 
     def _new_buffer_cb(self, sink):
         buffer = sink.emit('pull-buffer')
-        gst.debug('received new buffer at offset %r with length %r' % (
+        gst.log('received new buffer at offset %r with length %r' % (
             buffer.offset, buffer.size))
         if self._first is None:
             self._first = buffer.offset
@@ -194,7 +197,7 @@ class CRCAudioRipTask(CRCTask):
         CRCTask.__init__(self, path, frameStart, frameLength)
         self._trackNumber = trackNumber
         self._trackCount = trackCount
-        self._discFrameCounter = 0
+        self._discFrameCounter = 0 # 1-based
 
     def do_crc_buffer(self, buffer, crc):
         self._discFrameCounter += 1
@@ -203,13 +206,14 @@ class CRCAudioRipTask(CRCTask):
         if self._trackNumber == 1:
             # ... skip first 4 CD frames
             if self._discFrameCounter <= 4:
-                self.debug('skipping frame %d' % self._discFrameCounter)
+                gst.debug('skipping frame %d' % self._discFrameCounter)
                 return crc
             # ... on 5th frame, only use last value
             elif self._discFrameCounter == 5:
                 values = struct.unpack("<I", buffer[-4:])
                 crc += FRAMES_PER_DISC_FRAME * 5 * values[0]
                 crc &= 0xFFFFFFFF
+                return crc
  
         # on last track, skip last 5 CD frames
         if self._trackNumber == self._trackCount:
@@ -219,11 +223,16 @@ class CRCAudioRipTask(CRCTask):
                 return crc
 
         values = struct.unpack("<%dI" % (len(buffer) / 4), buffer)
+        sum = 0
         for i, value in enumerate(values):
-            crc += (self._bytes / 4 + i + 1) * value
-            crc &= 0xFFFFFFFF
-            offset = self._bytes / 4 + i + 1
+            # self._bytes is updated after do_crc_buffer
+            sum += (self._bytes / 4 + i + 1) * value
+            sum &= 0xFFFFFFFF
+            # offset = self._bytes / 4 + i + 1
             # if offset % FRAMES_PER_DISC_FRAME == 0:
-            #    print 'THOMAS: frame %d, offset %d, value %d, CRC %d' % (
-            #        offset / FRAMES_PER_DISC_FRAME, offset, value, crc)
+            #    print 'THOMAS: frame %d, ends before %d, last value %08x, CRC %08x' % (
+            #        offset / FRAMES_PER_DISC_FRAME, offset, value, sum)
+
+        crc += sum
+        crc &= 0xFFFFFFFF
         return crc

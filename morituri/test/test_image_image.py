@@ -56,7 +56,7 @@ class TracSeparateTestCase(unittest.TestCase):
         self.runner.run(crctask, verbose=False)
 
         self.assertEquals(len(crctask.crcs), 4)
-        self.assertEquals(h(crctask.crcs[0]), '0xaf18681e')
+        self.assertEquals(h(crctask.crcs[0]), '0xd60e55e1')
         self.assertEquals(h(crctask.crcs[1]), '0xd63dc2d2')
         self.assertEquals(h(crctask.crcs[2]), '0xd63dc2d2')
         self.assertEquals(h(crctask.crcs[3]), '0x7271db39')
