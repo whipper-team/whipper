@@ -20,15 +20,15 @@ class TrackSingleTestCase(unittest.TestCase):
         self.runner = task.SyncRunner()
         self.image.setup(self.runner)
 
-    def testAudioRipCRC(self):
-        crctask = image.AudioRipCRCTask(self.image) 
-        self.runner.run(crctask, verbose=False)
+    def testAccurateRipChecksum(self):
+        checksumtask = image.AccurateRipChecksumTask(self.image) 
+        self.runner.run(checksumtask, verbose=False)
 
-        self.assertEquals(len(crctask.crcs), 4)
-        self.assertEquals(h(crctask.crcs[0]), '0x00000000')
-        self.assertEquals(h(crctask.crcs[1]), '0x793fa868')
-        self.assertEquals(h(crctask.crcs[2]), '0x8dd37c26')
-        self.assertEquals(h(crctask.crcs[3]), '0x00000000')
+        self.assertEquals(len(checksumtask.checksums), 4)
+        self.assertEquals(h(checksumtask.checksums[0]), '0x00000000')
+        self.assertEquals(h(checksumtask.checksums[1]), '0x793fa868')
+        self.assertEquals(h(checksumtask.checksums[2]), '0x8dd37c26')
+        self.assertEquals(h(checksumtask.checksums[3]), '0x00000000')
 
     def testLength(self):
         self.assertEquals(self.image.toc.getTrackLength(1), 2)
@@ -50,15 +50,15 @@ class TracSeparateTestCase(unittest.TestCase):
         self.runner = task.SyncRunner()
         self.image.setup(self.runner)
 
-    def testAudioRipCRC(self):
-        crctask = image.AudioRipCRCTask(self.image) 
-        self.runner.run(crctask, verbose=False)
+    def testAccurateRipChecksum(self):
+        checksumtask = image.AccurateRipChecksumTask(self.image) 
+        self.runner.run(checksumtask, verbose=False)
 
-        self.assertEquals(len(crctask.crcs), 4)
-        self.assertEquals(h(crctask.crcs[0]), '0xd60e55e1')
-        self.assertEquals(h(crctask.crcs[1]), '0xd63dc2d2')
-        self.assertEquals(h(crctask.crcs[2]), '0xd63dc2d2')
-        self.assertEquals(h(crctask.crcs[3]), '0x7271db39')
+        self.assertEquals(len(checksumtask.checksums), 4)
+        self.assertEquals(h(checksumtask.checksums[0]), '0xd60e55e1')
+        self.assertEquals(h(checksumtask.checksums[1]), '0xd63dc2d2')
+        self.assertEquals(h(checksumtask.checksums[2]), '0xd63dc2d2')
+        self.assertEquals(h(checksumtask.checksums[3]), '0x7271db39')
 
     def testLength(self):
         tracks = self.image.cue.tracks
@@ -101,5 +101,5 @@ class AccurateRipResponseTestCase(unittest.TestCase):
 
         for i in range(11):
             self.assertEquals(response.confidences[i], 35)
-        self.assertEquals(response.crcs[0], "beea32c8")
-        self.assertEquals(response.crcs[10], "acee98ca")
+        self.assertEquals(response.checksums[0], "beea32c8")
+        self.assertEquals(response.checksums[10], "acee98ca")

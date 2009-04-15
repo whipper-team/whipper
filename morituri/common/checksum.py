@@ -1,4 +1,4 @@
-# -*- Mode: Python; test-case-name: morituri.test.test_common_crc -*-
+# -*- Mode: Python; test-case-name: morituri.test.test_common_checksum -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
 # Morituri - for those about to RIP
@@ -34,9 +34,15 @@ FRAMES_PER_DISC_FRAME = 588
 SAMPLES_PER_DISC_FRAME = FRAMES_PER_DISC_FRAME * 4
 DISC_FRAMES_PER_SECOND = 75
 
-class CRCTask(task.Task):
+class ChecksumTask(task.Task):
+    """
+    I am a task that calculates a checksum.
+
+    @ivar checksum: the resulting checksum
+    """
+
     # this object needs a main loop to stop
-    description = 'Calculating CRC checksum...'
+    description = 'Calculating checksum...'
 
     def __init__(self, path, frameStart=0, frameLength=-1):
         """
@@ -54,13 +60,13 @@ class CRCTask(task.Task):
         self._frameStart = frameStart
         self._frameLength = frameLength
         self._frameEnd = None
-        self._crc = 0
+        self._checksum = 0
         self._bytes = 0 # number of bytes received
         self._first = None
         self._last = None
         self._adapter = gst.Adapter()
 
-        self.crc = None # result
+        self.checksum = None # result
 
     def start(self, runner):
         task.Task.start(self, runner)
@@ -139,7 +145,7 @@ class CRCTask(task.Task):
             # FIXME: in 0.10.14.1, take_buffer leaks a ref
             buffer = self._adapter.take_buffer(SAMPLES_PER_DISC_FRAME)
 
-            self._crc = self.do_crc_buffer(buffer, self._crc)
+            self._checksum = self.do_checksum_buffer(buffer, self._checksum)
             self._bytes += len(buffer)
 
             # update progress
@@ -149,7 +155,7 @@ class CRCTask(task.Task):
             # marshall to the main thread
             self.runner.schedule(0, self.setProgress, progress)
 
-    def do_crc_buffer(self, buffer, crc):
+    def do_checksum_buffer(self, buffer, checksum):
         """
         Subclasses should implement this.
         """
@@ -171,35 +177,40 @@ class CRCTask(task.Task):
             print 'ERROR: not a single buffer gotten'
             raise
         else:
-            self._crc = self._crc % 2 ** 32
+            self._checksum = self._checksum % 2 ** 32
             last = self._last.offset + len(self._last) / 4 - 1
             self.debug("last sample:", last)
             self.debug("frame length:", self._frameLength)
-            self.debug("CRC: %08X" % self._crc)
+            self.debug("checksum: %08X" % self._checksum)
             self.debug("bytes: %d" % self._bytes)
             if self._frameEnd != last:
                 print 'ERROR: did not get all frames, %d missing' % (
                     self._frameEnd - last)
 
         # publicize and stop
-        self.crc = self._crc
+        self.checksum = self._checksum
         task.Task.stop(self)
 
-class CRC32Task(CRCTask):
+class CRC32Task(ChecksumTask):
     """
     I do a simple CRC32 check.
     """
-    def do_crc_buffer(self, buffer, crc):
-        return zlib.crc32(buffer, crc)
+    def do_checksum_buffer(self, buffer, checksum):
+        return zlib.crc32(buffer, checksum)
 
-class CRCAudioRipTask(CRCTask):
+class AccurateRipChecksumTask(ChecksumTask):
+    """
+    I implement the AccurateRip checksum.
+
+    See http://www.accuraterip.com/
+    """
     def __init__(self, path, trackNumber, trackCount, frameStart=0, frameLength=-1):
-        CRCTask.__init__(self, path, frameStart, frameLength)
+        ChecksumTask.__init__(self, path, frameStart, frameLength)
         self._trackNumber = trackNumber
         self._trackCount = trackCount
         self._discFrameCounter = 0 # 1-based
 
-    def do_crc_buffer(self, buffer, crc):
+    def do_checksum_buffer(self, buffer, checksum):
         self._discFrameCounter += 1
 
         # on first track ...
@@ -207,25 +218,25 @@ class CRCAudioRipTask(CRCTask):
             # ... skip first 4 CD frames
             if self._discFrameCounter <= 4:
                 gst.debug('skipping frame %d' % self._discFrameCounter)
-                return crc
+                return checksum
             # ... on 5th frame, only use last value
             elif self._discFrameCounter == 5:
                 values = struct.unpack("<I", buffer[-4:])
-                crc += FRAMES_PER_DISC_FRAME * 5 * values[0]
-                crc &= 0xFFFFFFFF
-                return crc
+                checksum += FRAMES_PER_DISC_FRAME * 5 * values[0]
+                checksum &= 0xFFFFFFFF
+                return checksum
  
         # on last track, skip last 5 CD frames
         if self._trackNumber == self._trackCount:
             discFrameLength = self._frameLength / FRAMES_PER_DISC_FRAME
             if self._discFrameCounter > discFrameLength - 5:
                 self.debug('skipping frame %d' % self._discFrameCounter)
-                return crc
+                return checksum
 
         values = struct.unpack("<%dI" % (len(buffer) / 4), buffer)
         sum = 0
         for i, value in enumerate(values):
-            # self._bytes is updated after do_crc_buffer
+            # self._bytes is updated after do_checksum_buffer
             sum += (self._bytes / 4 + i + 1) * value
             sum &= 0xFFFFFFFF
             # offset = self._bytes / 4 + i + 1
@@ -233,6 +244,6 @@ class CRCAudioRipTask(CRCTask):
             #    print 'THOMAS: frame %d, ends before %d, last value %08x, CRC %08x' % (
             #        offset / FRAMES_PER_DISC_FRAME, offset, value, sum)
 
-        crc += sum
-        crc &= 0xFFFFFFFF
-        return crc
+        checksum += sum
+        checksum &= 0xFFFFFFFF
+        return checksum

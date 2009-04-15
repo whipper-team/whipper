@@ -29,7 +29,7 @@ gobject.threads_init()
 import gtk
 
 from morituri.image import image
-from morituri.common import task, crc
+from morituri.common import task, checksum
 
 def gtkmain(runner, taskk):
     runner.connect('stop', lambda _: gtk.main_quit())
@@ -66,7 +66,7 @@ def main(argv):
 
     cueImage = image.Image(path)
     verifytask = image.ImageVerifyTask(cueImage)
-    cuetask = image.AudioRipCRCTask(cueImage)
+    cuetask = image.AccurateRipChecksumTask(cueImage)
 
     if options.runner == 'cli':
         runner = task.SyncRunner()
@@ -105,22 +105,22 @@ def main(argv):
 
     response = None
 
-    for i, crc in enumerate(cuetask.crcs):
+    for i, checksum in enumerate(cuetask.checksums):
         status = 'rip NOT accurate'
 
         confidence = None
-        arcrc = None
+        archecksum = None
 
         for j, r in enumerate(responses):
-            if "%08x" % crc == r.crcs[i]:
+            if "%08x" % checksum == r.checksums[i]:
                 if not response:
                     response = r
                 else:
                     assert r == response, \
-                        "CRC %s for %d matches wrong response %d, crc %s" % (
-                            crc, i + 1, j + 1, response.crcs[i])
+                        "CRC %s for %d matches wrong response %d, checksum %s" % (
+                            checksum, i + 1, j + 1, response.checksums[i])
                 status = 'rip accurate    '
-                arcrc = crc
+                archecksum = checksum
                 confidence = response.confidences[i]
 
         c = "(not found)"
@@ -133,9 +133,9 @@ def main(argv):
                 if confidence < maxConfidence:
                     c = "(confidence %3d of %3d)" % (confidence, maxConfidence)
 
-            ar = " AR [%s]" % response.crcs[i]
+            ar = " AR [%s]" % response.checksums[i]
         print "Track %2d: %s %s mine [%08x] %s" % (
-            i + 1, status, c, crc, ar)
+            i + 1, status, c, checksum, ar)
 
 
 main(sys.argv)

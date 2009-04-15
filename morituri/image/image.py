@@ -150,17 +150,17 @@ class MultiTask(task.Task):
         self._next()
 
 
-class AudioRipCRCTask(MultiTask):
+class AccurateRipChecksumTask(MultiTask):
     """
-    I calculate the AudioRip CRC's of all tracks.
+    I calculate the AccurateRip checksums of all tracks.
     """
     
-    description = "CRC'ing tracks"
+    description = "Checksumming tracks"
 
     def __init__(self, image):
         self._image = image
         cue = image.cue
-        self.crcs = []
+        self.checksums = []
 
         for trackIndex, track in enumerate(cue.tracks):
             index = track._indexes[1]
@@ -169,14 +169,14 @@ class AudioRipCRCTask(MultiTask):
             offset = index[0]
 
             path = image.getRealPath(file.path)
-            crctask = checksum.CRCAudioRipTask(path,
+            checksumTask = checksum.AccurateRipChecksumTask(path,
                 trackNumber=trackIndex + 1, trackCount=len(cue.tracks),
                 frameStart=offset * checksum.FRAMES_PER_DISC_FRAME,
                 frameLength=length * checksum.FRAMES_PER_DISC_FRAME)
-            self.addTask(crctask)
+            self.addTask(checksumTask)
 
     def stop(self):
-        self.crcs = [t.crc for t in self.tasks]
+        self.checksums = [t.checksum for t in self.tasks]
         MultiTask.stop(self)
 
 class AudioLengthTask(task.Task):
@@ -281,7 +281,7 @@ class AccurateRipResponse(object):
     discId2 = ""
     cddbDiscId = ""
     confidences = None
-    crcs = None
+    checksums = None
 
     def __init__(self, data):
         self.trackCount = struct.unpack("B", data[0])[0]
@@ -290,12 +290,12 @@ class AccurateRipResponse(object):
         self.cddbDiscId = "%08x" % struct.unpack("<L", data[9:13])[0]
 
         self.confidences = []
-        self.crcs = []
+        self.checksums = []
 
         pos = 13
         for i in range(self.trackCount):
             confidence = struct.unpack("B", data[pos])[0]
-            crc = "%08x" % struct.unpack("<L", data[pos + 1:pos + 5])[0]
+            checksum = "%08x" % struct.unpack("<L", data[pos + 1:pos + 5])[0]
             pos += 9
             self.confidences.append(confidence)
-            self.crcs.append(crc)
+            self.checksums.append(checksum)
