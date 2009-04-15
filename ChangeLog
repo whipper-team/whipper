@@ -1,5 +1,11 @@
 2009-04-15  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* examples/gtkchecksum.py:
+	* morituri/common/checksum.py:
+	  Final crc->checksum fixes.
+
+2009-04-15  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* examples/ARcue.py:
 	* morituri/common/checksum.py:
 	* morituri/image/image.py:

@@ -197,6 +197,9 @@ class CRC32Task(ChecksumTask):
     """
     I do a simple CRC32 check.
     """
+
+    description = 'Calculating CRC...'
+
     def do_checksum_buffer(self, buffer, checksum):
         return zlib.crc32(buffer, checksum)
 
@@ -206,6 +209,9 @@ class AccurateRipChecksumTask(ChecksumTask):
 
     See http://www.accuraterip.com/
     """
+
+    description = 'Calculating AccurateRip checksum...'
+
     def __init__(self, path, trackNumber, trackCount, frameStart=0, frameLength=-1):
         ChecksumTask.__init__(self, path, frameStart, frameLength)
         self._trackNumber = trackNumber

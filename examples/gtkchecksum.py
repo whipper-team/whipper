@@ -27,7 +27,7 @@ gobject.threads_init()
 
 import gtk
 
-from morituri.common import task, crc
+from morituri.common import task, checksum
 
 def main(path, start, end):
     progress = task.GtkProgressRunner()
@@ -37,12 +37,12 @@ def main(path, start, end):
     window.add(progress)
     window.show_all()
 
-    crctask = crc.CRC32Task(path, start, end)
-    progress.run(crctask)
+    checksumtask = checksum.CRC32Task(path, start, end)
+    progress.run(checksumtask)
 
     gtk.main()
 
-    print "CRC: %08X" % crctask.crc
+    print "CRC: %08X" % checksumtask.checksum
 
 path = 'test.flac'
 
