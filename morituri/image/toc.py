@@ -29,7 +29,7 @@ import struct
 
 import gst
 
-from morituri.common import task, crc
+from morituri.common import task, checksum
 from morituri.image import cue
 
 class Track:
@@ -134,14 +134,14 @@ class TOC:
             # CD's have a standard lead-in time of 2 seconds
             # which gets added for CDDB disc id's
             offset = self.getTrackStart(track.number) + \
-                2 * crc.DISC_FRAMES_PER_SECOND
-            seconds = offset / crc.DISC_FRAMES_PER_SECOND
+                2 * checksum.DISC_FRAMES_PER_SECOND
+            seconds = offset / checksum.DISC_FRAMES_PER_SECOND
             n += self._cddbSum(seconds)
 
         last = self.tracks[-1]
         leadout = self.getTrackEnd(last.number)
         frameLength = leadout - self.getTrackStart(1)
-        t = frameLength / crc.DISC_FRAMES_PER_SECOND
+        t = frameLength / checksum.DISC_FRAMES_PER_SECOND
 
         value = (n % 0xff) << 24 | t << 8 | len(self.tracks)
         

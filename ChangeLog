@@ -1,5 +1,13 @@
 2009-04-15  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/image/image.py:
+	* morituri/image/toc.py:
+	* morituri/common/checksum.py (added):
+	* morituri/common/crc.py (deleted):
+	  Rename crc to checksum, because AccurateRip checksums are not CRC's.
+
+2009-04-15  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* examples/ARcue.py:
 	* morituri/image/image.py:
 	* morituri/test/test_image_image.py:

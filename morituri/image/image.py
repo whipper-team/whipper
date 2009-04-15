@@ -29,7 +29,7 @@ import struct
 
 import gst
 
-from morituri.common import task, crc
+from morituri.common import task, checksum
 from morituri.image import cue, toc
 
 class Image:
@@ -169,10 +169,10 @@ class AudioRipCRCTask(MultiTask):
             offset = index[0]
 
             path = image.getRealPath(file.path)
-            crctask = crc.CRCAudioRipTask(path,
+            crctask = checksum.CRCAudioRipTask(path,
                 trackNumber=trackIndex + 1, trackCount=len(cue.tracks),
-                frameStart=offset * crc.FRAMES_PER_DISC_FRAME,
-                frameLength=length * crc.FRAMES_PER_DISC_FRAME)
+                frameStart=offset * checksum.FRAMES_PER_DISC_FRAME,
+                frameLength=length * checksum.FRAMES_PER_DISC_FRAME)
             self.addTask(crctask)
 
     def stop(self):
@@ -252,8 +252,8 @@ class ImageVerifyTask(MultiTask):
             # print '%d has length %d' % (trackIndex, taskk.length)
             index = track._indexes[1]
             offset = index[0]
-            assert taskk.length % crc.FRAMES_PER_DISC_FRAME == 0
-            end = taskk.length / crc.FRAMES_PER_DISC_FRAME
+            assert taskk.length % checksum.FRAMES_PER_DISC_FRAME == 0
+            end = taskk.length / checksum.FRAMES_PER_DISC_FRAME
             self.lengths[trackIndex] = end - offset
 
         MultiTask.stop(self)
