@@ -30,7 +30,7 @@ import struct
 import gst
 
 from morituri.common import task, crc
-from morituri.image import cue
+from morituri.image import cue, toc
 
 class Image:
     def __init__(self, path):
@@ -87,70 +87,32 @@ class Image:
         # checksums that use it should add it there
         offset = self.cue.tracks[0].getIndex(1)[0]
 
+        tracks = []
+
         for i in range(len(self.cue.tracks)):
-            self._offsets.append(offset)
             length = self.cue.getTrackLength(self.cue.tracks[i])
             if length == -1:
                 length = verify.lengths[i + 1]
-            self._lengths.append(length)
+            tracks.append(toc.Track(i + 1, offset, offset + length - 1))
 
             offset += length
+
+        self.toc = toc.TOC(tracks)
 
     def getTrackOffset(self, track):
         return self._offsets[self.cue.tracks.index(track)]
 
     def getTrackLength(self, track):
-        return self._lengths[self.cue.tracks.index(track)]
-
-    def _cddbSum(self, i):
-        ret = 0
-        while i > 0:
-            ret += (i % 10)
-            i /= 10
-
-        return ret
+        return self.toc.getTrackLength(self.cue.tracks.index(track) + 1)
 
     def getCDDBDiscId(self):
-        n = 0
-
-        for track in self.cue.tracks:
-            # CD's have a standard lead-in time of 2 seconds
-            # which gets added for CDDB disc id's
-            offset = self.getTrackOffset(track) + 2 * crc.DISC_FRAMES_PER_SECOND
-            seconds = offset / crc.DISC_FRAMES_PER_SECOND
-            n += self._cddbSum(seconds)
-
-        last = self.cue.tracks[-1]
-        leadout = self.getTrackOffset(last) + self.getTrackLength(last)
-        frameLength = leadout - self.getTrackOffset(self.cue.tracks[0])
-        t = frameLength / crc.DISC_FRAMES_PER_SECOND
-
-        value = (n % 0xff) << 24 | t << 8 | len(self.cue.tracks)
-        
-        return "%08x" % value
+        return self.toc.getCDDBDiscId()
 
     def getAccurateRipIds(self):
         """
         @rtype: two-tuple of (str, str)
         """
-        discId1 = 0
-        discId2 = 0
-
-        for i, track in enumerate(self.cue.tracks):
-            offset = self.getTrackOffset(track)
-            discId1 += offset
-            discId2 += (offset or 1) * (i + 1)
-
-        # also add end offsets
-        last = self.cue.tracks[-1]
-        leadout = self.getTrackOffset(last) + self.getTrackLength(last)
-        discId1 += leadout
-        discId2 += leadout * (len(self.cue.tracks) + 1)
-
-        discId1 &= 0xffffffff
-        discId2 &= 0xffffffff
-
-        return ("%08x" % discId1, "%08x" % discId2)
+        return self.toc.getAccurateRipIds()
 
     def getAccurateRipURL(self):
         discId1, discId2 = self.getAccurateRipIds()

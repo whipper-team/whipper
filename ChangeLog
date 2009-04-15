@@ -1,5 +1,12 @@
 2009-04-15  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/image/image.py:
+	  Refactor to use TOC class.
+	* morituri/image/toc.py:
+	  Fully document.
+
+2009-04-15  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/test/test_image_toc.py (added):
 	* morituri/image/toc.py (added):
 	  Add an abstraction for a TOC.

@@ -33,9 +33,22 @@ from morituri.common import task, crc
 from morituri.image import cue
 
 class Track:
-    number = None # track number, 1-based
-    start = None  # start of track in CD frames, 0-based
-    end = None    # end of track in CD frames, 0-based
+    """
+    I represent a track entry in a Table of Contents.
+
+    @ivar number: track number (1-based)
+    @type number: int
+    @ivar start:  start of track, in CD frames (0-based)
+    @type start:  int
+    @ivar end:    end of track, in CD frames (0-based)
+    @type end:    int
+    @ivar audio:  whether the track is audio
+    @type audio:  bool
+    """
+
+    number = None
+    start = None
+    end = None
     audio = True
 
     def __init__(self, number, start, end, audio=True):
@@ -45,6 +58,12 @@ class Track:
         self.audio = audio
 
 class TOC:
+    """
+    I represent the Table of Contents of a CD.
+
+    @ivar tracks: tracks on this CD
+    @type tracks: list of L{Track}
+    """
 
     tracks = None # list of Track
 
@@ -55,16 +74,41 @@ class TOC:
         self.tracks = tracks
 
     def getTrackStart(self, number):
+        """
+        @param number: the track number, 1-based
+        @type  number: int
+
+        @returns: the start of the given track number, in CD frames
+        @rtype:   int
+        """
         return self.tracks[number - 1].start
 
     def getTrackEnd(self, number):
+        """
+        @param number: the track number, 1-based
+        @type  number: int
+
+        @returns: the end of the given track number, in CD frames
+        @rtype:   int
+        """
         return self.tracks[number - 1].end
 
     def getTrackLength(self, number):
+        """
+        @param number: the track number, 1-based
+        @type  number: int
+
+        @returns: the length of the given track number, in CD frames
+        @rtype:   int
+        """
         track = self.tracks[number - 1]
         return track.end - track.start + 1
 
     def getAudioTracks(self):
+        """
+        @returns: the number of audio tracks on the CD
+        @rtype:   int
+        """
         return len([t for t in self.tracks if t.audio])
 
     def _cddbSum(self, i):
@@ -76,6 +120,12 @@ class TOC:
         return ret
 
     def getCDDBDiscId(self):
+        """
+        Calculate the CDDB disc ID.
+
+        @rtype: str
+        @returns: the 8-character hexadecimal disc ID
+        """
         # cddb disc id takes into account data tracks
         # last byte is the number of tracks on the CD
         n = 0
@@ -99,8 +149,13 @@ class TOC:
 
     def getAccurateRipIds(self):
         """
-        @rtype: two-tuple of (str, str)
+        Calculate the two AccurateRip ID's.
+
+        @returns: the two 8-character hexadecimal disc ID's
+        @rtype:   tuple of (str, str)
         """
+        # AccurateRip does not take into account data tracks,
+        # but does count the data track to determine the leadout offset
         discId1 = 0
         discId2 = 0
 
@@ -124,7 +179,12 @@ class TOC:
         return ("%08x" % discId1, "%08x" % discId2)
 
     def getAccurateRipURL(self):
-        # does not count data tracks
+        """
+        Return the full AccurateRip URL.
+
+        @returns: the AccurateRip URL
+        @rtype:   str
+        """
         discId1, discId2 = self.getAccurateRipIds()
 
         return "http://www.accuraterip.com/accuraterip/" \
