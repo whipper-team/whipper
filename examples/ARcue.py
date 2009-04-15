@@ -76,8 +76,8 @@ def main(argv):
         function = gtkmain
 
     cueImage.setup(runner)
-    print "CDDB disc id", cueImage.getCDDBDiscId()
-    url = cueImage.getAccurateRipURL()
+    print "CDDB disc id", cueImage.toc.getCDDBDiscId()
+    url = cueImage.toc.getAccurateRipURL()
     print "AccurateRip URL", url
 
     # FIXME: download url as a task too
@@ -96,7 +96,7 @@ def main(argv):
     if responses:
         print '%d AccurateRip reponses found' % len(responses)
 
-        if responses[0].cddbDiscId != cueImage.getCDDBDiscId():
+        if responses[0].cddbDiscId != cueImage.toc.getCDDBDiscId():
             print "AccurateRip response discid different: %s" % \
                 responses[0].cddbDiscId
 
@@ -106,7 +106,7 @@ def main(argv):
     response = None
 
     for i, crc in enumerate(cuetask.crcs):
-        status = '** rip not accurate **'
+        status = 'rip NOT accurate'
 
         confidence = None
         arcrc = None
@@ -119,7 +119,7 @@ def main(argv):
                     assert r == response, \
                         "CRC %s for %d matches wrong response %d, crc %s" % (
                             crc, i + 1, j + 1, response.crcs[i])
-                status = '   rip accurate       '
+                status = 'rip accurate    '
                 arcrc = crc
                 confidence = response.confidences[i]
 

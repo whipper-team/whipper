@@ -99,29 +99,6 @@ class Image:
 
         self.toc = toc.TOC(tracks)
 
-    def getTrackOffset(self, track):
-        return self._offsets[self.cue.tracks.index(track)]
-
-    def getTrackLength(self, track):
-        return self.toc.getTrackLength(self.cue.tracks.index(track) + 1)
-
-    def getCDDBDiscId(self):
-        return self.toc.getCDDBDiscId()
-
-    def getAccurateRipIds(self):
-        """
-        @rtype: two-tuple of (str, str)
-        """
-        return self.toc.getAccurateRipIds()
-
-    def getAccurateRipURL(self):
-        discId1, discId2 = self.getAccurateRipIds()
-
-        return "http://www.accuraterip.com/accuraterip/" \
-            "%s/%s/%s/dBAR-%.3d-%s-%s-%s.bin" % ( 
-                discId1[-1], discId1[-2], discId1[-3],
-                len(self.cue.tracks), discId1, discId2, self.getCDDBDiscId())
-
 class MultiTask(task.Task):
     """
     I perform multiple tasks.
