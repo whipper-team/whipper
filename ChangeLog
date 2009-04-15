@@ -1,3 +1,12 @@
+2009-04-15  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/image/image.py:
+	* morituri/test/test_image_image.py:
+	  AccurateRip binary files actually contain multiple responses, so
+	  parse all of them.
+	* examples/ARcue.py:
+	  Handle case of not having a response, and having multiple responses.
+
 2009-04-14  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/crc.py:

@@ -319,6 +319,19 @@ class ImageVerifyTask(MultiTask):
 
         MultiTask.stop(self)
 
+# FIXME: move this method to a different module ?
+def getAccurateRipResponses(data):
+    ret = []
+
+    while data:
+        trackCount = struct.unpack("B", data[0])[0]
+        bytes = 1 + 12 + trackCount * (1 + 8)
+
+        ret.append(AccurateRipResponse(data[:bytes]))
+        data = data[bytes:]
+
+    return ret
+
 class AccurateRipResponse(object):
     """
     I represent the response of the AccurateRip online database.

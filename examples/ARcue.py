@@ -81,21 +81,61 @@ def main(argv):
     print "AccurateRip URL", url
 
     # FIXME: download url as a task too
-    import urllib
-    (filename, headers) = urllib.urlretrieve(url) 
-    data = open(filename, 'rb').read()
-    os.unlink(filename)
-    response = image.AccurateRipResponse(data)
+    responses = []
+    import urllib2
+    try:
+        handle = urllib2.urlopen(url)
+        data = handle.read()
+        responses = image.getAccurateRipResponses(data)
+    except urllib2.HTTPError, e:
+        if e.code == 404:
+            print 'Album not found in AccurateRip database'
+        else:
+            raise
+
+    if responses:
+        print '%d AccurateRip reponses found' % len(responses)
+
+        if responses[0].cddbDiscId != cueImage.getCDDBDiscId():
+            print "AccurateRip response discid different: %s" % \
+                responses[0].cddbDiscId
 
     function(runner, verifytask)
     function(runner, cuetask)
 
+    response = None
+
     for i, crc in enumerate(cuetask.crcs):
-        status = '   rip accurate       '
-        if "%08x" % crc != response.crcs[i]:
-            status = '** rip not accurate **'
-        print "Track %2d: %s (confidence %3d) mine [%08x] AR [%s]" % (
-            i + 1, status, response.confidences[i], crc, response.crcs[i])
+        status = '** rip not accurate **'
+
+        confidence = None
+        arcrc = None
+
+        for j, r in enumerate(responses):
+            if "%08x" % crc == r.crcs[i]:
+                if not response:
+                    response = r
+                else:
+                    assert r == response, \
+                        "CRC %s for %d matches wrong response %d, crc %s" % (
+                            crc, i + 1, j + 1, response.crcs[i])
+                status = '   rip accurate       '
+                arcrc = crc
+                confidence = response.confidences[i]
+
+        c = "(not found)"
+        ar = ""
+        if responses:
+            maxConfidence = max(r.confidences[i] for r in responses)
+                 
+            c = "(confidence %3d)" % maxConfidence
+            if confidence is not None:
+                if confidence < maxConfidence:
+                    c = "(confidence %3d of %3d)" % (confidence, maxConfidence)
+
+            ar = " AR [%s]" % response.crcs[i]
+        print "Track %2d: %s %s mine [%08x] %s" % (
+            i + 1, status, c, crc, ar)
 
 
 main(sys.argv)

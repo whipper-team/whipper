@@ -88,7 +88,12 @@ class AccurateRipResponseTestCase(unittest.TestCase):
         path = os.path.join(os.path.dirname(__file__),
             'dBAR-011-0010e284-009228a3-9809ff0b.bin')
         data = open(path, "rb").read()
-        response = image.AccurateRipResponse(data)
+
+        responses = image.getAccurateRipResponses(data)
+        self.assertEquals(len(responses), 3)
+
+
+        response = responses[0]
 
         self.assertEquals(response.trackCount, 11)
         self.assertEquals(response.discId1, "0010e284")
