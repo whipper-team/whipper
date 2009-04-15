@@ -1,5 +1,13 @@
 2009-04-15  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/test/test_image_toc.py (added):
+	* morituri/image/toc.py (added):
+	  Add an abstraction for a TOC.
+	  Take data tracks into account correctly for CDDB and AccurateRip
+	  disc ID's.
+
+2009-04-15  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/image/image.py:
 	* morituri/test/test_image_image.py:
 	  AccurateRip binary files actually contain multiple responses, so
