@@ -3,6 +3,16 @@
 	* examples/ARcue.py:
 	* morituri/common/checksum.py:
 	* morituri/image/image.py:
+	* morituri/image/toc.py:
+	* examples/gtkchecksum.py (added):
+	* examples/gtkcrc.py (deleted):
+	  More crc->checksum changes.
+
+2009-04-15  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* examples/ARcue.py:
+	* morituri/common/checksum.py:
+	* morituri/image/image.py:
 	* morituri/test/test_image_image.py:
 	  Change crc to checksum everywhere.
 

@@ -171,8 +171,8 @@ class AccurateRipChecksumTask(MultiTask):
             path = image.getRealPath(file.path)
             checksumTask = checksum.AccurateRipChecksumTask(path,
                 trackNumber=trackIndex + 1, trackCount=len(cue.tracks),
-                frameStart=offset * checksum.FRAMES_PER_DISC_FRAME,
-                frameLength=length * checksum.FRAMES_PER_DISC_FRAME)
+                frameStart=offset * checksum.SAMPLES_PER_FRAME,
+                frameLength=length * checksum.SAMPLES_PER_FRAME)
             self.addTask(checksumTask)
 
     def stop(self):
@@ -252,8 +252,8 @@ class ImageVerifyTask(MultiTask):
             # print '%d has length %d' % (trackIndex, taskk.length)
             index = track._indexes[1]
             offset = index[0]
-            assert taskk.length % checksum.FRAMES_PER_DISC_FRAME == 0
-            end = taskk.length / checksum.FRAMES_PER_DISC_FRAME
+            assert taskk.length % checksum.SAMPLES_PER_FRAME == 0
+            end = taskk.length / checksum.SAMPLES_PER_FRAME
             self.lengths[trackIndex] = end - offset
 
         MultiTask.stop(self)

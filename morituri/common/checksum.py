@@ -32,9 +32,9 @@ from morituri.common import task
 
 # checksums are not CRC's. a CRC is a specific type of checksum.
 
-FRAMES_PER_DISC_FRAME = 588
-SAMPLES_PER_DISC_FRAME = FRAMES_PER_DISC_FRAME * 4
-DISC_FRAMES_PER_SECOND = 75
+SAMPLES_PER_FRAME = 588
+BYTES_PER_FRAME = SAMPLES_PER_FRAME * 4
+FRAMES_PER_SECOND = 75
 
 class ChecksumTask(task.Task):
     """
@@ -104,8 +104,8 @@ class ChecksumTask(task.Task):
             gst.SEEK_TYPE_SET, self._frameStart,
             gst.SEEK_TYPE_SET, self._frameEnd + 1) # half-inclusive interval
         gst.debug('CRCing %s from sector %d to sector %d' % (
-            self._path, self._frameStart / FRAMES_PER_DISC_FRAME,
-            (self._frameEnd + 1) / FRAMES_PER_DISC_FRAME))
+            self._path, self._frameStart / SAMPLES_PER_FRAME,
+            (self._frameEnd + 1) / SAMPLES_PER_FRAME))
         # FIXME: sending it with frameEnd set screws up the seek, we don't get
         # everything for flac; fixed in recent -good
         result = sink.send_event(event)
@@ -143,9 +143,9 @@ class ChecksumTask(task.Task):
         # see http://bugzilla.gnome.org/show_bug.cgi?id=576505
         self._adapter.push(buffer)
 
-        while self._adapter.available() >= SAMPLES_PER_DISC_FRAME:
+        while self._adapter.available() >= BYTES_PER_FRAME:
             # FIXME: in 0.10.14.1, take_buffer leaks a ref
-            buffer = self._adapter.take_buffer(SAMPLES_PER_DISC_FRAME)
+            buffer = self._adapter.take_buffer(BYTES_PER_FRAME)
 
             self._checksum = self.do_checksum_buffer(buffer, self._checksum)
             self._bytes += len(buffer)
@@ -224,13 +224,13 @@ class AccurateRipChecksumTask(ChecksumTask):
             # ... on 5th frame, only use last value
             elif self._discFrameCounter == 5:
                 values = struct.unpack("<I", buffer[-4:])
-                checksum += FRAMES_PER_DISC_FRAME * 5 * values[0]
+                checksum += SAMPLES_PER_FRAME * 5 * values[0]
                 checksum &= 0xFFFFFFFF
                 return checksum
  
         # on last track, skip last 5 CD frames
         if self._trackNumber == self._trackCount:
-            discFrameLength = self._frameLength / FRAMES_PER_DISC_FRAME
+            discFrameLength = self._frameLength / SAMPLES_PER_FRAME
             if self._discFrameCounter > discFrameLength - 5:
                 self.debug('skipping frame %d' % self._discFrameCounter)
                 return checksum
@@ -242,9 +242,9 @@ class AccurateRipChecksumTask(ChecksumTask):
             sum += (self._bytes / 4 + i + 1) * value
             sum &= 0xFFFFFFFF
             # offset = self._bytes / 4 + i + 1
-            # if offset % FRAMES_PER_DISC_FRAME == 0:
+            # if offset % SAMPLES_PER_FRAME == 0:
             #    print 'THOMAS: frame %d, ends before %d, last value %08x, CRC %08x' % (
-            #        offset / FRAMES_PER_DISC_FRAME, offset, value, sum)
+            #        offset / SAMPLES_PER_FRAME, offset, value, sum)
 
         checksum += sum
         checksum &= 0xFFFFFFFF

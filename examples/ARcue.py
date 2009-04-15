@@ -117,7 +117,8 @@ def main(argv):
                     response = r
                 else:
                     assert r == response, \
-                        "CRC %s for %d matches wrong response %d, checksum %s" % (
+                        "checksum %s for %d matches wrong response %d, "\
+                        "checksum %s" % (
                             checksum, i + 1, j + 1, response.checksums[i])
                 status = 'rip accurate    '
                 archecksum = checksum
@@ -133,8 +134,8 @@ def main(argv):
                 if confidence < maxConfidence:
                     c = "(confidence %3d of %3d)" % (confidence, maxConfidence)
 
-            ar = " AR [%s]" % response.checksums[i]
-        print "Track %2d: %s %s mine [%08x] %s" % (
+            ar = ", AR [%s]" % response.checksums[i]
+        print "Track %2d: %s %s [%08x]%s" % (
             i + 1, status, c, checksum, ar)
 
 
