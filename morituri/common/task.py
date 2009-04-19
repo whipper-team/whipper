@@ -248,3 +248,7 @@ class GtkProgressRunner(gtk.VBox, TaskRunner):
         self._progress.set_fraction(value)
 
 
+if __name__ == '__main__':
+    task = DummyTask()
+    runner = SyncRunner()
+    runner.run(task)
