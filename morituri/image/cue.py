@@ -33,15 +33,15 @@ _PERFORMER_RE = re.compile("^PERFORMER\s(.*)$")
 _TITLE_RE = re.compile("^TITLE\s(.*)$")
 
 _FILE_RE = re.compile(r"""
-    ^FILE       # FILE
-    \s+"(.*)"   # 'file name' in quotes
-    \s+(\w+)$   # format (WAVE/MP3/AIFF/...)
+    ^FILE                 # FILE
+    \s+"(?P<name>.*)"     # 'file name' in quotes
+    \s+(?P<format>\w+)$   # format (WAVE/MP3/AIFF/...)
 """, re.VERBOSE)
 
 _TRACK_RE = re.compile(r"""
-    ^\s+TRACK   # TRACK
-    \s+(\d\d)   # two-digit track number
-    \s+(\w+)$   # mode (AUDIO/...)
+    ^\s+TRACK            # TRACK
+    \s+(?P<track>\d\d)   # two-digit track number
+    \s+(?P<mode>\w+)$    # mode (AUDIO/...)
 """, re.VERBOSE)
 
 _INDEX_RE = re.compile(r"""
@@ -83,8 +83,8 @@ class Cue:
             # look for FILE lines
             m = _FILE_RE.search(line)
             if m:
-                filePath = m.expand('\\1')
-                fileFormat = m.expand('\\2')
+                filePath = m.group('name')
+                fileFormat = m.group('format')
                 currentFile = File(filePath, fileFormat)
 
             # look for TRACK lines
@@ -96,8 +96,8 @@ class Cue:
 
                 state = 'TRACK'
 
-                trackNumber = int(m.expand('\\1'))
-                trackMode = m.expand('\\2')
+                trackNumber = int(m.group('track'))
+                trackMode = m.group('mode')
 
                 currentTrack = Track(trackNumber)
                 self.tracks.append(currentTrack)

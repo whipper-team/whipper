@@ -1,5 +1,10 @@
 2009-04-19  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/image/cue.py:
+	  Use names for matches in regexps.
+
+2009-04-19  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* examples/readtoc.py (added):
 	  Add an example to read the TOC, not finished yet.
 
