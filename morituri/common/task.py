@@ -76,7 +76,7 @@ class Task(object):
         Notify about progress changes bigger than the increment.
         Called by subclass implementations as the task progresses.
         """
-        if value - self.progress > self.increment or value >= 1.0:
+        if value - self.progress > self.increment or value >= 1.0 or value == 0.0:
             self.progress = value
             self._notifyListeners('progressed', value)
             self.debug('notifying progress', value)

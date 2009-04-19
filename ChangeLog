@@ -1,5 +1,10 @@
 2009-04-19  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/task.py:
+	  Make sure we also show progress when it's 0%, at the start.
+
+2009-04-19  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/image/cue.py:
 	  Use names for matches in regexps.
 
