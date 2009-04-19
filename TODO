@@ -1,0 +1,9 @@
+MILESTONES:
+- read CD TOC including pre-gap information
+- detect read offset
+  (using a CD in AccurateRip and ripping with various offsets)
+  (can be delayed since we can get the number from EAC)
+- rip a CD with HTOA and other pre-gap tracks, creating separate track for HTOA
+
+TODO:
+- parse .toc files (see cdrdao)
