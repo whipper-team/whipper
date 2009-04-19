@@ -1,5 +1,11 @@
 2009-04-20  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* examples/readtoc.py:
+	  Read the toc using cdrdao.  Now sets progress based on which
+	  frame it is on.
+
+2009-04-20  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/task.py:
 	  Add a __main__ example using DummyTask.
 
