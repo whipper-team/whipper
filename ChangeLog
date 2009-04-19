@@ -1,3 +1,11 @@
+2009-04-19  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/extern (added):
+	* morituri/extern/__init__.py (added):
+	* morituri/extern/asyncsub.py (added):
+	  Add extern module; add asynchronous subprocess Popen from
+	  http://code.activestate.com/recipes/440554/
+
 2009-04-15  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* examples/gtkchecksum.py:
