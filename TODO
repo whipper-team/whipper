@@ -7,3 +7,5 @@ MILESTONES:
 
 TODO:
 - parse .toc files (see cdrdao)
+- check if it's simple to listen to each track in a multitrack completing
+- save trms to a pickle, after finishing each track
