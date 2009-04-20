@@ -76,6 +76,7 @@ class ChecksumTask(task.Task):
             filesrc location="%s" !
             decodebin ! audio/x-raw-int !
             appsink name=sink sync=False emit-signals=True''' % self._path)
+
         self.debug('pausing')
         self._pipeline.set_state(gst.STATE_PAUSED)
         self._pipeline.get_state()
@@ -255,3 +256,91 @@ class AccurateRipChecksumTask(ChecksumTask):
         checksum += sum
         checksum &= 0xFFFFFFFF
         return checksum
+
+class TRMTask(task.Task):
+    """
+    I calculate a MusicBrainz TRM fingerprint.
+
+    @ivar trm: the resulting trm
+    """
+
+    trm = None
+    description = 'Calculating fingerprint...'
+
+    def __init__(self, path):
+        if not os.path.exists(path):
+            raise IndexError, '%s does not exist' % path
+
+        self._path = path
+        self._trm = None
+        self._pipeline = None
+        self._bus = None
+
+    def start(self, runner):
+        task.Task.start(self, runner)
+        self._pipeline = gst.parse_launch('''
+            filesrc location="%s" !
+            decodebin ! audio/x-raw-int !
+            trm name=trm !
+            appsink name=sink sync=False emit-signals=True''' % self._path)
+        self._bus = self._pipeline.get_bus()
+        self._bus.add_signal_watch()
+        self._bus.connect('message::eos', self._bus_eos_cb)
+        self._bus.connect('message::tag', self._bus_tag_cb)
+        self._bus.connect('message::error', self._bus_error_cb)
+        sink = self._pipeline.get_by_name('sink')
+        sink.connect('new-buffer', self._new_buffer_cb)
+
+        gst.debug('pausing')
+        self._pipeline.set_state(gst.STATE_PAUSED)
+        self._pipeline.get_state()
+        gst.debug('paused')
+
+        gst.debug('query duration')
+        sink = self._pipeline.get_by_name('sink')
+
+        self._length, format = self._pipeline.query_duration(gst.FORMAT_TIME)
+        gst.debug('total length: %r' % self._length)
+        gst.debug('scheduling setting to play')
+        # since set_state returns non-False, adding it as timeout_add
+        # will repeatedly call it, and block the main loop; so
+        #   gobject.timeout_add(0L, self._pipeline.set_state, gst.STATE_PLAYING)
+        # would not work.
+
+        def play():
+            self._pipeline.set_state(gst.STATE_PLAYING)
+            return False
+        self.runner.schedule(0, play)
+
+        #self._pipeline.set_state(gst.STATE_PLAYING)
+        gst.debug('scheduled setting to play')
+
+    def _bus_eos_cb(self, bus, message):
+        gst.debug('eos, scheduling stop')
+        self.runner.schedule(0, self.stop)
+
+    def _bus_tag_cb(self, bus, message):
+        taglist = message.parse_tag()
+        if 'musicbrainz-trmid' in taglist.keys():
+            self._trm = taglist['musicbrainz-trmid']
+
+    def _bus_error_cb(self, bus, message):
+        error = message.parse_error()
+        print error
+
+    def _new_buffer_cb(self, sink):
+        # this is just for counting progress
+        buffer = sink.emit('pull-buffer')
+        position = buffer.timestamp
+        if buffer.duration != gst.CLOCK_TIME_NONE:
+            position += buffer.duration
+        self.setProgress(float(position) / self._length)
+
+    def stop(self):
+        gst.debug('stopping')
+        gst.debug('setting state to NULL')
+        self._pipeline.set_state(gst.STATE_NULL)
+
+        # publicize and stop
+        self.trm = self._trm
+        task.Task.stop(self)

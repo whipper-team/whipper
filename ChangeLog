@@ -1,5 +1,14 @@
 2009-04-20  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/checksum.py:
+	  Add a task to calculate a trm fingerprint.
+	* examples/trm.py (added):
+	  Add an example.
+	  Strangely enough it starts burstily, doing 10% directly, halting,
+	  then progressing quickly,
+
+2009-04-20  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* examples/ARcue.py:
 	  Fix a bug in the gtk example.
 
