@@ -54,16 +54,26 @@ def main(argv):
         action="store", dest="runner",
         help="runner ('cli' or 'gtk', defaults to %s)" % default,
         default=default)
+    parser.add_option('-p', '--playlist',
+        action="store", dest="playlist",
+        help="playlist to analyze files from")
+
 
     options, args = parser.parse_args(argv[1:])
 
-    try:
-        path = sys.argv[1]
-    except IndexError:
-        sys.stderr.write('Please give a file to trm!\n')
-        return
+    paths = []
+    if len(args) > 0:
+        paths.extend(args[0:])
+    if options.playlist:
+        paths.extend(open(options.playlist).readlines())
 
-    trmtask = checksum.TRMTask(path)
+    mtask = task.MultiCombinedTask()
+    for path in paths:
+        path = path.rstrip()
+        trmtask = checksum.TRMTask(path)
+        mtask.addTask(trmtask)
+    mtask.description = 'Fingerprinting files'
+
 
     if options.runner == 'cli':
         runner = task.SyncRunner()
@@ -72,9 +82,10 @@ def main(argv):
         runner = task.GtkProgressRunner()
         function = gtkmain
 
-    function(runner, trmtask)
+    function(runner, mtask)
 
     print
-    print trmtask.trm
+    for trmtask in mtask:
+        print trmtask.trm
 
 main(sys.argv)

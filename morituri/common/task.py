@@ -49,7 +49,7 @@ class Task(object):
 
         Subclasses should chain up to me at the beginning.
         """
-        self.progress = 0.0
+        self.setProgress(self.progress)
         self.running = True
         self.runner = runner
         self._notifyListeners('started')
@@ -81,6 +81,11 @@ class Task(object):
             self._notifyListeners('progressed', value)
             self.debug('notifying progress', value)
         
+    def setDescription(self, description):
+        if description != self.description:
+            self._notifyListeners('described', description)
+            self.description = description
+
     def addListener(self, listener):
         """
         Add a listener for task status changes.
@@ -111,15 +116,17 @@ class DummyTask(Task):
 
         self.runner.schedule(1.0, self._wind)
 
-class MultiTask(Task):
+class BaseMultiTask(Task):
     """
     I perform multiple tasks.
-    I track progress of each individual task, going back to 0 for each task.
     """
 
     description = 'Doing various tasks'
     tasks = None
 
+    def __init__(self):
+        self.tasks = []
+         
     def addTask(self, task):
         if self.tasks is None:
             self.tasks = []
@@ -133,16 +140,15 @@ class MultiTask(Task):
         self.__tasks = self.tasks[:]
         self._generic = self.description
 
-        self._next()
+        self.next()
 
-    def _next(self):
+    def next(self):
         # start next task
-        self.progress = 0.0 # reset progress for each task
         task = self.__tasks[0]
         del self.__tasks[0]
         self._task += 1
-        self.description = "%s (%d of %d) ..." % (
-            self._generic, self._task, len(self.tasks))
+        self.setDescription("%s (%d of %d) ..." % (
+            self._generic, self._task, len(self.tasks)))
         task.addListener(self)
         task.start(self.runner)
         
@@ -151,7 +157,7 @@ class MultiTask(Task):
         pass
 
     def progressed(self, task, value):
-        self.setProgress(value)
+        pass
 
     def stopped(self, task):
         if not self.__tasks:
@@ -159,8 +165,43 @@ class MultiTask(Task):
             return
 
         # pick another
-        self._next()
+        self.next()
 
+
+class MultiTask(BaseMultiTask):
+    """
+    I perform multiple tasks.
+    I track progress of each individual task, going back to 0 for each task.
+    """
+
+    def start(self, runner):
+        BaseMultiTask.start(self, runner)
+
+    def next(self):
+        # start next task
+        self.progress = 0.0 # reset progress for each task
+        BaseMultiTask.next(self)
+        
+    ### listener methods
+    def progressed(self, task, value):
+        self.setProgress(value)
+
+class MultiCombinedTask(BaseMultiTask):
+    """
+    I perform multiple tasks.
+    I track progress as a combined progress on all tasks on task granularity.
+    """
+
+    _stopped = 0
+       
+    ### listener methods
+    def progressed(self, task, value):
+        self.setProgress(float(self._stopped + value) / len(self.tasks))
+
+    def stopped(self, task):
+        self._stopped += 1
+        self.setProgress(float(self._stopped) / len(self.tasks))
+        BaseMultiTask.stopped(self, task)
 
 class TaskRunner:
     """
@@ -195,6 +236,14 @@ class TaskRunner:
 
         @type  value: float
         @param value: progress, from 0.0 to 1.0
+        """
+
+    def described(self, task, description):
+        """
+        Implement me to be informed about description changes.
+
+        @type  description: str
+        @param description: description
         """
 
     def started(self, task):
@@ -234,9 +283,7 @@ class SyncRunner(TaskRunner):
         if not self._verbose:
             return
 
-        sys.stdout.write('%s %3d %%\r' % (
-            self._task.description, value * 100.0))
-        sys.stdout.flush()
+        self._report()
 
         if value >= 1.0:
             if self._skip:
@@ -248,9 +295,16 @@ class SyncRunner(TaskRunner):
                     self._task.description, 100.0)
                 sys.stdout.write("%s\r" % (' ' * len(text), ))
 
+    def described(self, task, description):
+        self._report()
+
     def stopped(self, task):
         self._loop.quit()
 
+    def _report(self):
+        sys.stdout.write('%s %3d %%\r' % (
+            self._task.description, self._task.progress * 100.0))
+        sys.stdout.flush()
 
 class GtkProgressRunner(gtk.VBox, TaskRunner):
     """
@@ -294,9 +348,10 @@ class GtkProgressRunner(gtk.VBox, TaskRunner):
         # self._task.removeListener(self)
 
     def progressed(self, task, value):
-        self._label.set_text(task.description)
         self._progress.set_fraction(value)
 
+    def described(self, task, description):
+        self._label.set_text(description)
 
 if __name__ == '__main__':
     task = DummyTask()

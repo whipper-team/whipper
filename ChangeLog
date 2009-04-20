@@ -1,3 +1,17 @@
+2009-04-21  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/task.py:
+	  Add a 'described' method so listeners can get proper notification
+	  of description changes, and update their description in between
+	  progress changes.
+	  Add a MultiCombinedTask that reports on progress over all tasks
+	  combined.
+	* examples/trm.py:
+	  Add a playlist option to the example.  Still needs to store results
+	  to pickles, preferably after each completed task.
+	* morituri/common/checksum.py:
+	  Add audioconvert to make sure we can trm ogg files.
+
 2009-04-20  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/task.py:

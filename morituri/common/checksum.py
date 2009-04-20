@@ -280,7 +280,7 @@ class TRMTask(task.Task):
         task.Task.start(self, runner)
         self._pipeline = gst.parse_launch('''
             filesrc location="%s" !
-            decodebin ! audio/x-raw-int !
+            decodebin ! audioconvert ! audio/x-raw-int !
             trm name=trm !
             appsink name=sink sync=False emit-signals=True''' % self._path)
         self._bus = self._pipeline.get_bus()
@@ -293,6 +293,7 @@ class TRMTask(task.Task):
 
         gst.debug('pausing')
         self._pipeline.set_state(gst.STATE_PAUSED)
+        gst.debug('paused')
         self._pipeline.get_state()
         gst.debug('paused')
 
