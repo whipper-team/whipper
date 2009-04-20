@@ -32,10 +32,11 @@ from morituri.image import image
 from morituri.common import task, checksum
 
 def gtkmain(runner, taskk):
+    runner = task.GtkProgressRunner()
     runner.connect('stop', lambda _: gtk.main_quit())
 
     window = gtk.Window()
-    window.add(progress)
+    window.add(runner)
     window.show_all()
 
     runner.run(taskk)
