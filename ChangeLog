@@ -1,5 +1,11 @@
 2009-04-20  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/task.py:
+	* morituri/image/image.py:
+	  Move MultiTask to the task module.
+
+2009-04-20  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/checksum.py:
 	  Add a task to calculate a trm fingerprint.
 	* examples/trm.py (added):

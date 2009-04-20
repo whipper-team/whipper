@@ -111,6 +111,56 @@ class DummyTask(Task):
 
         self.runner.schedule(1.0, self._wind)
 
+class MultiTask(Task):
+    """
+    I perform multiple tasks.
+    I track progress of each individual task, going back to 0 for each task.
+    """
+
+    description = 'Doing various tasks'
+    tasks = None
+
+    def addTask(self, task):
+        if self.tasks is None:
+            self.tasks = []
+        self.tasks.append(task)
+
+    def start(self, runner):
+        Task.start(self, runner)
+
+        # initialize task tracking
+        self._task = 0
+        self.__tasks = self.tasks[:]
+        self._generic = self.description
+
+        self._next()
+
+    def _next(self):
+        # start next task
+        self.progress = 0.0 # reset progress for each task
+        task = self.__tasks[0]
+        del self.__tasks[0]
+        self._task += 1
+        self.description = "%s (%d of %d) ..." % (
+            self._generic, self._task, len(self.tasks))
+        task.addListener(self)
+        task.start(self.runner)
+        
+    ### listener methods
+    def started(self, task):
+        pass
+
+    def progressed(self, task, value):
+        self.setProgress(value)
+
+    def stopped(self, task):
+        if not self.__tasks:
+            self.stop()
+            return
+
+        # pick another
+        self._next()
+
 
 class TaskRunner:
     """
