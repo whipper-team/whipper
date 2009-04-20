@@ -85,7 +85,7 @@ def main(argv):
     function(runner, mtask)
 
     print
-    for trmtask in mtask:
+    for trmtask in mtask.tasks:
         print trmtask.trm
 
 main(sys.argv)
