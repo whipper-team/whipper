@@ -1,5 +1,10 @@
 2009-04-25  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/test/test_image_image.py:
+	  Fix name.
+
+2009-04-25  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/test/test_common_renamer.py (added):
 	* morituri/common/renamer.py (added):
 	  Add a way of doing transactional file renames, as well as their

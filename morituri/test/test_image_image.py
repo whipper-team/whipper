@@ -43,7 +43,7 @@ class TrackSingleTestCase(unittest.TestCase):
         self.assertEquals(self.image.toc.getAccurateRipIds(), (
             "00000016", "0000005b"))
 
-class TracSeparateTestCase(unittest.TestCase):
+class TrackSeparateTestCase(unittest.TestCase):
     def setUp(self):
         self.image = image.Image(os.path.join(os.path.dirname(__file__),
             'track-separate.cue'))
