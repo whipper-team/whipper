@@ -1,5 +1,13 @@
 2009-04-25  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/image/cue.py:
+	  getRealPath should be here, it doesn't need anything outside
+	  the .cue file
+	* morituri/image/image.py:
+	  Proxy it here.
+
+2009-04-25  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/checksum.py:
 	  Add some debugging.
 	* morituri/test/test_image_image.py:
