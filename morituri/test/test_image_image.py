@@ -47,7 +47,7 @@ class TrackSeparateTestCase(unittest.TestCase):
     def setUp(self):
         self.image = image.Image(os.path.join(os.path.dirname(__file__),
             'track-separate.cue'))
-        self.runner = task.SyncRunner()
+        self.runner = task.SyncRunner(verbose=False)
         self.image.setup(self.runner)
 
     def testAccurateRipChecksum(self):

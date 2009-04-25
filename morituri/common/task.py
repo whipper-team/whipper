@@ -203,7 +203,7 @@ class MultiCombinedTask(BaseMultiTask):
         self.setProgress(float(self._stopped) / len(self.tasks))
         BaseMultiTask.stopped(self, task)
 
-class TaskRunner:
+class TaskRunner(object):
     """
     I am a base class for task runners.
     Task runners should be reusable.
@@ -261,9 +261,14 @@ class SyncRunner(TaskRunner):
     """
     I run the task synchronously in a gobject MainLoop.
     """
-    def run(self, task, verbose=True, skip=False):
-        self._task = task
+    def __init__(self, verbose=True):
         self._verbose = verbose
+
+    def run(self, task, verbose=None, skip=False):
+        self._task = task
+        self._verboseRun = self._verbose
+        if verbose is not None:
+            self._verboseRun = verbose
         self._skip = skip
 
         self._loop = gobject.MainLoop()
@@ -280,7 +285,7 @@ class SyncRunner(TaskRunner):
         gobject.timeout_add(int(delta * 1000L), c)
 
     def progressed(self, task, value):
-        if not self._verbose:
+        if not self._verboseRun:
             return
 
         self._report()
@@ -296,7 +301,8 @@ class SyncRunner(TaskRunner):
                 sys.stdout.write("%s\r" % (' ' * len(text), ))
 
     def described(self, task, description):
-        self._report()
+        if self._verboseRun:
+            self._report()
 
     def stopped(self, task):
         self._loop.quit()
