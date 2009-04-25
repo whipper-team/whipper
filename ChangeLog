@@ -1,5 +1,12 @@
 2009-04-25  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/checksum.py:
+	  Add some debugging.
+	* morituri/test/test_image_image.py:
+	  Run less verbose.
+
+2009-04-25  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/task.py:
 	  Allow a SyncRunner to be constructed with verbose too.
 	  Separate a 'running' verbose mode from that.

@@ -181,8 +181,10 @@ class ChecksumTask(task.Task):
             raise
         else:
             self._checksum = self._checksum % 2 ** 32
+            self.debug("last offset", self._last.offset)
             last = self._last.offset + len(self._last) / 4 - 1
             self.debug("last sample:", last)
+            self.debug("frame end:", self._frameEnd)
             self.debug("frame length:", self._frameLength)
             self.debug("checksum: %08X" % self._checksum)
             self.debug("bytes: %d" % self._bytes)
