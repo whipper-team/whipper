@@ -1,5 +1,10 @@
 2009-04-26  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* examples/movecue.py (added):
+	  Add a script that moves a .cue file in its corresponding directory.
+
+2009-04-26  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/test/kanye.cue (added):
 	  Add a cue test with mixed mode.
 	* morituri/image/cue.py:
