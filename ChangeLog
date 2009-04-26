@@ -1,3 +1,11 @@
+2009-04-26  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/test/kanye.cue (added):
+	  Add a cue test with mixed mode.
+	* morituri/image/cue.py:
+	* morituri/test/test_image_cue.py:
+	  Handle it properly.
+
 2009-04-25  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/image/cue.py:

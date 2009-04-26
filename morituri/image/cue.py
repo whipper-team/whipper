@@ -42,7 +42,7 @@ _FILE_RE = re.compile(r"""
 _TRACK_RE = re.compile(r"""
     ^\s+TRACK            # TRACK
     \s+(?P<track>\d\d)   # two-digit track number
-    \s+(?P<mode>\w+)$    # mode (AUDIO/...)
+    \s+(?P<mode>.+)$    # mode (AUDIO, MODEx/2xxx, ...)
 """, re.VERBOSE)
 
 _INDEX_RE = re.compile(r"""
@@ -224,7 +224,8 @@ class Track:
         @type file: L{File}
         """
         if number in self._indexes.keys():
-            raise KeyError, "index %d already in track" % number
+            raise KeyError, "index %d already in track %d" % (
+                number, self.number)
         if number < 0 or number > 99:
             raise IndexError, "Index number must be from 0 to 99"
 

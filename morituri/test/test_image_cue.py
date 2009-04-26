@@ -33,3 +33,14 @@ class KingsSeparateTestCase(unittest.TestCase):
         self.assertEquals(self.cue.getTrackLength(t), -1)
         t = self.cue.tracks[-1]
         self.assertEquals(self.cue.getTrackLength(t), -1)
+
+class KanyeMixedTestCase(unittest.TestCase):
+    def setUp(self):
+        self.cue = cue.Cue(os.path.join(os.path.dirname(__file__),
+            'kanye.cue'))
+        self.cue.parse()
+        self.assertEquals(len(self.cue.tracks), 13)
+
+    def testGetTrackLength(self):
+        t = self.cue.tracks[0]
+        self.assertEquals(self.cue.getTrackLength(t), -1)
