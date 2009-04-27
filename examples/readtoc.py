@@ -7,6 +7,7 @@ import subprocess
 import tempfile
 
 from morituri.common import task
+from morituri.image import toc
 from morituri.extern import asyncsub
 
 states = ['START', 'TRACK', 'LEADOUT', 'DONE']
@@ -48,6 +49,9 @@ class ReadTOCTask(task.Task):
         self._frames = None # number of frames
         self._starts = [] # start of each track, in frames
         self._track = None # which track are we analyzing?
+        self._toc = None # path to temporary .toc file
+
+        self.toc = None # result
 
     def start(self, runner):
         task.Task.start(self, runner)
@@ -68,17 +72,8 @@ class ReadTOCTask(task.Task):
     def _read(self, runner):
         ret = self._popen.recv_err()
         if not ret:
-            # FIXME: handle done
-            self.setProgress(1.0)
-            retcode = self._popen.wait()
-            if retcode != 0:
-                if self._errors:
-                    print "\n".join(self._errors)
-                else:
-                    print 'ERROR: exit code %r' % retcode
-            else:
-                print 'done'
-            self.stop()
+            # could be finished now
+            self.runner.schedule(1.0, self._poll, runner)
             return
 
         self._buffer += ret
@@ -113,6 +108,28 @@ class ReadTOCTask(task.Task):
             self._lines.extend(lines)
 
         self.runner.schedule(1.0, self._read, runner)
+
+    def _poll(self, runner):
+        if self._popen.poll() is None:
+            self.runner.schedule(1.0, self._poll, runner)
+            return
+
+        self._done()
+
+    def _done(self):
+            self.setProgress(1.0)
+            if self._popen.returncode != 0:
+                if self._errors:
+                    print "\n".join(self._errors)
+                else:
+                    print 'ERROR: exit code %r' % self._popen.returncode
+            else:
+                self.toc = toc.TOC(self._toc)
+                self.toc.parse()
+                os.unlink(self._toc)
+                
+            self.stop()
+            return
 
     def _parse(self, lines):
         for line in lines:
@@ -157,5 +174,10 @@ def main():
     runner = task.SyncRunner()
     t = ReadTOCTask()
     runner.run(t)
+    print 'runner done', t.toc
+
+    for track in t.toc.tracks:
+        print track._indexes
+        
 
 main()
