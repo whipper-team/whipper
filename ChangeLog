@@ -1,5 +1,11 @@
 2009-04-28  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/test/test_image_toc.py (added):
+	* morituri/image/toc.py (added):
+	  Add first stab at .toc parsing.
+
+2009-04-28  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* examples/readtoc.py:
 	  get errors from output too.
 
