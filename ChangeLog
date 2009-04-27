@@ -1,5 +1,10 @@
 2009-04-28  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* examples/readtoc.py:
+	  get errors from output too.
+
+2009-04-28  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/image/image.py:
 	* morituri/image/table.py:
 	* morituri/test/test_image_image.py:

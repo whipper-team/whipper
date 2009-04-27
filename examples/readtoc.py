@@ -4,6 +4,7 @@
 import re
 import os
 import subprocess
+import tempfile
 
 from morituri.common import task
 from morituri.extern import asyncsub
@@ -41,6 +42,7 @@ class ReadTOCTask(task.Task):
     def __init__(self):
         self._buffer = "" # accumulate characters
         self._lines = [] # accumulate lines
+        self._errors = [] # accumulate error lines
         self._lineIndex = 0 # where we are
         self._state = 'START'
         self._frames = None # number of frames
@@ -51,11 +53,12 @@ class ReadTOCTask(task.Task):
         task.Task.start(self, runner)
 
         # FIXME: create a temporary file instead
-        if os.path.exists('/tmp/toc'):
-            os.unlink('/tmp/toc')
+        (fd, self._toc) = tempfile.mkstemp(suffix='.morituri')
+        os.close(fd)
+        os.unlink(self._toc)
 
         bufsize = 1024
-        self._popen = asyncsub.Popen(["cdrdao", "read-toc", "/tmp/toc"],
+        self._popen = asyncsub.Popen(["cdrdao", "read-toc", self._toc],
                   bufsize=bufsize,
                   stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                   stderr=subprocess.PIPE, close_fds=True)
@@ -67,8 +70,14 @@ class ReadTOCTask(task.Task):
         if not ret:
             # FIXME: handle done
             self.setProgress(1.0)
-            print
-            print 'done'
+            retcode = self._popen.wait()
+            if retcode != 0:
+                if self._errors:
+                    print "\n".join(self._errors)
+                else:
+                    print 'ERROR: exit code %r' % retcode
+            else:
+                print 'done'
             self.stop()
             return
 
@@ -87,6 +96,7 @@ class ReadTOCTask(task.Task):
                 + int(position[6:8])
             self.setProgress(float(frame) / self._frames)
 
+        # parse buffer into lines if possible, and parse them
         if "\n" in self._buffer:
             lines = self._buffer.split('\n')
             if lines[-1] != "\n":
@@ -95,6 +105,10 @@ class ReadTOCTask(task.Task):
                 del lines[-1]
             else:
                 self._buffer = ""
+            for line in lines:
+                if line.startswith('ERROR:'):
+                    self._errors.append(line)
+
             self._parse(lines)
             self._lines.extend(lines)
 
