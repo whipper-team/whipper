@@ -1,3 +1,11 @@
+2009-04-28  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/test/test_image_table.py (added):
+	* morituri/image/table.py (added):
+	* morituri/test/test_image_toc.py (deleted):
+	* morituri/image/toc.py (deleted):
+	  Move files around in preparation for the .toc file parsing.
+
 2009-04-26  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* examples/movecue.py (added):
