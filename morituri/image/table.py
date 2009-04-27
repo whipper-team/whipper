@@ -1,4 +1,4 @@
-# -*- Mode: Python; test-case-name: morituri.test.test_image_toc -*-
+# -*- Mode: Python; test-case-name: morituri.test.test_image_table -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
 # Morituri - for those about to RIP
@@ -57,7 +57,7 @@ class Track:
         self.end = end
         self.audio = audio
 
-class TOC:
+class Table:
     """
     I represent the Table of Contents of a CD.
 

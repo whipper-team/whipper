@@ -30,7 +30,7 @@ import struct
 import gst
 
 from morituri.common import task, checksum
-from morituri.image import cue, toc
+from morituri.image import cue, table
 
 class Image:
     def __init__(self, path):
@@ -68,11 +68,11 @@ class Image:
             length = self.cue.getTrackLength(self.cue.tracks[i])
             if length == -1:
                 length = verify.lengths[i + 1]
-            tracks.append(toc.Track(i + 1, offset, offset + length - 1))
+            tracks.append(table.Track(i + 1, offset, offset + length - 1))
 
             offset += length
 
-        self.toc = toc.TOC(tracks)
+        self.table = table.Table(tracks)
 
 
 class AccurateRipChecksumTask(task.MultiTask):

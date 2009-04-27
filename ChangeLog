@@ -1,5 +1,13 @@
 2009-04-28  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/image/image.py:
+	* morituri/image/table.py:
+	* morituri/test/test_image_image.py:
+	* morituri/test/test_image_table.py:
+	  Rename toc.TOC to table.Table
+
+2009-04-28  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/test/test_image_table.py (added):
 	* morituri/image/table.py (added):
 	* morituri/test/test_image_toc.py (deleted):

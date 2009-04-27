@@ -31,16 +31,16 @@ class TrackSingleTestCase(unittest.TestCase):
         self.assertEquals(h(checksumtask.checksums[3]), '0x00000000')
 
     def testLength(self):
-        self.assertEquals(self.image.toc.getTrackLength(1), 2)
-        self.assertEquals(self.image.toc.getTrackLength(2), 2)
-        self.assertEquals(self.image.toc.getTrackLength(3), 2)
-        self.assertEquals(self.image.toc.getTrackLength(4), 4)
+        self.assertEquals(self.image.table.getTrackLength(1), 2)
+        self.assertEquals(self.image.table.getTrackLength(2), 2)
+        self.assertEquals(self.image.table.getTrackLength(3), 2)
+        self.assertEquals(self.image.table.getTrackLength(4), 4)
 
     def testCDDB(self):
-        self.assertEquals(self.image.toc.getCDDBDiscId(), "08000004")
+        self.assertEquals(self.image.table.getCDDBDiscId(), "08000004")
 
     def testAccurateRip(self):
-        self.assertEquals(self.image.toc.getAccurateRipIds(), (
+        self.assertEquals(self.image.table.getAccurateRipIds(), (
             "00000016", "0000005b"))
 
 class TrackSeparateTestCase(unittest.TestCase):
@@ -62,16 +62,16 @@ class TrackSeparateTestCase(unittest.TestCase):
 
     def testLength(self):
         tracks = self.image.cue.tracks
-        self.assertEquals(self.image.toc.getTrackLength(1), 10)
-        self.assertEquals(self.image.toc.getTrackLength(2), 10)
-        self.assertEquals(self.image.toc.getTrackLength(3), 10)
-        self.assertEquals(self.image.toc.getTrackLength(4), 10)
+        self.assertEquals(self.image.table.getTrackLength(1), 10)
+        self.assertEquals(self.image.table.getTrackLength(2), 10)
+        self.assertEquals(self.image.table.getTrackLength(3), 10)
+        self.assertEquals(self.image.table.getTrackLength(4), 10)
 
     def testCDDB(self):
-        self.assertEquals(self.image.toc.getCDDBDiscId(), "08000004")
+        self.assertEquals(self.image.table.getCDDBDiscId(), "08000004")
 
     def testAccurateRip(self):
-        self.assertEquals(self.image.toc.getAccurateRipIds(), (
+        self.assertEquals(self.image.table.getAccurateRipIds(), (
             "00000064", "00000191"))
 
 class AudioLengthTestCase(unittest.TestCase):
