@@ -23,6 +23,9 @@
 import os
 import sys
 import optparse
+import tempfile
+import pickle
+import shutil
 
 import gobject
 gobject.threads_init()
@@ -45,6 +48,30 @@ def gtkmain(runner, taskk):
 def climain(runner, taskk):
     runner.run(taskk)
 
+class Listener(object):
+    def __init__(self, path):
+        self.path = path
+        self.trms = {}
+
+    def progressed(self, task, value):
+        pass
+
+    def described(self, task, description):
+        pass
+
+    def started(self, task):
+        pass
+
+    def stopped(self, task):
+        self.trms[task.path] = task.trm
+        print task.path, task.trm
+
+        (fd, path) = tempfile.mkstemp(suffix='.morituri')
+        handle = os.fdopen(fd, 'wb')
+        pickle.dump(self.trms, handle, 2)
+        handle.close()
+        shutil.move(path, self.path)
+
 
 def main(argv):
     parser = optparse.OptionParser()
@@ -57,6 +84,9 @@ def main(argv):
     parser.add_option('-p', '--playlist',
         action="store", dest="playlist",
         help="playlist to analyze files from")
+    parser.add_option('-P', '--pickle',
+        action="store", dest="pickle",
+        help="pickle to store trms to")
 
 
     options, args = parser.parse_args(argv[1:])
@@ -68,9 +98,28 @@ def main(argv):
         paths.extend(open(options.playlist).readlines())
 
     mtask = task.MultiCombinedTask()
+    listener = None
+    trms = {}
+    if options.pickle:
+        listener = Listener(options.pickle)
+        print 'Opening pickle %s' % options.pickle
+        handle = open(options.pickle)
+        try:
+            trms = pickle.load(handle)
+        except Exception, e:
+            sys.stderr.write(
+                "Pickle file '%s' cannot be loaded.\n" % options.pickle)
+            sys.exit(1)
+
+        handle.close()
+
     for path in paths:
         path = path.rstrip()
+        if path in trms.keys():
+            continue
         trmtask = checksum.TRMTask(path)
+        if listener:
+            trmtask.addListener(listener)
         mtask.addTask(trmtask)
     mtask.description = 'Fingerprinting files'
 

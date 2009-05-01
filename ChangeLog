@@ -1,5 +1,10 @@
 2009-05-01  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* examples/trm.py:
+	  Allow loading and saving fingerprints from a pickle.
+
+2009-05-01  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/image/toc.py:
 	* morituri/test/test_image_toc.py:
 	* morituri/test/bloc.toc (added):
