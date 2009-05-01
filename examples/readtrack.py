@@ -7,29 +7,8 @@ import subprocess
 import tempfile
 
 from morituri.common import task, log, common
-from morituri.image import toc
 from morituri.program import cdparanoia
 from morituri.extern import asyncsub
-
-states = ['START', 'TRACK', 'LEADOUT', 'DONE']
-
-_ANALYZING_RE = re.compile(r'^Analyzing track (?P<track>\d+).*')
-_TRACK_RE = re.compile(r"""
-    ^(?P<track>[\d\s]{2})\s+ # Track
-    \w+\s+                   # Mode
-    \d\s+                    # Flags
-    \d\d:\d\d:\d\d           # Start in HH:MM:FF
-    \((?P<start>.+)\)\s+     # Start in frames
-    \d\d:\d\d:\d\d           # Length in HH:MM:FF
-    \(.+\)                   # Length in frames
-""", re.VERBOSE)
-_LEADOUT_RE = re.compile(r"""
-    ^Leadout\s
-    \w+\s+               # Mode
-    \d\s+                # Flags
-    \d\d:\d\d:\d\d       # Start in HH:MM:FF
-    \((?P<start>.+)\)    # Start in frames
-""", re.VERBOSE)
 
 # FIXME: handle errors
 
