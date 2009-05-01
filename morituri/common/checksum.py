@@ -91,9 +91,9 @@ class ChecksumTask(task.Task):
             if format == gst.FORMAT_BYTES:
                 self.debug('query returned in BYTES format')
                 length /= 4
-            self.debug('total length', length)
+            self.debug('total length: %r', length)
             self._frameLength = length - self._frameStart
-            self.debug('audio frame length is', self._frameLength)
+            self.debug('audio frame length is %r', self._frameLength)
         self._frameEnd = self._frameStart + self._frameLength - 1
 
         self.debug('event')
@@ -135,7 +135,7 @@ class ChecksumTask(task.Task):
             buffer.offset, buffer.size))
         if self._first is None:
             self._first = buffer.offset
-            self.debug('first sample is', self._first)
+            self.debug('first sample is %r', self._first)
         self._last = buffer
 
         assert len(buffer) % 4 == 0, "buffer is not a multiple of 4 bytes"
@@ -181,13 +181,13 @@ class ChecksumTask(task.Task):
             raise
         else:
             self._checksum = self._checksum % 2 ** 32
-            self.debug("last offset", self._last.offset)
+            self.debug("last offset %r", self._last.offset)
             last = self._last.offset + len(self._last) / 4 - 1
-            self.debug("last sample:", last)
-            self.debug("frame end:", self._frameEnd)
-            self.debug("frame length:", self._frameLength)
-            self.debug("checksum: %08X" % self._checksum)
-            self.debug("bytes: %d" % self._bytes)
+            self.debug("last sample: %r", last)
+            self.debug("frame end: %r", self._frameEnd)
+            self.debug("frame length: %r", self._frameLength)
+            self.debug("checksum: %08X", self._checksum)
+            self.debug("bytes: %d", self._bytes)
             if self._frameEnd != last:
                 print 'ERROR: did not get all frames, %d missing' % (
                     self._frameEnd - last)
@@ -241,7 +241,7 @@ class AccurateRipChecksumTask(ChecksumTask):
         if self._trackNumber == self._trackCount:
             discFrameLength = self._frameLength / SAMPLES_PER_FRAME
             if self._discFrameCounter > discFrameLength - 5:
-                self.debug('skipping frame %d' % self._discFrameCounter)
+                self.debug('skipping frame %d', self._discFrameCounter)
                 return checksum
 
         values = struct.unpack("<%dI" % (len(buffer) / 4), buffer)

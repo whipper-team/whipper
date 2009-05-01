@@ -1,5 +1,10 @@
 2009-05-01  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/checksum.py:
+	  Debug fixes.
+
+2009-05-01  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/common.py:
 	  Create some common functions to parse MSF and back.
 	* morituri/image/toc.py:
