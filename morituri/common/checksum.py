@@ -273,7 +273,7 @@ class TRMTask(task.Task):
         if not os.path.exists(path):
             raise IndexError, '%s does not exist' % path
 
-        self._path = path
+        self.path = path
         self._trm = None
         self._pipeline = None
         self._bus = None
@@ -284,7 +284,7 @@ class TRMTask(task.Task):
             filesrc location="%s" !
             decodebin ! audioconvert ! audio/x-raw-int !
             trm name=trm !
-            appsink name=sink sync=False emit-signals=True''' % self._path)
+            appsink name=sink sync=False emit-signals=True''' % self.path)
         self._bus = self._pipeline.get_bus()
         self._bus.add_signal_watch()
         self._bus.connect('message::eos', self._bus_eos_cb)
