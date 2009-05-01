@@ -7,5 +7,7 @@ MILESTONES:
 
 TODO:
 - parse .toc files (see cdrdao)
+- handle errors on cdrdao spawning (for example, not having cdrecorder,
+  or not putting the disk in)
 - check if it's simple to listen to each track in a multitrack completing
 - save trms to a pickle, after finishing each track
