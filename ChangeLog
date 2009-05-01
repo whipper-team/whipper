@@ -1,3 +1,8 @@
+2009-05-01  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/log.py:
+	  Add external log module and use it.
+
 2009-04-29  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/test/cure.toc (added):
