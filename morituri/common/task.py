@@ -25,7 +25,9 @@ import sys
 import gobject
 import gtk
 
-class Task(object):
+from morituri.common import log
+
+class Task(object, log.Loggable):
     """
     I wrap a task in an asynchronous interface.
     I can be listened to for starting, stopping, and progress updates.
@@ -66,11 +68,6 @@ class Task(object):
         self._notifyListeners('stopped')
 
     ### base class methods
-    def debug(self, *args, **kwargs):
-        return
-        print self, args, kwargs
-        sys.stdout.flush()
-
     def setProgress(self, value):
         """
         Notify about progress changes bigger than the increment.
@@ -79,7 +76,7 @@ class Task(object):
         if value - self.progress > self.increment or value >= 1.0 or value == 0.0:
             self.progress = value
             self._notifyListeners('progressed', value)
-            self.debug('notifying progress', value)
+            self.debug('notifying progress: %r', value)
         
     def setDescription(self, description):
         if description != self.description:
