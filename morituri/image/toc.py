@@ -27,6 +27,8 @@ Reading .toc files
 import os
 import re
 
+from morituri.common import common
+
 # header
 _CATALOG_RE = re.compile(r'^CATALOG "(?P<catalog>\d+)"$')
 
@@ -115,7 +117,7 @@ class TOC:
             m = _SILENCE_RE.search(line)
             if m:
                 length = m.group('length')
-                currentLength += self._parseMSF(length)
+                currentLength += common.msfToFrames(length)
 
             # look for FILE lines
             m = _FILE_RE.search(line)
@@ -124,8 +126,8 @@ class TOC:
                 start = m.group('start')
                 length = m.group('length')
                 currentFile = File(filePath, start, length)
-                #currentOffset += self._parseMSF(start)
-                currentLength += self._parseMSF(length)
+                #currentOffset += common.msfToFrames(start)
+                currentLength += common.msfToFrames(length)
 
             # look for START lines
             m = _START_RE.search(line)
@@ -135,7 +137,7 @@ class TOC:
                     print 'ouch'
                     continue
 
-                length = self._parseMSF(m.group('length'))
+                length = common.msfToFrames(m.group('length'))
                 currentTrack.index(0, currentOffset, currentFile)
                 currentLength += length
                 pregapLength = length
@@ -146,7 +148,7 @@ class TOC:
                 if not currentTrack:
                     self.message(number, 'INDEX without preceding TRACK')
                     indexNumber += 1
-                    offset = self._parseMSF(m.group('offset'))
+                    offset = common.msfToFrames(m.group('offset'))
                     currentTrack.index(indexNumber, offset, currentFile)
 
         # handle index 1 of final track, if any
@@ -209,13 +211,6 @@ class TOC:
                     return cpath
 
         raise KeyError, "Cannot find file for %s" % path
-
-    def _parseMSF(self, msf):
-        # parse str value in MM:SS:FF to frames
-        if not ':' in msf:
-            return int(msf)
-        m, s, f = msf.split(':')
-        return 60 * 75 * int(m) + 75 * int(s) + int(f)
 
 class File:
     """

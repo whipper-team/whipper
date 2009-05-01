@@ -1,5 +1,12 @@
 2009-05-01  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/common.py:
+	  Create some common functions to parse MSF and back.
+	* morituri/image/toc.py:
+	  Use it here.
+
+2009-05-01  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* examples/trm.py:
 	  Allow loading and saving fingerprints from a pickle.
 
