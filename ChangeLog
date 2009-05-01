@@ -1,5 +1,10 @@
 2009-05-01  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* examples/readtrack.py (added):
+	  Add an example that reads a track using cdparanoia.
+
+2009-05-01  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/test/cdparanoia.progress (added):
 	* morituri/test/test_program_cdparanoia.py (added):
 	* morituri/program/__init__.py (added):
