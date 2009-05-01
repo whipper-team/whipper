@@ -1,5 +1,13 @@
 2009-05-01  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/image/toc.py:
+	* morituri/test/test_image_toc.py:
+	* morituri/test/bloc.toc (added):
+	  Fix up .toc parsing to correct index 0 behaviour.
+	  Add Bloc Party's Silent Alarm .toc file to test HTOA.
+
+2009-05-01  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* examples/readtoc.py:
 	  Update to work on my desktop.
 

@@ -36,6 +36,13 @@ _TRACK_RE = re.compile(r"""
     \s(?P<mode>.+)$   # mode (AUDIO, MODEx/2xxx, ...)
 """, re.VERBOSE)
 
+# a HTOA is marked in the cdrdao's TOC as SILENCE
+_SILENCE_RE = re.compile(r"""
+    ^SILENCE              # SILENCE
+    \s(?P<length>.*)$     # pre-gap length
+""", re.VERBOSE)
+
+
 _FILE_RE = re.compile(r"""
     ^FILE                 # FILE
     \s+"(?P<name>.*)"     # 'file name' in quotes
@@ -67,8 +74,14 @@ class TOC:
         currentTrack = None
         trackNumber = 0
         indexNumber = 0
-        offset = 0 # running count of where each track starts
+        currentOffset = 0 # running absolute offset of where each track starts
+        currentLength = 0 # accrued during TRACK record parsing, current track
+        pregapLength = 0 # length of the pre-gap, current track
 
+
+        # the first track's INDEX 1 can only be gotten from the .toc
+        # file once the first pregap is calculated; so we add INDEX 1
+        # at the end of each parsed  TRACK record
         handle = open(self._path, 'r')
 
         for number, line in enumerate(handle.readlines()):
@@ -82,12 +95,27 @@ class TOC:
             m = _TRACK_RE.search(line)
             if m:
                 state = 'TRACK'
+
+                # handle index 1 of previous track, if any
+                if currentTrack:
+                    currentTrack.index(1, currentOffset + pregapLength,
+                        currentFile)
+
                 trackNumber += 1
+                currentOffset += currentLength
+                currentLength = 0
+                indexNumber = 1
                 trackMode = m.group('mode')
 
                 currentTrack = Track(trackNumber)
                 self.tracks.append(currentTrack)
                 continue
+
+            # look for SILENCE lines
+            m = _SILENCE_RE.search(line)
+            if m:
+                length = m.group('length')
+                currentLength += self._parseMSF(length)
 
             # look for FILE lines
             m = _FILE_RE.search(line)
@@ -96,9 +124,8 @@ class TOC:
                 start = m.group('start')
                 length = m.group('length')
                 currentFile = File(filePath, start, length)
-                offset = self._parseMSF(start)
-                indexNumber = 1
-                currentTrack.index(1, offset, currentFile)
+                #currentOffset += self._parseMSF(start)
+                currentLength += self._parseMSF(length)
 
             # look for START lines
             m = _START_RE.search(line)
@@ -109,7 +136,9 @@ class TOC:
                     continue
 
                 length = self._parseMSF(m.group('length'))
-                currentTrack.index(0, offset - length, currentFile)
+                currentTrack.index(0, currentOffset, currentFile)
+                currentLength += length
+                pregapLength = length
                 
              # look for INDEX lines
             m = _INDEX_RE.search(line)
@@ -119,6 +148,10 @@ class TOC:
                     indexNumber += 1
                     offset = self._parseMSF(m.group('offset'))
                     currentTrack.index(indexNumber, offset, currentFile)
+
+        # handle index 1 of final track, if any
+        if currentTrack:
+            currentTrack.index(1, currentOffset + pregapLength, currentFile)
 
     def message(self, number, message):
         """
