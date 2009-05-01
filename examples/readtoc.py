@@ -6,13 +6,13 @@ import os
 import subprocess
 import tempfile
 
-from morituri.common import task
+from morituri.common import task, log
 from morituri.image import toc
 from morituri.extern import asyncsub
 
 states = ['START', 'TRACK', 'LEADOUT', 'DONE']
 
-_ANALYZING_RE = re.compile(r'^Analyzing track (\d+).*')
+_ANALYZING_RE = re.compile(r'^Analyzing track (?P<track>\d+).*')
 _TRACK_RE = re.compile(r"""
     ^(?P<track>[\d\s]{2})\s+ # Track
     \w+\s+                   # Mode
@@ -71,6 +71,7 @@ class ReadTOCTask(task.Task):
 
     def _read(self, runner):
         ret = self._popen.recv_err()
+        self.log(ret)
         if not ret:
             # could be finished now
             self.runner.schedule(1.0, self._poll, runner)
@@ -80,16 +81,22 @@ class ReadTOCTask(task.Task):
 
         # find counter in LEADOUT state
         if self._buffer and  self._state == 'LEADOUT':
+            # split on lines that end in \r, which reset cursor to counter start
+            # this misses the first one, but that's ok:
+            # length 03:40:71...\n00:01:00
             times = self._buffer.split('\r')
             position = ""
-            while len(position) != 8:
+            while times and len(position) != 8:
                 position = times.pop()
 
-            frame = self._starts[self._track - 1] \
-                + int(position[0:2]) * 60 * 75 \
-                + int(position[3:5]) * 75 \
-                + int(position[6:8])
-            self.setProgress(float(frame) / self._frames)
+            # we need both a position reported and an Analyzing line
+            # to have been parsed to report progress
+            if position and self._track is not None:
+                frame = self._starts[self._track - 1]  or 0 \
+                    + int(position[0:2]) * 60 * 75 \
+                    + int(position[3:5]) * 75 \
+                    + int(position[6:8])
+                self.setProgress(float(frame) / self._frames)
 
         # parse buffer into lines if possible, and parse them
         if "\n" in self._buffer:
@@ -101,6 +108,7 @@ class ReadTOCTask(task.Task):
             else:
                 self._buffer = ""
             for line in lines:
+                self.log('Parsing %s', line)
                 if line.startswith('ERROR:'):
                     self._errors.append(line)
 
@@ -138,8 +146,10 @@ class ReadTOCTask(task.Task):
             getattr(self, methodName)(line)
 
     def _parse_START(self, line):
+        if line.startswith('Track'):
+            self.debug('Found possible track line')
         if line == "Track   Mode    Flags  Start                Length":
-            #print 'Found track line'
+            self.debug('Found track line, moving to TRACK state')
             self._state = 'TRACK'
 
     def _parse_TRACK(self, line):
@@ -150,20 +160,23 @@ class ReadTOCTask(task.Task):
         if m:
             self._tracks = int(m.group('track'))
             self._starts.append(int(m.group('start')))
+            self.debug('Found track %d', self._tracks)
 
         m = _LEADOUT_RE.search(line)
         if m:
+            self.debug('Found leadout line, moving to LEADOUT state')
             self._state = 'LEADOUT'
             self._frames = int(m.group('start'))
+            self.debug('Found leadout at offset %r', self._frames)
+            self.info('%d tracks found', self._tracks)
             return
 
-        self._tracks = int(line[:2])
-        #print '%d tracks found' % self._tracks
 
     def _parse_LEADOUT(self, line):
         m = _ANALYZING_RE.search(line)
         if m:
-            track = int(m.expand('\\1'))
+            self.debug('Found analyzing line')
+            track = int(m.group('track'))
             self.description = 'Analyzing track %d...' % track
             self._track = track
             #self.setProgress(float(track - 1) / self._tracks)
@@ -171,6 +184,7 @@ class ReadTOCTask(task.Task):
 
 
 def main():
+    log.init()
     runner = task.SyncRunner()
     t = ReadTOCTask()
     runner.run(t)

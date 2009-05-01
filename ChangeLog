@@ -1,5 +1,10 @@
 2009-05-01  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* examples/readtoc.py:
+	  Update to work on my desktop.
+
+2009-05-01  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/task.py:
 	  Make task subclass log.Log
 
