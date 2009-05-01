@@ -1,5 +1,10 @@
 2009-05-01  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* examples/readhtoa.py (added):
+	  Add an example that detects and rips the Hidden Track One Audio.
+
+2009-05-01  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* examples/readtoc.py:
 	* morituri/program/cdrdao.py (added):
 	  Move the ReadTocTask to the new cdrdao module.
