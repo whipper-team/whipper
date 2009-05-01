@@ -1,5 +1,11 @@
 2009-05-01  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* examples/readtrack.py:
+	* morituri/program/cdparanoia.py:
+	  Move ReadTrackTask to cdparanoia module.
+
+2009-05-01  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* examples/readtrack.py (added):
 	  Add an example that reads a track using cdparanoia.
 
