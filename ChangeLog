@@ -1,5 +1,14 @@
 2009-05-01  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/test/cdparanoia.progress (added):
+	* morituri/test/test_program_cdparanoia.py (added):
+	* morituri/program/__init__.py (added):
+	* morituri/program/cdparanoia.py (added):
+	  Add a module to wrap cdparanoia.  Add a test for parsing
+	  the progress report output.
+
+2009-05-01  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/checksum.py:
 	  Debug fixes.
 
