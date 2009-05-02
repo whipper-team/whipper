@@ -143,6 +143,7 @@ class BaseMultiTask(Task):
         # start next task
         task = self.__tasks[0]
         del self.__tasks[0]
+        self.debug('BaseMultiTask.next(): starting task %r', task)
         self._task += 1
         self.setDescription("%s (%d of %d) ..." % (
             self._generic, self._task, len(self.tasks)))
@@ -172,9 +173,11 @@ class MultiTask(BaseMultiTask):
     """
 
     def start(self, runner):
+        self.debug('MultiTask.start()')
         BaseMultiTask.start(self, runner)
 
     def next(self):
+        self.debug('MultiTask.next()')
         # start next task
         self.progress = 0.0 # reset progress for each task
         BaseMultiTask.next(self)

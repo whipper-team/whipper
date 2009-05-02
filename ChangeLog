@@ -1,3 +1,9 @@
+2009-05-02  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/task.py:
+	* morituri/image/image.py:
+	  Add some debugging.
+
 2009-05-01  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* examples/readhtoa.py (added):

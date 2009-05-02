@@ -29,10 +29,15 @@ import struct
 
 import gst
 
-from morituri.common import task, checksum
+from morituri.common import task, checksum, log
 from morituri.image import cue, table
 
-class Image:
+class Image(object, log.Loggable):
+    """
+    @ivar table: The Table of Contents for this image.
+    @type table: L{table.Table}
+    """
+
     def __init__(self, path):
         """
         @param path: .cue path
@@ -42,6 +47,7 @@ class Image:
         self.cue.parse()
         self._offsets = [] # 0 .. trackCount - 1
         self._lengths = [] # 0 .. trackCount - 1
+        self.table = None
 
     def getRealPath(self, path):
         """
@@ -51,10 +57,13 @@ class Image:
 
     def setup(self, runner):
         """
-        Do initial setup, like figuring out track lengths.
+        Do initial setup, like figuring out track lengths, and
+        constructing the Table of Contents.
         """
         verify = ImageVerifyTask(self)
+        self.debug('verifying image')
         runner.run(verify)
+        self.debug('verified image')
 
         # calculate offset and length for each track
 
@@ -116,10 +125,6 @@ class AudioLengthTask(task.Task):
     def __init__(self, path):
         self._path = path
 
-    def debug(self, *args, **kwargs):
-        return
-        print args, kwargs
-
     def start(self, runner):
         task.Task.start(self, runner)
         self._pipeline = gst.parse_launch('''
@@ -140,7 +145,7 @@ class AudioLengthTask(task.Task):
         if format == gst.FORMAT_BYTES:
             self.debug('query returned in BYTES format')
             length /= 4
-        self.debug('total length', length)
+        self.debug('total length: %d', length)
         self.length = length
         self._pipeline.set_state(gst.STATE_NULL)
         
@@ -161,6 +166,7 @@ class ImageVerifyTask(task.MultiTask):
         self.lengths = {}
 
         for trackIndex, track in enumerate(cue.tracks):
+            self.debug('verifying track %d', trackIndex + 1)
             index = track._indexes[1]
             offset = index[0]
             length = cue.getTrackLength(track)
@@ -168,9 +174,12 @@ class ImageVerifyTask(task.MultiTask):
 
             if length == -1:
                 path = image.getRealPath(file.path)
+                self.debug('schedule scan of audio length of %s', path)
                 taskk = AudioLengthTask(path)
                 self.addTask(taskk)
                 self._tasks.append((trackIndex + 1, track, taskk))
+            else:
+                self.debug('track %d has length %d', trackIndex + 1, length)
 
     def stop(self):
         for trackIndex, track, taskk in self._tasks:
