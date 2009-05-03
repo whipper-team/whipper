@@ -51,6 +51,9 @@ class Track:
     end = None
     audio = True
 
+    def __repr__(self):
+        return '<Track %02d>' % self.number
+
     def __init__(self, number, start, end, audio=True):
         self.number = number
         self.start = start
