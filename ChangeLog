@@ -1,5 +1,11 @@
 2009-05-03  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* examples/ARcalibrate.py (added):
+	  Add an example that calculates the read offset of your drive
+	  using AccurateRip.
+
+2009-05-03  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/program/cdrdao.py:
 	  Add a task to read the Table.
 
