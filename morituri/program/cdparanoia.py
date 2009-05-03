@@ -61,7 +61,7 @@ class ReadTrackTask(task.Task):
     I am a task that reads a track using cdparanoia.
     """
 
-    description = "Reading Track..."
+    description = "Reading Track"
 
 
     def __init__(self, path, table, start, stop, offset=0):
@@ -193,3 +193,49 @@ class ReadTrackTask(task.Task):
             
         self.stop()
         return
+
+class ReadVerifyTrackTask(task.MultiTask):
+    """
+    I am a task that reads and verifies a track using cdparanoia.
+
+    @ivar checksum: the checksum of the track.
+    """
+
+    def __init__(self, path, table, start, stop, offset=0):
+        """
+        @param path:   where to store the ripped track
+        @type  path:   str
+        @param table:  table of contents of CD
+        @type  table:  L{table.Table}
+        @param start:  first frame to rip
+        @type  start:  int
+        @param stop:   last frame to rip (inclusive)
+        @type  stop:   int
+        @param offset: read offset, in samples
+        @type  offset: int
+        """
+        self.tasks = []
+        self.tasks.append(
+            ReadTrackTask(path, table, start, stop, offset))
+        self.tasks.append(
+            checksum.CRC32Task(path))
+        t = ReadTrackTask(path, table, start, stop, offset)
+        t.description = 'Verifying track...'
+        self.tasks.append(
+            ReadTrackTask(path, table, start, stop, offset))
+        self.tasks.append(
+            checksum.CRC32Task(path))
+
+        self.checksum = None
+
+    def stop(self):
+        c1 = self.tasks[1].checksum
+        c2 = self.tasks[3].checksum
+        if c1 == c2:
+            self.info('Checksums match, %08x' % c1)
+            self.checksum = checksum
+        else:
+            print 'ERROR: read and verify failed'
+            self.checksum = None
+
+        task.MultiTask.stop(self)

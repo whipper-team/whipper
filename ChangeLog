@@ -1,5 +1,15 @@
 2009-05-03  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/program/cdparanoia.py:
+	  Add a task to read and verify a track.
+	* examples/readtrack.py:
+	  Use it to clean up code.
+	* morituri/common/task.py:
+	  describe a MultiTask better.
+
+
+2009-05-03  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/common.py:
 	  Create a Persister class to wrap a possible pickle path.
 	* examples/trm.py:

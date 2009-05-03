@@ -145,7 +145,7 @@ class BaseMultiTask(Task):
         self.debug('BaseMultiTask.next(): starting task %r', task)
         self._task += 1
         self.setDescription("%s (%d of %d) ..." % (
-            self._generic, self._task, len(self.tasks)))
+            task.description, self._task, len(self.tasks)))
         task.addListener(self)
         task.start(self.runner)
         
@@ -184,6 +184,11 @@ class MultiTask(BaseMultiTask):
     ### listener methods
     def progressed(self, task, value):
         self.setProgress(value)
+
+    def described(self, description):
+        print 'description'
+        self.setDescription("%s (%d of %d) ..." % (
+            description, self._task, len(self.tasks)))
 
 class MultiCombinedTask(BaseMultiTask):
     """
