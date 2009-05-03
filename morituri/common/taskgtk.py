@@ -25,7 +25,7 @@ import gtk
 
 from morituri.common import task
 
-class GtkProgressRunner(gtk.VBox, TaskRunner):
+class GtkProgressRunner(gtk.VBox, task.TaskRunner):
     """
     I am a widget that shows progress on a task.
     """

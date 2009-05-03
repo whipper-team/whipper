@@ -1,5 +1,10 @@
 2009-05-03  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/taskgtk.py:
+	  Bug fix.
+
+2009-05-03  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/task.py:
 	* morituri/common/taskgtk.py:
 	  Split off GtkProgressRunner in separate module to not import gtk
