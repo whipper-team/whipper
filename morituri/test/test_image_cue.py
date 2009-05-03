@@ -64,6 +64,13 @@ class WriteCueTestCase(unittest.TestCase):
         t.index(1, 1100, f)
         c.tracks.append(t)
 
-        print c.dump()
+        self.assertEquals(c.dump(), """FILE "track01.wav" WAVE
+  TRACK 01 AUDIO
+    INDEX 01 00:00:00
+  TRACK 02 AUDIO
+    INDEX 00 00:13:25
+FILE "track02.wav" WAVE
+    INDEX 01 00:14:50
+""")
 
         
