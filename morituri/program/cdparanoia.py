@@ -62,20 +62,23 @@ class ReadTrackTask(task.Task):
     description = "Reading Track..."
 
 
-    def __init__(self, path, start, stop, offset=0):
+    def __init__(self, path, table, start, stop, offset=0):
         """
         Read the given track.
 
         @param path:   where to store the ripped track
         @type  path:   str
-        @param start:  first frame to rip
-        @type  start:  int
+        @param table:  table of contents of CD
+        @type  table:  L{table.Table}
+        @param start:  first frame to rip, in cdparanoia notation
+        @type  start:  str
         @param stop:   last frame to rip (inclusive)
         @type  stop:   int
         @param offset: read offset, in samples
         @type  offset: int
         """
         self.path = path
+        self._table = table
         self._start = start
         self._stop = stop
         self._offset = offset
@@ -87,13 +90,32 @@ class ReadTrackTask(task.Task):
     def start(self, runner):
         task.Task.start(self, runner)
 
+        # find on which track the range starts and stops
+        startTrack = 0
+        startOffset = 0
+        stopTrack = 0
+        stopOffset = 0
+
+        for i, t in enumerate(self._table.tracks):
+            if t.start <= self._start:
+                startTrack = i + 1
+                startOffset = self._start - t.start
+            if t.end <= self._stop:
+                stopTrack = i + 1
+                stopOffset = self._stop - t.start
+
+        self.debug('Ripping from %d to %d (inclusive)', self._start, self._stop)
+        self.debug('Starting at track %d, offset %d', startTrack, startOffset)
+        self.debug('Stopping at track %d, offset %d', stopTrack, stopOffset)
+
         bufsize = 1024
         argv = ["cdparanoia",
             "--sample-offset=%d" % self._offset,
             "--stderr-progress",
-            "[%s]-[%s]" % (
-                common.framesToHMSF(self._start),
-                common.framesToHMSF(self._stop)), self.path]
+            "%d[%s]-%d[%s]" % (
+                startTrack, common.framesToHMSF(startOffset),
+                stopTrack, common.framesToHMSF(stopOffset)),
+            self.path]
         self.debug('Running %s' % (" ".join(argv), ))
         self._popen = asyncsub.Popen(argv,
             bufsize=bufsize,

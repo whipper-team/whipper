@@ -55,6 +55,26 @@ def climain(runner, taskk):
     runner.run(taskk)
 
 
+def arcs(runner, function, table, track, offset):
+    # rips the track with the given offset, return the arcs checksum
+    print 'ripping track %r with offset %d' % (track, offset)
+
+    fd, path = tempfile.mkstemp(suffix='.track%02d.offset%d.morituri.wav' % (
+        track, offset))
+    os.close(fd)
+
+    track = table.tracks[track - 1]
+    t = cdparanoia.ReadTrackTask(path, table, track.start, track.end, offset)
+    t.description = 'Ripping with offset %d' % offset
+    function(runner, t)
+
+    t = checksum.AccurateRipChecksumTask(path, trackNumber=track,
+        trackCount=len(table.tracks))
+    function(runner, t)
+    
+    # os.unlink(path)
+    return "%08x" % t.checksum
+ 
 def main(argv):
     parser = optparse.OptionParser()
 
@@ -122,30 +142,43 @@ def main(argv):
             print "AccurateRip response discid different: %s" % \
                 responses[0].cddbDiscId
 
-    response = None
-
     # now rip the first track at various offsets, calculating AccurateRip
     # CRC, and matching it against the retrieved ones
-    for offset in offsets:
-        fd, path = tempfile.mkstemp(suffix='.morituri')
-        os.close(fd)
-
-        print 'ripping track 1 with offset', offset
-        track = table.tracks[0]
-        t = cdparanoia.ReadTrackTask(path, track.start, track.end, offset)
-        t.description = 'Ripping with offset %d' % offset
-        function(runner, t)
-
-        t = checksum.AccurateRipChecksumTask(path, trackNumber=1,
-            trackCount = len(table.tracks))
-        function(runner, t)
-        arcs = "%08x" % t.checksum
-        print 'AR checksum calculated: %s' % arcs
-
+    
+    def match(archecksum, track, responses):
         for i, r in enumerate(responses):
-            if arcs == r.checksums[0]:
-                print 'MATCHED against response %d' % i
-                print 'offset of device is', offset
+            if archecksum == r.checksums[track - 1]:
+                return archecksum, i
+
+        return None, None
+
+    for offset in offsets:
+        archecksum = arcs(runner, function, table, 1, offset)
+
+        print 'AR checksum calculated: %s' % archecksum
+
+        c, i = match(archecksum, 1, responses)
+        if c:
+            count = 1
+            print 'MATCHED against response %d' % i
+            print 'offset of device is likely', offset
+            # now try and rip all other tracks as well
+            for track in range(2, len(table.tracks) + 1):
+                archecksum = arcs(runner, function, table, track, offset)
+                c, i = match(archecksum, track, responses)
+                if c:
+                    print 'MATCHED track %d against response %d' % (track, i)
+                    count += 1
+
+            if count == len(table.tracks):
+                print 'OFFSET of device is', offset
+                return
+            else:
+                print 'not all tracks matched, continuing'
+                
+    print 'no matching offset found.'
+                    
+                
 
 
 main(sys.argv)

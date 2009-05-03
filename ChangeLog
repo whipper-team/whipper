@@ -1,5 +1,14 @@
 2009-05-03  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/program/cdparanoia.py:
+	  Add table to __init__, so we can correctly calculate cdparanoia's
+	  strange ripping regions.
+	* examples/ARcalibrate.py:
+	  When we found a positive match on a first track, match all the other
+	  tracks too for confirmation.
+
+2009-05-03  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/taskgtk.py:
 	  Bug fix.
 
