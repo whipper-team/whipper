@@ -76,7 +76,7 @@ class Task(object, log.Loggable):
         if value - self.progress > self.increment or value >= 1.0 or value == 0.0:
             self.progress = value
             self._notifyListeners('progressed', value)
-            self.debug('notifying progress: %r', value)
+            self.log('notifying progress: %r', value)
         
     def setDescription(self, description):
         if description != self.description:
