@@ -23,7 +23,6 @@
 import sys
 
 import gobject
-import gtk
 
 from morituri.common import log
 
@@ -311,53 +310,6 @@ class SyncRunner(TaskRunner):
         sys.stdout.write('%s %3d %%\r' % (
             self._task.description, self._task.progress * 100.0))
         sys.stdout.flush()
-
-class GtkProgressRunner(gtk.VBox, TaskRunner):
-    """
-    I am a widget that shows progress on a task.
-    """
-
-    __gsignals__ = {
-        'stop': (gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE, ())
-    }
-
-    def __init__(self):
-        gtk.VBox.__init__(self)
-        self.set_border_width(6)
-        self.set_spacing(6)
-
-        self._label = gtk.Label()
-        self.add(self._label)
-
-        self._progress = gtk.ProgressBar()
-        self.add(self._progress)
-
-    def run(self, task):
-        self._task = task
-        self._label.set_text(task.description)
-        task.addListener(self)
-        while gtk.events_pending():
-            gtk.main_iteration()
-        task.start(self)
-
-    def schedule(self, delta, callable, *args, **kwargs):
-        def c():
-            callable(*args, **kwargs)
-            return False
-        gobject.timeout_add(int(delta * 1000L), c)
-
-    def started(self, task):
-        pass
-
-    def stopped(self, task):
-        self.emit('stop')
-        # self._task.removeListener(self)
-
-    def progressed(self, task, value):
-        self._progress.set_fraction(value)
-
-    def described(self, task, description):
-        self._label.set_text(description)
 
 if __name__ == '__main__':
     task = DummyTask()

@@ -29,10 +29,9 @@ gobject.threads_init()
 import gtk
 
 from morituri.image import image
-from morituri.common import task, checksum, log
+from morituri.common import task, taskgtk, checksum, log
 
 def gtkmain(runner, taskk):
-    runner = task.GtkProgressRunner()
     runner.connect('stop', lambda _: gtk.main_quit())
 
     window = gtk.Window()
@@ -75,7 +74,7 @@ def main(argv):
         runner = task.SyncRunner()
         function = climain
     elif options.runner == 'gtk':
-        runner = task.GtkProgressRunner()
+        runner = taskgtk.GtkProgressRunner()
         function = gtkmain
 
     cueImage.setup(runner)

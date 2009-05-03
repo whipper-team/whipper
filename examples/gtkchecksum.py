@@ -27,10 +27,10 @@ gobject.threads_init()
 
 import gtk
 
-from morituri.common import task, checksum
+from morituri.common import task, checksum, taskgtk
 
 def main(path, start, end):
-    progress = task.GtkProgressRunner()
+    progress = taskgtk.GtkProgressRunner()
     progress.connect('stop', lambda _: gtk.main_quit())
 
     window = gtk.Window()

@@ -31,10 +31,9 @@ import gobject
 gobject.threads_init()
 import gtk
 
-from morituri.common import checksum, task
+from morituri.common import checksum, task, taskgtk
 
 def gtkmain(runner, taskk):
-    runner = task.GtkProgressRunner()
     runner.connect('stop', lambda _: gtk.main_quit())
 
     window = gtk.Window()
@@ -128,7 +127,7 @@ def main(argv):
         runner = task.SyncRunner()
         function = climain
     elif options.runner == 'gtk':
-        runner = task.GtkProgressRunner()
+        runner = taskgtk.GtkProgressRunner()
         function = gtkmain
 
     function(runner, mtask)
