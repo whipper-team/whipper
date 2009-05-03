@@ -1,3 +1,8 @@
+2009-05-03  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/program/cdrdao.py:
+	  Add a task to read the Table.
+
 2009-05-02  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/task.py:
