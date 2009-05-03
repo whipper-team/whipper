@@ -29,6 +29,8 @@ See http://digitalx.org/cuesheetsyntax.php
 import os
 import re
 
+from morituri.common import common
+
 _REM_RE = re.compile("^REM\s(\w+)\s(.*)$")
 _PERFORMER_RE = re.compile("^PERFORMER\s(.*)$")
 _TITLE_RE = re.compile("^TITLE\s(.*)$")
@@ -121,6 +123,31 @@ class Cue:
                 currentTrack.index(indexNumber, frameOffset, currentFile)
                 # print 'index %d, offset %d of track %r' % (indexNumber, frameOffset, currentTrack)
                 continue
+
+    def dump(self):
+        """
+        Dump our internal representation to a .cue file content.
+        """
+        lines = []
+        currentFile = None
+
+        for i, track in enumerate(self.tracks):
+            indexes = track._indexes.keys()
+            indexes.sort()
+            index, file = track._indexes[indexes[0]]
+            if file != currentFile:
+                lines.append('FILE "%s" WAVE' % file.path)
+                currentFile = file
+            lines.append("  TRACK %02d %s" % (i + 1, 'AUDIO'))
+            for index in indexes:
+                (offset, file) = track._indexes[index]
+                if file != currentFile:
+                    lines.append('FILE "%s" WAVE' % file.path)
+                lines.append(
+                    "    INDEX %02d %s" % (index, common.framesToMSF(offset)))
+
+        lines.append("")
+        return "\n".join(lines) 
 
     def message(self, number, message):
         """

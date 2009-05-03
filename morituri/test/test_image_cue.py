@@ -2,6 +2,7 @@
 # vi:si:et:sw=4:sts=4:ts=4
 
 import os
+import tempfile
 import unittest
 
 from morituri.image import cue
@@ -44,3 +45,25 @@ class KanyeMixedTestCase(unittest.TestCase):
     def testGetTrackLength(self):
         t = self.cue.tracks[0]
         self.assertEquals(self.cue.getTrackLength(t), -1)
+
+
+class WriteCueTestCase(unittest.TestCase):
+    def testWrite(self):
+        fd, path = tempfile.mkstemp(suffix='morituri.test.cue')
+        os.close(fd)
+        c = cue.Cue(path)
+
+        f = cue.File('track01.wav', 'AUDIO')
+        t = cue.Track(1)
+        t.index(1, 0, f)
+        c.tracks.append(t)
+
+        t = cue.Track(2)
+        t.index(0, 1000, f)
+        f = cue.File('track02.wav', 'AUDIO')
+        t.index(1, 1100, f)
+        c.tracks.append(t)
+
+        print c.dump()
+
+        
