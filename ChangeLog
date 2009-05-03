@@ -1,5 +1,10 @@
 2009-05-03  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/program/cdparanoia.py:
+	  Use a temporary file to rip to.
+
+2009-05-03  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* examples/readtrack.py:
 	  Allow specifying the track to save.
 

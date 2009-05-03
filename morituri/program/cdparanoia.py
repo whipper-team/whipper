@@ -23,7 +23,9 @@
 import os
 import re
 import stat
+import shutil
 import subprocess
+import tempfile
 
 from morituri.common import task, log, common, checksum
 from morituri.extern import asyncsub
@@ -198,6 +200,7 @@ class ReadVerifyTrackTask(task.MultiTask):
     """
     I am a task that reads and verifies a track using cdparanoia.
 
+    @ivar path:     the path where the file is to be stored.
     @ivar checksum: the checksum of the track.
     """
 
@@ -214,17 +217,25 @@ class ReadVerifyTrackTask(task.MultiTask):
         @param offset: read offset, in samples
         @type  offset: int
         """
+
+        self.path = path
+
+        # FIXME: choose a dir on the same disk/dir as the final path
+        fd, tmppath = tempfile.mkstemp(suffix='.morituri.wav')
+        os.close(fd)
+        self._tmppath = tmppath
+
         self.tasks = []
         self.tasks.append(
-            ReadTrackTask(path, table, start, stop, offset))
+            ReadTrackTask(tmppath, table, start, stop, offset))
         self.tasks.append(
-            checksum.CRC32Task(path))
-        t = ReadTrackTask(path, table, start, stop, offset)
+            checksum.CRC32Task(tmppath))
+        t = ReadTrackTask(tmppath, table, start, stop, offset)
         t.description = 'Verifying track...'
         self.tasks.append(
-            ReadTrackTask(path, table, start, stop, offset))
+            ReadTrackTask(tmppath, table, start, stop, offset))
         self.tasks.append(
-            checksum.CRC32Task(path))
+            checksum.CRC32Task(tmppath))
 
         self.checksum = None
 
@@ -234,6 +245,7 @@ class ReadVerifyTrackTask(task.MultiTask):
         if c1 == c2:
             self.info('Checksums match, %08x' % c1)
             self.checksum = checksum
+            shutil.move(self._tmppath, self.path)
         else:
             print 'ERROR: read and verify failed'
             self.checksum = None
