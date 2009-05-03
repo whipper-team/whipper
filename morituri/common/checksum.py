@@ -44,7 +44,7 @@ class ChecksumTask(task.Task):
     """
 
     # this object needs a main loop to stop
-    description = 'Calculating checksum...'
+    description = 'Calculating checksum'
 
     def __init__(self, path, frameStart=0, frameLength=-1):
         """
@@ -201,7 +201,7 @@ class CRC32Task(ChecksumTask):
     I do a simple CRC32 check.
     """
 
-    description = 'Calculating CRC...'
+    description = 'Calculating CRC'
 
     def do_checksum_buffer(self, buffer, checksum):
         return zlib.crc32(buffer, checksum)
@@ -213,7 +213,7 @@ class AccurateRipChecksumTask(ChecksumTask):
     See http://www.accuraterip.com/
     """
 
-    description = 'Calculating AccurateRip checksum...'
+    description = 'Calculating AccurateRip checksum'
 
     def __init__(self, path, trackNumber, trackCount, frameStart=0, frameLength=-1):
         ChecksumTask.__init__(self, path, frameStart, frameLength)
@@ -267,7 +267,7 @@ class TRMTask(task.Task):
     """
 
     trm = None
-    description = 'Calculating fingerprint...'
+    description = 'Calculating fingerprint'
 
     def __init__(self, path):
         if not os.path.exists(path):
