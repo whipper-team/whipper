@@ -55,6 +55,9 @@ _LEADOUT_RE = re.compile(r"""
 class ReadTOCTask(task.Task):
     """
     I am a task that reads the TOC of a CD, including pregaps.
+
+    @ivar toc: the .toc object
+    @type toc: L{toc.TOC}
     """
 
     description = "Reading TOC..."
