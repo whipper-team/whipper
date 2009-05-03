@@ -178,13 +178,12 @@ class ReadTrackTask(task.Task):
         offsetLength = self._stop - self._start + 1
         expected = offsetLength * checksum.BYTES_PER_FRAME + 44
         if size != expected:
+            # FIXME: handle errors better
             print 'ERROR: file size %d did not match expected size %d' % (
                 size, expected)
             if (size - expected) % checksum.BYTES_PER_FRAME == 0:
                 print 'ERROR: %d frames difference' % (
                     (size - expected) / checksum.BYTES_PER_FRAME)
-        else:
-            print 'SIZE %d matches offset delta %d' % (size, self._stop - self._start)
 
         if self._popen.returncode != 0:
             if self._errors:
