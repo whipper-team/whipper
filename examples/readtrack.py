@@ -3,6 +3,7 @@
 
 import re
 import os
+import sys
 import stat
 import subprocess
 import tempfile
@@ -16,11 +17,17 @@ gobject.threads_init()
 
 def main():
     log.init()
+
+    
     runner = task.SyncRunner()
 
     checksums = []
-    fd, path = tempfile.mkstemp(suffix='.morituri')
-    os.close(fd)
+    if len(sys.argv) > 1:
+        path = sys.argv[1]
+    else:
+        fd, path = tempfile.mkstemp(suffix='.morituri.wav')
+        os.close(fd)
+        print 'storing track to %s' % path
 
     fakeTable = table.Table([
         table.Track( 1,      0,  15536),

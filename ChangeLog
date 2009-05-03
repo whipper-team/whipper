@@ -1,5 +1,10 @@
 2009-05-03  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* examples/readtrack.py:
+	  Allow specifying the track to save.
+
+2009-05-03  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/task.py:
 	  Make SyncRunner clear previous description/progress task by
 	  tracking longest output given up to now.
