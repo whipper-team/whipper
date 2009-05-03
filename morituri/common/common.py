@@ -109,7 +109,6 @@ class Persister(object):
         self.object = object
         (fd, path) = tempfile.mkstemp(suffix='.morituri.pickle')
         handle = os.fdopen(fd, 'wb')
-        print 'pickle'
         import pickle
         pickle.dump(object, handle, 2)
         handle.close()
@@ -127,5 +126,4 @@ class Persister(object):
 
         handle = open(self._path)
         import pickle
-        print 'unpickle'
         self.object = pickle.load(handle)
