@@ -1,5 +1,11 @@
 2009-05-03  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/task.py:
+	  Make SyncRunner clear previous description/progress task by
+	  tracking longest output given up to now.
+
+2009-05-03  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/program/cdparanoia.py:
 	  Add a task to read and verify a track.
 	* examples/readtrack.py:

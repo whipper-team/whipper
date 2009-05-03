@@ -267,6 +267,7 @@ class SyncRunner(TaskRunner):
     """
     def __init__(self, verbose=True):
         self._verbose = verbose
+        self._longest = 0 # longest string shown; for clearing
 
     def run(self, task, verbose=None, skip=False):
         self._task = task
@@ -296,25 +297,35 @@ class SyncRunner(TaskRunner):
 
         if value >= 1.0:
             if self._skip:
-                sys.stdout.write('%s %3d %%\n' % (
+                self._output('%s %3d %%' % (
                     self._task.description, 100.0))
             else:
                 # clear with whitespace
-                text = '%s %3d %%' % (
-                    self._task.description, 100.0)
-                sys.stdout.write("%s\r" % (' ' * len(text), ))
+                sys.stdout.write("%s\r" % (' ' * self._longest, ))
+
+    def _output(self, what, newline=False, ret=True):
+        sys.stdout.write(what)
+        sys.stdout.write(' ' * (self._longest - len(what)))
+        if ret:
+            sys.stdout.write('\r')
+        if newline:
+            sys.stdout.write('\n')
+        sys.stdout.flush()
+        if len(what) > self._longest:
+            #print; print 'setting longest', self._longest; print
+            self._longest = len(what)
 
     def described(self, task, description):
         if self._verboseRun:
             self._report()
 
     def stopped(self, task):
+        self.progressed(task, 1.0)
         self._loop.quit()
 
     def _report(self):
-        sys.stdout.write('%s %3d %%\r' % (
+        self._output('%s %3d %%' % (
             self._task.description, self._task.progress * 100.0))
-        sys.stdout.flush()
 
 if __name__ == '__main__':
     task = DummyTask()
