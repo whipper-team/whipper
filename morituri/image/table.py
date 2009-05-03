@@ -123,7 +123,7 @@ class Table:
         """
         Calculate the CDDB disc ID.
 
-        @rtype: str
+        @rtype:   str
         @returns: the 8-character hexadecimal disc ID
         """
         # cddb disc id takes into account data tracks
