@@ -165,18 +165,18 @@ class BaseMultiTask(Task):
         self.next()
 
 
-class MultiTask(BaseMultiTask):
+class MultiSeparateTask(BaseMultiTask):
     """
     I perform multiple tasks.
     I track progress of each individual task, going back to 0 for each task.
     """
 
     def start(self, runner):
-        self.debug('MultiTask.start()')
+        self.debug('MultiSeparateTask.start()')
         BaseMultiTask.start(self, runner)
 
     def next(self):
-        self.debug('MultiTask.next()')
+        self.debug('MultiSeparateTask.next()')
         # start next task
         self.progress = 0.0 # reset progress for each task
         BaseMultiTask.next(self)

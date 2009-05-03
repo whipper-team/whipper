@@ -1,5 +1,11 @@
 2009-05-03  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/task.py:
+	  Distinguish more clearly between MultiSeparateTask and
+	  MultiCombinedTask.
+
+2009-05-03  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/image/cue.py:
 	* morituri/test/test_image_cue.py:
 	  Add dumping of .cue files.
