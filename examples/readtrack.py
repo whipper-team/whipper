@@ -3,10 +3,12 @@
 
 import re
 import os
+import stat
 import subprocess
 import tempfile
 
 from morituri.common import task, checksum, log
+from morituri.image import table
 from morituri.program import cdparanoia
 
 import gobject
@@ -21,7 +23,12 @@ def main():
         fd, path = tempfile.mkstemp(suffix='.morituri')
         os.close(fd)
 
-        t = cdparanoia.ReadTrackTask(path, 1000, 3000, offset=0)
+        fakeTable = table.Table([
+            table.Track( 1,      0,  15536),
+        ])
+
+        t = cdparanoia.ReadTrackTask(path, fakeTable, 1000, 3000, offset=0)
+
         if i == 1:
             t.description = 'Verifying track...'
 

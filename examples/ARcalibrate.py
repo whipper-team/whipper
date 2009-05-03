@@ -27,10 +27,9 @@ import optparse
 
 import gobject
 gobject.threads_init()
-import gtk
 
 from morituri.image import image
-from morituri.common import task, taskgtk, checksum
+from morituri.common import task, checksum
 from morituri.program import cdrdao, cdparanoia
 
 """
@@ -41,6 +40,7 @@ from morituri.common import log
 log.init()
 
 def gtkmain(runner, taskk):
+    import gtk
     runner.connect('stop', lambda _: gtk.main_quit())
 
     window = gtk.Window()
@@ -112,6 +112,7 @@ def main(argv):
         runner = task.SyncRunner()
         function = climain
     elif options.runner == 'gtk':
+        from morituri.common import taskgtk
         runner = taskgtk.GtkProgressRunner()
         function = gtkmain
 

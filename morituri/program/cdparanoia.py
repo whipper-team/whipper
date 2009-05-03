@@ -20,10 +20,12 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 import re
+import stat
 import subprocess
 
-from morituri.common import task, log, common
+from morituri.common import task, log, common, checksum
 from morituri.extern import asyncsub
 
 _PROGRESS_RE = re.compile(r"""
@@ -70,8 +72,8 @@ class ReadTrackTask(task.Task):
         @type  path:   str
         @param table:  table of contents of CD
         @type  table:  L{table.Table}
-        @param start:  first frame to rip, in cdparanoia notation
-        @type  start:  str
+        @param start:  first frame to rip
+        @type  start:  int
         @param stop:   last frame to rip (inclusive)
         @type  stop:   int
         @param offset: read offset, in samples
@@ -91,10 +93,10 @@ class ReadTrackTask(task.Task):
         task.Task.start(self, runner)
 
         # find on which track the range starts and stops
-        startTrack = 0
+        startTrack = 1
         startOffset = 0
-        stopTrack = 0
-        stopOffset = 0
+        stopTrack = 1
+        stopOffset = self._stop
 
         for i, t in enumerate(self._table.tracks):
             if t.start <= self._start:
@@ -168,12 +170,27 @@ class ReadTrackTask(task.Task):
         self._done()
 
     def _done(self):
-            self.setProgress(1.0)
-            if self._popen.returncode != 0:
-                if self._errors:
-                    print "\n".join(self._errors)
-                else:
-                    print 'ERROR: exit code %r' % self._popen.returncode
-                
-            self.stop()
-            return
+        self.setProgress(1.0)
+
+        # check if the length matches
+        size = os.stat(self.path)[stat.ST_SIZE]
+        # wav header is 44 bytes
+        offsetLength = self._stop - self._start + 1
+        expected = offsetLength * checksum.BYTES_PER_FRAME + 44
+        if size != expected:
+            print 'ERROR: file size %d did not match expected size %d' % (
+                size, expected)
+            if (size - expected) % checksum.BYTES_PER_FRAME == 0:
+                print 'ERROR: %d frames difference' % (
+                    (size - expected) / checksum.BYTES_PER_FRAME)
+        else:
+            print 'SIZE %d matches offset delta %d' % (size, self._stop - self._start)
+
+        if self._popen.returncode != 0:
+            if self._errors:
+                print "\n".join(self._errors)
+            else:
+                print 'ERROR: exit code %r' % self._popen.returncode
+            
+        self.stop()
+        return
