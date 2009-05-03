@@ -145,7 +145,7 @@ class AudioLengthTask(task.Task):
         if format == gst.FORMAT_BYTES:
             self.debug('query returned in BYTES format')
             length /= 4
-        self.debug('total length: %d', length)
+        self.debug('total length of %s in samples: %d', self._path, length)
         self.length = length
         self._pipeline.set_state(gst.STATE_NULL)
         
