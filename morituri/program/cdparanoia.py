@@ -82,6 +82,7 @@ class ReadTrackTask(task.Task):
         self._parser = ProgressParser()
 
         self._buffer = "" # accumulate characters
+        self._errors = []
 
     def start(self, runner):
         task.Task.start(self, runner)
