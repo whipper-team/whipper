@@ -1,4 +1,4 @@
-# -*- Mode: Python; test-case-name: morituri.test.test_header -*-
+# -*- Mode: Python -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
 # Morituri - for those about to RIP
@@ -29,7 +29,7 @@ gobject.threads_init()
 import gtk
 
 from morituri.image import image
-from morituri.common import task, checksum
+from morituri.common import task, checksum, log
 
 def gtkmain(runner, taskk):
     runner = task.GtkProgressRunner()
@@ -48,6 +48,8 @@ def climain(runner, taskk):
 
 
 def main(argv):
+    log.init()
+
     parser = optparse.OptionParser()
 
     default = 'cli'
@@ -77,8 +79,9 @@ def main(argv):
         function = gtkmain
 
     cueImage.setup(runner)
-    print "CDDB disc id", cueImage.toc.getCDDBDiscId()
-    url = cueImage.toc.getAccurateRipURL()
+    print
+    print "CDDB disc id", cueImage.table.getCDDBDiscId()
+    url = cueImage.table.getAccurateRipURL()
     print "AccurateRip URL", url
 
     # FIXME: download url as a task too
@@ -97,7 +100,7 @@ def main(argv):
     if responses:
         print '%d AccurateRip reponses found' % len(responses)
 
-        if responses[0].cddbDiscId != cueImage.toc.getCDDBDiscId():
+        if responses[0].cddbDiscId != cueImage.table.getCDDBDiscId():
             print "AccurateRip response discid different: %s" % \
                 responses[0].cddbDiscId
 
