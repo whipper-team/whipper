@@ -1,5 +1,12 @@
 2009-05-03  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/common.py:
+	  Create a Persister class to wrap a possible pickle path.
+	* examples/trm.py:
+	  Use it.
+
+2009-05-03  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/program/cdparanoia.py:
 	  Add table to __init__, so we can correctly calculate cdparanoia's
 	  strange ripping regions.

@@ -31,7 +31,7 @@ import gobject
 gobject.threads_init()
 import gtk
 
-from morituri.common import checksum, task, taskgtk
+from morituri.common import checksum, task, taskgtk, common
 
 def gtkmain(runner, taskk):
     runner.connect('stop', lambda _: gtk.main_quit())
@@ -48,9 +48,8 @@ def climain(runner, taskk):
     runner.run(taskk)
 
 class Listener(object):
-    def __init__(self, path):
-        self.path = path
-        self.trms = {}
+    def __init__(self, persister):
+        self._persister = persister
 
     def progressed(self, task, value):
         pass
@@ -62,14 +61,9 @@ class Listener(object):
         pass
 
     def stopped(self, task):
-        self.trms[task.path] = task.trm
+        self._persister.object[task.path] = task.trm
         print task.path, task.trm
-
-        (fd, path) = tempfile.mkstemp(suffix='.morituri')
-        handle = os.fdopen(fd, 'wb')
-        pickle.dump(self.trms, handle, 2)
-        handle.close()
-        shutil.move(path, self.path)
+        self._persister.persist()
 
 
 def main(argv):
@@ -98,19 +92,12 @@ def main(argv):
 
     mtask = task.MultiCombinedTask()
     listener = None
-    trms = {}
-    if options.pickle:
-        listener = Listener(options.pickle)
-        print 'Opening pickle %s' % options.pickle
-        handle = open(options.pickle)
-        try:
-            trms = pickle.load(handle)
-        except Exception, e:
-            sys.stderr.write(
-                "Pickle file '%s' cannot be loaded.\n" % options.pickle)
-            sys.exit(1)
 
-        handle.close()
+    ptrms = common.Persister(options.pickle or None, {})
+    if options.pickle:
+        listener = Listener(ptrms)
+        print 'Using pickle %s' % options.pickle
+    trms = ptrms.object
 
     for path in paths:
         path = path.rstrip()
