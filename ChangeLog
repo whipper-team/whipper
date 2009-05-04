@@ -1,5 +1,10 @@
 2009-05-04  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* examples/readdisc.py (added):
+	  Add an example to read a whole disc.  Doesn't work yet.
+
+2009-05-04  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* examples/readhtoa.py:
 	  Fix up readhtoa example.  Add offset option.
 
