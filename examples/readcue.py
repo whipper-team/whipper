@@ -25,7 +25,7 @@ import sys
 from morituri.image import cue
 
 def main(path):
-    cuefile = cue.Cue(path)
+    cuefile = cue.CueFile(path)
     cuefile.parse()
 
     print cuefile.tracks

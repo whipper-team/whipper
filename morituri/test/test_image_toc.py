@@ -8,7 +8,7 @@ from morituri.image import toc
 
 class CureTestCase(unittest.TestCase):
     def setUp(self):
-        self.toc = toc.TOC(os.path.join(os.path.dirname(__file__),
+        self.toc = toc.TocFile(os.path.join(os.path.dirname(__file__),
             'cure.toc'))
         self.toc.parse()
         self.assertEquals(len(self.toc.tracks), 13)
@@ -33,7 +33,7 @@ class CureTestCase(unittest.TestCase):
 # Bloc Party - Silent Alarm has a Hidden Track One Audio
 class BlocTestCase(unittest.TestCase):
     def setUp(self):
-        self.toc = toc.TOC(os.path.join(os.path.dirname(__file__),
+        self.toc = toc.TocFile(os.path.join(os.path.dirname(__file__),
             'bloc.toc'))
         self.toc.parse()
         self.assertEquals(len(self.toc.tracks), 13)

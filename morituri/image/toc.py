@@ -64,7 +64,7 @@ _INDEX_RE = re.compile(r"""
     \s(?P<offset>.+)$ # start offset
 """, re.VERBOSE)
 
-class TOC:
+class TocFile(object):
     def __init__(self, path):
         self._path = path
         self._messages = []

@@ -11,7 +11,7 @@ from morituri.image import table, cue
 
 class KingsSingleTestCase(unittest.TestCase):
     def setUp(self):
-        self.cue = cue.Cue(os.path.join(os.path.dirname(__file__),
+        self.cue = cue.CueFile(os.path.join(os.path.dirname(__file__),
             'kings-single.cue'))
         self.cue.parse()
         self.assertEquals(len(self.cue.tracks), 11)
@@ -25,7 +25,7 @@ class KingsSingleTestCase(unittest.TestCase):
 
 class KingsSeparateTestCase(unittest.TestCase):
     def setUp(self):
-        self.cue = cue.Cue(os.path.join(os.path.dirname(__file__),
+        self.cue = cue.CueFile(os.path.join(os.path.dirname(__file__),
             'kings-separate.cue'))
         self.cue.parse()
         self.assertEquals(len(self.cue.tracks), 11)
@@ -39,7 +39,7 @@ class KingsSeparateTestCase(unittest.TestCase):
 
 class KanyeMixedTestCase(unittest.TestCase):
     def setUp(self):
-        self.cue = cue.Cue(os.path.join(os.path.dirname(__file__),
+        self.cue = cue.CueFile(os.path.join(os.path.dirname(__file__),
             'kanye.cue'))
         self.cue.parse()
         self.assertEquals(len(self.cue.tracks), 13)
@@ -49,7 +49,7 @@ class KanyeMixedTestCase(unittest.TestCase):
         self.assertEquals(self.cue.getTrackLength(t), -1)
 
 
-class WriteCueTestCase(unittest.TestCase):
+class WriteCueFileTestCase(unittest.TestCase):
     def testWrite(self):
         fd, path = tempfile.mkstemp(suffix='morituri.test.cue')
         os.close(fd)

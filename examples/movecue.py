@@ -31,7 +31,7 @@ from morituri.image import cue
 
 def move(path):
     print 'reading', path
-    cuefile = cue.Cue(path)
+    cuefile = cue.CueFile(path)
     cuefile.parse()
 
     track = cuefile.tracks[0]

@@ -260,7 +260,7 @@ class ReadIndexTableTask(CDRDAOTask):
     def done(self):
         # FIXME: instead of reading only a TOC, output a complete IndexTable
         # by merging the TOC info.
-        self.toc = toc.TOC(self._toc)
+        self.toc = toc.TocFile(self._toc)
         self.toc.parse()
         os.unlink(self._toc)
 

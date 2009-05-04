@@ -45,7 +45,7 @@ class Image(object, log.Loggable):
         @param path: .cue path
         """
         self._path = path
-        self.cue = cue.Cue(path)
+        self.cue = cue.CueFile(path)
         self.cue.parse()
         self._offsets = [] # 0 .. trackCount - 1
         self._lengths = [] # 0 .. trackCount - 1

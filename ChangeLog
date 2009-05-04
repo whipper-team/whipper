@@ -1,5 +1,18 @@
 2009-05-04  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* examples/movecue.py:
+	* examples/readcue.py:
+	* morituri/image/cue.py:
+	* morituri/image/image.py:
+	* morituri/image/toc.py:
+	* morituri/program/cdrdao.py:
+	* morituri/test/test_image_cue.py:
+	* morituri/test/test_image_toc.py:
+	  Cue -> CueFile
+	  TOC -> TocFile
+
+2009-05-04  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* examples/readdisc.py (added):
 	  Add an example to read a whole disc.  Doesn't work yet.
 

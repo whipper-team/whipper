@@ -57,7 +57,7 @@ _INDEX_RE = re.compile(r"""
 """, re.VERBOSE)
 
 
-class Cue(object, log.Loggable):
+class CueFile(object, log.Loggable):
     def __init__(self, path):
         self._path = path
         self._rems = {}
