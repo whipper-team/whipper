@@ -11,6 +11,10 @@ def main():
     runner.run(t)
     print 'runner done', t.toc
 
+    if not t.toc:
+        print 'Failed to read TOC'
+        return
+
     for track in t.toc.tracks:
         print track._indexes
         
