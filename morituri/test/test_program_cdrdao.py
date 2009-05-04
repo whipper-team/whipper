@@ -19,6 +19,7 @@ class ParseTestCase(unittest.TestCase):
         self._handle = open(path)
 
     def testParse(self):
+        # FIXME: we should be testing splitting in byte blocks, not lines
         for line in self._handle.readlines():
             self._parser.read(line)
         self.assertEquals(self._parser._starts,
