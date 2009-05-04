@@ -1,4 +1,4 @@
-# -*- Mode: Python -*-
+# -*- Mode: Python; test-case-name:morituri.test.test_program_cdrdao -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
 # Morituri - for those about to RIP
@@ -33,6 +33,7 @@ from morituri.extern import asyncsub
 states = ['START', 'TRACK', 'LEADOUT', 'DONE']
 
 _ANALYZING_RE = re.compile(r'^Analyzing track (?P<track>\d+).*')
+
 _TRACK_RE = re.compile(r"""
     ^(?P<track>[\d\s]{2})\s+ # Track
     (?P<mode>\w+)\s+         # Mode; AUDIO
@@ -42,6 +43,7 @@ _TRACK_RE = re.compile(r"""
     \d\d:\d\d:\d\d           # Length in HH:MM:FF
     \((?P<length>.+)\)       # Length in frames
 """, re.VERBOSE)
+
 _LEADOUT_RE = re.compile(r"""
     ^Leadout\s
     \w+\s+               # Mode
@@ -50,57 +52,26 @@ _LEADOUT_RE = re.compile(r"""
     \((?P<start>.+)\)    # Start in frames
 """, re.VERBOSE)
 
-# FIXME: handle errors
-
-class ReadTOCTask(task.Task):
-    """
-    I am a task that reads the TOC of a CD, including pregaps.
-
-    @ivar toc: the .toc object
-    @type toc: L{toc.TOC}
-    """
-
-    description = "Reading TOC..."
+_POSITION_RE = re.compile(r"""
+    ^(?P<hh>\d\d):       # HH
+    (?P<mm>\d\d):        # MM
+    (?P<ss>\d\d)         # SS
+""", re.VERBOSE)
 
 
-    def __init__(self):
-        self._buffer = "" # accumulate characters
-        self._lines = [] # accumulate lines
-        self._errors = [] # accumulate error lines
-        self._lineIndex = 0 # where we are
+class OutputParser(object, log.Loggable):
+    def __init__(self, taskk):
+        self._buffer = ""     # accumulate characters
+        self._lines = []      # accumulate lines
+        self._errors = []     # accumulate error lines
         self._state = 'START'
         self._frames = None # number of frames
         self._starts = [] # start of each track, in frames
         self._track = None # which track are we analyzing?
-        self._toc = None # path to temporary .toc file
+        self._task = taskk
 
-        self.toc = None # result
-
-    def start(self, runner):
-        task.Task.start(self, runner)
-
-        # FIXME: create a temporary file instead
-        (fd, self._toc) = tempfile.mkstemp(suffix='.morituri')
-        os.close(fd)
-        os.unlink(self._toc)
-
-        bufsize = 1024
-        self._popen = asyncsub.Popen(["cdrdao", "read-toc", self._toc],
-                  bufsize=bufsize,
-                  stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                  stderr=subprocess.PIPE, close_fds=True)
-
-        self.runner.schedule(1.0, self._read, runner)
-
-    def _read(self, runner):
-        ret = self._popen.recv_err()
-        self.log(ret)
-        if not ret:
-            # could be finished now
-            self.runner.schedule(1.0, self._poll, runner)
-            return
-
-        self._buffer += ret
+    def read(self, bytes):
+        self._buffer += bytes
 
         # find counter in LEADOUT state
         if self._buffer and  self._state == 'LEADOUT':
@@ -109,17 +80,19 @@ class ReadTOCTask(task.Task):
             # length 03:40:71...\n00:01:00
             times = self._buffer.split('\r')
             position = ""
-            while times and len(position) != 8:
+            m = None
+            while times and not m:
+                m = _POSITION_RE.search(position)
                 position = times.pop()
 
             # we need both a position reported and an Analyzing line
             # to have been parsed to report progress
-            if position and self._track is not None:
+            if m and self._track is not None:
                 frame = self._starts[self._track - 1]  or 0 \
-                    + int(position[0:2]) * 60 * 75 \
-                    + int(position[3:5]) * 75 \
-                    + int(position[6:8])
-                self.setProgress(float(frame) / self._frames)
+                    + int(m.group('hh')) * 60 * 75 \
+                    + int(m.group('mm')) * 75 \
+                    + int(m.group('ss'))
+                self._task.setProgress(float(frame) / self._frames)
 
         # parse buffer into lines if possible, and parse them
         if "\n" in self._buffer:
@@ -138,29 +111,6 @@ class ReadTOCTask(task.Task):
             self._parse(lines)
             self._lines.extend(lines)
 
-        self.runner.schedule(1.0, self._read, runner)
-
-    def _poll(self, runner):
-        if self._popen.poll() is None:
-            self.runner.schedule(1.0, self._poll, runner)
-            return
-
-        self._done()
-
-    def _done(self):
-            self.setProgress(1.0)
-            if self._popen.returncode != 0:
-                if self._errors:
-                    print "\n".join(self._errors)
-                else:
-                    print 'ERROR: exit code %r' % self._popen.returncode
-            else:
-                self.toc = toc.TOC(self._toc)
-                self.toc.parse()
-                os.unlink(self._toc)
-                
-            self.stop()
-            return
 
     def _parse(self, lines):
         for line in lines:
@@ -205,6 +155,76 @@ class ReadTOCTask(task.Task):
             #self.setProgress(float(track - 1) / self._tracks)
             #print 'analyzing', track
 
+
+
+# FIXME: handle errors
+
+class ReadTOCTask(task.Task):
+    """
+    I am a task that reads the TOC of a CD, including pregaps.
+
+    @ivar toc: the .toc object
+    @type toc: L{toc.TOC}
+    """
+
+    description = "Reading TOC..."
+
+
+    def __init__(self):
+        self._parser = OutputParser(self)
+        self._toc = None # path to temporary .toc file
+        self.toc = None # result
+
+    def start(self, runner):
+        task.Task.start(self, runner)
+
+        # FIXME: create a temporary file instead
+        (fd, self._toc) = tempfile.mkstemp(suffix='.morituri')
+        os.close(fd)
+        os.unlink(self._toc)
+
+        bufsize = 1024
+        self._popen = asyncsub.Popen(["cdrdao", "read-toc", self._toc],
+                  bufsize=bufsize,
+                  stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                  stderr=subprocess.PIPE, close_fds=True)
+
+        self.runner.schedule(1.0, self._read, runner)
+
+    def _read(self, runner):
+        ret = self._popen.recv_err()
+        self.log(ret)
+        if not ret:
+            # could be finished now
+            self.runner.schedule(1.0, self._poll, runner)
+            return
+
+        self._parser.read(ret)
+
+        self.runner.schedule(1.0, self._read, runner)
+
+    def _poll(self, runner):
+        if self._popen.poll() is None:
+            self.runner.schedule(1.0, self._poll, runner)
+            return
+
+        self._done()
+
+    def _done(self):
+            self.setProgress(1.0)
+            if self._popen.returncode != 0:
+                if self._errors:
+                    print "\n".join(self._errors)
+                else:
+                    print 'ERROR: exit code %r' % self._popen.returncode
+            else:
+                self.toc = toc.TOC(self._toc)
+                self.toc.parse()
+                os.unlink(self._toc)
+                
+            self.stop()
+            return
+
 class ReadTableTask(task.Task):
     """
     I am a task that reads the TOC of a CD, without pregaps.
@@ -217,7 +237,6 @@ class ReadTableTask(task.Task):
         self._buffer = "" # accumulate characters
         self._lines = [] # accumulate lines
         self._errors = [] # accumulate error lines
-        self._lineIndex = 0 # where we are
         self._state = 'START'
         self._frames = None # number of frames
         self._starts = [] # start of each track, in frames
