@@ -196,7 +196,7 @@ class ReadTrackTask(task.Task):
         self.stop()
         return
 
-class ReadVerifyTrackTask(task.MultiTask):
+class ReadVerifyTrackTask(task.MultiSeparateTask):
     """
     I am a task that reads and verifies a track using cdparanoia.
 
@@ -250,4 +250,4 @@ class ReadVerifyTrackTask(task.MultiTask):
             print 'ERROR: read and verify failed'
             self.checksum = None
 
-        task.MultiTask.stop(self)
+        task.MultiSeparateTask.stop(self)

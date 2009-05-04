@@ -29,7 +29,8 @@ See http://digitalx.org/cuesheetsyntax.php
 import os
 import re
 
-from morituri.common import common
+from morituri.common import common, log
+from morituri.image import table
 
 _REM_RE = re.compile("^REM\s(\w+)\s(.*)$")
 _PERFORMER_RE = re.compile("^PERFORMER\s(.*)$")
@@ -56,18 +57,21 @@ _INDEX_RE = re.compile(r"""
 """, re.VERBOSE)
 
 
-class Cue:
+class Cue(object, log.Loggable):
     def __init__(self, path):
         self._path = path
         self._rems = {}
         self._messages = []
         self.tracks = []
+        self.leadout = None
 
     def parse(self):
         state = 'HEADER'
         currentFile = None
         currentTrack = None
+        counter = 0
 
+        self.info('Parsing .cue file %s', self._path)
         handle = open(self._path, 'r')
 
         for number, line in enumerate(handle.readlines()):
@@ -86,6 +90,7 @@ class Cue:
             # look for FILE lines
             m = _FILE_RE.search(line)
             if m:
+                counter += 1
                 filePath = m.group('name')
                 fileFormat = m.group('format')
                 currentFile = File(filePath, fileFormat)
@@ -102,7 +107,8 @@ class Cue:
                 trackNumber = int(m.group('track'))
                 trackMode = m.group('mode')
 
-                currentTrack = Track(trackNumber)
+                self.debug('found track %d', trackNumber)
+                currentTrack = table.ITTrack(trackNumber)
                 self.tracks.append(currentTrack)
                 continue
 
@@ -118,36 +124,14 @@ class Cue:
                 minutes = int(m.expand('\\2'))
                 seconds = int(m.expand('\\3'))
                 frames = int(m.expand('\\4'))
+                self.debug('found index %d', indexNumber)
 
                 frameOffset = frames + seconds * 75 + minutes * 75 * 60
-                currentTrack.index(indexNumber, frameOffset, currentFile)
-                # print 'index %d, offset %d of track %r' % (indexNumber, frameOffset, currentTrack)
+                # FIXME: what do we do about File's FORMAT ?
+                currentTrack.index(indexNumber,
+                    path=currentFile.path, relative=frameOffset,
+                    counter=counter)
                 continue
-
-    def dump(self):
-        """
-        Dump our internal representation to a .cue file content.
-        """
-        lines = []
-        currentFile = None
-
-        for i, track in enumerate(self.tracks):
-            indexes = track._indexes.keys()
-            indexes.sort()
-            index, file = track._indexes[indexes[0]]
-            if file != currentFile:
-                lines.append('FILE "%s" WAVE' % file.path)
-                currentFile = file
-            lines.append("  TRACK %02d %s" % (i + 1, 'AUDIO'))
-            for index in indexes:
-                (offset, file) = track._indexes[index]
-                if file != currentFile:
-                    lines.append('FILE "%s" WAVE' % file.path)
-                lines.append(
-                    "    INDEX %02d %s" % (index, common.framesToMSF(offset)))
-
-        lines.append("")
-        return "\n".join(lines) 
 
     def message(self, number, message):
         """
@@ -166,11 +150,13 @@ class Cue:
             # last track, so no length known
             return -1
 
-        thisIndex = track._indexes[1] # FIXME: could be more
-        nextIndex = self.tracks[i + 1]._indexes[1] # FIXME: could be 0
+        thisIndex = track.indexes[1] # FIXME: could be more
+        nextIndex = self.tracks[i + 1].indexes[1] # FIXME: could be 0
 
-        if thisIndex[1] == nextIndex[1]: # same file
-            return nextIndex[0] - thisIndex[0]
+        c = thisIndex.counter
+        if c is not None and c == nextIndex.counter:
+            # they belong to the same source, so their relative delta is length
+            return nextIndex.relative - thisIndex.relative
 
         # FIXME: more logic
         return -1
@@ -217,49 +203,3 @@ class File:
 
     def __repr__(self):
         return '<File "%s" of format %s>' % (self.path, self.format)
-
-
-# FIXME: add type ? separate AUDIO from others
-class Track:
-    """
-    I represent a track in a cue file.
-    I have index points.
-    Each index point is linked to an audio file.
-
-    @ivar number: track number
-    @type number: int
-    """
-
-    def __init__(self, number):
-        if number < 1 or number > 99:
-            raise IndexError, "Track number must be from 1 to 99"
-
-        self.number = number
-        self._indexes = {} # index number -> (sector, File)
-
-        self.title = None
-        self.performer = None
-
-    def __repr__(self):
-        return '<Track %02d with %d indexes>' % (self.number,
-            len(self._indexes.keys()))
-
-    def index(self, number, sector, file):
-        """
-        Add the given index to the current track.
-
-        @type file: L{File}
-        """
-        if number in self._indexes.keys():
-            raise KeyError, "index %d already in track %d" % (
-                number, self.number)
-        if number < 0 or number > 99:
-            raise IndexError, "Index number must be from 0 to 99"
-
-        self._indexes[number] = (sector, file)
-
-    def getIndex(self, number):
-        """
-        @rtype: tuple of (int, File)
-        """
-        return self._indexes[number]

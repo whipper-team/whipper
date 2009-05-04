@@ -32,6 +32,8 @@ import gst
 from morituri.common import task, checksum, log
 from morituri.image import cue, table
 
+from morituri.test import common
+
 class Image(object, log.Loggable):
     """
     @ivar table: The Table of Contents for this image.
@@ -47,6 +49,7 @@ class Image(object, log.Loggable):
         self.cue.parse()
         self._offsets = [] # 0 .. trackCount - 1
         self._lengths = [] # 0 .. trackCount - 1
+
         self.table = None
 
     def getRealPath(self, path):
@@ -60,6 +63,7 @@ class Image(object, log.Loggable):
         Do initial setup, like figuring out track lengths, and
         constructing the Table of Contents.
         """
+        self.debug('setup image start')
         verify = ImageVerifyTask(self)
         self.debug('verifying image')
         runner.run(verify)
@@ -69,7 +73,7 @@ class Image(object, log.Loggable):
 
         # CD's have a standard lead-in time of 2 seconds;
         # checksums that use it should add it there
-        offset = self.cue.tracks[0].getIndex(1)[0]
+        offset = self.cue.tracks[0].getIndex(1).relative
 
         tracks = []
 
@@ -77,14 +81,21 @@ class Image(object, log.Loggable):
             length = self.cue.getTrackLength(self.cue.tracks[i])
             if length == -1:
                 length = verify.lengths[i + 1]
-            tracks.append(table.Track(i + 1, offset, offset + length - 1))
+            t = table.ITTrack(i + 1, audio=True)
+            tracks.append(t)
+            # FIXME: this probably only works for non-compliant .CUE files
+            # where pregap is put at end of previous file
+            t.index(1, absolute=offset, path=self.cue.tracks[i].getIndex(1).path,
+                relative=0)
 
             offset += length
 
-        self.table = table.Table(tracks)
+        self.table = table.IndexTable(tracks)
+        self.table.leadout = offset
+        self.debug('setup image done')
 
 
-class AccurateRipChecksumTask(task.MultiTask):
+class AccurateRipChecksumTask(task.MultiSeparateTask):
     """
     I calculate the AccurateRip checksums of all tracks.
     """
@@ -96,22 +107,22 @@ class AccurateRipChecksumTask(task.MultiTask):
         cue = image.cue
         self.checksums = []
 
+        self.debug('Checksumming %d tracks' % len(cue.tracks))
         for trackIndex, track in enumerate(cue.tracks):
-            index = track._indexes[1]
+            index = track.indexes[1]
             length = cue.getTrackLength(track)
-            file = index[1]
-            offset = index[0]
+            self.debug('track %d has length %d' % (trackIndex + 1, length))
 
-            path = image.getRealPath(file.path)
+            path = image.getRealPath(index.path)
             checksumTask = checksum.AccurateRipChecksumTask(path,
                 trackNumber=trackIndex + 1, trackCount=len(cue.tracks),
-                frameStart=offset * checksum.SAMPLES_PER_FRAME,
+                frameStart=index.relative * checksum.SAMPLES_PER_FRAME,
                 frameLength=length * checksum.SAMPLES_PER_FRAME)
             self.addTask(checksumTask)
 
     def stop(self):
         self.checksums = [t.checksum for t in self.tasks]
-        task.MultiTask.stop(self)
+        task.MultiSeparateTask.stop(self)
 
 class AudioLengthTask(task.Task):
     """
@@ -151,7 +162,7 @@ class AudioLengthTask(task.Task):
         
         self.stop()
 
-class ImageVerifyTask(task.MultiTask):
+class ImageVerifyTask(task.MultiSeparateTask):
     """
     I verify a disk image and get the necessary track lengths.
     """
@@ -167,13 +178,11 @@ class ImageVerifyTask(task.MultiTask):
 
         for trackIndex, track in enumerate(cue.tracks):
             self.debug('verifying track %d', trackIndex + 1)
-            index = track._indexes[1]
-            offset = index[0]
+            index = track.indexes[1]
             length = cue.getTrackLength(track)
-            file = index[1]
 
             if length == -1:
-                path = image.getRealPath(file.path)
+                path = image.getRealPath(index.path)
                 self.debug('schedule scan of audio length of %s', path)
                 taskk = AudioLengthTask(path)
                 self.addTask(taskk)
@@ -184,13 +193,12 @@ class ImageVerifyTask(task.MultiTask):
     def stop(self):
         for trackIndex, track, taskk in self._tasks:
             # print '%d has length %d' % (trackIndex, taskk.length)
-            index = track._indexes[1]
-            offset = index[0]
+            index = track.indexes[1]
             assert taskk.length % checksum.SAMPLES_PER_FRAME == 0
             end = taskk.length / checksum.SAMPLES_PER_FRAME
-            self.lengths[trackIndex] = end - offset
+            self.lengths[trackIndex] = end - index.relative
 
-        task.MultiTask.stop(self)
+        task.MultiSeparateTask.stop(self)
 
 # FIXME: move this method to a different module ?
 def getAccurateRipResponses(data):

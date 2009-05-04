@@ -5,7 +5,9 @@ import os
 import tempfile
 import unittest
 
-from morituri.image import cue
+from morituri.test import common
+
+from morituri.image import table, cue
 
 class KingsSingleTestCase(unittest.TestCase):
     def setUp(self):
@@ -51,26 +53,26 @@ class WriteCueTestCase(unittest.TestCase):
     def testWrite(self):
         fd, path = tempfile.mkstemp(suffix='morituri.test.cue')
         os.close(fd)
-        c = cue.Cue(path)
 
-        f = cue.File('track01.wav', 'AUDIO')
-        t = cue.Track(1)
-        t.index(1, 0, f)
-        c.tracks.append(t)
+        it = table.IndexTable()
+        
 
-        t = cue.Track(2)
-        t.index(0, 1000, f)
-        f = cue.File('track02.wav', 'AUDIO')
-        t.index(1, 1100, f)
-        c.tracks.append(t)
+        t = table.ITTrack(1)
+        t.index(1, path='track01.wav', relative=0)
+        it.tracks.append(t)
 
-        self.assertEquals(c.dump(), """FILE "track01.wav" WAVE
+        t = table.ITTrack(2)
+        t.index(0, path='track01.wav', relative=1000)
+        t.index(1, path='track02.wav', relative=0)
+        it.tracks.append(t)
+
+        self.assertEquals(it.cue(), """FILE "track01.wav" WAVE
   TRACK 01 AUDIO
     INDEX 01 00:00:00
   TRACK 02 AUDIO
     INDEX 00 00:13:25
 FILE "track02.wav" WAVE
-    INDEX 01 00:14:50
+    INDEX 01 00:00:00
 """)
 
         
