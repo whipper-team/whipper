@@ -18,21 +18,19 @@ class LadyhawkeTestCase(unittest.TestCase):
     # AccurateRip URL has been verified against EAC's, using wireshark
 
     def setUp(self):
-        self.table = table.Table([
-            table.Track( 1,      0,  15536),
-            table.Track( 2,  15537,  31690),
-            table.Track( 3,  31691,  50865),
-            table.Track( 4,  50866,  66465),
-            table.Track( 5,  66466,  81201),
-            table.Track( 6,  81202,  99408),
-            table.Track( 7,  99409, 115919),
-            table.Track( 8, 115920, 133092),
-            table.Track( 9, 133093, 149846),
-            table.Track(10, 149847, 161559),
-            table.Track(11, 161560, 177681),
-            table.Track(12, 177682, 195705),
-            table.Track(13, 207106, 210384, audio=False),
-        ])
+        self.table = table.IndexTable()
+
+        for i in range(12):
+            self.table.tracks.append(table.ITTrack(i + 1, audio=True))
+        self.table.tracks.append(table.ITTrack(13, audio=False))
+
+        offsets = [0, 15537, 31691, 50866, 66466, 81202, 99409,
+            115920, 133093, 149847, 161560, 177682, 207106]
+        t = self.table.tracks
+        for i, offset in enumerate(offsets):
+            t[i].index(1, absolute=offset)
+
+        self.table.leadout = 210385
 
     def testCDDB(self):
         self.assertEquals(self.table.getCDDBDiscId(), "c60af50d")

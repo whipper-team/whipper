@@ -1,3 +1,10 @@
+2009-05-05  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* examples/readdisc.py:
+	* morituri/image/table.py:
+	* morituri/test/test_image_table.py:
+	  Fix up and deprecate stuff.
+
 2009-05-04  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* examples/movecue.py:

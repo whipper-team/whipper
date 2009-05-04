@@ -123,15 +123,14 @@ def main(argv):
         function(runner, t)
         ptable.persist(t.toc)
     itable = ptable.object
-    import code; code.interact(local=locals())
 
     lastTrackStart = 0
 
     for i, track in enumerate(itable.tracks):
-        print 'Ripping track %d' % (i + 1)
         path = 'track%02d.wav' % (i + 1)
         # FIXME: optionally allow overriding reripping
         if not os.path.exists(path):
+            print 'Ripping track %d' % (i + 1)
             t = cdparanoia.ReadVerifyTrackTask(path, ittoc, ittoc.getTrackStart(i + 1),
                 ittoc.getTrackEnd(i + 1),
                 offset=int(options.offset))
@@ -150,7 +149,7 @@ def main(argv):
         # first copy over index 0 if there is any
         try:
             sector, _ = tocTrack.getIndex(0)
-            t.index(0, path=path, relative=sector - lastTrackStart)
+            ittrack.index(0, path=path, relative=sector - lastTrackStart)
         except KeyError:
             pass
         lastTrackStart, _ = tocTrack.getIndex(1)

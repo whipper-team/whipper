@@ -31,7 +31,7 @@ import gst
 
 from morituri.common import task, checksum, common
 
-class Track:
+class DeleteMeTrack:
     """
     I represent a track entry in a Table of Contents.
 
@@ -59,7 +59,7 @@ class Track:
         self.end = end
         self.audio = audio
 
-class Table:
+class DeleteMeTable:
     """
     I represent the Table of Contents of a CD.
 
