@@ -106,14 +106,16 @@ def main(argv):
     function(runner, verifytask)
     function(runner, cuetask)
 
-    response = None
+    response = None # track which response matches, for all tracks
 
+    # loop over tracks
     for i, checksum in enumerate(cuetask.checksums):
         status = 'rip NOT accurate'
 
         confidence = None
         archecksum = None
 
+        # match against each response's checksum
         for j, r in enumerate(responses):
             if "%08x" % checksum == r.checksums[i]:
                 if not response:
@@ -128,16 +130,19 @@ def main(argv):
                 confidence = response.confidences[i]
 
         c = "(not found)"
-        ar = ""
+        ar = "(not in database)"
         if responses:
-            maxConfidence = max(r.confidences[i] for r in responses)
-                 
-            c = "(confidence %3d)" % maxConfidence
-            if confidence is not None:
-                if confidence < maxConfidence:
-                    c = "(confidence %3d of %3d)" % (confidence, maxConfidence)
+            if not response:
+                print 'ERROR: none of the responses matched.'
+            else:
+                maxConfidence = max(r.confidences[i] for r in responses)
+                     
+                c = "(confidence %3d)" % maxConfidence
+                if confidence is not None:
+                    if confidence < maxConfidence:
+                        c = "(confidence %3d of %3d)" % (confidence, maxConfidence)
 
-            ar = ", AR [%s]" % response.checksums[i]
+                ar = ", AR [%s]" % response.checksums[i]
         print "Track %2d: %s %s [%08x]%s" % (
             i + 1, status, c, checksum, ar)
 
