@@ -11,12 +11,11 @@ def main():
     runner.run(t)
     print 'runner done', t.toc
 
-    if not t.toc:
+    if not t.table:
         print 'Failed to read TOC'
         return
 
-    for track in t.toc.tracks:
-        print track._indexes
-        
+    for track in t.table.tracks:
+        print track.getIndex(1).absolute
 
 main()
