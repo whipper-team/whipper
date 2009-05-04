@@ -2,6 +2,8 @@
 # vi:si:et:sw=4:sts=4:ts=4
 
 import os
+import sys
+import optparse
 import tempfile
 import shutil
 
@@ -13,7 +15,33 @@ gobject.threads_init()
 
 def main():
     log.init()
+
+    parser = optparse.OptionParser()
+
+    default = 0
+    parser.add_option('-o', '--offset',
+        action="store", dest="offset",
+        help="sample offset (defaults to %d)" % default,
+        default=default)
+
+    options, args = parser.parse_args(sys.argv[1:])
+
     runner = task.SyncRunner()
+
+    # first do a simple TOC scan
+    t = cdrdao.ReadTOCTask()
+    runner.run(t)
+    toc = t.table
+
+    offset = t.table.tracks[0].getIndex(1).absolute
+
+    if offset < 150:
+        print 'Disc is unlikely to have Hidden Track One Audio.'
+    else:
+        print 'Disc seems to have a %d frame HTOA.' % offset
+
+
+    # now do a more extensive scan
     t = cdrdao.ReadIndexTableTask()
     runner.run(t)
 
@@ -30,34 +58,16 @@ def main():
     print 'Found Hidden Track One Audio from frame %d to %d' % (start, stop)
         
     # rip it
-    
-    checksums = []
-
-    for i in range(2):
-        fd, path = tempfile.mkstemp(suffix='.morituri', dir=os.getcwd())
-        os.close(fd)
-
-        t = cdparanoia.ReadTrackTask(path, start, stop - 1, offset=0)
-        if i == 1:
-            t.description = 'Verifying track...'
-
-        runner.run(t)
-
-        t = checksum.CRC32Task(path)
-        runner.run(t)
-
-        if i == 0:
-            os.unlink(path)
-
-        checksums.append(t.checksum)
+    riptask = cdparanoia.ReadVerifyTrackTask('track00.wav', toc,
+        start, stop - 1,
+        offset=int(options.offset))
+    runner.run(riptask)
 
     print 'runner done'
-    if checksums[0] == checksums[1]:
+
+    if riptask.checksum is not None:
         print 'Checksums match'
-        shutil.move(path, 'track00.wav')
     else:
         print 'Checksums did not match'
-        os.unlink(path)
-
 
 main()
