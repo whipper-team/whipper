@@ -1,6 +1,14 @@
 2009-05-04  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/program/cdrdao.py:
+	  Convert ReadTableTask to a CDRDAOTask subclass.
+	* examples/ARcalibrate.py:
+	* morituri/program/cdparanoia.py:
+	  Adapt.
+
+2009-05-04  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/program/cdrdao.py:
 	  Fix up index scanning's progress report.
 	  Add some debugging.
 

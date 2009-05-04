@@ -101,12 +101,12 @@ class ReadTrackTask(task.Task):
         stopOffset = self._stop
 
         for i, t in enumerate(self._table.tracks):
-            if t.start <= self._start:
+            if self._table.getTrackStart(i + 1) <= self._start:
                 startTrack = i + 1
-                startOffset = self._start - t.start
-            if t.end <= self._stop:
+                startOffset = self._start - self._table.getTrackStart(i + 1)
+            if self._table.getTrackEnd(i + 1) <= self._stop:
                 stopTrack = i + 1
-                stopOffset = self._stop - t.start
+                stopOffset = self._stop - self._table.getTrackStart(i + 1)
 
         self.debug('Ripping from %d to %d (inclusive)', self._start, self._stop)
         self.debug('Starting at track %d, offset %d', startTrack, startOffset)

@@ -63,8 +63,9 @@ def arcs(runner, function, table, track, offset):
         track, offset))
     os.close(fd)
 
-    track = table.tracks[track - 1]
-    t = cdparanoia.ReadTrackTask(path, table, track.start, track.end, offset)
+    table.getTrackLength
+    t = cdparanoia.ReadTrackTask(path, table, table.getTrackStart(track),
+        table.getTrackEnd(track), offset)
     t.description = 'Ripping with offset %d' % offset
     function(runner, t)
 
@@ -72,7 +73,7 @@ def arcs(runner, function, table, track, offset):
         trackCount=len(table.tracks))
     function(runner, t)
     
-    # os.unlink(path)
+    os.unlink(path)
     return "%08x" % t.checksum
  
 def main(argv):
