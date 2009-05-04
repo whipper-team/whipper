@@ -22,6 +22,9 @@ class ParseTestCase(unittest.TestCase):
         # FIXME: we should be testing splitting in byte blocks, not lines
         for line in self._handle.readlines():
             self._parser.read(line)
-        self.assertEquals(self._parser._starts,
+
+        for i, offset in enumerate(
             [0, 13864, 31921, 48332, 61733, 80961,
-             100219, 116291, 136188, 157504, 175275])
+             100219, 116291, 136188, 157504, 175275]):
+            track = self._parser.toc.tracks[i]
+            self.assertEquals(track.getIndex(1).absolute, offset)

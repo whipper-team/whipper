@@ -65,10 +65,11 @@ class OutputParser(object, log.Loggable):
         self._lines = []      # accumulate lines
         self._errors = []     # accumulate error lines
         self._state = 'START'
-        self._frames = None # number of frames
-        self._starts = [] # start of each track, in frames
-        self._track = None # which track are we analyzing?
+        self._frames = None   # number of frames
+        self._track = None    # which track are we analyzing?
         self._task = taskk
+
+        self.toc = table.IndexTable() # the index table for the TOC
 
     def read(self, bytes):
         self._buffer += bytes
@@ -88,7 +89,8 @@ class OutputParser(object, log.Loggable):
             # we need both a position reported and an Analyzing line
             # to have been parsed to report progress
             if m and self._track is not None:
-                frame = self._starts[self._track - 1]  or 0 \
+                track = self.toc.tracks[self._track - 1]
+                frame = track.getIndex(1).absolute or 0 \
                     + int(m.group('hh')) * 60 * 75 \
                     + int(m.group('mm')) * 75 \
                     + int(m.group('ss'))
@@ -132,7 +134,9 @@ class OutputParser(object, log.Loggable):
         m = _TRACK_RE.search(line)
         if m:
             self._tracks = int(m.group('track'))
-            self._starts.append(int(m.group('start')))
+            track = table.ITTrack(self._tracks)
+            track.index(1, absolute=int(m.group('start')))
+            self.toc.tracks.append(track)
             self.debug('Found track %d', self._tracks)
 
         m = _LEADOUT_RE.search(line)
@@ -141,9 +145,9 @@ class OutputParser(object, log.Loggable):
             self._state = 'LEADOUT'
             self._frames = int(m.group('start'))
             self.debug('Found leadout at offset %r', self._frames)
+            self.toc.leadout = self._frames
             self.info('%d tracks found', self._tracks)
             return
-
 
     def _parse_LEADOUT(self, line):
         m = _ANALYZING_RE.search(line)
@@ -154,7 +158,6 @@ class OutputParser(object, log.Loggable):
             self._track = track
             #self.setProgress(float(track - 1) / self._tracks)
             #print 'analyzing', track
-
 
 
 # FIXME: handle errors
@@ -233,7 +236,7 @@ class ReadTOCTask(CDRDAOTask):
     description = "Scanning indexes..."
 
     def __init__(self):
-        self._parser = OutputParser(self)
+        self.parser = OutputParser(self)
         self.toc = None # result
         (fd, self._toc) = tempfile.mkstemp(suffix='.morituri')
         os.close(fd)
@@ -242,7 +245,7 @@ class ReadTOCTask(CDRDAOTask):
         self.options = ['read-toc', self._toc]
 
     def readbytes(self, bytes):
-        self._parser.read(bytes)
+        self.parser.read(bytes)
 
     def done(self):
         self.toc = toc.TOC(self._toc)
