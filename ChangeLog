@@ -1,6 +1,12 @@
 2009-05-04  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/program/cdrdao.py:
+	  Fix up index scanning's progress report.
+	  Add some debugging.
+
+2009-05-04  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/program/cdrdao.py:
 	* morituri/test/test_program_cdrdao.py:
 	  Fix up tests.  Use an IndexTable.
 

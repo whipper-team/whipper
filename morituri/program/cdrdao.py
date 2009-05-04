@@ -72,38 +72,48 @@ class OutputParser(object, log.Loggable):
         self.toc = table.IndexTable() # the index table for the TOC
 
     def read(self, bytes):
+        self.log('received %d bytes in state %s', len(bytes), self._state)
         self._buffer += bytes
 
         # find counter in LEADOUT state; only when we read full toc
-        if self._buffer and  self._state == 'LEADOUT':
+        self.log('state: %s, buffer bytes: %d', self._state, len(self._buffer))
+        if self._buffer and self._state == 'LEADOUT':
             # split on lines that end in \r, which reset cursor to counter start
             # this misses the first one, but that's ok:
             # length 03:40:71...\n00:01:00
             times = self._buffer.split('\r')
+            # counter ends in \r, so the last one would be empty
+            if not times[-1]:
+                del times[-1]
+
             position = ""
             m = None
             while times and not m:
-                m = _POSITION_RE.search(position)
                 position = times.pop()
+                m = _POSITION_RE.search(position)
 
             # we need both a position reported and an Analyzing line
             # to have been parsed to report progress
             if m and self._track is not None:
                 track = self.toc.tracks[self._track - 1]
-                frame = track.getIndex(1).absolute or 0 \
+                frame = (track.getIndex(1).absolute or 0) \
                     + int(m.group('hh')) * 60 * 75 \
                     + int(m.group('mm')) * 75 \
                     + int(m.group('ss'))
+                self.log('at frame %d of %d', frame, self._frames)
                 self._task.setProgress(float(frame) / self._frames)
 
         # parse buffer into lines if possible, and parse them
         if "\n" in self._buffer:
+            self.log('buffer has newline, splitting')
             lines = self._buffer.split('\n')
             if lines[-1] != "\n":
                 # last line didn't end yet
+                self.log('last line still in progress')
                 self._buffer = lines[-1]
                 del lines[-1]
             else:
+                self.log('last line finished, resetting buffer')
                 self._buffer = ""
             for line in lines:
                 self.log('Parsing %s', line)
@@ -170,6 +180,9 @@ class CDRDAOTask(task.Task):
     description = "Reading TOC..."
     options = None
 
+    def __init__(self):
+        self._errors = []
+
     def start(self, runner):
         task.Task.start(self, runner)
 
@@ -183,18 +196,14 @@ class CDRDAOTask(task.Task):
 
     def _read(self, runner):
         ret = self._popen.recv_err()
-        self.log(ret)
-        if not ret:
-            # could be finished now
-            self.runner.schedule(1.0, self._poll, runner)
-            return
 
-        self.readbytes(ret)
-        self.runner.schedule(1.0, self._read, runner)
+        if ret:
+            self.log("read from stderr: %s", ret)
+            self.readbytes(ret)
 
-    def _poll(self, runner):
         if self._popen.poll() is None:
-            self.runner.schedule(1.0, self._poll, runner)
+            # not finished yet
+            self.runner.schedule(1.0, self._read, runner)
             return
 
         self._done()
@@ -236,6 +245,7 @@ class ReadTOCTask(CDRDAOTask):
     description = "Scanning indexes..."
 
     def __init__(self):
+        CDRDAOTask.__init__(self)
         self.parser = OutputParser(self)
         self.toc = None # result
         (fd, self._toc) = tempfile.mkstemp(suffix='.morituri')
