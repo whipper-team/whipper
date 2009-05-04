@@ -1,5 +1,14 @@
 2009-05-04  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* examples/ARcalibrate.py:
+	* examples/readhtoa.py:
+	* examples/readtoc.py:
+	* morituri/program/cdrdao.py:
+	  Rename ReadTOCTask to ReadIndexTableTask.
+	  Rename ReadTableTask to ReadTOCTask.
+
+2009-05-04  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/program/cdrdao.py:
 	  Convert ReadTableTask to a CDRDAOTask subclass.
 	* examples/ARcalibrate.py:

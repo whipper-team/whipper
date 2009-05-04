@@ -107,7 +107,7 @@ def main(argv):
             offsets.append(int(b))
 
     # first get the Table Of Contents of the CD
-    t = cdrdao.ReadTableTask()
+    t = cdrdao.ReadTOCTask()
 
     if options.runner == 'cli':
         runner = task.SyncRunner()

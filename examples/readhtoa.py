@@ -14,7 +14,7 @@ gobject.threads_init()
 def main():
     log.init()
     runner = task.SyncRunner()
-    t = cdrdao.ReadTOCTask()
+    t = cdrdao.ReadIndexTableTask()
     runner.run(t)
 
     # now check if we have a hidden track one audio

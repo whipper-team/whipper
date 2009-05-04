@@ -7,7 +7,7 @@ from morituri.program import cdrdao
 def main():
     log.init()
     runner = task.SyncRunner()
-    t = cdrdao.ReadTOCTask()
+    t = cdrdao.ReadIndexTableTask()
     runner.run(t)
     print 'runner done', t.toc
 

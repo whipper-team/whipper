@@ -234,7 +234,7 @@ class CDRDAOTask(task.Task):
         raise NotImplentedError
 
 
-class ReadTOCTask(CDRDAOTask):
+class ReadIndexTableTask(CDRDAOTask):
     """
     I am a task that reads all indexes of a CD.
 
@@ -264,7 +264,7 @@ class ReadTOCTask(CDRDAOTask):
         self.toc.parse()
         os.unlink(self._toc)
 
-class ReadTableTask(CDRDAOTask):
+class ReadTOCTask(CDRDAOTask):
     """
     I am a task that reads the TOC of a CD, without pregaps.
     """
