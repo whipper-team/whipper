@@ -55,6 +55,8 @@ class ChecksumTask(task.Task):
         @type  frameStart: int
         @param frameStart: the frame to start at
         """
+        self.debug('Creating checksum task on %s from %d to %d',
+            path, frameStart, frameLength)
         if not os.path.exists(path):
             raise IndexError, '%s does not exist' % path
 
@@ -77,15 +79,15 @@ class ChecksumTask(task.Task):
             decodebin ! audio/x-raw-int !
             appsink name=sink sync=False emit-signals=True''' % self._path)
 
-        self.debug('pausing')
+        self.debug('pausing pipeline')
         self._pipeline.set_state(gst.STATE_PAUSED)
         self._pipeline.get_state()
-        self.debug('paused')
+        self.debug('paused pipeline')
 
-        self.debug('query duration')
         sink = self._pipeline.get_by_name('sink')
 
         if self._frameLength < 0:
+            self.debug('query duration')
             length, format = sink.query_duration(gst.FORMAT_DEFAULT)
             # wavparse 0.10.14 returns in bytes
             if format == gst.FORMAT_BYTES:
@@ -94,6 +96,8 @@ class ChecksumTask(task.Task):
             self.debug('total length: %r', length)
             self._frameLength = length - self._frameStart
             self.debug('audio frame length is %r', self._frameLength)
+        else:
+            self.debug('frameLength known, is %d' % self._frameLength)
         self._frameEnd = self._frameStart + self._frameLength - 1
 
         self.debug('event')
@@ -220,6 +224,10 @@ class AccurateRipChecksumTask(ChecksumTask):
         self._trackNumber = trackNumber
         self._trackCount = trackCount
         self._discFrameCounter = 0 # 1-based
+
+    def __repr__(self):
+        return "<AccurateRipCheckSumTask of track %d in %s>" % (
+            self._trackNumber, self._path)
 
     def do_checksum_buffer(self, buffer, checksum):
         self._discFrameCounter += 1
