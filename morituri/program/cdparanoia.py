@@ -73,7 +73,7 @@ class ReadTrackTask(task.Task):
         @param path:   where to store the ripped track
         @type  path:   str
         @param table:  table of contents of CD
-        @type  table:  L{table.Table}
+        @type  table:  L{table.IndexTable}
         @param start:  first frame to rip
         @type  start:  int
         @param stop:   last frame to rip (inclusive)

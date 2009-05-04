@@ -249,7 +249,7 @@ class Index:
         self.counter = counter
 
     def __repr__(self):
-        return '<Index %02d, absolute %d, path %d, relative %d>' % (
+        return '<Index %02d, absolute %r, path %r, relative %r>' % (
             self.number, self.absolute, self.path, self.relative)
 
 class IndexTable:
