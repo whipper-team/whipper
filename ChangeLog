@@ -1,6 +1,11 @@
 2009-05-04  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/program/cdrdao.py:
+	  Massage out a base class for running cdrdao.
+
+2009-05-04  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/program/cdrdao.py:
 	* morituri/test/test_program_cdrdao.py (added):
 	  Split out the parser from the task.  Test the parser.
 

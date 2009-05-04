@@ -73,7 +73,7 @@ class OutputParser(object, log.Loggable):
     def read(self, bytes):
         self._buffer += bytes
 
-        # find counter in LEADOUT state
+        # find counter in LEADOUT state; only when we read full toc
         if self._buffer and  self._state == 'LEADOUT':
             # split on lines that end in \r, which reset cursor to counter start
             # this misses the first one, but that's ok:
@@ -159,32 +159,19 @@ class OutputParser(object, log.Loggable):
 
 # FIXME: handle errors
 
-class ReadTOCTask(task.Task):
+class CDRDAOTask(task.Task):
     """
-    I am a task that reads the TOC of a CD, including pregaps.
-
-    @ivar toc: the .toc object
-    @type toc: L{toc.TOC}
+    I am a task base class that runs CDRDAO.
     """
 
     description = "Reading TOC..."
-
-
-    def __init__(self):
-        self._parser = OutputParser(self)
-        self._toc = None # path to temporary .toc file
-        self.toc = None # result
+    options = None
 
     def start(self, runner):
         task.Task.start(self, runner)
 
-        # FIXME: create a temporary file instead
-        (fd, self._toc) = tempfile.mkstemp(suffix='.morituri')
-        os.close(fd)
-        os.unlink(self._toc)
-
         bufsize = 1024
-        self._popen = asyncsub.Popen(["cdrdao", "read-toc", self._toc],
+        self._popen = asyncsub.Popen(["cdrdao"] + self.options,
                   bufsize=bufsize,
                   stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                   stderr=subprocess.PIPE, close_fds=True)
@@ -199,8 +186,7 @@ class ReadTOCTask(task.Task):
             self.runner.schedule(1.0, self._poll, runner)
             return
 
-        self._parser.read(ret)
-
+        self.readbytes(ret)
         self.runner.schedule(1.0, self._read, runner)
 
     def _poll(self, runner):
@@ -218,12 +204,50 @@ class ReadTOCTask(task.Task):
                 else:
                     print 'ERROR: exit code %r' % self._popen.returncode
             else:
-                self.toc = toc.TOC(self._toc)
-                self.toc.parse()
-                os.unlink(self._toc)
-                
+                self.done()
+
             self.stop()
             return
+
+    def readbytes(self, bytes):
+        """
+        Called when bytes have been read from stderr.
+        """
+        raise NotImplementedError
+
+    def done(self):
+        """
+        Called when cdrdao completed successfully.
+        """
+        raise NotImplentedError
+
+
+class ReadTOCTask(CDRDAOTask):
+    """
+    I am a task that reads all indexes of a CD.
+
+    @ivar toc: the .toc object
+    @type toc: L{toc.TOC}
+    """
+
+    description = "Scanning indexes..."
+
+    def __init__(self):
+        self._parser = OutputParser(self)
+        self.toc = None # result
+        (fd, self._toc) = tempfile.mkstemp(suffix='.morituri')
+        os.close(fd)
+        os.unlink(self._toc)
+
+        self.options = ['read-toc', self._toc]
+
+    def readbytes(self, bytes):
+        self._parser.read(bytes)
+
+    def done(self):
+        self.toc = toc.TOC(self._toc)
+        self.toc.parse()
+        os.unlink(self._toc)
 
 class ReadTableTask(task.Task):
     """
