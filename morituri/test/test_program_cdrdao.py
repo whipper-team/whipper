@@ -26,5 +26,5 @@ class ParseTestCase(unittest.TestCase):
         for i, offset in enumerate(
             [0, 13864, 31921, 48332, 61733, 80961,
              100219, 116291, 136188, 157504, 175275]):
-            track = self._parser.toc.tracks[i]
+            track = self._parser.table.tracks[i]
             self.assertEquals(track.getIndex(1).absolute, offset)

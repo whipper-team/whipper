@@ -100,16 +100,20 @@ class TocFile(object, log.Loggable):
             if m:
                 state = 'TRACK'
 
-                # handle index 1 of previous track, if any
+                # set index 1 of previous track if there was one, using
+                # pregapLength if applicable
                 if currentTrack:
                     currentTrack.index(1, path=currentFile.path,
                         relative=currentOffset + pregapLength, counter=counter)
+                    self.debug('track %d, added index %r',
+                        currentTrack.number, currentTrack.getIndex(1))
 
                 trackNumber += 1
                 currentOffset += currentLength
                 currentLength = 0
                 indexNumber = 1
                 trackMode = m.group('mode')
+                pregapLength = 0
 
                 # FIXME: track mode
                 currentTrack = table.ITTrack(trackNumber)
@@ -153,24 +157,34 @@ class TocFile(object, log.Loggable):
 
                 length = common.msfToFrames(m.group('length'))
                 currentTrack.index(0, path=currentFile.path,
-                    relative=currentOffset - length, counter=counter)
-                #currentLength += length
+                    relative=currentOffset, counter=counter)
+                self.debug('track %d, added index %r',
+                    currentTrack.number, currentTrack.getIndex(0))
+                # store the pregapLength to add it when we index 1 for this
+                # track on the next iteration
                 pregapLength = length
                 
-             # look for INDEX lines
+            # look for INDEX lines
             m = _INDEX_RE.search(line)
             if m:
                 if not currentTrack:
                     self.message(number, 'INDEX without preceding TRACK')
-                    indexNumber += 1
-                    offset = common.msfToFrames(m.group('offset'))
-                    currentTrack.index(indexNumber, path=currentFile.path,
-                        relative=offset, counter=counter)
+                    print 'ouch'
+                    continue
+
+                indexNumber += 1
+                offset = common.msfToFrames(m.group('offset'))
+                currentTrack.index(indexNumber, path=currentFile.path,
+                    relative=offset, counter=counter)
+                self.debug('track %d, added index %r',
+                    currentTrack.number, currentTrack.getIndex(indexNumber))
 
         # handle index 1 of final track, if any
         if currentTrack:
             currentTrack.index(1, path=currentFile.path,
                 relative=currentOffset + pregapLength, counter=counter)
+            self.debug('track %d, added index %r',
+                currentTrack.number, currentTrack.getIndex(1))
 
     def message(self, number, message):
         """

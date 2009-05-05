@@ -22,7 +22,8 @@ class CureTestCase(unittest.TestCase):
         self.assertEquals(self.toc.getTrackLength(t), -1)
 
     def testIndexes(self):
-        # track 2, index 0 is at 06:16:45
+        # track 2, index 0 is at 06:16:45 or 28245
+        # track 2, index 1 is at 06:17:49 or 28324
         # FIXME: cdrdao seems to get length of FILE 1 frame too many,
         # and START value one frame less
         t = self.toc.table.tracks[1]
@@ -60,7 +61,7 @@ class CureTestCase(unittest.TestCase):
         self.toc.table.clearFiles()
 
         self._assertAbsolute(1, 1, 0)
-        self._assertAbsolute(2, 0, 28166)
+        self._assertAbsolute(2, 0, 28245)
         self._assertAbsolute(2, 1, 28324)
         self._assertAbsolute(3, 1, 46110)
         self._assertAbsolute(4, 1, 66767)
@@ -72,7 +73,7 @@ class CureTestCase(unittest.TestCase):
         self._assertPath(1, 1, 'track01.wav')
         self._assertRelative(1, 1, 0)
         self._assertPath(2, 0, 'track01.wav')
-        self._assertAbsolute(2, 0, 28166)
+        self._assertRelative(2, 0, 28245)
 
         self._assertPath(2, 1, None)
         self._assertRelative(2, 1, None)
@@ -88,7 +89,9 @@ class BlocTestCase(unittest.TestCase):
     def testGetTrackLength(self):
         t = self.toc.table.tracks[0]
         # first track has known length because the .toc is a single file
-        self.assertEquals(self.toc.getTrackLength(t), 50089)
+        # the length is from Track 1, Index 1 to Track 2, Index 1, so
+        # does not include the htoa
+        self.assertEquals(self.toc.getTrackLength(t), 19649)
         # last track has unknown length
         t = self.toc.table.tracks[-1]
         self.assertEquals(self.toc.getTrackLength(t), -1)
