@@ -121,8 +121,10 @@ def main(argv):
     if not ptable.object:
         t = cdrdao.ReadIndexTableTask()
         function(runner, t)
-        ptable.persist(t.toc)
+        ptable.persist(t.table)
     itable = ptable.object
+
+    assert itable.hasTOC()
 
     lastTrackStart = 0
 
@@ -139,36 +141,16 @@ def main(argv):
             if t.checksum:
                 print 'Checksums match for track %d' % (i + 1)
 
-        ittrack = table.ITTrack(i + 1)
-        # we know the .toc file represents a single wav rip, so all offsets
-        # are absolute since beginning of disc
+        # overlay this rip onto the IndexTable
+        itable.setFile(i + 1, 1, path, ittoc.getTrackLength(i + 1))
 
-        # copy over indexes, adjusting the offset
-        tocTrack = itable.tracks[i]
+    print itable.tracks
+    for t in itable.tracks:
+        print t, t.indexes.values()
 
-        # first copy over index 0 if there is any
-        try:
-            sector, _ = tocTrack.getIndex(0)
-            ittrack.index(0, path=path, relative=sector - lastTrackStart)
-        except KeyError:
-            pass
-        lastTrackStart, _ = tocTrack.getIndex(1)
-
-        indexes = itable.tracks[i]._indexes
-        numbers = indexes.keys()
-        numbers.sort()
-        if 0 in numbers: 
-            del numbers[0]
-        for number in numbers:
-            sector, _ = tocTrack.getIndex(number)
-            ittrack.index(number, path=path, relative=sector - lastTrackStart)
-        #itable.tracks.append(ittrack)
-
-            
-
-    # FIXME: this is the part where our IndexTable reader should convert
-    # a .toc file to a IndexTable we can dump .cue from
-    print ittoc.cue()
+    handle = open('morituri.cue', 'w')
+    handle.write(itable.cue())
+    handle.close()
 
     # verify using accuraterip
     print "CDDB disc id", itable.getCDDBDiscId()
@@ -196,7 +178,55 @@ def main(argv):
                 responses[0].cddbDiscId
 
        
-                
+    # FIXME: put accuraterip verification into a separate task/function
+    # and apply here
+    cueImage = image.Image('morituri.cue')
+    verifytask = image.ImageVerifyTask(cueImage)
+    cuetask = image.AccurateRipChecksumTask(cueImage)
+    function(runner, verifytask)
+    function(runner, cuetask)
+
+    response = None # track which response matches, for all tracks
+
+    # loop over tracks
+    for i, checksum in enumerate(cuetask.checksums):
+        status = 'rip NOT accurate'
+
+        confidence = None
+        archecksum = None
+
+        # match against each response's checksum
+        for j, r in enumerate(responses):
+            if "%08x" % checksum == r.checksums[i]:
+                if not response:
+                    response = r
+                else:
+                    assert r == response, \
+                        "checksum %s for %d matches wrong response %d, "\
+                        "checksum %s" % (
+                            checksum, i + 1, j + 1, response.checksums[i])
+                status = 'rip accurate    '
+                archecksum = checksum
+                confidence = response.confidences[i]
+
+        c = "(not found)"
+        ar = "(not in database)"
+        if responses:
+            if not response:
+                print 'ERROR: none of the responses matched.'
+            else:
+                maxConfidence = max(r.confidences[i] for r in responses)
+                     
+                c = "(confidence %3d)" % maxConfidence
+                if confidence is not None:
+                    if confidence < maxConfidence:
+                        c = "(confidence %3d of %3d)" % (confidence, maxConfidence)
+
+                ar = ", AR [%s]" % response.checksums[i]
+        print "Track %2d: %s %s [%08x]%s" % (
+            i + 1, status, c, checksum, ar)
+
+
 
 
 main(sys.argv)

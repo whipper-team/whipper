@@ -30,7 +30,11 @@ class LadyhawkeTestCase(unittest.TestCase):
         for i, offset in enumerate(offsets):
             t[i].index(1, absolute=offset)
 
+        self.failIf(self.table.hasTOC())
+
         self.table.leadout = 210385
+
+        self.failUnless(self.table.hasTOC())
 
     def testCDDB(self):
         self.assertEquals(self.table.getCDDBDiscId(), "c60af50d")

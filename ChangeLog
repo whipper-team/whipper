@@ -1,5 +1,35 @@
 2009-05-05  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/image/table.py:
+	  Add logging.
+	  Add methods to clear a table of files, and to absolutize indexes
+	  as long as the source is the same file, and to set a File on a
+	  given index, adjusting all following indexes that match the
+	  duration, and check if the IndexTable has all information for a TOC.
+	* morituri/image/toc.py:
+	  Add logging.
+	  Use a counter for the source.
+	  Fix up index offset calculation.
+	* morituri/program/cdrdao.py:
+	  Use a real IndexTable as the result, instead of a TocFile.
+	* morituri/image/cue.py:
+	  Use a real IndexTable to store tracks.
+	* morituri/test/test_image_toc.py:
+	  The toc file now has a table which has the tracks.
+	  Fix the tests to adjust for wrong index calculations.
+	* morituri/test/test_image_cue.py:
+	* morituri/test/test_image_image.py:
+	* morituri/image/image.py:
+	  The cue file now has a table which has the tracks.
+	* morituri/test/test_image_table.py:
+	  Add assertions to make sure when the table can serve as a TOC.
+	* examples/readdisc.py:
+	  Adjust for changes.  Fix up to include AccurateRip results.
+	  First time we can do a complete normal rip including verifying
+	  against AccurateRip results!
+
+2009-05-05  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* examples/readdisc.py:
 	* morituri/image/table.py:
 	* morituri/test/test_image_table.py:

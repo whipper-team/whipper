@@ -69,7 +69,7 @@ class OutputParser(object, log.Loggable):
         self._track = None    # which track are we analyzing?
         self._task = taskk
 
-        self.toc = table.IndexTable() # the index table for the TOC
+        self.table = table.IndexTable() # the index table for the TOC
 
     def read(self, bytes):
         self.log('received %d bytes in state %s', len(bytes), self._state)
@@ -95,7 +95,7 @@ class OutputParser(object, log.Loggable):
             # we need both a position reported and an Analyzing line
             # to have been parsed to report progress
             if m and self._track is not None:
-                track = self.toc.tracks[self._track - 1]
+                track = self.table.tracks[self._track - 1]
                 frame = (track.getIndex(1).absolute or 0) \
                     + int(m.group('hh')) * 60 * 75 \
                     + int(m.group('mm')) * 75 \
@@ -146,7 +146,7 @@ class OutputParser(object, log.Loggable):
             self._tracks = int(m.group('track'))
             track = table.ITTrack(self._tracks)
             track.index(1, absolute=int(m.group('start')))
-            self.toc.tracks.append(track)
+            self.table.tracks.append(track)
             self.debug('Found track %d', self._tracks)
 
         m = _LEADOUT_RE.search(line)
@@ -155,7 +155,7 @@ class OutputParser(object, log.Loggable):
             self._state = 'LEADOUT'
             self._frames = int(m.group('start'))
             self.debug('Found leadout at offset %r', self._frames)
-            self.toc.leadout = self._frames
+            self.table.leadout = self._frames
             self.info('%d tracks found', self._tracks)
             return
 
@@ -238,21 +238,21 @@ class ReadIndexTableTask(CDRDAOTask):
     """
     I am a task that reads all indexes of a CD.
 
-    @ivar toc: the .toc file object
-    @type toc: L{toc.TOC}
+    @ivar table: the index table
+    @type table: L{table.IndexTable}
     """
 
     description = "Scanning indexes..."
+    table = None
 
     def __init__(self):
         CDRDAOTask.__init__(self)
         self.parser = OutputParser(self)
-        self.toc = None # result
-        (fd, self._toc) = tempfile.mkstemp(suffix='.morituri')
+        (fd, self._tocfilepath) = tempfile.mkstemp(suffix='.morituri')
         os.close(fd)
-        os.unlink(self._toc)
+        os.unlink(self._tocfilepath)
 
-        self.options = ['read-toc', self._toc]
+        self.options = ['read-toc', self._tocfilepath]
 
     def readbytes(self, bytes):
         self.parser.read(bytes)
@@ -260,13 +260,34 @@ class ReadIndexTableTask(CDRDAOTask):
     def done(self):
         # FIXME: instead of reading only a TOC, output a complete IndexTable
         # by merging the TOC info.
-        self.toc = toc.TocFile(self._toc)
-        self.toc.parse()
-        os.unlink(self._toc)
+        self._tocfile = toc.TocFile(self._tocfilepath)
+        self._tocfile.parse()
+        os.unlink(self._tocfilepath)
+        self.table = self._tocfile.table
+
+        # we know the .toc file represents a single wav rip, so all offsets
+        # are absolute since beginning of disc
+        self.table.absolutize()
+        # we unset relative since there is no real file backing this toc
+        for t in self.table.tracks:
+            for i in t.indexes.values():
+                #i.absolute = i.relative
+                i.relative = None
+
+        # copy the leadout from the parser's table
+        # FIXME: how do we get the length of the last audio track in the case
+        # of a data track ?
+        self.table.leadout = self.parser.table.leadout
+
+        # we should have parsed it from the initial output
+        assert self.table.leadout is not None
 
 class ReadTOCTask(CDRDAOTask):
     """
     I am a task that reads the TOC of a CD, without pregaps.
+
+    @ivar table: the index table that matches the TOC.
+    @type table: L{table.IndexTable}
     """
 
     description = "Reading TOC..."
@@ -287,4 +308,6 @@ class ReadTOCTask(CDRDAOTask):
 
     def done(self):
         os.unlink(self._toc)
-        self.table = self.parser.toc
+        self.table = self.parser.table
+
+        assert self.table.hasTOC(), "This Table Index should be a TOC"

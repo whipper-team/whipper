@@ -73,19 +73,19 @@ class Image(object, log.Loggable):
 
         # CD's have a standard lead-in time of 2 seconds;
         # checksums that use it should add it there
-        offset = self.cue.tracks[0].getIndex(1).relative
+        offset = self.cue.table.tracks[0].getIndex(1).relative
 
         tracks = []
 
-        for i in range(len(self.cue.tracks)):
-            length = self.cue.getTrackLength(self.cue.tracks[i])
+        for i in range(len(self.cue.table.tracks)):
+            length = self.cue.getTrackLength(self.cue.table.tracks[i])
             if length == -1:
                 length = verify.lengths[i + 1]
             t = table.ITTrack(i + 1, audio=True)
             tracks.append(t)
             # FIXME: this probably only works for non-compliant .CUE files
             # where pregap is put at end of previous file
-            t.index(1, absolute=offset, path=self.cue.tracks[i].getIndex(1).path,
+            t.index(1, absolute=offset, path=self.cue.table.tracks[i].getIndex(1).path,
                 relative=0)
 
             offset += length
@@ -107,15 +107,15 @@ class AccurateRipChecksumTask(task.MultiSeparateTask):
         cue = image.cue
         self.checksums = []
 
-        self.debug('Checksumming %d tracks' % len(cue.tracks))
-        for trackIndex, track in enumerate(cue.tracks):
+        self.debug('Checksumming %d tracks' % len(cue.table.tracks))
+        for trackIndex, track in enumerate(cue.table.tracks):
             index = track.indexes[1]
             length = cue.getTrackLength(track)
             self.debug('track %d has length %d' % (trackIndex + 1, length))
 
             path = image.getRealPath(index.path)
             checksumTask = checksum.AccurateRipChecksumTask(path,
-                trackNumber=trackIndex + 1, trackCount=len(cue.tracks),
+                trackNumber=trackIndex + 1, trackCount=len(cue.table.tracks),
                 frameStart=index.relative * checksum.SAMPLES_PER_FRAME,
                 frameLength=length * checksum.SAMPLES_PER_FRAME)
             self.addTask(checksumTask)
@@ -176,7 +176,7 @@ class ImageVerifyTask(task.MultiSeparateTask):
         self._tasks = []
         self.lengths = {}
 
-        for trackIndex, track in enumerate(cue.tracks):
+        for trackIndex, track in enumerate(cue.table.tracks):
             self.debug('verifying track %d', trackIndex + 1)
             index = track.indexes[1]
             length = cue.getTrackLength(track)

@@ -27,7 +27,8 @@ Reading .toc files
 import os
 import re
 
-from morituri.common import common
+from morituri.common import common, log
+from morituri.image import table
 
 # header
 _CATALOG_RE = re.compile(r'^CATALOG "(?P<catalog>\d+)"$')
@@ -64,16 +65,17 @@ _INDEX_RE = re.compile(r"""
     \s(?P<offset>.+)$ # start offset
 """, re.VERBOSE)
 
-class TocFile(object):
+class TocFile(object, log.Loggable):
     def __init__(self, path):
         self._path = path
         self._messages = []
-        self.tracks = []
+        self.table = table.IndexTable()
 
     def parse(self):
         state = 'HEADER'
         currentFile = None
         currentTrack = None
+        counter = 0
         trackNumber = 0
         indexNumber = 0
         currentOffset = 0 # running absolute offset of where each track starts
@@ -100,8 +102,8 @@ class TocFile(object):
 
                 # handle index 1 of previous track, if any
                 if currentTrack:
-                    currentTrack.index(1, currentOffset + pregapLength,
-                        currentFile)
+                    currentTrack.index(1, path=currentFile.path,
+                        relative=currentOffset + pregapLength, counter=counter)
 
                 trackNumber += 1
                 currentOffset += currentLength
@@ -109,13 +111,18 @@ class TocFile(object):
                 indexNumber = 1
                 trackMode = m.group('mode')
 
-                currentTrack = Track(trackNumber)
-                self.tracks.append(currentTrack)
+                # FIXME: track mode
+                currentTrack = table.ITTrack(trackNumber)
+                self.table.tracks.append(currentTrack)
                 continue
 
             # look for SILENCE lines
             m = _SILENCE_RE.search(line)
             if m:
+                if currentFile is not None:
+                    self.debug('SILENCE after FILE, increasing counter')
+                    counter += 1
+                    currentFile = None
                 length = m.group('length')
                 currentLength += common.msfToFrames(length)
 
@@ -125,6 +132,13 @@ class TocFile(object):
                 filePath = m.group('name')
                 start = m.group('start')
                 length = m.group('length')
+                self.debug('FILE %s, start %r, length %r',
+                    filePath, common.msfToFrames(start),
+                    common.msfToFrames(length))
+                if not currentFile or filePath != currentFile.path:
+                    counter += 1
+                    self.debug('track %d, switched to new FILE, increased counter to %d',
+                        trackNumber, counter)
                 currentFile = File(filePath, start, length)
                 #currentOffset += common.msfToFrames(start)
                 currentLength += common.msfToFrames(length)
@@ -138,8 +152,9 @@ class TocFile(object):
                     continue
 
                 length = common.msfToFrames(m.group('length'))
-                currentTrack.index(0, currentOffset, currentFile)
-                currentLength += length
+                currentTrack.index(0, path=currentFile.path,
+                    relative=currentOffset - length, counter=counter)
+                #currentLength += length
                 pregapLength = length
                 
              # look for INDEX lines
@@ -149,11 +164,13 @@ class TocFile(object):
                     self.message(number, 'INDEX without preceding TRACK')
                     indexNumber += 1
                     offset = common.msfToFrames(m.group('offset'))
-                    currentTrack.index(indexNumber, offset, currentFile)
+                    currentTrack.index(indexNumber, path=currentFile.path,
+                        relative=offset, counter=counter)
 
         # handle index 1 of final track, if any
         if currentTrack:
-            currentTrack.index(1, currentOffset + pregapLength, currentFile)
+            currentTrack.index(1, path=currentFile.path,
+                relative=currentOffset + pregapLength, counter=counter)
 
     def message(self, number, message):
         """
@@ -167,16 +184,18 @@ class TocFile(object):
         # returns track length in frames, or -1 if can't be determined and
         # complete file should be assumed
         # FIXME: this assumes a track can only be in one file; is this true ?
-        i = self.tracks.index(track)
-        if i == len(self.tracks) - 1:
+        i = self.table.tracks.index(track)
+        if i == len(self.table.tracks) - 1:
             # last track, so no length known
             return -1
 
-        thisIndex = track._indexes[1] # FIXME: could be more
-        nextIndex = self.tracks[i + 1]._indexes[1] # FIXME: could be 0
+        thisIndex = track.indexes[1] # FIXME: could be more
+        nextIndex = self.table.tracks[i + 1].indexes[1] # FIXME: could be 0
 
-        if thisIndex[1] == nextIndex[1]: # same file
-            return nextIndex[0] - thisIndex[0]
+        c = thisIndex.counter
+        if c is not None and c == nextIndex.counter:
+            # they belong to the same source, so their relative delta is length
+            return nextIndex.relative - thisIndex.relative
 
         # FIXME: more logic
         return -1
@@ -218,15 +237,15 @@ class File:
     """
     def __init__(self, path, start, length):
         self.path = path
-        self.start = start
-        self.length = length
+        #self.start = start
+        #self.length = length
 
     def __repr__(self):
         return '<File "%s">' % (self.path, )
 
 
 # FIXME: add type ? separate AUDIO from others
-class Track:
+class DeleteMeTrack:
     """
     I represent a track in a cue file.
     I have index points.

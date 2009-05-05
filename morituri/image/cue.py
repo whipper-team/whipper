@@ -58,12 +58,18 @@ _INDEX_RE = re.compile(r"""
 
 
 class CueFile(object, log.Loggable):
+    """
+    I represent a .cue file as an object.
+    
+    @type table: L{table.IndexTable}
+    @ivar table: the index table.
+    """
     def __init__(self, path):
         self._path = path
         self._rems = {}
         self._messages = []
-        self.tracks = []
         self.leadout = None
+        self.table = table.IndexTable()
 
     def parse(self):
         state = 'HEADER'
@@ -109,7 +115,7 @@ class CueFile(object, log.Loggable):
 
                 self.debug('found track %d', trackNumber)
                 currentTrack = table.ITTrack(trackNumber)
-                self.tracks.append(currentTrack)
+                self.table.tracks.append(currentTrack)
                 continue
 
             # look for INDEX lines
@@ -145,13 +151,13 @@ class CueFile(object, log.Loggable):
         # returns track length in frames, or -1 if can't be determined and
         # complete file should be assumed
         # FIXME: this assumes a track can only be in one file; is this true ?
-        i = self.tracks.index(track)
-        if i == len(self.tracks) - 1:
+        i = self.table.tracks.index(track)
+        if i == len(self.table.tracks) - 1:
             # last track, so no length known
             return -1
 
         thisIndex = track.indexes[1] # FIXME: could be more
-        nextIndex = self.tracks[i + 1].indexes[1] # FIXME: could be 0
+        nextIndex = self.table.tracks[i + 1].indexes[1] # FIXME: could be 0
 
         c = thisIndex.counter
         if c is not None and c == nextIndex.counter:

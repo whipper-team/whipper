@@ -29,7 +29,9 @@ import struct
 
 import gst
 
-from morituri.common import task, checksum, common
+from morituri.common import task, checksum, common, log
+
+from morituri.test import common as tcommon
 
 class DeleteMeTrack:
     """
@@ -249,12 +251,12 @@ class Index:
         self.counter = counter
 
     def __repr__(self):
-        return '<Index %02d, absolute %r, path %r, relative %r>' % (
-            self.number, self.absolute, self.path, self.relative)
+        return '<Index %02d, absolute %r, path %r, relative %r, counter %r>' % (
+            self.number, self.absolute, self.path, self.relative, self.counter)
 
-class IndexTable:
+class IndexTable(object, log.Loggable):
     """
-    I represent the Table of Contents of a CD.
+    I represent a table of indexes on a CD.
 
     @ivar tracks: tracks on this CD
     @type tracks: list of L{ITTrack}
@@ -417,6 +419,140 @@ class IndexTable:
                     common.framesToMSF(index.relative)))
 
         lines.append("")
+
         return "\n".join(lines) 
 
+    ### methods that modify the table
+    def clearFiles(self):
+        """
+        Clear all file backings.
+        Resets indexes paths and relative offsets.
+        """
+        # FIXME: do a loop over track indexes better, with a pythonic
+        # construct that allows you to do for t, i in ...
+        t = self.tracks[0].number
+        index = self.tracks[0].getFirstIndex()
+        i = index.number
+        # the first cut is the deepest
+        counter = index.counter
 
+        self.debug('clearing path')
+        while True:
+            track = self.tracks[t - 1]
+            index = track.getIndex(i)
+            self.debug('Clearing path on track %d, index %d', t, i)
+            index.path = None
+            index.relative = None
+            try:
+                t, i = self.getNextTrackIndex(t, i)
+            except IndexError:
+                break
+
+
+    def setFile(self, track, index, path, length):
+        """
+        Sets the given file as the source from the given index on.
+        Will loop over all indexes that fall within the given length,
+        to adjust the path.
+
+        Assumes all indexes have an absolute offset and will raise if not.
+        """
+        t = self.tracks[track - 1]
+        i = t.indexes[index]
+        start = i.absolute
+        assert start is not None, "index %r is missing absolute offset" % i
+        end = start + length
+
+        # FIXME: check border conditions here, esp. wrt. toc's off-by-one bug
+        while i.absolute <= end:
+            self.debug('Setting path and relative on track %d, index %d',
+                track, index)
+            i.path = path
+            i.relative = i.absolute - start
+            try:
+                track, index = self.getNextTrackIndex(track, index)
+                t = self.tracks[track - 1]
+                i = t.indexes[index]
+            except IndexError:
+                break
+
+    def absolutize(self):
+        """
+        Calculate absolute offsets on indexes as much as possible.
+        Only possible for as long as tracks draw from the same file.
+        """ 
+        t = self.tracks[0].number
+        index = self.tracks[0].getFirstIndex()
+        i = index.number
+        # the first cut is the deepest
+        counter = index.counter
+
+        self.debug('absolutizing')
+        while True:
+            if index.counter is None:
+                self.debug('Track %d, index %d has no counter', t, i)
+                break
+            if  index.counter != counter:
+                self.debug('Track %d, index %d has a different counter', t, i)
+                break
+            track = self.tracks[t - 1]
+            index = track.getIndex(i)
+            assert track.number == t
+            assert index.number == i
+            self.debug('Setting absolute offset %d on track %d, index %d',
+                index.relative, t, i)
+            index.absolute = index.relative
+            try:
+                t, i = self.getNextTrackIndex(t, i)
+            except IndexError:
+                break
+
+    ### lookups
+    def getNextTrackIndex(self, track, index):
+        """
+        Return the next track and index.
+
+        @param track: track number, 1-based
+
+        @raises IndexError: on last index
+
+        @rtype: tuple of (int, int)
+        """
+        t = self.tracks[track - 1]
+        indexes = t.indexes.keys()
+        position = indexes.index(index)
+
+        if position + 1 < len(indexes):
+            return track, indexes[position + 1]
+
+        track += 1
+        if track > len(self.tracks):
+            raise IndexError, "No index beyond track %d, index %d" % (
+                track - 1, index)
+
+        t = self.tracks[track - 1]
+        indexes = t.indexes.keys()
+
+        return track, indexes[0]
+
+
+    # various tests for types of IndexTable
+    def hasTOC(self):
+        """
+        Check if the Index Table has a complete TOC.
+        a TOC is a list of all tracks and their Index 01, with absolute
+        offsets, as well as the leadout.
+        """
+        if not self.leadout:
+            self.debug('no leadout, no TOC')
+            return False
+
+        for t in self.tracks:
+            if 1 not in t.indexes.keys():
+                self.debug('no index 1, no TOC')
+                return False
+            if t.indexes[1].absolute is None:
+                self.debug('no absolute index 1, no TOC')
+                return False
+
+        return True

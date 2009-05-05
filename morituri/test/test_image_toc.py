@@ -11,24 +11,71 @@ class CureTestCase(unittest.TestCase):
         self.toc = toc.TocFile(os.path.join(os.path.dirname(__file__),
             'cure.toc'))
         self.toc.parse()
-        self.assertEquals(len(self.toc.tracks), 13)
+        self.assertEquals(len(self.toc.table.tracks), 13)
 
     def testGetTrackLength(self):
-        t = self.toc.tracks[0]
-        self.assertEquals(self.toc.getTrackLength(t), -1)
+        t = self.toc.table.tracks[0]
+        # first track has known length because the .toc is a single file
+        self.assertEquals(self.toc.getTrackLength(t), 28324)
         # last track has unknown length
-        t = self.toc.tracks[-1]
+        t = self.toc.table.tracks[-1]
         self.assertEquals(self.toc.getTrackLength(t), -1)
 
     def testIndexes(self):
         # track 2, index 0 is at 06:16:45
         # FIXME: cdrdao seems to get length of FILE 1 frame too many,
         # and START value one frame less
-        t = self.toc.tracks[1]
-        (offset, file) = t.getIndex(0)
-        self.assertEquals(offset, 28245)
-        (offset, file) = t.getIndex(1)
-        self.assertEquals(offset, 28324)
+        t = self.toc.table.tracks[1]
+        self.assertEquals(t.getIndex(0).relative, 28245)
+        self.assertEquals(t.getIndex(1).relative, 28324)
+
+    def _getIndex(self, t, i):
+        track = self.toc.table.tracks[t - 1]
+        return track.getIndex(i)
+
+    def _assertAbsolute(self, t, i, value):
+        index = self._getIndex(t, i)
+        self.assertEquals(index.absolute, value)
+
+    def _assertPath(self, t, i, value):
+        index = self._getIndex(t, i)
+        self.assertEquals(index.path, value)
+
+    def _assertRelative(self, t, i, value):
+        index = self._getIndex(t, i)
+        self.assertEquals(index.relative, value)
+
+    def testSetFile(self):
+        self._assertAbsolute(1, 1, None)
+        self._assertAbsolute(2, 0, None)
+        self._assertAbsolute(2, 1, None)
+        self._assertPath(1, 1, "data.wav")
+
+        def dump():
+            for t in self.toc.table.tracks:
+                print t
+                print t.indexes.values()
+
+        self.toc.table.absolutize()
+        self.toc.table.clearFiles()
+
+        self._assertAbsolute(1, 1, 0)
+        self._assertAbsolute(2, 0, 28166)
+        self._assertAbsolute(2, 1, 28324)
+        self._assertAbsolute(3, 1, 46110)
+        self._assertAbsolute(4, 1, 66767)
+        self._assertPath(1, 1, None)
+        self._assertRelative(1, 1, None)
+
+        # adding a file to the table should fix up to including 2, 0
+        self.toc.table.setFile(1, 1, 'track01.wav', 28245)
+        self._assertPath(1, 1, 'track01.wav')
+        self._assertRelative(1, 1, 0)
+        self._assertPath(2, 0, 'track01.wav')
+        self._assertAbsolute(2, 0, 28166)
+
+        self._assertPath(2, 1, None)
+        self._assertRelative(2, 1, None)
 
 # Bloc Party - Silent Alarm has a Hidden Track One Audio
 class BlocTestCase(unittest.TestCase):
@@ -36,18 +83,17 @@ class BlocTestCase(unittest.TestCase):
         self.toc = toc.TocFile(os.path.join(os.path.dirname(__file__),
             'bloc.toc'))
         self.toc.parse()
-        self.assertEquals(len(self.toc.tracks), 13)
+        self.assertEquals(len(self.toc.table.tracks), 13)
 
     def testGetTrackLength(self):
-        t = self.toc.tracks[0]
-        self.assertEquals(self.toc.getTrackLength(t), -1)
+        t = self.toc.table.tracks[0]
+        # first track has known length because the .toc is a single file
+        self.assertEquals(self.toc.getTrackLength(t), 50089)
         # last track has unknown length
-        t = self.toc.tracks[-1]
+        t = self.toc.table.tracks[-1]
         self.assertEquals(self.toc.getTrackLength(t), -1)
 
     def testIndexes(self):
-        t = self.toc.tracks[0]
-        (offset, file) = t.getIndex(0)
-        self.assertEquals(offset, 0)
-        (offset, file) = t.getIndex(1)
-        self.assertEquals(offset, 15220)
+        t = self.toc.table.tracks[0]
+        self.assertEquals(t.getIndex(0).relative, 0)
+        self.assertEquals(t.getIndex(1).relative, 15220)
