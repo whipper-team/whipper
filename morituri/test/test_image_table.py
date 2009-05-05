@@ -39,6 +39,37 @@ class LadyhawkeTestCase(unittest.TestCase):
     def testCDDB(self):
         self.assertEquals(self.table.getCDDBDiscId(), "c60af50d")
 
+    def testMusicBrainz(self):
+        # FIXME: doesn't seem to be the correct id, so try the example on this
+        # track
+        #print self.table.getMusicBrainzDiscId()
+        pass
+
     def testAccurateRip(self):
         self.assertEquals(self.table.getAccurateRipIds(), (
             "0013bd5a", "00b8d489"))
+
+class MusicBrainzTestCase(unittest.TestCase):
+    # example taken from http://musicbrainz.org/doc/DiscIDCalculation
+    # disc is Ettella Diamant
+
+    def setUp(self):
+        self.table = table.IndexTable()
+
+        for i in range(6):
+            self.table.tracks.append(table.ITTrack(i + 1, audio=True))
+
+        offsets = [0, 15213, 32164, 46442, 63264, 80339]
+        t = self.table.tracks
+        for i, offset in enumerate(offsets):
+            t[i].index(1, absolute=offset)
+
+        self.failIf(self.table.hasTOC())
+
+        self.table.leadout = 95312
+
+        self.failUnless(self.table.hasTOC())
+
+    def testMusicBrainz(self):
+        self.assertEquals(self.table.getMusicBrainzDiscId(),
+            '49HHV7Eb8UKF3aQiNmu1GR8vKTY-')

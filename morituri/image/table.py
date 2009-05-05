@@ -349,6 +349,55 @@ class IndexTable(object, log.Loggable):
         
         return "%08x" % value
 
+    def getMusicBrainzDiscId(self):
+        """
+        Calculate the MusicBrainz disc ID.
+
+        @rtype:   str
+        @returns: the 28-character base64-encoded disc ID
+        """
+        # MusicBrainz disc id does not take into account data tracks
+        import sha
+        import base64
+
+        sha1 = sha.new()
+
+        # number of first track
+        sha1.update("%02X" % 1)
+
+        # number of last track
+        sha1.update("%02X" % self.getAudioTracks())
+
+        # treat leadout offset as track 0 offset
+        sha1.update("%08X" % (150 + self.leadout))
+
+        # offsets of tracks
+        for i in range(1, 100):
+            try:
+                offset = self.tracks[i - 1].getIndex(1).absolute + 150
+            except IndexError:
+                #print 'track', i - 1, '0 offset'
+                offset = 0
+            sha1.update("%08X" % offset)
+
+        digest = sha1.digest()
+        assert len(digest) == 20, \
+            "digest should be 20 chars, not %d" % len(digest)
+
+        # The RFC822 spec uses +, /, and = characters, all of which are special
+        # HTTP/URL characters. To avoid the problems with dealing with that, I
+        # (Rob) used ., _, and -
+
+        # base64 altchars specify replacements for + and /
+        result = base64.b64encode(digest, '._')
+
+        # now replace =
+        result = "-".join(result.split("="))
+        assert len(result) == 28, \
+            "Result should be 28 characters, not %d" % len(result)
+
+        return result
+
     def getAccurateRipIds(self):
         """
         Calculate the two AccurateRip ID's.

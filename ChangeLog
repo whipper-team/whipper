@@ -1,6 +1,14 @@
 2009-05-05  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/image/table.py:
+	* morituri/test/test_image_table.py:
+	  Implement MusicBrainz disc id.  Works for audio-only discs,
+	  have to figure out why it fails for an Enhanced CD like the
+	  Ladyhawke one.
+
+2009-05-05  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/image/table.py:
 	  Add logging.
 	  Add methods to clear a table of files, and to absolutize indexes
 	  as long as the source is the same file, and to set a File on a
