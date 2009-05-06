@@ -220,7 +220,8 @@ def main(argv):
     discName = 'morituri'
     if metadata:
         discName = '%s - %s' % (metadata.artist, metadata.title)
-    handle = open('%s.cue' % discName, 'w')
+    cuePath = '%s.cue' % discName
+    handle = open(cuePath, 'w')
     handle.write(itable.cue())
     handle.close()
 
@@ -253,7 +254,7 @@ def main(argv):
        
     # FIXME: put accuraterip verification into a separate task/function
     # and apply here
-    cueImage = image.Image('morituri.cue')
+    cueImage = image.Image(cuePath)
     verifytask = image.ImageVerifyTask(cueImage)
     cuetask = image.AccurateRipChecksumTask(cueImage)
     function(runner, verifytask)
