@@ -1,5 +1,11 @@
 2009-05-06  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/image/table.py:
+	* morituri/image/toc.py:
+	  Delete old code.
+
+2009-05-06  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/image/toc.py:
 	* morituri/test/test_image_toc.py:
 	* morituri/test/test_program_cdrdao.py:
