@@ -56,27 +56,91 @@ def gtkmain(runner, taskk):
 def climain(runner, taskk):
     runner.run(taskk)
 
+class TrackMetadata(object):
+    artist = None
+    title = None
 
-def arcs(runner, function, table, track, offset):
-    # rips the track with the given offset, return the arcs checksum
-    print 'ripping track %r with offset %d' % (track, offset)
+class DiscMetadata(object):
+    artist = None
+    title = None
+    various = False
+    tracks = None
 
-    fd, path = tempfile.mkstemp(suffix='.track%02d.offset%d.morituri.wav' % (
-        track, offset))
-    os.close(fd)
+    def __init__(self):
+        self.tracks = []
 
-    track = table.tracks[track - 1]
-    t = cdparanoia.ReadTrackTask(path, table, track.start, track.end, offset)
-    t.description = 'Ripping with offset %d' % offset
-    function(runner, t)
+def musicbrainz(discid):
+    metadata = DiscMetadata()
 
-    t = checksum.AccurateRipChecksumTask(path, trackNumber=track,
-        trackCount=len(table.tracks))
-    function(runner, t)
-    
-    # os.unlink(path)
-    return "%08x" % t.checksum
- 
+    import musicbrainz2.disc as mbdisc
+    import musicbrainz2.webservice as mbws
+
+
+    # Setup a Query object.
+    service = mbws.WebService()
+    query = mbws.Query(service)
+
+
+    # Query for all discs matching the given DiscID.
+    try:
+        filter = mbws.ReleaseFilter(discId=discid)
+        results = query.getReleases(filter)
+    except mbws.WebServiceError, e:
+        print "Error:", e
+        return
+
+
+    # No disc matching this DiscID has been found.
+    if len(results) == 0:
+        print "Disc is not yet in the MusicBrainz database."
+        print "Consider adding it via", mbdisc.getSubmissionUrl(disc)
+        return
+
+
+    # Display the returned results to the user.
+    print 'Matching releases:'
+
+    for result in results:
+        release = result.release
+        print 'Artist  :', release.artist.name
+        print 'Title   :', release.title
+        print
+
+
+    # Select one of the returned releases. We just pick the first one.
+    selectedRelease = results[0].release
+
+
+    # The returned release object only contains title and artist, but no tracks.
+    # Query the web service once again to get all data we need.
+    try:
+        inc = mbws.ReleaseIncludes(artist=True, tracks=True, releaseEvents=True)
+        release = query.getReleaseById(selectedRelease.getId(), inc)
+    except mbws.WebServiceError, e:
+        print "Error:", e
+        sys.exit(2)
+
+
+    isSingleArtist = release.isSingleArtistRelease()
+    metadata.various = not isSingleArtist
+    metadata.title = release.title
+    metadata.artist = release.artist.getUniqueName()
+
+    print "%s - %s" % (release.artist.getUniqueName(), release.title)
+
+    i = 1
+    for t in release.tracks:
+        track = TrackMetadata()
+        if isSingleArtist:
+            track.artist = metadata.artist
+            track.title = t.title
+        else:
+            track.artist = t.artist.name
+            track.title = t.title
+        metadata.tracks.append(track)
+
+    return metadata
+
 def main(argv):
     parser = optparse.OptionParser()
 
@@ -128,8 +192,13 @@ def main(argv):
 
     lastTrackStart = 0
 
+    metadata = musicbrainz(itable.getMusicBrainzDiscId())
+
     for i, track in enumerate(itable.tracks):
         path = 'track%02d.wav' % (i + 1)
+        if metadata:
+            path = '%s - %s.wav' % (metadata.tracks[i].artist,
+                metadata.tracks[i].title)
         # FIXME: optionally allow overriding reripping
         if not os.path.exists(path):
             print 'Ripping track %d' % (i + 1)
@@ -148,12 +217,16 @@ def main(argv):
     for t in itable.tracks:
         print t, t.indexes.values()
 
-    handle = open('morituri.cue', 'w')
+    discName = 'morituri'
+    if metadata:
+        discName = '%s - %s' % (metadata.artist, metadata.title)
+    handle = open('%s.cue' % discName, 'w')
     handle.write(itable.cue())
     handle.close()
 
     # verify using accuraterip
     print "CDDB disc id", itable.getCDDBDiscId()
+    print "MusicBrainz disc id", itable.getMusicBrainzDiscId()
     url = itable.getAccurateRipURL()
     print "AccurateRip URL", url
 

@@ -1,5 +1,10 @@
 2009-05-06  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* examples/readdisc.py:
+	  Add musicbrainz code for disc naming.
+
+2009-05-06  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/image/table.py:
 	* morituri/image/toc.py:
 	  Delete old code.
