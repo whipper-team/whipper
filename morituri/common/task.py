@@ -32,6 +32,8 @@ class Task(object, log.Loggable):
     I can be listened to for starting, stopping, and progress updates.
 
     @ivar  description: what am I doing
+    @ivar  exception:   set if an exception happened during the task
+                        execution.
     """
     description = 'I am doing something.'
 
@@ -39,6 +41,7 @@ class Task(object, log.Loggable):
     increment = 0.01
     running = False
     runner = None
+    exception = None
 
     _listeners = None
 
@@ -93,9 +96,9 @@ class Task(object, log.Loggable):
         self._listeners.append(listener)
 
     def _notifyListeners(self, methodName, *args, **kwargs):
-            if self._listeners:
-                for l in self._listeners:
-                    getattr(l, methodName)(self, *args, **kwargs)
+        if self._listeners:
+            for l in self._listeners:
+                getattr(l, methodName)(self, *args, **kwargs)
 
 # this is a Dummy task that can be used if this works at all
 class DummyTask(Task):
@@ -157,6 +160,11 @@ class BaseMultiTask(Task):
         pass
 
     def stopped(self, task):
+        if task.exception:
+            self.exception = task.exception
+            self.stop()
+            return
+
         if not self.__tasks:
             self.stop()
             return
@@ -282,6 +290,8 @@ class SyncRunner(TaskRunner):
         # otherwise the task might complete before we are in it
         gobject.timeout_add(0L, self._task.start, self)
         self._loop.run()
+        if self._task.exception:
+            raise self._task.exception
 
     def schedule(self, delta, callable, *args, **kwargs):
         def c():
@@ -320,6 +330,7 @@ class SyncRunner(TaskRunner):
             self._report()
 
     def stopped(self, task):
+        print 'stopped'
         self.progressed(task, 1.0)
         self._loop.quit()
 

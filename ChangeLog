@@ -1,5 +1,14 @@
 2009-05-07  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/task.py:
+	  Add an exception ivar for tasks to set an exception on while
+	  running.  Make SyncRunner raise it during done()
+	* morituri/program/cdparanoia.py:
+	  Set an exception if the ripped file doesn't match the expected size
+	  (for example when disc is full)
+
+2009-05-07  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/common.py:
 	  Set the object when we don't persist.
 	* examples/readdisc.py:

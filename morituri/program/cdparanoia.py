@@ -30,6 +30,22 @@ import tempfile
 from morituri.common import task, log, common, checksum
 from morituri.extern import asyncsub
 
+class FileSizeError(Exception):
+    """
+    The given path does not have the expected size.
+    """
+    def __init__(self, path):
+        self.args = (path, )
+        self.path = path
+
+class ReturnCodeError(Exception):
+    """
+    The program had a non-zero return code.
+    """
+    def __init__(self, returncode):
+        self.args = (returncode, )
+        self.returncode = returncode
+
 _PROGRESS_RE = re.compile(r"""
     ^\#\#: (?P<code>.+)\s      # function code
     \[(?P<function>.*)\]\s@\s     # function name
@@ -181,17 +197,20 @@ class ReadTrackTask(task.Task):
         expected = offsetLength * checksum.BYTES_PER_FRAME + 44
         if size != expected:
             # FIXME: handle errors better
-            print 'ERROR: file size %d did not match expected size %d' % (
+            self.warning('file size %d did not match expected size %d',
                 size, expected)
             if (size - expected) % checksum.BYTES_PER_FRAME == 0:
                 print 'ERROR: %d frames difference' % (
                     (size - expected) / checksum.BYTES_PER_FRAME)
 
-        if self._popen.returncode != 0:
+            self.exception = FileSizeError(self.path)
+
+        if not self.exception and self._popen.returncode != 0:
             if self._errors:
                 print "\n".join(self._errors)
             else:
-                print 'ERROR: exit code %r' % self._popen.returncode
+                self.warning('exit code %r', self._popen.returncode)
+                self.exception = ReturnCodeError(self._popen.returncode)
             
         self.stop()
         return
@@ -240,14 +259,18 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         self.checksum = None
 
     def stop(self):
-        c1 = self.tasks[1].checksum
-        c2 = self.tasks[3].checksum
-        if c1 == c2:
-            self.info('Checksums match, %08x' % c1)
-            self.checksum = checksum
-            shutil.move(self._tmppath, self.path)
-        else:
-            print 'ERROR: read and verify failed'
-            self.checksum = None
+        if not self.exception:
+            c1 = self.tasks[1].checksum
+            c2 = self.tasks[3].checksum
+            if c1 == c2:
+                self.info('Checksums match, %08x' % c1)
+                try:
+                    shutil.move(self._tmppath, self.path)
+                    self.checksum = checksum
+                except Exception, e:
+                    self._exception = e
+            else:
+                print 'ERROR: read and verify failed'
+                self.checksum = None
 
         task.MultiSeparateTask.stop(self)
