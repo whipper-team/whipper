@@ -1,5 +1,11 @@
 2009-05-07  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/image/table.py:
+	* morituri/test/test_image_table.py:
+	  Correctly calculate MusicBrainz disc id for enhanced cd's.
+
+2009-05-07  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/task.py:
 	  Log on runners too.
 	* morituri/program/cdrdao.py:

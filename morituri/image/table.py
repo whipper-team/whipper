@@ -147,6 +147,13 @@ class IndexTable(object, log.Loggable):
         """
         return len([t for t in self.tracks if t.audio])
 
+    def hasDataTracks(self):
+        """
+        @returns: whether this disc contains data tracks
+        """
+        return len([t for t in self.tracks if not t.audio]) > 0
+
+
     def _cddbSum(self, i):
         ret = 0
         while i > 0:
@@ -202,8 +209,16 @@ class IndexTable(object, log.Loggable):
         # number of last track
         sha1.update("%02X" % self.getAudioTracks())
 
+        leadout = self.leadout
+        # if the disc is multi-session, last track is the data track,
+        # and we should subtract 11250 + 150 from the last track's offset
+        # for the leadout
+        if self.hasDataTracks():
+            assert not self.tracks[-1].audio
+            leadout = self.tracks[-1].getIndex(1).absolute - 11250 - 150
+
         # treat leadout offset as track 0 offset
-        sha1.update("%08X" % (150 + self.leadout))
+        sha1.update("%08X" % (150 + leadout))
 
         # offsets of tracks
         for i in range(1, 100):

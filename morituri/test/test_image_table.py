@@ -40,10 +40,9 @@ class LadyhawkeTestCase(unittest.TestCase):
         self.assertEquals(self.table.getCDDBDiscId(), "c60af50d")
 
     def testMusicBrainz(self):
-        # FIXME: doesn't seem to be the correct id, so try the example on this
         # track
-        #print self.table.getMusicBrainzDiscId()
-        pass
+        self.assertEquals(self.table.getMusicBrainzDiscId(),
+            "qrJJkrLvXz5Nkvym3oZM4KI9U4A-")
 
     def testAccurateRip(self):
         self.assertEquals(self.table.getAccurateRipIds(), (
