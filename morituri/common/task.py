@@ -216,11 +216,12 @@ class MultiCombinedTask(BaseMultiTask):
         self.setProgress(float(self._stopped) / len(self.tasks))
         BaseMultiTask.stopped(self, task)
 
-class TaskRunner(object):
+class TaskRunner(object, log.Loggable):
     """
     I am a base class for task runners.
     Task runners should be reusable.
     """
+    logCategory = 'TaskRunner'
 
     def run(self, task):
         """
@@ -279,6 +280,7 @@ class SyncRunner(TaskRunner):
         self._longest = 0 # longest string shown; for clearing
 
     def run(self, task, verbose=None, skip=False):
+        self.debug('run task %r', task)
         self._task = task
         self._verboseRun = self._verbose
         if verbose is not None:
@@ -291,7 +293,9 @@ class SyncRunner(TaskRunner):
         # otherwise the task might complete before we are in it
         gobject.timeout_add(0L, self._task.start, self)
         self._loop.run()
+        self.debug('done running task %r', task)
         if self._task.exception:
+            self.debug('raising exception')
             raise self._task.exception
 
     def schedule(self, delta, callable, *args, **kwargs):

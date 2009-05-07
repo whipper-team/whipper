@@ -23,12 +23,21 @@
 
 import re
 import os
+import signal
 import subprocess
 import tempfile
 
 from morituri.common import task, log
 from morituri.image import toc, table
 from morituri.extern import asyncsub
+
+class ProgramError(Exception):
+    """
+    The program had a fatal error.
+    """
+    def __init__(self, message):
+        self.args = (message, )
+        self.message = message
 
 states = ['START', 'TRACK', 'LEADOUT', 'DONE']
 
@@ -118,7 +127,9 @@ class OutputParser(object, log.Loggable):
             for line in lines:
                 self.log('Parsing %s', line)
                 if line.startswith('ERROR:'):
-                    self._errors.append(line)
+                    self._task.exception = ProgramError(line)
+                    self._task.abort()
+                    return
 
             self._parse(lines)
             self._lines.extend(lines)
@@ -191,6 +202,7 @@ class CDRDAOTask(task.Task):
                   bufsize=bufsize,
                   stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                   stderr=subprocess.PIPE, close_fds=True)
+        self.debug('Started cdrdao with pid %d', self._popen.pid)
 
         self.runner.schedule(1.0, self._read, runner)
 
@@ -220,6 +232,11 @@ class CDRDAOTask(task.Task):
 
             self.stop()
             return
+
+    def abort(self):
+        self.debug('Aborting, sending SIGTERM to %d', self._popen.pid)
+        os.kill(self._popen.pid, signal.SIGTERM)
+        self.stop()
 
     def readbytes(self, bytes):
         """

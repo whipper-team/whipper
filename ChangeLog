@@ -1,5 +1,12 @@
 2009-05-07  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/task.py:
+	  Log on runners too.
+	* morituri/program/cdrdao.py:
+	  Abort if output has ERROR by killing and setting an exception.
+
+2009-05-07  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* examples/readdisc.py:
 	  filter out slashes when deciding on file names.
 
