@@ -131,6 +131,7 @@ class AudioLengthTask(task.Task):
     @ivar  length: length of the decoded audio file, in audio frames.
     """
 
+    description = 'Getting length of audio track'
     length = None
 
     def __init__(self, path):

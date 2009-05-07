@@ -1,6 +1,12 @@
 2009-05-07  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/task.py:
+	* morituri/image/image.py:
+	  Remove prints.  Describe tasks.
+
+2009-05-07  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/task.py:
 	  Add an exception ivar for tasks to set an exception on while
 	  running.  Make SyncRunner raise it during done()
 	* morituri/program/cdparanoia.py:

@@ -178,6 +178,7 @@ class MultiSeparateTask(BaseMultiTask):
     I perform multiple tasks.
     I track progress of each individual task, going back to 0 for each task.
     """
+    description = 'Doing various tasks separately'
 
     def start(self, runner):
         self.debug('MultiSeparateTask.start()')
@@ -194,7 +195,6 @@ class MultiSeparateTask(BaseMultiTask):
         self.setProgress(value)
 
     def described(self, description):
-        print 'description'
         self.setDescription("%s (%d of %d) ..." % (
             description, self._task, len(self.tasks)))
 
@@ -204,6 +204,7 @@ class MultiCombinedTask(BaseMultiTask):
     I track progress as a combined progress on all tasks on task granularity.
     """
 
+    description = 'Doing various tasks combined'
     _stopped = 0
        
     ### listener methods
@@ -330,7 +331,6 @@ class SyncRunner(TaskRunner):
             self._report()
 
     def stopped(self, task):
-        print 'stopped'
         self.progressed(task, 1.0)
         self._loop.quit()
 
