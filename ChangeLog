@@ -1,3 +1,10 @@
+2009-05-07  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/common.py:
+	  Set the object when we don't persist.
+	* examples/readdisc.py:
+	  Small fixes.
+
 2009-05-06  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* examples/readdisc.py:

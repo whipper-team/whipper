@@ -97,6 +97,10 @@ class Persister(object):
         if object and object == self.object:
             return
 
+        # store the object on ourselves if not None
+        if object is not None:
+            self.object = object
+
         # don't pickle if there is no path
         if not self._path:
             return

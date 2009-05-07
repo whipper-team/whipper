@@ -93,7 +93,7 @@ def musicbrainz(discid):
     # No disc matching this DiscID has been found.
     if len(results) == 0:
         print "Disc is not yet in the MusicBrainz database."
-        print "Consider adding it via", mbdisc.getSubmissionUrl(disc)
+        print "Consider adding it."
         return
 
 
@@ -201,7 +201,7 @@ def main(argv):
                 metadata.tracks[i].title)
         # FIXME: optionally allow overriding reripping
         if not os.path.exists(path):
-            print 'Ripping track %d' % (i + 1)
+            print 'Ripping track %d: %s' % (i + 1, os.path.basename(path))
             t = cdparanoia.ReadVerifyTrackTask(path, ittoc, ittoc.getTrackStart(i + 1),
                 ittoc.getTrackEnd(i + 1),
                 offset=int(options.offset))
