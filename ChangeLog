@@ -1,5 +1,10 @@
 2009-05-07  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* examples/readdisc.py:
+	  filter out slashes when deciding on file names.
+
+2009-05-07  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/task.py:
 	* morituri/image/image.py:
 	  Remove prints.  Describe tasks.

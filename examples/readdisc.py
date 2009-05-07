@@ -69,6 +69,9 @@ class DiscMetadata(object):
     def __init__(self):
         self.tracks = []
 
+def filterForPath(text):
+    return "-".join(text.split("/"))
+
 def musicbrainz(discid):
     metadata = DiscMetadata()
 
@@ -197,8 +200,8 @@ def main(argv):
     for i, track in enumerate(itable.tracks):
         path = 'track%02d.wav' % (i + 1)
         if metadata:
-            path = '%s - %s.wav' % (metadata.tracks[i].artist,
-                metadata.tracks[i].title)
+            path = filterForPath('%s - %s.wav' % (metadata.tracks[i].artist,
+                metadata.tracks[i].title))
         # FIXME: optionally allow overriding reripping
         if not os.path.exists(path):
             print 'Ripping track %d: %s' % (i + 1, os.path.basename(path))
@@ -213,13 +216,9 @@ def main(argv):
         # overlay this rip onto the IndexTable
         itable.setFile(i + 1, 1, path, ittoc.getTrackLength(i + 1))
 
-    print itable.tracks
-    for t in itable.tracks:
-        print t, t.indexes.values()
-
     discName = 'morituri'
     if metadata:
-        discName = '%s - %s' % (metadata.artist, metadata.title)
+        discName = filterForPath('%s - %s' % (metadata.artist, metadata.title))
     cuePath = '%s.cue' % discName
     handle = open(cuePath, 'w')
     handle.write(itable.cue())
