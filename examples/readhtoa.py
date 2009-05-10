@@ -46,7 +46,7 @@ def main():
     runner.run(t)
 
     # now check if we have a hidden track one audio
-    track = t.toc.tracks[0]
+    track = t.table.tracks[0]
     try:
         index = track.getIndex(0)
     except KeyError:
@@ -58,7 +58,7 @@ def main():
     print 'Found Hidden Track One Audio from frame %d to %d' % (start, stop)
         
     # rip it
-    riptask = cdparanoia.ReadVerifyTrackTask('track00.wav', toc,
+    riptask = cdparanoia.ReadVerifyTrackTask('track00.wav', table,
         start, stop - 1,
         offset=int(options.offset))
     runner.run(riptask)

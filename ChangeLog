@@ -1,3 +1,8 @@
+2009-05-10  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* examples/readhtoa.py:
+	  Fix example.
+
 2009-05-07  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/image/table.py:
