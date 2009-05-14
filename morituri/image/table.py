@@ -31,20 +31,41 @@ import gst
 
 from morituri.common import task, checksum, common, log
 
+CDTEXT_FIELDS = [
+    'ARRANGER',
+    'COMPOSER',
+    'DISCID',
+    'GENRE',
+    'MESSAGE',
+    'ISRC',
+    'PERFORMER',
+    'SIZE_INFO',
+    'SONGWRITER',
+    'TITLE',
+    'TOC_INFO',
+    'TOC_INFO2',
+    'UPC_EAN',
+]
+
+
 class ITTrack:
     """
     I represent a track entry in an IndexTable.
 
-    @ivar number: track number (1-based)
-    @type number: int
-    @ivar audio:  whether the track is audio
-    @type audio:  bool
+    @ivar number:  track number (1-based)
+    @type number:  int
+    @ivar audio:   whether the track is audio
+    @type audio:   bool
     @type indexes: dict of number -> L{Index}
+    @ivar isrc:    ISRC code (12 alphanumeric characters)
+    @type isrc:    str
     """
 
     number = None
     audio = None
     indexes = None
+    isrc = None
+    cdtext = None
 
     def __repr__(self):
         return '<Track %02d>' % self.number
@@ -53,6 +74,7 @@ class ITTrack:
         self.number = number
         self.audio = audio
         self.indexes = {}
+        self.cdtext = {}
 
     def index(self, number, absolute=None, path=None, relative=None, counter=None):
         i = Index(number, absolute, path, relative, counter)
@@ -94,10 +116,13 @@ class IndexTable(object, log.Loggable):
 
     @ivar tracks: tracks on this CD
     @type tracks: list of L{ITTrack}
+    @ivar catalog: catalog number
+    @type catalog: str
     """
 
     tracks = None # list of ITTrack
     leadout = None # offset where the leadout starts
+    catalog = None # catalog number; FIXME: is this UPC ?
 
     def __init__(self, tracks=None):
         if not tracks:
@@ -298,6 +323,11 @@ class IndexTable(object, log.Loggable):
         """
         lines = []
 
+        # header
+        lines.append('REM COMMENT "Morituri"')
+        if self.catalog:
+            lines.append("CATALOG %s" % self.catalog)
+
         # add the first FILE line
         path = self.tracks[0].getFirstIndex().path
         currentPath = path
@@ -305,6 +335,8 @@ class IndexTable(object, log.Loggable):
 
         for i, track in enumerate(self.tracks):
             lines.append("  TRACK %02d %s" % (i + 1, 'AUDIO'))
+            if track.isrc is not None:
+                lines.append("    ISRC %s" % track.isrc)
 
             indexes = track.indexes.keys()
             indexes.sort()

@@ -1,3 +1,14 @@
+2009-05-14  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/image/table.py:
+	* morituri/image/toc.py:
+	  Add parsing of ISRC codes.
+	  Add first part of CDTEXT stuff.
+	* morituri/test/test_image_toc.py:
+	  Add test for converting .toc to .cue
+	* morituri/test/cure.cue
+	  Add reference for converted cure.toc
+
 2009-05-10  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* examples/readhtoa.py:

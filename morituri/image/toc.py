@@ -30,6 +30,9 @@ import re
 from morituri.common import common, log
 from morituri.image import table
 
+# shared
+_CDTEXT_CANDIDATE_RE = re.compile(r'(?P<key>s+) "(?P<value>.+")')
+
 # header
 _CATALOG_RE = re.compile(r'^CATALOG "(?P<catalog>\d+)"$')
 
@@ -38,6 +41,8 @@ _TRACK_RE = re.compile(r"""
     ^TRACK            # TRACK
     \s(?P<mode>.+)$   # mode (AUDIO, MODEx/2xxx, ...)
 """, re.VERBOSE)
+
+_ISRC_RE = re.compile(r'^ISRC "(?P<isrc>\w+)"$')
 
 # a HTOA is marked in the cdrdao's TOC as SILENCE
 _SILENCE_RE = re.compile(r"""
@@ -91,9 +96,18 @@ class TocFile(object, log.Loggable):
         for number, line in enumerate(handle.readlines()):
             line = line.rstrip()
 
+            # look for CDTEXT stuff in either header or tracks
+            m = _CDTEXT_CANDIDATE_RE.search(line)
+            if m:
+                key = m.group('key')
+                value = m.group('value')
+                # print key, value
+
+            # look for header elements
             m = _CATALOG_RE.search(line)
             if m:
-                catalog = m.group('catalog')
+                self.table.catalog = m.group('catalog')
+                self.debug("Found catalog number %s", self.table.catalog)
 
             # look for TRACK lines
             m = _TRACK_RE.search(line)
@@ -119,6 +133,13 @@ class TocFile(object, log.Loggable):
                 currentTrack = table.ITTrack(trackNumber)
                 self.table.tracks.append(currentTrack)
                 continue
+
+            # look for ISRC lines
+            m = _ISRC_RE.search(line)
+            if m:
+                isrc = m.group('isrc')
+                currentTrack.isrc = isrc
+                self.debug('Found ISRC code %s', isrc)
 
             # look for SILENCE lines
             m = _SILENCE_RE.search(line)

@@ -78,6 +78,11 @@ class CureTestCase(unittest.TestCase):
         self._assertPath(2, 1, None)
         self._assertRelative(2, 1, None)
 
+    def testConvertCue(self):
+        cue = self.toc.table.cue()
+        ref = open(os.path.join(os.path.dirname(__file__), 'cure.cue')).read()
+        self.assertEquals(cue, ref)
+
 # Bloc Party - Silent Alarm has a Hidden Track One Audio
 class BlocTestCase(unittest.TestCase):
     def setUp(self):
