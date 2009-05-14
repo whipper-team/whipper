@@ -31,6 +31,8 @@ import gst
 
 from morituri.common import task, checksum, common, log
 
+# FIXME: taken from libcdio, but no reference found for these
+
 CDTEXT_FIELDS = [
     'ARRANGER',
     'COMPOSER',
@@ -123,12 +125,14 @@ class IndexTable(object, log.Loggable):
     tracks = None # list of ITTrack
     leadout = None # offset where the leadout starts
     catalog = None # catalog number; FIXME: is this UPC ?
+    cdtext = None
 
     def __init__(self, tracks=None):
         if not tracks:
             tracks = []
 
         self.tracks = tracks
+        self.cdtext = {}
 
     def getTrackStart(self, number):
         """
@@ -324,9 +328,20 @@ class IndexTable(object, log.Loggable):
         lines = []
 
         # header
+        main = ['PERFORMER', 'TITLE']
+
+        for key in CDTEXT_FIELDS:
+                if key not in main and self.cdtext.has_key(key):
+                    lines.append("    %s %s" % (key, track.cdtext[key]))
+
         lines.append('REM COMMENT "Morituri"')
+
         if self.catalog:
             lines.append("CATALOG %s" % self.catalog)
+
+        for key in main:
+            if self.cdtext.has_key(key):
+                lines.append('%s "%s"' % (key, self.cdtext[key]))
 
         # add the first FILE line
         path = self.tracks[0].getFirstIndex().path
@@ -335,6 +350,10 @@ class IndexTable(object, log.Loggable):
 
         for i, track in enumerate(self.tracks):
             lines.append("  TRACK %02d %s" % (i + 1, 'AUDIO'))
+            for key in CDTEXT_FIELDS:
+                if track.cdtext.has_key(key):
+                    lines.append('    %s "%s"' % (key, track.cdtext[key]))
+
             if track.isrc is not None:
                 lines.append("    ISRC %s" % track.isrc)
 

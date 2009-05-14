@@ -1,6 +1,16 @@
 2009-05-14  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/image/table.py:
+	  Add CDText writing to .cue() method.
+	* morituri/image/toc.py:
+	  Add CDText parsing.
+	* morituri/test/test_image_toc.py:
+	* morituri/test/breeders.cue (added):
+	  Add a test for cue'ing the breeders' toc.
+
+2009-05-14  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/image/table.py:
 	* morituri/image/toc.py:
 	  Add parsing of ISRC codes.
 	  Add first part of CDTEXT stuff.

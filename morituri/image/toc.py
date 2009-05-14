@@ -31,7 +31,7 @@ from morituri.common import common, log
 from morituri.image import table
 
 # shared
-_CDTEXT_CANDIDATE_RE = re.compile(r'(?P<key>s+) "(?P<value>.+")')
+_CDTEXT_CANDIDATE_RE = re.compile(r'(?P<key>\w+) "(?P<value>.+)"')
 
 # header
 _CATALOG_RE = re.compile(r'^CATALOG "(?P<catalog>\d+)"$')
@@ -101,7 +101,15 @@ class TocFile(object, log.Loggable):
             if m:
                 key = m.group('key')
                 value = m.group('value')
-                # print key, value
+                if key in table.CDTEXT_FIELDS:
+                    # FIXME: consider ISRC separate for now, but this
+                    # is a limitation of our parser approach
+                    if state == 'HEADER':
+                        self.table.cdtext[key] = value
+                    elif state == 'TRACK':
+                        if key != 'ISRC' or not currentTrack \
+                            or currentTrack.isrc is not None:
+                            currentTrack.cdtext[key] = value
 
             # look for header elements
             m = _CATALOG_RE.search(line)

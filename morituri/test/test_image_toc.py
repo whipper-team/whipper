@@ -105,3 +105,27 @@ class BlocTestCase(unittest.TestCase):
         t = self.toc.table.tracks[0]
         self.assertEquals(t.getIndex(0).relative, 0)
         self.assertEquals(t.getIndex(1).relative, 15220)
+
+# The Breeders - Mountain Battles has CDText
+class BreedersTestCase(unittest.TestCase):
+    def setUp(self):
+        self.toc = toc.TocFile(os.path.join(os.path.dirname(__file__),
+            'breeders.toc'))
+        self.toc.parse()
+        self.assertEquals(len(self.toc.table.tracks), 13)
+
+    def testCDText(self):
+        cdt = self.toc.table.cdtext
+        self.assertEquals(cdt['PERFORMER'], 'THE BREEDERS')
+        self.assertEquals(cdt['TITLE'], 'MOUNTAIN BATTLES')
+
+        t = self.toc.table.tracks[0]
+        cdt = t.cdtext
+        self.assertRaises(AttributeError, getattr, cdt, 'PERFORMER')
+        self.assertEquals(cdt['TITLE'], 'OVERGLAZED')
+
+    def testConvertCue(self):
+        cue = self.toc.table.cue()
+        ref = open(os.path.join(os.path.dirname(__file__),
+            'breeders.cue')).read()
+        self.assertEquals(cue, ref)
