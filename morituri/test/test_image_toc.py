@@ -88,6 +88,11 @@ class CureTestCase(unittest.TestCase):
         ref = open(os.path.join(os.path.dirname(__file__), 'cure.cue')).read()
         self.assertEquals(cue, ref)
 
+        # we verify it because it has failed in readdisc in the past
+        self.assertEquals(self.toc.table.getAccurateRipURL(),
+            'http://www.accuraterip.com/accuraterip/'
+            '3/c/4/dBAR-013-0019d4c3-00fe8924-b90c650d.bin')
+
 # Bloc Party - Silent Alarm has a Hidden Track One Audio
 class BlocTestCase(unittest.TestCase):
     def setUp(self):
@@ -111,6 +116,15 @@ class BlocTestCase(unittest.TestCase):
         self.assertEquals(t.getIndex(0).relative, 0)
         self.assertEquals(t.getIndex(1).relative, 15220)
 
+    # This disc has a pre-gap, so is a good test for .CUE writing
+    def testConvertCue(self):
+        self.failIf(self.toc.table.hasTOC())
+        self.toc.table.absolutize()
+        self.failUnless(self.toc.table.hasTOC())
+        cue = self.toc.table.cue()
+        ref = open(os.path.join(os.path.dirname(__file__),
+            'bloc.cue')).read()
+        self.assertEquals(cue, ref)
 # The Breeders - Mountain Battles has CDText
 class BreedersTestCase(unittest.TestCase):
     def setUp(self):
