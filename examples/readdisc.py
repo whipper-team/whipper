@@ -261,6 +261,10 @@ def main(argv):
                 start, stop - 1,
                 offset=int(options.offset))
             function(runner, t)
+            if t.checksum:
+                print 'Checksums match for track %d' % 0
+            else:
+                print 'ERROR: checksums did not match for track %d' % 0
             # overlay this rip onto the IndexTable
         itable.setFile(1, 0, path, stop - start, 0)
 
@@ -282,6 +286,8 @@ def main(argv):
             function(runner, t)
             if t.checksum:
                 print 'Checksums match for track %d' % (i + 1)
+            else:
+                print 'ERROR: checksums did not match for track %d' % (i + 1)
 
         # overlay this rip onto the IndexTable
         itable.setFile(i + 1, 1, path, ittoc.getTrackLength(i + 1), i + 1)
