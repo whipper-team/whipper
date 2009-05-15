@@ -85,6 +85,7 @@ class TocFile(object, log.Loggable):
         indexNumber = 0
         currentOffset = 0 # running absolute offset of where each track starts
         currentLength = 0 # accrued during TRACK record parsing, current track
+        totalLength = 0 # accrued during TRACK record parsing, total disc
         pregapLength = 0 # length of the pre-gap, current track
 
 
@@ -134,6 +135,7 @@ class TocFile(object, log.Loggable):
 
                 trackNumber += 1
                 currentOffset += currentLength
+                totalLength += currentLength
                 currentLength = 0
                 indexNumber = 1
                 trackMode = m.group('mode')
@@ -216,6 +218,10 @@ class TocFile(object, log.Loggable):
                 relative=currentOffset + pregapLength, counter=counter)
             self.debug('track %d, added index %r',
                 currentTrack.number, currentTrack.getIndex(1))
+
+        # totalLength was added up to the penultimate track
+        self.table.leadout = totalLength + currentLength
+        self.debug('leadout: %r', self.table.leadout)
 
     def message(self, number, message):
         """

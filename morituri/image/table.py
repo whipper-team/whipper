@@ -334,10 +334,8 @@ class IndexTable(object, log.Loggable):
                 if key not in main and self.cdtext.has_key(key):
                     lines.append("    %s %s" % (key, track.cdtext[key]))
 
-        if self.hasTOC():
-            lines.append('REM DISCID %s' % self.getCDDBDiscId().upper())
-        else:
-            self.warning("Cannot write disc id, not a TOC")
+        assert self.hasTOC(), "Table does not represent a full CD TOC"
+        lines.append('REM DISCID %s' % self.getCDDBDiscId().upper())
         lines.append('REM COMMENT "%s"' % program)
 
         if self.catalog:

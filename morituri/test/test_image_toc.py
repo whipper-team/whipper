@@ -6,6 +6,8 @@ import unittest
 
 from morituri.image import toc
 
+from morituri.test import common
+
 class CureTestCase(unittest.TestCase):
     def setUp(self):
         self.toc = toc.TocFile(os.path.join(os.path.dirname(__file__),
@@ -81,6 +83,7 @@ class CureTestCase(unittest.TestCase):
         self._assertRelative(2, 1, None)
 
     def testConvertCue(self):
+        self.toc.table.absolutize()
         cue = self.toc.table.cue()
         ref = open(os.path.join(os.path.dirname(__file__), 'cure.cue')).read()
         self.assertEquals(cue, ref)
@@ -127,6 +130,9 @@ class BreedersTestCase(unittest.TestCase):
         self.assertEquals(cdt['TITLE'], 'OVERGLAZED')
 
     def testConvertCue(self):
+        self.failIf(self.toc.table.hasTOC())
+        self.toc.table.absolutize()
+        self.failUnless(self.toc.table.hasTOC())
         cue = self.toc.table.cue()
         ref = open(os.path.join(os.path.dirname(__file__),
             'breeders.cue')).read()

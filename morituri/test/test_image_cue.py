@@ -65,8 +65,11 @@ class WriteCueFileTestCase(unittest.TestCase):
         t.index(0, path='track01.wav', relative=1000, counter=1)
         t.index(1, path='track02.wav', relative=0, counter=2)
         it.tracks.append(t)
+        it.absolutize()
+        it.leadout = 2000
 
-        self.assertEquals(it.cue(), """REM COMMENT "Morituri"
+        self.assertEquals(it.cue(), """REM DISCID 04001A02
+REM COMMENT "Morituri"
 FILE "track01.wav" WAVE
   TRACK 01 AUDIO
     INDEX 01 00:00:00
