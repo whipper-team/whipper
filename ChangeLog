@@ -1,5 +1,10 @@
 2009-05-15  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* examples/readdisc.py:
+	  Rip HTOA as well.  Add disc-template parameter.
+
+2009-05-15  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/image/table.py:
 	  Fix a subtle bug in our CDDB disc id calculation.
 	  The length of the audio should be calculated as the delta

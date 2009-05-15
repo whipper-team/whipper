@@ -52,6 +52,8 @@ def gtkmain(runner, taskk):
     runner.run(taskk)
 
     gtk.main()
+    window.remove(runner)
+    window.hide()
 
 def climain(runner, taskk):
     runner.run(taskk)
@@ -161,8 +163,13 @@ def getPath(template, metadata, i):
     if metadata:
         v['A'] = filterForPath(metadata.artist)
         v['d'] = filterForPath(metadata.title)
-        v['a'] = filterForPath(metadata.tracks[i].artist)
-        v['n'] = filterForPath(metadata.tracks[i].title)
+        if i >= 0:
+            v['a'] = filterForPath(metadata.tracks[i].artist)
+            v['n'] = filterForPath(metadata.tracks[i].title)
+        else:
+            # htoa defaults to disc's artist
+            v['a'] = filterForPath(metadata.artist)
+            v['n'] = filterForPath('Hidden Track One Audio')
 
     import re
     template = re.sub(r'%(\w)', r'%(\1)s', template)
@@ -195,6 +202,12 @@ def main(argv):
         action="store", dest="track_template",
         help="template for track file naming (default %s)" % default,
         default=default)
+    default = '%A - %d/%A - %d'
+    parser.add_option('', '--disc-template',
+        action="store", dest="disc_template",
+        help="template for disc file naming (default %s)" % default,
+        default=default)
+
 
     options, args = parser.parse_args(argv[1:])
 
@@ -227,6 +240,31 @@ def main(argv):
 
     metadata = musicbrainz(itable.getMusicBrainzDiscId())
 
+    # check for hidden track one audio
+    htoa = None
+    track = itable.tracks[0]
+    try:
+        index = track.getIndex(0)
+    except KeyError:
+        pass
+
+    if index:
+        start = index.absolute
+        stop = track.getIndex(1).absolute
+        print 'Found Hidden Track One Audio from frame %d to %d' % (start, stop)
+            
+        # rip it
+        path = getPath(options.track_template, metadata, -1) + '.wav'
+        if not os.path.exists(path):
+            print 'Ripping track %d: %s' % (0, os.path.basename(path))
+            t = cdparanoia.ReadVerifyTrackTask(path, ittoc,
+                start, stop - 1,
+                offset=int(options.offset))
+            function(runner, t)
+            # overlay this rip onto the IndexTable
+        itable.setFile(1, 0, path, stop - start, 0)
+
+
     for i, track in enumerate(itable.tracks):
         path = getPath(options.track_template, metadata, i) + '.wav'
         dirname = os.path.dirname(path)
@@ -248,9 +286,14 @@ def main(argv):
         # overlay this rip onto the IndexTable
         itable.setFile(i + 1, 1, path, ittoc.getTrackLength(i + 1), i + 1)
 
-    discName = 'morituri'
-    if metadata:
-        discName = filterForPath('%s - %s' % (metadata.artist, metadata.title))
+
+    ### write disc files
+    discName = getPath(options.disc_template, metadata, i)
+    dirname = os.path.dirname(discName)
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
+
+    # write .cue file
     cuePath = '%s.cue' % discName
     handle = open(cuePath, 'w')
     handle.write(itable.cue())
@@ -322,7 +365,7 @@ def main(argv):
             else:
                 maxConfidence = max(r.confidences[i] for r in responses)
                      
-                c = "(confidence %3d)" % maxConfidence
+                c = "(max confidence %3d)" % maxConfidence
                 if confidence is not None:
                     if confidence < maxConfidence:
                         c = "(confidence %3d of %3d)" % (confidence, maxConfidence)
