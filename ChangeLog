@@ -1,5 +1,12 @@
 2009-05-15  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/program/cdparanoia.py:
+	  Fix up track counting so HTOA can be ripped again.
+	* examples/readhtoa.py:
+	  Fix up example so it works again, tested on Silent Alarm.
+
+2009-05-15  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/test/test_image_toc.py:
 	* morituri/test/bloc.cue (added):
 	  Add an expected .cue file for the bloc party toc.

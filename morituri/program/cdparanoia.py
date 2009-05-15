@@ -111,9 +111,9 @@ class ReadTrackTask(task.Task):
         task.Task.start(self, runner)
 
         # find on which track the range starts and stops
-        startTrack = 1
+        startTrack = 0
         startOffset = 0
-        stopTrack = 1
+        stopTrack = 0
         stopOffset = self._stop
 
         for i, t in enumerate(self._table.tracks):
@@ -247,14 +247,11 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         self.tasks = []
         self.tasks.append(
             ReadTrackTask(tmppath, table, start, stop, offset))
-        self.tasks.append(
-            checksum.CRC32Task(tmppath))
+        self.tasks.append(checksum.CRC32Task(tmppath))
         t = ReadTrackTask(tmppath, table, start, stop, offset)
         t.description = 'Verifying track...'
-        self.tasks.append(
-            ReadTrackTask(tmppath, table, start, stop, offset))
-        self.tasks.append(
-            checksum.CRC32Task(tmppath))
+        self.tasks.append(t)
+        self.tasks.append(checksum.CRC32Task(tmppath))
 
         self.checksum = None
 

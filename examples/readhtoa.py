@@ -53,12 +53,12 @@ def main():
         print 'No Hidden Track One Audio found.'
         return
 
-    start = index[0]
-    stop, _ = track.getIndex(1)
+    start = index.absolute
+    stop = track.getIndex(1).absolute
     print 'Found Hidden Track One Audio from frame %d to %d' % (start, stop)
         
     # rip it
-    riptask = cdparanoia.ReadVerifyTrackTask('track00.wav', table,
+    riptask = cdparanoia.ReadVerifyTrackTask('track00.wav', t.table,
         start, stop - 1,
         offset=int(options.offset))
     runner.run(riptask)
