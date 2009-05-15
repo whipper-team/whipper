@@ -68,8 +68,10 @@ class CureTestCase(unittest.TestCase):
         self._assertPath(1, 1, None)
         self._assertRelative(1, 1, None)
 
-        # adding a file to the table should fix up to including 2, 0
-        self.toc.table.setFile(1, 1, 'track01.wav', 28245)
+        # adding the first track file with length 28324 to the table should
+        # relativize from absolute 0 to absolute 28323, right before track 2,
+        # index 1
+        self.toc.table.setFile(1, 1, 'track01.wav', 28324)
         self._assertPath(1, 1, 'track01.wav')
         self._assertRelative(1, 1, 0)
         self._assertPath(2, 0, 'track01.wav')

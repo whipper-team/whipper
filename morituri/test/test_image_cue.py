@@ -58,15 +58,16 @@ class WriteCueFileTestCase(unittest.TestCase):
         
 
         t = table.ITTrack(1)
-        t.index(1, path='track01.wav', relative=0)
+        t.index(1, path='track01.wav', relative=0, counter=1)
         it.tracks.append(t)
 
         t = table.ITTrack(2)
-        t.index(0, path='track01.wav', relative=1000)
-        t.index(1, path='track02.wav', relative=0)
+        t.index(0, path='track01.wav', relative=1000, counter=1)
+        t.index(1, path='track02.wav', relative=0, counter=2)
         it.tracks.append(t)
 
-        self.assertEquals(it.cue(), """FILE "track01.wav" WAVE
+        self.assertEquals(it.cue(), """REM COMMENT "Morituri"
+FILE "track01.wav" WAVE
   TRACK 01 AUDIO
     INDEX 01 00:00:00
   TRACK 02 AUDIO

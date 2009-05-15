@@ -1,5 +1,14 @@
 2009-05-15  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/image/table.py:
+	  Only add DISCID if our table is a TOC (which it isn't
+	  with our current .toc file parsing)
+	* morituri/test/test_image_cue.py:
+	* morituri/test/test_image_toc.py:
+	  Fix up tests; testsuite passes again.
+
+2009-05-15  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/image/toc.py:
 	  Add some debugging.
 

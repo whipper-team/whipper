@@ -334,7 +334,10 @@ class IndexTable(object, log.Loggable):
                 if key not in main and self.cdtext.has_key(key):
                     lines.append("    %s %s" % (key, track.cdtext[key]))
 
-        lines.append('REM DISCID %s' % self.getCDDBDiscId().upper())
+        if self.hasTOC():
+            lines.append('REM DISCID %s' % self.getCDDBDiscId().upper())
+        else:
+            self.warning("Cannot write disc id, not a TOC")
         lines.append('REM COMMENT "%s"' % program)
 
         if self.catalog:
@@ -417,7 +420,7 @@ class IndexTable(object, log.Loggable):
         Assumes all indexes have an absolute offset and will raise if not.
         """
         self.debug('setFile: track %d, index %d, path %s, '
-            'length %d, counter %d', track, index, path, length, counter)
+            'length %r, counter %r', track, index, path, length, counter)
 
         t = self.tracks[track - 1]
         i = t.indexes[index]
@@ -430,8 +433,8 @@ class IndexTable(object, log.Loggable):
             i.path = path
             i.relative = i.absolute - start
             i.counter = counter
-            self.debug('Setting path %s, relative %d on '
-                'track %d, index %d, counter %d',
+            self.debug('Setting path %s, relative %r on '
+                'track %d, index %d, counter %r',
                 path, i.relative, track, index, counter)
             try:
                 track, index = self.getNextTrackIndex(track, index)
