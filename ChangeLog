@@ -1,5 +1,16 @@
 2009-05-15  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/image/table.py:
+	  Fix a subtle bug in our CDDB disc id calculation.
+	  The length of the audio should be calculated as the delta
+	  between leadout and start already converted (and truncated)
+	  to seconds.
+	* morituri/test/bloc.cue:
+	* morituri/test/test_image_toc.py:
+	  Fix up tests for this.
+
+2009-05-15  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/program/cdparanoia.py:
 	  Fix up track counting so HTOA can be ripped again.
 	* examples/readhtoa.py:

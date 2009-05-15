@@ -125,6 +125,18 @@ class BlocTestCase(unittest.TestCase):
         ref = open(os.path.join(os.path.dirname(__file__),
             'bloc.cue')).read()
         self.assertEquals(cue, ref)
+
+    def testCDDBId(self):
+        self.toc.table.absolutize()
+        self.assertEquals(self.toc.table.getCDDBDiscId(), 'ad0be00d')
+
+    def testAccurateRip(self):
+        # we verify it because it has failed in readdisc in the past
+        self.toc.table.absolutize()
+        self.assertEquals(self.toc.table.getAccurateRipURL(),
+            'http://www.accuraterip.com/accuraterip/'
+            'e/d/2/dBAR-013-001af2de-0105994e-ad0be00d.bin')
+
 # The Breeders - Mountain Battles has CDText
 class BreedersTestCase(unittest.TestCase):
     def setUp(self):
