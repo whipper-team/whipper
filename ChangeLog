@@ -1,5 +1,10 @@
 2009-05-15  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/image/toc.py:
+	  Add some debugging.
+
+2009-05-15  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/image/table.py:
 	  Update .cue writing:
 	  - customise program name
@@ -7,6 +12,7 @@
 	  - use counter for FILE lines
 	  - put FILE line before TRACK if track does not have INDEX 00
 	  Take counter into account for setFile
+	  Fix off-by-one in setFile
 	* examples/readdisc.py:
 	  Add --track-template.
 	  Pass counter to setFile.

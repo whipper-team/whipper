@@ -106,9 +106,11 @@ class TocFile(object, log.Loggable):
                     # is a limitation of our parser approach
                     if state == 'HEADER':
                         self.table.cdtext[key] = value
+                        self.debug('Found disc CD-Text %s: %s', key, value)
                     elif state == 'TRACK':
                         if key != 'ISRC' or not currentTrack \
                             or currentTrack.isrc is not None:
+                            self.debug('Found track CD-Text %s: %s', key, value)
                             currentTrack.cdtext[key] = value
 
             # look for header elements
