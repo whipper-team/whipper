@@ -1,3 +1,16 @@
+2009-05-15  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/image/table.py:
+	  Update .cue writing:
+	  - customise program name
+	  - add DISCID
+	  - use counter for FILE lines
+	  - put FILE line before TRACK if track does not have INDEX 00
+	  Take counter into account for setFile
+	* examples/readdisc.py:
+	  Add --track-template.
+	  Pass counter to setFile.
+
 2009-05-14  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/image/table.py:

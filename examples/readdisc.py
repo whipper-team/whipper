@@ -144,6 +144,31 @@ def musicbrainz(discid):
 
     return metadata
 
+def getPath(template, metadata, i):
+    # returns without extension
+
+    v = {}
+
+    v['t'] = '%02d' % (i + 1)
+
+    # default values
+    v['A'] = 'Unknown Artist'
+    v['d'] = 'Unknown Disc'
+
+    v['a'] = v['A']
+    v['n'] = 'Unknown Track'
+
+    if metadata:
+        v['A'] = filterForPath(metadata.artist)
+        v['d'] = filterForPath(metadata.title)
+        v['a'] = filterForPath(metadata.tracks[i].artist)
+        v['n'] = filterForPath(metadata.tracks[i].title)
+
+    import re
+    template = re.sub(r'%(\w)', r'%(\1)s', template)
+
+    return template % v
+
 def main(argv):
     parser = optparse.OptionParser()
 
@@ -164,6 +189,11 @@ def main(argv):
     parser.add_option('-T', '--toc-pickle',
         action="store", dest="toc_pickle",
         help="pickle to use for reading and writing the TOC",
+        default=default)
+    default = '%A - %d/%t. %a - %n'
+    parser.add_option('', '--track-template',
+        action="store", dest="track_template",
+        help="template for track file naming (default %s)" % default,
         default=default)
 
     options, args = parser.parse_args(argv[1:])
@@ -198,14 +228,16 @@ def main(argv):
     metadata = musicbrainz(itable.getMusicBrainzDiscId())
 
     for i, track in enumerate(itable.tracks):
-        path = 'track%02d.wav' % (i + 1)
-        if metadata:
-            path = filterForPath('%s - %s.wav' % (metadata.tracks[i].artist,
-                metadata.tracks[i].title))
+        path = getPath(options.track_template, metadata, i) + '.wav'
+        dirname = os.path.dirname(path)
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
+
         # FIXME: optionally allow overriding reripping
         if not os.path.exists(path):
             print 'Ripping track %d: %s' % (i + 1, os.path.basename(path))
-            t = cdparanoia.ReadVerifyTrackTask(path, ittoc, ittoc.getTrackStart(i + 1),
+            t = cdparanoia.ReadVerifyTrackTask(path, ittoc,
+                ittoc.getTrackStart(i + 1),
                 ittoc.getTrackEnd(i + 1),
                 offset=int(options.offset))
             t.description = 'Reading Track %d' % (i + 1)
@@ -214,7 +246,7 @@ def main(argv):
                 print 'Checksums match for track %d' % (i + 1)
 
         # overlay this rip onto the IndexTable
-        itable.setFile(i + 1, 1, path, ittoc.getTrackLength(i + 1))
+        itable.setFile(i + 1, 1, path, ittoc.getTrackLength(i + 1), i + 1)
 
     discName = 'morituri'
     if metadata:

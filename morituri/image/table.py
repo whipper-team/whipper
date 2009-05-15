@@ -321,7 +321,7 @@ class IndexTable(object, log.Loggable):
                 discId1[-1], discId1[-2], discId1[-3],
                 len(self.tracks), discId1, discId2, self.getCDDBDiscId())
 
-    def cue(self):
+    def cue(self, program='Morituri'):
         """
         Dump our internal representation to a .cue file content.
         """
@@ -334,7 +334,8 @@ class IndexTable(object, log.Loggable):
                 if key not in main and self.cdtext.has_key(key):
                     lines.append("    %s %s" % (key, track.cdtext[key]))
 
-        lines.append('REM COMMENT "Morituri"')
+        lines.append('REM DISCID %s' % self.getCDDBDiscId().upper())
+        lines.append('REM COMMENT "%s"' % program)
 
         if self.catalog:
             lines.append("CATALOG %s" % self.catalog)
@@ -345,10 +346,18 @@ class IndexTable(object, log.Loggable):
 
         # add the first FILE line
         path = self.tracks[0].getFirstIndex().path
+        counter = self.tracks[0].getFirstIndex().counter
         currentPath = path
         lines.append('FILE "%s" WAVE' % path)
 
         for i, track in enumerate(self.tracks):
+            # if there is no index 0, but there is a new file, advance
+            # FILE line here
+            if not track.indexes.has_key(0):
+                index = track.indexes[1]
+                if index.counter != counter:
+                    lines.append('FILE "%s" WAVE' % index.path)
+                    counter = index.counter
             lines.append("  TRACK %02d %s" % (i + 1, 'AUDIO'))
             for key in CDTEXT_FIELDS:
                 if track.cdtext.has_key(key):
@@ -362,8 +371,9 @@ class IndexTable(object, log.Loggable):
 
             for number in indexes:
                 index = track.indexes[number]
-                if index.path != currentPath:
+                if index.counter != counter:
                     lines.append('FILE "%s" WAVE' % index.path)
+                    counter = index.counter
                 lines.append("    INDEX %02d %s" % (number,
                     common.framesToMSF(index.relative)))
 
@@ -398,7 +408,7 @@ class IndexTable(object, log.Loggable):
                 break
 
 
-    def setFile(self, track, index, path, length):
+    def setFile(self, track, index, path, length, counter=None):
         """
         Sets the given file as the source from the given index on.
         Will loop over all indexes that fall within the given length,
@@ -406,18 +416,23 @@ class IndexTable(object, log.Loggable):
 
         Assumes all indexes have an absolute offset and will raise if not.
         """
+        self.debug('setFile: track %d, index %d, path %s, '
+            'length %d, counter %d', track, index, path, length, counter)
+
         t = self.tracks[track - 1]
         i = t.indexes[index]
         start = i.absolute
         assert start is not None, "index %r is missing absolute offset" % i
-        end = start + length
+        end = start + length - 1 # last sector that should come from this file
 
         # FIXME: check border conditions here, esp. wrt. toc's off-by-one bug
         while i.absolute <= end:
-            self.debug('Setting path and relative on track %d, index %d',
-                track, index)
             i.path = path
             i.relative = i.absolute - start
+            i.counter = counter
+            self.debug('Setting path %s, relative %d on '
+                'track %d, index %d, counter %d',
+                path, i.relative, track, index, counter)
             try:
                 track, index = self.getNextTrackIndex(track, index)
                 t = self.tracks[track - 1]
