@@ -194,14 +194,14 @@ class ReadTrackTask(task.Task):
         size = os.stat(self.path)[stat.ST_SIZE]
         # wav header is 44 bytes
         offsetLength = self._stop - self._start + 1
-        expected = offsetLength * checksum.BYTES_PER_FRAME + 44
+        expected = offsetLength * common.BYTES_PER_FRAME + 44
         if size != expected:
             # FIXME: handle errors better
             self.warning('file size %d did not match expected size %d',
                 size, expected)
-            if (size - expected) % checksum.BYTES_PER_FRAME == 0:
+            if (size - expected) % common.BYTES_PER_FRAME == 0:
                 print 'ERROR: %d frames difference' % (
-                    (size - expected) / checksum.BYTES_PER_FRAME)
+                    (size - expected) / common.BYTES_PER_FRAME)
 
             self.exception = FileSizeError(self.path)
 

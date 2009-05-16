@@ -29,10 +29,8 @@ import struct
 
 import gst
 
-from morituri.common import task, checksum, log
+from morituri.common import task, checksum, log, common
 from morituri.image import cue, table
-
-from morituri.test import common
 
 class Image(object, log.Loggable):
     """
@@ -116,8 +114,8 @@ class AccurateRipChecksumTask(task.MultiSeparateTask):
             path = image.getRealPath(index.path)
             checksumTask = checksum.AccurateRipChecksumTask(path,
                 trackNumber=trackIndex + 1, trackCount=len(cue.table.tracks),
-                frameStart=index.relative * checksum.SAMPLES_PER_FRAME,
-                frameLength=length * checksum.SAMPLES_PER_FRAME)
+                frameStart=index.relative * common.SAMPLES_PER_FRAME,
+                frameLength=length * common.SAMPLES_PER_FRAME)
             self.addTask(checksumTask)
 
     def stop(self):
@@ -195,8 +193,8 @@ class ImageVerifyTask(task.MultiSeparateTask):
         for trackIndex, track, taskk in self._tasks:
             # print '%d has length %d' % (trackIndex, taskk.length)
             index = track.indexes[1]
-            assert taskk.length % checksum.SAMPLES_PER_FRAME == 0
-            end = taskk.length / checksum.SAMPLES_PER_FRAME
+            assert taskk.length % common.SAMPLES_PER_FRAME == 0
+            end = taskk.length / common.SAMPLES_PER_FRAME
             self.lengths[trackIndex] = end - index.relative
 
         task.MultiSeparateTask.stop(self)

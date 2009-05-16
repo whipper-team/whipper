@@ -29,7 +29,7 @@ import struct
 
 import gst
 
-from morituri.common import task, checksum, common, log
+from morituri.common import task, common, log
 
 # FIXME: taken from libcdio, but no reference found for these
 
@@ -204,20 +204,20 @@ class IndexTable(object, log.Loggable):
 
         # CD's have a standard lead-in time of 2 seconds
         # which gets added for CDDB disc id's
-        delta = 2 * checksum.FRAMES_PER_SECOND
+        delta = 2 * common.FRAMES_PER_SECOND
         #if self.getTrackStart(1) > 0:
         #    delta = 0
 
         for track in self.tracks:
             offset = self.getTrackStart(track.number) + delta
-            seconds = offset / checksum.FRAMES_PER_SECOND
+            seconds = offset / common.FRAMES_PER_SECOND
             n += self._cddbSum(seconds)
 
         last = self.tracks[-1]
         # the 'real' leadout, not offset by 150 frames
         leadout = self.getTrackEnd(last.number) + 1
-        startSeconds = self.getTrackStart(1) / checksum.FRAMES_PER_SECOND
-        leadoutSeconds = leadout / checksum.FRAMES_PER_SECOND
+        startSeconds = self.getTrackStart(1) / common.FRAMES_PER_SECOND
+        leadoutSeconds = leadout / common.FRAMES_PER_SECOND
         t = leadoutSeconds - startSeconds
 
         value = (n % 0xff) << 24 | t << 8 | len(self.tracks)

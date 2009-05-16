@@ -1,5 +1,14 @@
 2009-05-16  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/checksum.py:
+	* morituri/common/common.py:
+	* morituri/image/image.py:
+	* morituri/image/table.py:
+	* morituri/program/cdparanoia.py:
+	  Move constants to common
+
+2009-05-16  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* examples/readdisc.py:
 	  Get our metadata only from the toc.
 
