@@ -21,8 +21,8 @@ class LadyhawkeTestCase(unittest.TestCase):
         self.table = table.IndexTable()
 
         for i in range(12):
-            self.table.tracks.append(table.ITTrack(i + 1, audio=True))
-        self.table.tracks.append(table.ITTrack(13, audio=False))
+            self.table.tracks.append(table.Track(i + 1, audio=True))
+        self.table.tracks.append(table.Track(13, audio=False))
 
         offsets = [0, 15537, 31691, 50866, 66466, 81202, 99409,
             115920, 133093, 149847, 161560, 177682, 207106]
@@ -56,7 +56,7 @@ class MusicBrainzTestCase(unittest.TestCase):
         self.table = table.IndexTable()
 
         for i in range(6):
-            self.table.tracks.append(table.ITTrack(i + 1, audio=True))
+            self.table.tracks.append(table.Track(i + 1, audio=True))
 
         offsets = [0, 15213, 32164, 46442, 63264, 80339]
         t = self.table.tracks

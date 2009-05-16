@@ -57,11 +57,11 @@ class WriteCueFileTestCase(unittest.TestCase):
         it = table.IndexTable()
         
 
-        t = table.ITTrack(1)
+        t = table.Track(1)
         t.index(1, path='track01.wav', relative=0, counter=1)
         it.tracks.append(t)
 
-        t = table.ITTrack(2)
+        t = table.Track(2)
         t.index(0, path='track01.wav', relative=1000, counter=1)
         t.index(1, path='track02.wav', relative=0, counter=2)
         it.tracks.append(t)

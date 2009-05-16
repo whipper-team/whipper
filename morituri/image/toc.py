@@ -142,7 +142,7 @@ class TocFile(object, log.Loggable):
                 pregapLength = 0
 
                 # FIXME: track mode
-                currentTrack = table.ITTrack(trackNumber)
+                currentTrack = table.Track(trackNumber)
                 self.table.tracks.append(currentTrack)
                 continue
 

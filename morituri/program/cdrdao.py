@@ -27,7 +27,7 @@ import signal
 import subprocess
 import tempfile
 
-from morituri.common import task, log
+from morituri.common import task, log, common
 from morituri.image import toc, table
 from morituri.extern import asyncsub
 
@@ -106,8 +106,8 @@ class OutputParser(object, log.Loggable):
             if m and self._track is not None:
                 track = self.table.tracks[self._track - 1]
                 frame = (track.getIndex(1).absolute or 0) \
-                    + int(m.group('hh')) * 60 * 75 \
-                    + int(m.group('mm')) * 75 \
+                    + int(m.group('hh')) * 60 * common.FRAMES_PER_SECOND \
+                    + int(m.group('mm')) * common.FRAMES_PER_SECOND \
                     + int(m.group('ss'))
                 self.log('at frame %d of %d', frame, self._frames)
                 self._task.setProgress(float(frame) / self._frames)
@@ -155,7 +155,7 @@ class OutputParser(object, log.Loggable):
         m = _TRACK_RE.search(line)
         if m:
             self._tracks = int(m.group('track'))
-            track = table.ITTrack(self._tracks)
+            track = table.Track(self._tracks)
             track.index(1, absolute=int(m.group('start')))
             self.table.tracks.append(track)
             self.debug('Found track %d', self._tracks)

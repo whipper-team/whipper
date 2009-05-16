@@ -79,7 +79,7 @@ class Image(object, log.Loggable):
             length = self.cue.getTrackLength(self.cue.table.tracks[i])
             if length == -1:
                 length = verify.lengths[i + 1]
-            t = table.ITTrack(i + 1, audio=True)
+            t = table.Track(i + 1, audio=True)
             tracks.append(t)
             # FIXME: this probably only works for non-compliant .CUE files
             # where pregap is put at end of previous file

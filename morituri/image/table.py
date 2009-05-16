@@ -50,7 +50,7 @@ CDTEXT_FIELDS = [
 ]
 
 
-class ITTrack:
+class Track:
     """
     I represent a track entry in an IndexTable.
 
@@ -117,12 +117,12 @@ class IndexTable(object, log.Loggable):
     I represent a table of indexes on a CD.
 
     @ivar tracks: tracks on this CD
-    @type tracks: list of L{ITTrack}
+    @type tracks: list of L{Track}
     @ivar catalog: catalog number
     @type catalog: str
     """
 
-    tracks = None # list of ITTrack
+    tracks = None # list of Track
     leadout = None # offset where the leadout starts
     catalog = None # catalog number; FIXME: is this UPC ?
     cdtext = None
