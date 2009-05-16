@@ -44,26 +44,26 @@ def msfToFrames(msf):
 
     m, s, f = msf.split(':')
 
-    return 60 * 75 * int(m) + 75 * int(s) + int(f)
+    return 60 * FRAMES_PER_SECOND * int(m) + FRAMES_PER_SECOND * int(s) + int(f)
 
 def framesToMSF(frames):
-    f = frames % 75
+    f = frames % FRAMES_PER_SECOND
     frames -= f
-    s = (frames / 75) % 60
+    s = (frames / FRAMES_PER_SECOND) % 60
     frames -= s * 60
-    m = frames / 75 / 60
+    m = frames / FRAMES_PER_SECOND / 60
 
     return "%02d:%02d:%02d" % (m, s, f)
 
 def framesToHMSF(frames):
     # cdparanoia style
-    f = frames % 75
+    f = frames % FRAMES_PER_SECOND
     frames -= f
-    s = (frames / 75) % 60
-    frames -= s * 75
-    m = (frames / 75 / 60) % 60
-    frames -= m * 75 * 60
-    h = frames / 75 / 60 / 60
+    s = (frames / FRAMES_PER_SECOND) % 60
+    frames -= s * FRAMES_PER_SECOND
+    m = (frames / FRAMES_PER_SECOND / 60) % 60
+    frames -= m * FRAMES_PER_SECOND * 60
+    h = frames / FRAMES_PER_SECOND / 60 / 60
 
     return "%02d:%02d:%02d.%02d" % (h, m, s, f)
 

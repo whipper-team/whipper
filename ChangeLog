@@ -1,5 +1,11 @@
 2009-05-16  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/common.py:
+	* morituri/image/cue.py:
+	  Use FRAMES_PER_SECOND where appropriate.
+
+2009-05-16  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/checksum.py:
 	* morituri/common/common.py:
 	* morituri/image/image.py:

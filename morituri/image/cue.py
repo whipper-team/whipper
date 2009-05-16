@@ -132,7 +132,9 @@ class CueFile(object, log.Loggable):
                 frames = int(m.expand('\\4'))
                 self.debug('found index %d', indexNumber)
 
-                frameOffset = frames + seconds * 75 + minutes * 75 * 60
+                frameOffset = frames \
+                    + seconds * common.FRAMES_PER_SECOND \
+                    + minutes * common.FRAMES_PER_SECOND * 60
                 # FIXME: what do we do about File's FORMAT ?
                 currentTrack.index(indexNumber,
                     path=currentFile.path, relative=frameOffset,
