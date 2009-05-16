@@ -1,3 +1,8 @@
+2009-05-16  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* examples/readdisc.py:
+	  Write .m3u file.
+
 2009-05-15  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* examples/readdisc.py:

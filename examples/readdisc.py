@@ -254,10 +254,11 @@ def main(argv):
         print 'Found Hidden Track One Audio from frame %d to %d' % (start, stop)
             
         # rip it
-        path = getPath(options.track_template, metadata, -1) + '.wav'
-        if not os.path.exists(path):
-            print 'Ripping track %d: %s' % (0, os.path.basename(path))
-            t = cdparanoia.ReadVerifyTrackTask(path, ittoc,
+        htoapath = getPath(options.track_template, metadata, -1) + '.wav'
+        htoalength = stop - start
+        if not os.path.exists(htoapath):
+            print 'Ripping track %d: %s' % (0, os.path.basename(htoapath))
+            t = cdparanoia.ReadVerifyTrackTask(htoapath, ittoc,
                 start, stop - 1,
                 offset=int(options.offset))
             function(runner, t)
@@ -266,7 +267,7 @@ def main(argv):
             else:
                 print 'ERROR: checksums did not match for track %d' % 0
             # overlay this rip onto the IndexTable
-        itable.setFile(1, 0, path, stop - start, 0)
+        itable.setFile(1, 0, htoapath, htoalength, 0)
 
 
     for i, track in enumerate(itable.tracks):
@@ -303,6 +304,24 @@ def main(argv):
     cuePath = '%s.cue' % discName
     handle = open(cuePath, 'w')
     handle.write(itable.cue())
+    handle.close()
+
+    # write .m3u file
+    m3uPath = '%s.m3u' % discName
+    handle = open(m3uPath, 'w')
+    handle.write('#EXTM3U\n')
+    if htoapath:
+        handle.write('#EXTINF:%d,%s\n' % (
+            htoalength / checksum.FRAMES_PER_SECOND,
+                os.path.basename(htoapath[:-4])))
+        handle.write('%s\n' % os.path.basename(htoapath))
+
+    for i, track in enumerate(itable.tracks):
+        path = getPath(options.track_template, metadata, i) + '.wav'
+        handle.write('#EXTINF:%d,%s\n' % (
+            itable.getTrackLength(i + 1) / checksum.FRAMES_PER_SECOND,
+            os.path.basename(path)))
+        handle.write('%s\n' % os.path.basename(path))
     handle.close()
 
     # verify using accuraterip
@@ -343,24 +362,24 @@ def main(argv):
     response = None # track which response matches, for all tracks
 
     # loop over tracks
-    for i, checksum in enumerate(cuetask.checksums):
+    for i, sum in enumerate(cuetask.checksums):
         status = 'rip NOT accurate'
 
         confidence = None
-        archecksum = None
+        arsum = None
 
         # match against each response's checksum
         for j, r in enumerate(responses):
-            if "%08x" % checksum == r.checksums[i]:
+            if "%08x" % sum == r.checksums[i]:
                 if not response:
                     response = r
                 else:
                     assert r == response, \
                         "checksum %s for %d matches wrong response %d, "\
                         "checksum %s" % (
-                            checksum, i + 1, j + 1, response.checksums[i])
+                            sum, i + 1, j + 1, response.checksums[i])
                 status = 'rip accurate    '
-                archecksum = checksum
+                arsum = sum
                 confidence = response.confidences[i]
 
         c = "(not found)"
@@ -378,7 +397,7 @@ def main(argv):
 
                 ar = ", AR [%s]" % response.checksums[i]
         print "Track %2d: %s %s [%08x]%s" % (
-            i + 1, status, c, checksum, ar)
+            i + 1, status, c, sum, ar)
 
 
 
