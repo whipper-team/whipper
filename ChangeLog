@@ -1,5 +1,12 @@
 2009-05-16  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* examples/readdisc.py:
+	* examples/readhtoa.py:
+	* examples/readtoc.py:
+	  Rename IndexTable to Table.
+
+2009-05-16  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/image/cue.py:
 	* morituri/image/image.py:
 	* morituri/image/table.py:

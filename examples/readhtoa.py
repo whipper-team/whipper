@@ -42,7 +42,7 @@ def main():
 
 
     # now do a more extensive scan
-    t = cdrdao.ReadIndexTableTask()
+    t = cdrdao.ReadTableTask()
     runner.run(t)
 
     # now check if we have a hidden track one audio

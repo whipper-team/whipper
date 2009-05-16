@@ -234,7 +234,7 @@ def main(argv):
     # now, read the complete index table, which is slower
     ptable = common.Persister(options.table_pickle or None)
     if not ptable.object:
-        t = cdrdao.ReadIndexTableTask()
+        t = cdrdao.ReadTableTask()
         function(runner, t)
         ptable.persist(t.table)
     itable = ptable.object
@@ -270,7 +270,7 @@ def main(argv):
                 print 'Checksums match for track %d' % 0
             else:
                 print 'ERROR: checksums did not match for track %d' % 0
-            # overlay this rip onto the IndexTable
+            # overlay this rip onto the Table
         itable.setFile(1, 0, htoapath, htoalength, 0)
 
 
@@ -294,7 +294,7 @@ def main(argv):
             else:
                 print 'ERROR: checksums did not match for track %d' % (i + 1)
 
-        # overlay this rip onto the IndexTable
+        # overlay this rip onto the Table
         itable.setFile(i + 1, 1, path, ittoc.getTrackLength(i + 1), i + 1)
 
 
