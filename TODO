@@ -4,9 +4,9 @@ MILESTONES:
   (using a CD in AccurateRip and ripping with various offsets)
   (can be delayed since we can get the number from EAC)
 - rip a CD with HTOA and other pre-gap tracks, creating separate track for HTOA
+- parse .toc files (see cdrdao)
 
 TODO:
-- parse .toc files (see cdrdao)
 - handle errors on cdrdao spawning (for example, not having cdrecorder,
   or not putting the disk in)
 - check if it's simple to listen to each track in a multitrack completing
