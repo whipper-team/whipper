@@ -39,7 +39,7 @@ _CATALOG_RE = re.compile(r'^CATALOG "(?P<catalog>\d+)"$')
 # records
 _TRACK_RE = re.compile(r"""
     ^TRACK            # TRACK
-    \s(?P<mode>.+)$   # mode (AUDIO, MODEx/2xxx, ...)
+    \s(?P<mode>.+)$   # mode (AUDIO, MODE2_FORM_MIX, MODEx/2xxx, ...)
 """, re.VERBOSE)
 
 _ISRC_RE = re.compile(r'^ISRC "(?P<isrc>\w+)"$')
@@ -50,6 +50,13 @@ _SILENCE_RE = re.compile(r"""
     \s(?P<length>.*)$     # pre-gap length
 """, re.VERBOSE)
 
+# ZERO is used as pre-gap source when switching mode
+_ZERO_RE = re.compile(r"""
+    ^ZERO                 # ZERO
+    \s(?P<mode>.+)        # mode (AUDIO, MODEx/2xxx, ...)
+    \s(?P<length>.*)$     # zero length
+""", re.VERBOSE)
+
 
 _FILE_RE = re.compile(r"""
     ^FILE                 # FILE
@@ -57,6 +64,14 @@ _FILE_RE = re.compile(r"""
     \s+(?P<start>.+)      # start offset
     \s(?P<length>.+)$     # stop offset
 """, re.VERBOSE)
+
+_DATAFILE_RE = re.compile(r"""
+    ^DATAFILE             # DATA FILE
+    \s+"(?P<name>.*)"     # 'file name' in quotes
+    \s+(?P<length>\S+)    # start offset
+    \s*.*                 # possible // comment
+""", re.VERBOSE)
+
 
 # FIXME: start can be 0
 _START_RE = re.compile(r"""
@@ -83,7 +98,8 @@ class TocFile(object, log.Loggable):
         counter = 0
         trackNumber = 0
         indexNumber = 0
-        currentOffset = 0 # running absolute offset of where each track starts
+        absoluteOffset = 0 # running absolute offset of where each track starts
+        relativeOffset = 0 # running relative offset, relative to counter source
         currentLength = 0 # accrued during TRACK record parsing, current track
         totalLength = 0 # accrued during TRACK record parsing, total disc
         pregapLength = 0 # length of the pre-gap, current track
@@ -128,13 +144,16 @@ class TocFile(object, log.Loggable):
                 # set index 1 of previous track if there was one, using
                 # pregapLength if applicable
                 if currentTrack:
+                    # FIXME: why not set absolute offsets too ?
                     currentTrack.index(1, path=currentFile.path,
-                        relative=currentOffset + pregapLength, counter=counter)
+                        absolute=absoluteOffset + pregapLength,
+                        relative=relativeOffset + pregapLength, counter=counter)
                     self.debug('track %d, added index %r',
                         currentTrack.number, currentTrack.getIndex(1))
 
                 trackNumber += 1
-                currentOffset += currentLength
+                absoluteOffset += currentLength
+                relativeOffset += currentLength
                 totalLength += currentLength
                 currentLength = 0
                 indexNumber = 1
@@ -142,7 +161,9 @@ class TocFile(object, log.Loggable):
                 pregapLength = 0
 
                 # FIXME: track mode
-                currentTrack = table.Track(trackNumber)
+                self.debug('found track %d, mode %s', trackNumber, trackMode)
+                audio = trackMode == 'AUDIO'
+                currentTrack = table.Track(trackNumber, audio=audio)
                 self.table.tracks.append(currentTrack)
                 continue
 
@@ -163,6 +184,16 @@ class TocFile(object, log.Loggable):
                 length = m.group('length')
                 currentLength += common.msfToFrames(length)
 
+            # look for ZERO lines
+            m = _ZERO_RE.search(line)
+            if m:
+                if currentFile is not None:
+                    self.debug('ZERO after FILE, increasing counter')
+                    counter += 1
+                    currentFile = None
+                length = m.group('length')
+                currentLength += common.msfToFrames(length)
+
             # look for FILE lines
             m = _FILE_RE.search(line)
             if m:
@@ -174,11 +205,31 @@ class TocFile(object, log.Loggable):
                     common.msfToFrames(length))
                 if not currentFile or filePath != currentFile.path:
                     counter += 1
+                    relativeOffset = 0
                     self.debug('track %d, switched to new FILE, increased counter to %d',
                         trackNumber, counter)
                 currentFile = File(filePath, start, length)
-                #currentOffset += common.msfToFrames(start)
+                #absoluteOffset += common.msfToFrames(start)
                 currentLength += common.msfToFrames(length)
+
+            # look for DATAFILE lines
+            m = _DATAFILE_RE.search(line)
+            if m:
+                filePath = m.group('name')
+                length = m.group('length')
+                # print 'THOMAS', length
+                self.debug('FILE %s, length %r',
+                    filePath, common.msfToFrames(length))
+                if not currentFile or filePath != currentFile.path:
+                    counter += 1
+                    relativeOffset = 0
+                    self.debug('track %d, switched to new FILE, increased counter to %d',
+                        trackNumber, counter)
+                # FIXME: assume that a MODE2_FORM_MIX track always starts at 0
+                currentFile = File(filePath, 0, length)
+                #absoluteOffset += common.msfToFrames(start)
+                currentLength += common.msfToFrames(length)
+
 
             # look for START lines
             m = _START_RE.search(line)
@@ -190,7 +241,8 @@ class TocFile(object, log.Loggable):
 
                 length = common.msfToFrames(m.group('length'))
                 currentTrack.index(0, path=currentFile.path,
-                    relative=currentOffset, counter=counter)
+                    absolute=absoluteOffset,
+                    relative=relativeOffset, counter=counter)
                 self.debug('track %d, added index %r',
                     currentTrack.number, currentTrack.getIndex(0))
                 # store the pregapLength to add it when we index 1 for this
@@ -215,7 +267,8 @@ class TocFile(object, log.Loggable):
         # handle index 1 of final track, if any
         if currentTrack:
             currentTrack.index(1, path=currentFile.path,
-                relative=currentOffset + pregapLength, counter=counter)
+                absolute=absoluteOffset + pregapLength,
+                relative=relativeOffset + pregapLength, counter=counter)
             self.debug('track %d, added index %r',
                 currentTrack.number, currentTrack.getIndex(1))
 

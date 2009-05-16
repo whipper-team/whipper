@@ -208,19 +208,28 @@ class Table(object, log.Loggable):
         #if self.getTrackStart(1) > 0:
         #    delta = 0
 
+        debug = [str(len(self.tracks))]
         for track in self.tracks:
             offset = self.getTrackStart(track.number) + delta
+            debug.append(str(offset))
             seconds = offset / common.FRAMES_PER_SECOND
             n += self._cddbSum(seconds)
 
         last = self.tracks[-1]
         # the 'real' leadout, not offset by 150 frames
+        # print 'THOMAS: disc leadout', self.leadout
         leadout = self.getTrackEnd(last.number) + 1
+        self.debug('leadout LBA: %d', leadout)
         startSeconds = self.getTrackStart(1) / common.FRAMES_PER_SECOND
         leadoutSeconds = leadout / common.FRAMES_PER_SECOND
         t = leadoutSeconds - startSeconds
+        debug.append(str(leadoutSeconds + 2)) # 2 is the 150 frame cddb offset
 
         value = (n % 0xff) << 24 | t << 8 | len(self.tracks)
+
+        # compare this debug line to cd-discid output
+        self.debug('cddb disc id debug: %s',
+            " ".join(["%08x" % value, ] + debug))
         
         return "%08x" % value
 
@@ -457,20 +466,27 @@ class Table(object, log.Loggable):
         # the first cut is the deepest
         counter = index.counter
 
+        #for t in self.tracks: print t, t.indexes
         self.debug('absolutizing')
         while True:
+            track = self.tracks[t - 1]
+            index = track.getIndex(i)
+            assert track.number == t
+            assert index.number == i
             if index.counter is None:
                 self.debug('Track %d, index %d has no counter', t, i)
                 break
             if  index.counter != counter:
                 self.debug('Track %d, index %d has a different counter', t, i)
                 break
-            track = self.tracks[t - 1]
-            index = track.getIndex(i)
-            assert track.number == t
-            assert index.number == i
             self.debug('Setting absolute offset %d on track %d, index %d',
                 index.relative, t, i)
+            if index.absolute is not None:
+                if index.absolute != index.relative:
+                    msg = 'Track %d, index %d had absolute %d,' \
+                        ' overriding with %d' % (
+                            t, i, index.absolute, index.relative)
+                    raise ValueError(msg)
             index.absolute = index.relative
             try:
                 t, i = self.getNextTrackIndex(t, i)

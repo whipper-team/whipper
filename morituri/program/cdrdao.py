@@ -202,7 +202,8 @@ class CDRDAOTask(task.Task):
                   bufsize=bufsize,
                   stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                   stderr=subprocess.PIPE, close_fds=True)
-        self.debug('Started cdrdao with pid %d', self._popen.pid)
+        self.debug('Started cdrdao with pid %d and options %r',
+            self._popen.pid, self.options)
 
         self.runner.schedule(1.0, self._read, runner)
 
@@ -269,7 +270,8 @@ class ReadTableTask(CDRDAOTask):
         os.close(fd)
         os.unlink(self._tocfilepath)
 
-        self.options = ['read-toc', self._tocfilepath]
+        self.options = ['read-toc', '--session', '9',
+            self._tocfilepath, ]
 
     def readbytes(self, bytes):
         self.parser.read(bytes)
@@ -318,7 +320,10 @@ class ReadTOCTask(CDRDAOTask):
         os.close(fd)
         os.unlink(self._toc)
 
-        self.options = ['read-toc', '--fast-toc', self._toc]
+        # Reading a non-existent session gives you output for all sessions
+        # 9 should be a safe number
+        self.options = ['read-toc', '--fast-toc', '--session', '9',
+            self._toc, ]
 
     def readbytes(self, bytes):
         self.parser.read(bytes)

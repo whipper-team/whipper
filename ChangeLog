@@ -1,5 +1,26 @@
 2009-05-16  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/program/cdrdao.py:
+	  read all sessions by reading session 9.
+	* morituri/image/toc.py:
+	  Parse ZERO statements properly.
+	  Also set absolute offsets when we know them from the .toc file.
+	  Properly set audio flag on tracks.
+	  FIXME: probably doesn't work if the .toc does not have lengths.
+	* morituri/image/table.py:
+	  Add some debug to cddb disc id calculation.
+	  Fix absolutize function, it was going one index too far.
+	  raise ValueError when overriding .absolute with a wrong value.
+	* examples/readdisc.py:
+	  Show CDDB disc id at the start.
+	  Assert when toc and table have different disc id's (to be fixed)
+	* morituri/test/test_image_cue.py:
+	  Update for having the table already with absolute values.
+	* morituri/test/test_image_toc.py:
+	  Add Ladyhawke CDDB test, it has a data track.
+
+2009-05-16  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* examples/readdisc.py:
 	  Move constants to common
 

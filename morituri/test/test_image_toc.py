@@ -49,9 +49,9 @@ class CureTestCase(unittest.TestCase):
         self.assertEquals(index.relative, value)
 
     def testSetFile(self):
-        self._assertAbsolute(1, 1, None)
-        self._assertAbsolute(2, 0, None)
-        self._assertAbsolute(2, 1, None)
+        self._assertAbsolute(1, 1, 0)
+        self._assertAbsolute(2, 0, 28245)
+        self._assertAbsolute(2, 1, 28324)
         self._assertPath(1, 1, "data.wav")
 
         def dump():
@@ -118,8 +118,7 @@ class BlocTestCase(unittest.TestCase):
 
     # This disc has a pre-gap, so is a good test for .CUE writing
     def testConvertCue(self):
-        self.failIf(self.toc.table.hasTOC())
-        self.toc.table.absolutize()
+        #self.toc.table.absolutize()
         self.failUnless(self.toc.table.hasTOC())
         cue = self.toc.table.cue()
         ref = open(os.path.join(os.path.dirname(__file__),
@@ -128,6 +127,10 @@ class BlocTestCase(unittest.TestCase):
 
     def testCDDBId(self):
         self.toc.table.absolutize()
+        # cd-discid output:
+        # ad0be00d 13 15370 35019 51532 69190 84292 96826 112527 132448
+        # 148595 168072 185539 203331 222103 3244
+
         self.assertEquals(self.toc.table.getCDDBDiscId(), 'ad0be00d')
 
     def testAccurateRip(self):
@@ -156,10 +159,27 @@ class BreedersTestCase(unittest.TestCase):
         self.assertEquals(cdt['TITLE'], 'OVERGLAZED')
 
     def testConvertCue(self):
-        self.failIf(self.toc.table.hasTOC())
         self.toc.table.absolutize()
         self.failUnless(self.toc.table.hasTOC())
         cue = self.toc.table.cue()
         ref = open(os.path.join(os.path.dirname(__file__),
             'breeders.cue')).read()
         self.assertEquals(cue, ref)
+
+# Ladyhawke has a data track
+class LadyhawkeTestCase(unittest.TestCase):
+    def setUp(self):
+        self.toc = toc.TocFile(os.path.join(os.path.dirname(__file__),
+            'ladyhawke.toc'))
+        self.toc.parse()
+        self.assertEquals(len(self.toc.table.tracks), 13)
+        #import code; code.interact(local=locals())
+        self.failIf(self.toc.table.tracks[-1].audio)
+
+    def testCDDBId(self):
+        self.toc.table.absolutize()
+        self.assertEquals(self.toc.table.getCDDBDiscId(), 'c60af50d')
+        # output from cd-discid:
+        # c60af50d 13 150 15687 31841 51016 66616 81352 99559 116070 133243
+        # 149997 161710 177832 207256 2807
+

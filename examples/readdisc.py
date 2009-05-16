@@ -229,6 +229,7 @@ def main(argv):
     assert ittoc.hasTOC()
 
     # already show us some info based on this
+    print "CDDB disc id", ittoc.getCDDBDiscId()
     metadata = musicbrainz(ittoc.getMusicBrainzDiscId())
 
     # now, read the complete index table, which is slower
@@ -240,6 +241,11 @@ def main(argv):
     itable = ptable.object
 
     assert itable.hasTOC()
+
+    assert itable.getCDDBDiscId() == ittoc.getCDDBDiscId(), \
+        "full table's id %s differs from toc id %s" % (
+            itable.getCDDBDiscId(), ittoc.getCDDBDiscId())
+    assert itable.getMusicBrainzDiscId() == ittoc.getMusicBrainzDiscId()
 
     lastTrackStart = 0
 
