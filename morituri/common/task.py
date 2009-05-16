@@ -135,6 +135,8 @@ class BaseMultiTask(Task):
         Task.start(self, runner)
 
         # initialize task tracking
+        if not self.tasks:
+            self.warning('no tasks')
         self._task = 0
         self.__tasks = self.tasks[:]
         self._generic = self.description
