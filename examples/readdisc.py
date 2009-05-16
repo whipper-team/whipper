@@ -241,7 +241,8 @@ def main(argv):
     metadata = musicbrainz(itable.getMusicBrainzDiscId())
 
     # check for hidden track one audio
-    htoa = None
+    htoapath = None
+    index = None
     track = itable.tracks[0]
     try:
         index = track.getIndex(0)
