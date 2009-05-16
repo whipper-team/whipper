@@ -54,7 +54,7 @@ class WriteCueFileTestCase(unittest.TestCase):
         fd, path = tempfile.mkstemp(suffix='morituri.test.cue')
         os.close(fd)
 
-        it = table.IndexTable()
+        it = table.Table()
         
 
         t = table.Track(1)

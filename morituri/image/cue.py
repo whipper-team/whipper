@@ -61,7 +61,7 @@ class CueFile(object, log.Loggable):
     """
     I represent a .cue file as an object.
     
-    @type table: L{table.IndexTable}
+    @type table: L{table.Table}
     @ivar table: the index table.
     """
     def __init__(self, path):
@@ -69,7 +69,7 @@ class CueFile(object, log.Loggable):
         self._rems = {}
         self._messages = []
         self.leadout = None
-        self.table = table.IndexTable()
+        self.table = table.Table()
 
     def parse(self):
         state = 'HEADER'

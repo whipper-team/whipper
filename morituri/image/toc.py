@@ -74,7 +74,7 @@ class TocFile(object, log.Loggable):
     def __init__(self, path):
         self._path = path
         self._messages = []
-        self.table = table.IndexTable()
+        self.table = table.Table()
 
     def parse(self):
         state = 'HEADER'

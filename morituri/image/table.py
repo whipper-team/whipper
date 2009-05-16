@@ -52,7 +52,7 @@ CDTEXT_FIELDS = [
 
 class Track:
     """
-    I represent a track entry in an IndexTable.
+    I represent a track entry in an Table.
 
     @ivar number:  track number (1-based)
     @type number:  int
@@ -112,7 +112,7 @@ class Index:
         return '<Index %02d, absolute %r, path %r, relative %r, counter %r>' % (
             self.number, self.absolute, self.path, self.relative, self.counter)
 
-class IndexTable(object, log.Loggable):
+class Table(object, log.Loggable):
     """
     I represent a table of indexes on a CD.
 
@@ -506,10 +506,10 @@ class IndexTable(object, log.Loggable):
         return track, indexes[0]
 
 
-    # various tests for types of IndexTable
+    # various tests for types of Table
     def hasTOC(self):
         """
-        Check if the Index Table has a complete TOC.
+        Check if the Table has a complete TOC.
         a TOC is a list of all tracks and their Index 01, with absolute
         offsets, as well as the leadout.
         """

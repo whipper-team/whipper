@@ -88,7 +88,7 @@ class Image(object, log.Loggable):
 
             offset += length
 
-        self.table = table.IndexTable(tracks)
+        self.table = table.Table(tracks)
         self.table.leadout = offset
         self.debug('setup image done')
 

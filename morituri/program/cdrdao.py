@@ -78,7 +78,7 @@ class OutputParser(object, log.Loggable):
         self._track = None    # which track are we analyzing?
         self._task = taskk
 
-        self.table = table.IndexTable() # the index table for the TOC
+        self.table = table.Table() # the index table for the TOC
 
     def read(self, bytes):
         self.log('received %d bytes in state %s', len(bytes), self._state)
@@ -251,12 +251,12 @@ class CDRDAOTask(task.Task):
         raise NotImplentedError
 
 
-class ReadIndexTableTask(CDRDAOTask):
+class ReadTableTask(CDRDAOTask):
     """
     I am a task that reads all indexes of a CD.
 
     @ivar table: the index table
-    @type table: L{table.IndexTable}
+    @type table: L{table.Table}
     """
 
     description = "Scanning indexes..."
@@ -275,7 +275,7 @@ class ReadIndexTableTask(CDRDAOTask):
         self.parser.read(bytes)
 
     def done(self):
-        # FIXME: instead of reading only a TOC, output a complete IndexTable
+        # FIXME: instead of reading only a TOC, output a complete Table
         # by merging the TOC info.
         self._tocfile = toc.TocFile(self._tocfilepath)
         self._tocfile.parse()
@@ -304,7 +304,7 @@ class ReadTOCTask(CDRDAOTask):
     I am a task that reads the TOC of a CD, without pregaps.
 
     @ivar table: the index table that matches the TOC.
-    @type table: L{table.IndexTable}
+    @type table: L{table.Table}
     """
 
     description = "Reading TOC..."

@@ -18,7 +18,7 @@ class LadyhawkeTestCase(unittest.TestCase):
     # AccurateRip URL has been verified against EAC's, using wireshark
 
     def setUp(self):
-        self.table = table.IndexTable()
+        self.table = table.Table()
 
         for i in range(12):
             self.table.tracks.append(table.Track(i + 1, audio=True))
@@ -53,7 +53,7 @@ class MusicBrainzTestCase(unittest.TestCase):
     # disc is Ettella Diamant
 
     def setUp(self):
-        self.table = table.IndexTable()
+        self.table = table.Table()
 
         for i in range(6):
             self.table.tracks.append(table.Track(i + 1, audio=True))
