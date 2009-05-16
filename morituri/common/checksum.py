@@ -33,6 +33,7 @@ from morituri.common import task
 # checksums are not CRC's. a CRC is a specific type of checksum.
 
 SAMPLES_PER_FRAME = 588
+WORDS_PER_FRAME = SAMPLES_PER_FRAME * 2
 BYTES_PER_FRAME = SAMPLES_PER_FRAME * 4
 FRAMES_PER_SECOND = 75
 
