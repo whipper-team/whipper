@@ -1,6 +1,11 @@
 2009-05-16  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* examples/readdisc.py:
+	  Get our metadata only from the toc.
+
+2009-05-16  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* examples/readdisc.py:
 	  Also work for discs without htoa.
 
 2009-05-16  Thomas Vander Stichele  <thomas at apestaart dot org>

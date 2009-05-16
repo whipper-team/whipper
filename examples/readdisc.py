@@ -219,14 +219,19 @@ def main(argv):
         runner = taskgtk.GtkProgressRunner()
         function = gtkmain
 
-    # first, read the normal TOC and full index table
+    # first, read the normal TOC, which is fast
     ptoc = common.Persister(options.toc_pickle or None)
     if not ptoc.object:
         t = cdrdao.ReadTOCTask()
         function(runner, t)
         ptoc.persist(t.table)
     ittoc = ptoc.object
+    assert ittoc.hasTOC()
 
+    # already show us some info based on this
+    metadata = musicbrainz(ittoc.getMusicBrainzDiscId())
+
+    # now, read the complete index table, which is slower
     ptable = common.Persister(options.table_pickle or None)
     if not ptable.object:
         t = cdrdao.ReadIndexTableTask()
@@ -237,8 +242,6 @@ def main(argv):
     assert itable.hasTOC()
 
     lastTrackStart = 0
-
-    metadata = musicbrainz(itable.getMusicBrainzDiscId())
 
     # check for hidden track one audio
     htoapath = None
