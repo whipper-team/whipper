@@ -11,3 +11,39 @@ TODO:
   or not putting the disk in)
 - check if it's simple to listen to each track in a multitrack completing
 - save trms to a pickle, after finishing each track
+- cdrdao doesn't automatically save session 2 tracks to toc (like data track)
+  so not a good candidate for getting a complete TOC and calculating cddb
+  Instead, get session 9 to get all
+
+Ladyhawke TOC:
+track:   1 lba:         0 (        0) 00:02:00 adr: 1 control: 0 mode: 0
+track:   2 lba:     15537 (    62148) 03:29:12 adr: 1 control: 0 mode: 0
+track:   3 lba:     31691 (   126764) 07:04:41 adr: 1 control: 0 mode: 0
+track:   4 lba:     50866 (   203464) 11:20:16 adr: 1 control: 0 mode: 0
+track:   5 lba:     66466 (   265864) 14:48:16 adr: 1 control: 0 mode: 0
+track:   6 lba:     81202 (   324808) 18:04:52 adr: 1 control: 0 mode: 0
+track:   7 lba:     99409 (   397636) 22:07:34 adr: 1 control: 0 mode: 0
+track:   8 lba:    115920 (   463680) 25:47:45 adr: 1 control: 0 mode: 0
+track:   9 lba:    133093 (   532372) 29:36:43 adr: 1 control: 0 mode: 0
+track:  10 lba:    149847 (   599388) 33:19:72 adr: 1 control: 0 mode: 0
+track:  11 lba:    161560 (   646240) 35:56:10 adr: 1 control: 0 mode: 0
+track:  12 lba:    177682 (   710728) 39:31:07 adr: 1 control: 0 mode: 0
+track:  13 lba:    207106 (   828424) 46:03:31 adr: 1 control: 4 mode: 2
+track:lout lba:    210385 (   841540) 46:47:10 adr: 1 control: 4 mode: -1
+
+Bloc Party TOC:
+track:   1 lba:     15220 (    60880) 03:24:70 adr: 1 control: 0 mode: 0
+track:   2 lba:     34869 (   139476) 07:46:69 adr: 1 control: 0 mode: 0
+track:   3 lba:     51382 (   205528) 11:27:07 adr: 1 control: 0 mode: 0
+track:   4 lba:     69040 (   276160) 15:22:40 adr: 1 control: 0 mode: 0
+track:   5 lba:     84142 (   336568) 18:43:67 adr: 1 control: 0 mode: 0
+track:   6 lba:     96676 (   386704) 21:31:01 adr: 1 control: 0 mode: 0
+track:   7 lba:    112377 (   449508) 25:00:27 adr: 1 control: 0 mode: 0
+track:   8 lba:    132298 (   529192) 29:25:73 adr: 1 control: 0 mode: 0
+track:   9 lba:    148445 (   593780) 33:01:20 adr: 1 control: 0 mode: 0
+track:  10 lba:    167922 (   671688) 37:20:72 adr: 1 control: 0 mode: 0
+track:  11 lba:    185389 (   741556) 41:13:64 adr: 1 control: 0 mode: 0
+track:  12 lba:    203181 (   812724) 45:11:06 adr: 1 control: 0 mode: 0
+track:  13 lba:    221953 (   887812) 49:21:28 adr: 1 control: 0 mode: 0
+track:lout lba:    243216 (   972864) 54:04:66 adr: 1 control: 0 mode: -1
+
