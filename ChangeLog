@@ -1,6 +1,11 @@
 2009-05-16  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* examples/readdisc.py:
+	  Move constants to common
+
+2009-05-16  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* examples/readdisc.py:
 	* examples/readhtoa.py:
 	* examples/readtoc.py:
 	  Rename IndexTable to Table.

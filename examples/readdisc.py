@@ -316,14 +316,14 @@ def main(argv):
     handle.write('#EXTM3U\n')
     if htoapath:
         handle.write('#EXTINF:%d,%s\n' % (
-            htoalength / checksum.FRAMES_PER_SECOND,
+            htoalength / common.FRAMES_PER_SECOND,
                 os.path.basename(htoapath[:-4])))
         handle.write('%s\n' % os.path.basename(htoapath))
 
     for i, track in enumerate(itable.tracks):
         path = getPath(options.track_template, metadata, i) + '.wav'
         handle.write('#EXTINF:%d,%s\n' % (
-            itable.getTrackLength(i + 1) / checksum.FRAMES_PER_SECOND,
+            itable.getTrackLength(i + 1) / common.FRAMES_PER_SECOND,
             os.path.basename(path)))
         handle.write('%s\n' % os.path.basename(path))
     handle.close()
