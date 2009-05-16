@@ -8,7 +8,7 @@ import gobject
 gobject.threads_init()
 
 from morituri.image import image
-from morituri.common import task
+from morituri.common import task, common
 
 def h(i):
     return "0x%08x" % i
@@ -80,7 +80,7 @@ class AudioLengthTestCase(unittest.TestCase):
         t = image.AudioLengthTask(path)
         runner = task.SyncRunner()
         runner.run(t, verbose=False)
-        self.assertEquals(t.length, 5880)
+        self.assertEquals(t.length, 10 * common.SAMPLES_PER_FRAME)
 
 class AccurateRipResponseTestCase(unittest.TestCase):
     def testResponse(self):
