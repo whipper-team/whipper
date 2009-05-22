@@ -1,5 +1,10 @@
 2009-05-22  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/checksum.py:
+	  More pychecker fixes.
+
+2009-05-22  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/common.py:
 	* morituri/common/renamer.py:
 	  Pychecker fixes.

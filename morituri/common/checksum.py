@@ -247,18 +247,15 @@ class AccurateRipChecksumTask(ChecksumTask):
                 return checksum
 
         values = struct.unpack("<%dI" % (len(buffer) / 4), buffer)
-        sum = 0
         for i, value in enumerate(values):
             # self._bytes is updated after do_checksum_buffer
-            sum += (self._bytes / 4 + i + 1) * value
-            sum &= 0xFFFFFFFF
+            checksum += (self._bytes / 4 + i + 1) * value
+            checksum &= 0xFFFFFFFF
             # offset = self._bytes / 4 + i + 1
             # if offset % common.SAMPLES_PER_FRAME == 0:
             #    print 'THOMAS: frame %d, ends before %d, last value %08x, CRC %08x' % (
             #        offset / common.SAMPLES_PER_FRAME, offset, value, sum)
 
-        checksum += sum
-        checksum &= 0xFFFFFFFF
         return checksum
 
 class TRMTask(task.Task):
@@ -335,10 +332,10 @@ class TRMTask(task.Task):
 
     def _new_buffer_cb(self, sink):
         # this is just for counting progress
-        buffer = sink.emit('pull-buffer')
-        position = buffer.timestamp
-        if buffer.duration != gst.CLOCK_TIME_NONE:
-            position += buffer.duration
+        buf = sink.emit('pull-buffer')
+        position = buf.timestamp
+        if buf.duration != gst.CLOCK_TIME_NONE:
+            position += buf.duration
         self.setProgress(float(position) / self._length)
 
     def stop(self):
