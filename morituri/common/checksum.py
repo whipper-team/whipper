@@ -108,8 +108,8 @@ class ChecksumTask(task.Task):
         # FIXME: sending it with frameEnd set screws up the seek, we don't get
         # everything for flac; fixed in recent -good
         result = sink.send_event(event)
-        #self.debug('event sent')
-        #self.debug(result)
+        self.debug('event sent')
+        self.debug(result)
         sink.connect('new-buffer', self._new_buffer_cb)
         sink.connect('eos', self._eos_cb)
 
@@ -128,26 +128,26 @@ class ChecksumTask(task.Task):
         self.debug('scheduled setting to play')
 
     def _new_buffer_cb(self, sink):
-        buffer = sink.emit('pull-buffer')
+        buf = sink.emit('pull-buffer')
         gst.log('received new buffer at offset %r with length %r' % (
-            buffer.offset, buffer.size))
+            buf.offset, buf.size))
         if self._first is None:
-            self._first = buffer.offset
+            self._first = buf.offset
             self.debug('first sample is %r', self._first)
-        self._last = buffer
+        self._last = buf
 
-        assert len(buffer) % 4 == 0, "buffer is not a multiple of 4 bytes"
+        assert len(buf) % 4 == 0, "buffer is not a multiple of 4 bytes"
         
         # FIXME: gst-python 0.10.14.1 doesn't have adapter_peek/_take wrapped
         # see http://bugzilla.gnome.org/show_bug.cgi?id=576505
-        self._adapter.push(buffer)
+        self._adapter.push(buf)
 
         while self._adapter.available() >= common.BYTES_PER_FRAME:
             # FIXME: in 0.10.14.1, take_buffer leaks a ref
-            buffer = self._adapter.take_buffer(common.BYTES_PER_FRAME)
+            buf = self._adapter.take_buffer(common.BYTES_PER_FRAME)
 
-            self._checksum = self.do_checksum_buffer(buffer, self._checksum)
-            self._bytes += len(buffer)
+            self._checksum = self.do_checksum_buffer(buf, self._checksum)
+            self._bytes += len(buf)
 
             # update progress
             frame = self._first + self._bytes / 4
@@ -156,7 +156,7 @@ class ChecksumTask(task.Task):
             # marshall to the main thread
             self.runner.schedule(0, self.setProgress, progress)
 
-    def do_checksum_buffer(self, buffer, checksum):
+    def do_checksum_buffer(self, buf, checksum):
         """
         Subclasses should implement this.
         """
@@ -201,8 +201,8 @@ class CRC32Task(ChecksumTask):
 
     description = 'Calculating CRC'
 
-    def do_checksum_buffer(self, buffer, checksum):
-        return zlib.crc32(buffer, checksum)
+    def do_checksum_buffer(self, buf, checksum):
+        return zlib.crc32(buf, checksum)
 
 class AccurateRipChecksumTask(ChecksumTask):
     """
@@ -223,7 +223,7 @@ class AccurateRipChecksumTask(ChecksumTask):
         return "<AccurateRipCheckSumTask of track %d in %s>" % (
             self._trackNumber, self._path)
 
-    def do_checksum_buffer(self, buffer, checksum):
+    def do_checksum_buffer(self, buf, checksum):
         self._discFrameCounter += 1
 
         # on first track ...
@@ -234,7 +234,7 @@ class AccurateRipChecksumTask(ChecksumTask):
                 return checksum
             # ... on 5th frame, only use last value
             elif self._discFrameCounter == 5:
-                values = struct.unpack("<I", buffer[-4:])
+                values = struct.unpack("<I", buf[-4:])
                 checksum += common.SAMPLES_PER_FRAME * 5 * values[0]
                 checksum &= 0xFFFFFFFF
                 return checksum
@@ -246,7 +246,7 @@ class AccurateRipChecksumTask(ChecksumTask):
                 self.debug('skipping frame %d', self._discFrameCounter)
                 return checksum
 
-        values = struct.unpack("<%dI" % (len(buffer) / 4), buffer)
+        values = struct.unpack("<%dI" % (len(buf) / 4), buf)
         for i, value in enumerate(values):
             # self._bytes is updated after do_checksum_buffer
             checksum += (self._bytes / 4 + i + 1) * value
