@@ -1,5 +1,19 @@
 2009-05-22  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* RELEASE:
+	* misc/pycheckerrc:
+	* misc/show-coverage.py:
+	* morituri/image/Makefile.am:
+	* morituri/program/Makefile.am:
+	* RELEASE (added):
+	* morituri/image/Makefile.am (added):
+	* morituri/program/Makefile.am (added):
+	* misc/show-coverage.py (added):
+	* misc/pycheckerrc (added):
+	  more additions
+
+2009-05-22  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* AUTHORS:
 	* Makefile.am:
 	* NEWS:
