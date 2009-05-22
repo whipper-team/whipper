@@ -346,7 +346,7 @@ class Table(object, log.Loggable):
 
         for key in CDTEXT_FIELDS:
                 if key not in main and self.cdtext.has_key(key):
-                    lines.append("    %s %s" % (key, track.cdtext[key]))
+                    lines.append("    %s %s" % (key, self.cdtext[key]))
 
         assert self.hasTOC(), "Table does not represent a full CD TOC"
         lines.append('REM DISCID %s' % self.getCDDBDiscId().upper())
