@@ -63,7 +63,7 @@ class ProgressParser(object):
         """
         m = _PROGRESS_RE.search(line)
         if m:
-            code = int(m.group('code'))
+            # code = int(m.group('code'))
             function = m.group('function')
             offset = int(m.group('offset'))
             if function == 'read':

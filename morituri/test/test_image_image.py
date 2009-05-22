@@ -61,7 +61,6 @@ class TrackSeparateTestCase(unittest.TestCase):
         self.assertEquals(h(checksumtask.checksums[3]), '0x7271db39')
 
     def testLength(self):
-        tracks = self.image.cue.table.tracks
         self.assertEquals(self.image.table.getTrackLength(1), 10)
         self.assertEquals(self.image.table.getTrackLength(2), 10)
         self.assertEquals(self.image.table.getTrackLength(3), 10)

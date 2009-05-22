@@ -54,11 +54,6 @@ class CureTestCase(unittest.TestCase):
         self._assertAbsolute(2, 1, 28324)
         self._assertPath(1, 1, "data.wav")
 
-        def dump():
-            for t in self.toc.table.tracks:
-                print t
-                print t.indexes.values()
-
         self.toc.table.absolutize()
         self.toc.table.clearFiles()
 

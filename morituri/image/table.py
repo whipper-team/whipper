@@ -24,11 +24,6 @@
 Wrap Table of Contents.
 """
 
-import os
-import struct
-
-import gst
-
 from morituri.common import task, common, log
 
 # FIXME: taken from libcdio, but no reference found for these
@@ -166,7 +161,6 @@ class Table(object, log.Loggable):
         @returns: the length of the given track number, in CD frames
         @rtype:   int
         """
-        track = self.tracks[number - 1]
         return self.getTrackEnd(number) - self.getTrackStart(number) + 1
 
     def getAudioTracks(self):
@@ -362,7 +356,6 @@ class Table(object, log.Loggable):
         # add the first FILE line
         path = self.tracks[0].getFirstIndex().path
         counter = self.tracks[0].getFirstIndex().counter
-        currentPath = path
         lines.append('FILE "%s" WAVE' % path)
 
         for i, track in enumerate(self.tracks):
@@ -407,8 +400,6 @@ class Table(object, log.Loggable):
         t = self.tracks[0].number
         index = self.tracks[0].getFirstIndex()
         i = index.number
-        # the first cut is the deepest
-        counter = index.counter
 
         self.debug('clearing path')
         while True:

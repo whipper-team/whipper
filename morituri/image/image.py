@@ -24,7 +24,6 @@
 Wrap on-disk CD images based on the .cue file.
 """
 
-import os
 import struct
 
 import gst
@@ -234,7 +233,7 @@ class AccurateRipResponse(object):
         self.checksums = []
 
         pos = 13
-        for i in range(self.trackCount):
+        for _ in range(self.trackCount):
             confidence = struct.unpack("B", data[pos])[0]
             checksum = "%08x" % struct.unpack("<L", data[pos + 1:pos + 5])[0]
             pos += 9

@@ -111,7 +111,7 @@ class CueFile(object, log.Loggable):
                 state = 'TRACK'
 
                 trackNumber = int(m.group('track'))
-                trackMode = m.group('mode')
+                #trackMode = m.group('mode')
 
                 self.debug('found track %d', trackNumber)
                 currentTrack = table.Track(trackNumber)

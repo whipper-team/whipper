@@ -1,7 +1,6 @@
 # -*- Mode: Python; test-case-name: morituri.test.test_image_table -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
-import os
 import unittest
 
 from morituri.image import table
