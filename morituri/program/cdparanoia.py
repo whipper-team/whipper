@@ -67,11 +67,12 @@ class ProgressParser(object):
             function = m.group('function')
             offset = int(m.group('offset'))
             if function == 'read':
-                if offset % 1176 != 0:
-                    print 'THOMAS: not a multiple of 2532', offset
+                if offset % common.WORDS_PER_FRAME != 0:
+                    print 'THOMAS: not a multiple of %d: %d' % (
+                        common.WORDS_PER_FRAME, offset)
                     print line
                 else:
-                    self.read = offset / 1176
+                    self.read = offset / common.WORDS_PER_FRAME
 
 # FIXME: handle errors
 class ReadTrackTask(task.Task):
