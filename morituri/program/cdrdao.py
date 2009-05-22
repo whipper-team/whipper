@@ -249,7 +249,7 @@ class CDRDAOTask(task.Task):
         """
         Called when cdrdao completed successfully.
         """
-        raise NotImplentedError
+        raise NotImplementedError
 
 
 class ReadTableTask(CDRDAOTask):
