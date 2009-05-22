@@ -50,10 +50,13 @@ etc/bash_completion.d/Makefile
 m4/Makefile
 morituri/Makefile
 morituri/rip/Makefile
+morituri/common/Makefile
 morituri/configure/Makefile
 morituri/configure/uninstalled.py
 morituri/configure/installed.py
 morituri/extern/Makefile
+morituri/image/Makefile
+morituri/program/Makefile
 morituri/test/Makefile
 doc/Makefile
 misc/Makefile

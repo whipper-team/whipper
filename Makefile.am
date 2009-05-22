@@ -5,7 +5,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = bin etc morituri doc m4 misc
 
-EXTRA_DIST = HACKING morituri.spec morituri.doap RELEASE
+EXTRA_DIST = morituri.spec morituri.doap RELEASE
 
 check: pychecker check-python check-bash
 

@@ -1,5 +1,5 @@
 EXTRA_DIST = \
 	pycheckerrc \
 	header.py \
-	moap-uninstalled \
+	morituri-uninstalled \
 	show-coverage.py

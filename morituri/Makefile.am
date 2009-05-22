@@ -3,7 +3,6 @@ CLEANFILES = *.py{c,o}
 morituridir = $(PYTHONLIBDIR)/morituri
 
 morituri_PYTHON = \
-	__init__.py \
-	main.py
+	__init__.py
 
-SUBDIRS = extern rip test
+SUBDIRS = common extern image program rip test
