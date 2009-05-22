@@ -134,6 +134,7 @@ def main(argv):
     except urllib2.HTTPError, e:
         if e.code == 404:
             print 'Album not found in AccurateRip database'
+            sys.exit(1)
         else:
             raise
 

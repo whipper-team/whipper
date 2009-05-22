@@ -1,3 +1,43 @@
+2009-05-22  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* AUTHORS:
+	* Makefile.am:
+	* NEWS:
+	* TODO:
+	* autogen.sh:
+	* configure.ac:
+	* examples/ARcalibrate.py:
+	* misc/Makefile.am:
+	* misc/morituri-uninstalled:
+	* morituri.spec.in:
+	* morituri/Makefile.am:
+	* morituri/common/Makefile.am:
+	* morituri/common/logcommand.py:
+	* morituri/extern/Makefile.am:
+	* morituri/rip/Makefile.am:
+	* morituri/rip/__init__.py:
+	* morituri/rip/main.py:
+	* morituri/test/Makefile:
+	* morituri/test/Makefile.am:
+	* configure.ac (added):
+	* AUTHORS (added):
+	* morituri.spec.in (added):
+	* Makefile.am (added):
+	* morituri/test/Makefile.am (added):
+	* morituri/extern/Makefile.am (added):
+	* morituri/common/logcommand.py (added):
+	* morituri/common/Makefile.am (added):
+	* morituri/Makefile.am (added):
+	* morituri/rip (added):
+	* morituri/rip/__init__.py (added):
+	* morituri/rip/Makefile.am (added):
+	* morituri/rip/main.py (added):
+	* misc/Makefile.am (added):
+	* misc/morituri-uninstalled (added):
+	* autogen.sh (added):
+	* NEWS (added):
+	  Start autotooling.  Add a command-line application.
+
 2009-05-16  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/program/cdrdao.py:

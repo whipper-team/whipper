@@ -1,0 +1,42 @@
+%define pyver %(%{__python} -c "import sys; print sys.version[:3]")
+
+Name:           morituri
+Version:        @PACKAGE_VERSION@
+Release:        @PACKAGE_VERSION_RELEASE@%{?dist}
+Summary:        CD ripper
+Source:         %{name}-%{version}.tar.bz2
+URL:            http://thomas.apestaart.org/thomas/trac/
+License:        GPL
+Group:          Applications/Archiving
+BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+
+BuildArch:      noarch
+
+%description
+Morituri is a CD ripper.
+
+%prep
+
+%setup -q
+%configure --sysconfdir=%{_sysconfdir}
+
+%build
+
+%install
+rm -rf $RPM_BUILD_ROOT
+make DESTDIR=$RPM_BUILD_ROOT install
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%files
+%defattr(-,root,root)
+%doc README morituri.doap NEWS RELEASE ChangeLog
+%{_bindir}/rip
+%{_mandir}/man1/rip.1*
+%{_libdir}/python*.*/site-packages/morituri
+%{_sysconfdir}/bash_completion.d/morituri
+
+%changelog
+* Wed May 20 2009 Thomas Vander Stichele <thomas at apestaart dot org>
+- created package

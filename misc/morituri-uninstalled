@@ -1,0 +1,80 @@
+#!/bin/bash -i
+#
+# set up environment to use and develop uninstalled
+#
+# set up PATH, PYTHONPATH
+#
+# prefer uninstalled versions, but also put installed ones on the path
+#
+# symlink this script in a directory in your path (for example $HOME/bin)
+# to a name that reflects the version of your checkout
+
+# this script is run -i so that PS1 doesn't get cleared
+
+self=$0
+absolute=$self
+if test -L $absolute
+then
+  # find what the symlink points to
+  absolute=`stat $absolute -c %N -t | sed 's/^.* -> .//g' | sed 's/.$//g'`
+fi
+MISCDIR=`dirname $absolute`
+BASEDIR=`cd $MISCDIR/.. && pwd`
+
+# extract version from $0
+# if this script is called "...-head" then version will be "head"
+PROJECT=`basename $self | sed s/-.*//g`
+VERSION=`basename $self | sed s/.*-//g`
+
+options=
+
+# set up a bunch of paths
+export PATH=$BASEDIR/bin${PATH:+:$PATH}
+export PYTHONPATH=$BASEDIR${PYTHONPATH:+:$PYTHONPATH}
+
+# set up bash completion if we have it
+tmp=
+if echo $SHELL | grep bash > /dev/null
+then
+  if test -d $BASEDIR/etc/bash_completion.d
+  then
+    # we need to create our own temporary bashrc replacement from the user's
+    # and our completion stuff
+    tmp=`mktemp -t bashrc.XXXXXXXX`
+    if test -e $HOME/.bashrc
+    then
+      cat $HOME/.bashrc > $tmp
+    fi
+    cat $BASEDIR/etc/bash_completion.d/$PROJECT >> $tmp
+    SHELL_OPTIONS="--init-file $tmp"
+    options="(with bash completion)"
+  fi
+fi
+
+# if we got a command, run it, else start a shell
+if test ! -z "$1";
+then
+  $@
+  exit $?
+fi
+
+# set up prompt to help us remember we're in a subshell, cd to
+# the base directory and start $SHELL
+cd $BASEDIR
+shell=$SHELL
+if test "x$SHELL" == "x/bin/bash"
+then
+  # debian/ubuntu resets our PS1.  bastards.
+  if test -e /etc/debian_version
+  then
+    SHELL_OPTIONS="$SHELL_OPTIONS --noprofile"
+  fi
+fi
+echo Entering interactive $PROJECT shell $SHELL $options
+PS1="[$PROJECT-$VERSION] $PS1" $SHELL $SHELL_OPTIONS
+
+if test ! -z "$tmp"
+then
+  rm $tmp
+fi
+echo Thank you for using $PROJECT.
