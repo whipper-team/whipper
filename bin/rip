@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+# -*- Mode: Python -*-
+# vi:si:et:sw=4:sts=4:ts=4
+
+import sys
+
+# first try to import morituri
+try:
+    import morituri
+except ImportError:
+    sys.stderr.write('''The rip binary cannot find its python package.
+This means that the 'morituri' directory containing __init__.py is not on your
+PYTHONPATH.
+Typically this is due to a broken install.
+Please fix the problem, and verify that it is fixed by starting python and
+typing:
+
+>>> import morituri
+
+and assure it doesn't raise an exception.
+
+''')
+    sys.exit(1)
+
+# now load the main function
+try:
+    from morituri.rip import main
+    sys.exit(main.main(sys.argv[1:]))
+except ImportError, e:
+    raise
+    from morituri.util import deps
+    deps.handleImportError(e)
