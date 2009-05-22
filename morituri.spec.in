@@ -33,9 +33,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 %doc README morituri.doap NEWS RELEASE ChangeLog
 %{_bindir}/rip
-%{_mandir}/man1/rip.1*
+#%{_mandir}/man1/rip.1*
 %{_libdir}/python*.*/site-packages/morituri
-%{_sysconfdir}/bash_completion.d/morituri
+%{_sysconfdir}/bash_completion.d/rip
 
 %changelog
 * Wed May 20 2009 Thomas Vander Stichele <thomas at apestaart dot org>

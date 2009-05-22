@@ -1,8 +1,8 @@
 CLEANFILES = *.py{c,o}
 
-moapdir = $(PYTHONLIBDIR)/moap/configure
+morituridir = $(PYTHONLIBDIR)/morituri/configure
 
-moap_PYTHON = \
+morituri_PYTHON = \
 	__init__.py \
 	configure.py \
 	installed.py
@@ -15,4 +15,4 @@ TAGS_FILES = installed.py.in uninstalled.py.in
 
 DISTCLEANFILES = installed.pyc installed.pyo uninstalled.pyc uninstalled.pyo
 
-EXTRA_DIST = $(moap_PYTHON) installed.py.in uninstalled.py.in
+EXTRA_DIST = $(morituri_PYTHON) installed.py.in uninstalled.py.in

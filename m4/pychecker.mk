@@ -48,4 +48,4 @@ pychecker:
 
 pycheckerverbose:
 	@echo "running pychecker (verbose) ..."
-	$(pychecker) $(pychecker_files)
+	$(pychecker) --limit 1000 $(pychecker_files)

@@ -1,17 +1,18 @@
 CLEANFILES = *.py{c,o} command/*.py{c,o} log/*.py{c,o}
 
-moapdir = $(PYTHONLIBDIR)/moap/extern
+morituridir = $(PYTHONLIBDIR)/morituri/extern
 
-moap_PYTHON = \
-	__init__.py
+morituri_PYTHON = \
+	__init__.py \
+	asyncsub.py
 
-logdir = $(PYTHONLIBDIR)/moap/extern/log
+logdir = $(PYTHONLIBDIR)/morituri/extern/log
 
 log_PYTHON = \
 	log/__init__.py \
 	log/log.py
 
-commanddir = $(PYTHONLIBDIR)/moap/extern/command
+commanddir = $(PYTHONLIBDIR)/morituri/extern/command
 
 command_PYTHON = \
 	command/__init__.py \

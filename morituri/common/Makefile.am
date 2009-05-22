@@ -6,6 +6,7 @@ morituri_PYTHON = \
 	__init__.py \
 	checksum.py \
 	common.py \
+	log.py \
 	logcommand.py \
 	renamer.py \
 	task.py \
