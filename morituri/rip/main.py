@@ -15,8 +15,8 @@ def main(argv):
     except ImportError, e:
         # FIXME: decide how to handle
         raise
-        deps.handleImportError(e)
-        ret = -1
+        # deps.handleImportError(e)
+        # ret = -1
 
     if ret is None:
         return 0
