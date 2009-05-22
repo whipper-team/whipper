@@ -1,0 +1,211 @@
+#!/usr/bin/env python
+# -*- Mode: Python -*-
+# vi:si:et:sw=4:sts=4:ts=4
+
+# generate bash completion for all commands
+# first argument should be program name
+# second argument should be the main Command entry class's fully qualified name
+
+import sys
+
+def funcName(cmd):
+    """
+    Generate a name for the given command by walking up the ancestry
+    and seperating with underscore.
+    """
+    l = [cmd.name]
+    while cmd.parentCommand:
+        cmd = cmd.parentCommand
+        l.append(cmd.name)
+
+    l.reverse()
+    return "_%s_complete_" % cmd.name + "_".join(l)
+    
+def generateOneCommand(cmd):
+    function = funcName(cmd)
+    commandList = cmd.subCommands.keys()
+    commandList.sort()
+    commands = '"' + " ".join(commandList) + '"'
+
+    # poking into private instance variables for optparse.Option is nasty,
+    # but I see no alternative
+    optionBooleanList = []
+    optionValueList = []
+    optionList = []
+    for option in cmd.parser.option_list:
+        optionList.extend(option._short_opts + option._long_opts)
+        if not option.nargs:
+            optionBooleanList.extend(option._short_opts + option._long_opts)
+        else:
+            optionValueList.extend(option._short_opts + option._long_opts)
+    optionList.sort()
+    options = '"' + " ".join(optionList) + '"'
+    optionsBoolean = '"' + " ".join(optionBooleanList) + '"'
+    optionsValue = '"' + " ".join(optionValueList) + '"'
+
+    name = cmd.name
+
+    return """
+%(function)s()
+{
+    options=%(options)s
+    optionsboolean=%(optionsBoolean)s
+    optionsvalue=%(optionsValue)s
+    commands=%(commands)s
+    completed=false
+
+    debug "function %(function)s"
+    debug "args '$@'"
+    debug "ARG1 '$1'"
+    debug "ARG2 '$2'"
+    shift
+    debug "after shift: args '$@'"
+    debug "ARG1 '$1'"
+    debug "ARG2 '$2'"
+
+
+    while [[ "$completed" == "false" ]]
+    do
+        if [[ "$1" == -* ]]
+        then
+            # handle as argument
+            debug "handling argument $#"
+            # found will be set to true when the current argument fully matches
+            # an option, causing us to swallow it
+            found=false
+            # first check for boolean options
+            for option in $optionsboolean
+            do
+                debug "matching option $option to args $1"
+                if [[ "$option" == "$1" ]]
+                then
+                    debug "found full boolean option $option, eating"
+                    found=true
+                    shift
+                fi
+            done
+            # then check for valued options
+            if [[ "$found" == false ]]
+            then
+                for option in $optionsvalue
+                do
+                    debug "matching option $option to args $1"
+                    if [[ "$option" == "$1" ]]
+                    then
+                        found=true
+                        if [[ $# -eq 1 ]]
+                        then
+                            # a valued option with no value
+                            # we can't complete this since we don't know what
+                            # values the option takes
+                            completed=true
+                            COMPREPLY=()
+                        else
+                            # eat option and its value
+                            shift 2
+                        fi
+                    fi
+                done
+            fi
+            if [[ "$found" == false ]]
+            then
+                debug "completing argument"
+                COMPREPLY=( $( compgen -W "$options" -- $1 ) )
+                debug "COMPREPLY ${COMPREPLY[*]}"
+                completed=true
+            fi
+        else
+            # handle as command
+            debug "handle as command"
+            found=false
+            if [[ $# -eq 0 ]]; then
+                # completing this command
+                COMPREPLY=( $( compgen -W "$commands" -- $1 ) )
+                debug "command, COMPREPLY ${COMPREPLY[*]}"
+                completed=true
+            else
+                for command in $commands
+                do
+                    debug "matching arg $1 against command $command"
+                    if [[ "$command" == "$1" ]]
+                    then
+                        debug "found full command, delegating"
+                         # completing a subcommand, delegate
+                        debug "delegate, $# args, 1 is $1"
+                        %(function)s_$1 $@
+                        debug "delegated, COMPREPLY ${COMPREPLY[*]}"
+                        found=true
+                    fi
+                done
+                # if not found, we must still be wanting to complete the
+                # current partial command
+                if [[ "$found" == false ]]
+                then
+                    COMPREPLY=( $( compgen -W "$commands" -- $1 ) )
+                    completed=true
+                fi
+            fi
+        fi
+        debug "function %(function)s: COMPREPLY ${COMPREPLY[*]}"
+    done
+        
+}
+""" % locals()
+
+def generateSubCommands(cmd):
+    snippets = []
+    if cmd.subCommands:
+        for subCommand in cmd.subCommands.values():
+            snippets.extend(generateSubCommands(subCommand))
+    snippets.append(generateOneCommand(cmd))
+    return snippets
+
+        
+def start():
+    if len(sys.argv) != 3:
+        sys.stderr.write('Usage: %s [program-name] [entry-class]\n')
+        sys.exit(1)
+
+    name = sys.argv[1]
+    entry = sys.argv[2]
+    parts = entry.split('.')
+    if len(parts) <= 1:
+        sys.stderr.write(
+            'The entry class should be a module-qualified Class.\n')
+        sys.exit(1)
+    module = ".".join(parts[:-1])
+    command = "from %s import %s as EntryClass" % (module, parts[-1])
+    exec command
+    entry = EntryClass()
+    print """#-*- mode: shell-script;-*-
+
+# Programmed completion for bash to use %s
+
+""" % name
+
+    print "\n".join(generateSubCommands(entry))
+
+    print """
+# helper debug function
+debug()
+{
+    if [[ ! -z "$DEBUG" ]]
+    then
+        echo $@
+    fi
+}
+
+# main entry point
+# dispatches to a command-specific function, passing in the rest of the
+# command line as arguments, starting with the command name being called
+_%(name)s()
+{
+        COMPREPLY=()
+        # pass as a list, not as a single string
+        _%(name)s_complete_%(name)s ${COMP_WORDS[*]}
+}
+
+complete -F _%(name)s -o default %(name)s
+""" % locals()
+
+start()
