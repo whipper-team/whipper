@@ -184,7 +184,7 @@ class CueFile(object, log.Loggable):
         # - check relatively to the cue file
         # - check only the filename part relative to the cue file
         if tpath == os.path.abspath(tpath):
-            candidatePaths.append(tPath)
+            candidatePaths.append(tpath)
         else:
             candidatePaths.append(os.path.join(
                 os.path.dirname(self._path), tpath))

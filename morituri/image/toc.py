@@ -177,11 +177,12 @@ class TocFile(object, log.Loggable):
             # look for SILENCE lines
             m = _SILENCE_RE.search(line)
             if m:
+                length = m.group('length')
+                self.debug('SILENCE of %r', length)
                 if currentFile is not None:
                     self.debug('SILENCE after FILE, increasing counter')
                     counter += 1
                     currentFile = None
-                length = m.group('length')
                 currentLength += common.msfToFrames(length)
 
             # look for ZERO lines
@@ -319,7 +320,7 @@ class TocFile(object, log.Loggable):
         # - check relatively to the cue file
         # - check only the filename part relative to the cue file
         if tpath == os.path.abspath(tpath):
-            candidatePaths.append(tPath)
+            candidatePaths.append(tpath)
         else:
             candidatePaths.append(os.path.join(
                 os.path.dirname(self._path), tpath))
