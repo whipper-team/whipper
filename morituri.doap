@@ -1,0 +1,65 @@
+<Project
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns="http://usefulinc.com/ns/doap#"
+  xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  xmlns:admin="http://webns.net/mvcb/">
+
+ <name>Morituri</name>
+ <shortname>morituri</shortname>
+ <homepage rdf:resource="http://thomas.apestaart.org/thomas/trac/" />
+ <created>2006-06-11</created>
+ <shortdesc xml:lang="en">
+Morituri is a CD ripper aiming for maximum quality.
+</shortdesc>
+ <description xml:lang="en">
+Morituri is a CD ripper aiming for maximum quality.
+ </description>
+ <category></category>
+ <wiki rdf:resource="http://thomas.apestaart.org/thomas/trac/" />
+ <bug-database rdf:resource="http://thomas.apestaart.org/thomas/trac/newticket?component=morituri" />
+ <screenshots></screenshots>
+<!--
+ <mailing-list rdf:resource="http://lists.sourceforge.net/lists/listinfo/moap-devel/" />
+-->
+ <programming-language>python</programming-language>
+ <license rdf:resource="http://usefulinc.com/doap/licenses/gpl" />
+ <download-page rdf:resource="http://thomas.apestaart.org/projects/morituri/" />
+
+ <repository>
+   <SVNRepository>
+     <location rdf:resource="http://thomas.apestaart.org/thomas/svn/src/morituri/trunk/" />
+     <browse rdf:resource="http://thomas.apestaart.org/thomas/trac/browser/svn/src/morituri/trunk" />
+   </SVNRepository>
+ </repository> 
+
+ <maintainer>
+  <foaf:Person>
+     <foaf:name>Thomas Vander Stichele</foaf:name>
+  </foaf:Person>
+ </maintainer>
+
+<!--
+ <release>
+  <Version>
+   <revision>0.2.6</revision>
+   <branch>trunk</branch>
+   <name>Nerd Night</name>
+   <created>2008-05-23</created>
+   <file-release rdf:resource="http://thomas.apestaart.org/download/moap/moap-0.2.6.tar.bz2" />
+   <file-release rdf:resource="http://thomas.apestaart.org/download/moap/moap-0.2.6-1.noarch.rpm" />
+   <dc:description>
+Added support for git-svn.
+Fix brz diff.
+Added moap changelog find to search through a ChangeLog.
+Added man page.
+Added moap tracadmin to administrate trac installations.
+Added changed properties/added/deleted files when preparing ChangeLog entries.
+Added checking of unchanged ChangeLog entry template.
+    </dc:description>
+  </Version>
+ </release>
+-->
+
+</Project>
