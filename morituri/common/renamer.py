@@ -200,13 +200,13 @@ class RenameInFile(Operation):
         # check if the source exists in the given file
 
     def do(self):
-        input = open(self._path)
+        handle = open(self._path)
         (fd, name) = tempfile.mkstemp(suffix='.morituri')
 
-        for s in input:
+        for s in handle:
             os.write(fd, s.replace(self._source, self._destination))
 
-        input.close()
+        handle.close()
         os.close(fd)
         os.rename(name, self._path)
 

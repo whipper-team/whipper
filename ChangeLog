@@ -1,5 +1,11 @@
 2009-05-22  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/common.py:
+	* morituri/common/renamer.py:
+	  Pychecker fixes.
+
+2009-05-22  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* RELEASE:
 	* misc/pycheckerrc:
 	* misc/show-coverage.py:

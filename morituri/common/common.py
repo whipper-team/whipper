@@ -90,7 +90,7 @@ class Persister(object):
 
         self._unpickle(default)
 
-    def persist(self, object=None):
+    def persist(self, obj=None):
         """
         Persist the given object, if we have a persistence path and the
         object changed.
@@ -99,27 +99,27 @@ class Persister(object):
         If object is given, only persist if it was changed.
         """
         # don't pickle if it's already ok
-        if object and object == self.object:
+        if obj and obj == self.object:
             return
 
         # store the object on ourselves if not None
-        if object is not None:
-            self.object = object
+        if obj is not None:
+            self.object = obj
 
         # don't pickle if there is no path
         if not self._path:
             return
 
         # default to pickling our object again
-        if object is None:
-            object = self.object
+        if obj is None:
+            obj = self.object
 
         # pickle
-        self.object = object
+        self.object = obj
         (fd, path) = tempfile.mkstemp(suffix='.morituri.pickle')
         handle = os.fdopen(fd, 'wb')
         import pickle
-        pickle.dump(object, handle, 2)
+        pickle.dump(obj, handle, 2)
         handle.close()
         # do an atomic move
         shutil.move(path, self._path)
