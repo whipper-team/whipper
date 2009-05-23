@@ -21,7 +21,7 @@
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import strct
+import struct
 import urlparse
 import urllib2
 
@@ -60,8 +60,6 @@ class AccuCache(log.Loggable):
 
     def download(self, url):
         # FIXME: download url as a task too
-        responses = []
-        import urllib2
         try:
             handle = urllib2.urlopen(url)
             data = handle.read()

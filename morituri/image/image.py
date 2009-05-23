@@ -24,8 +24,6 @@
 Wrap on-disk CD images based on the .cue file.
 """
 
-import struct
-
 import gst
 
 from morituri.common import task, checksum, log, common

@@ -26,7 +26,7 @@ import tempfile
 import gobject
 gobject.threads_init()
 
-from morituri.common import logcommand, task, checksum
+from morituri.common import logcommand, task, checksum, accurip
 from morituri.image import image
 from morituri.program import cdrdao, cdparanoia
 

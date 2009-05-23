@@ -21,10 +21,7 @@
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import tempfile
 import sys
-import pickle
-import shutil
 
 import gobject
 gobject.threads_init()
@@ -52,7 +49,7 @@ def filterForPath(text):
 def musicbrainz(discid):
     metadata = DiscMetadata()
 
-    import musicbrainz2.disc as mbdisc
+    #import musicbrainz2.disc as mbdisc
     import musicbrainz2.webservice as mbws
 
 
@@ -63,8 +60,8 @@ def musicbrainz(discid):
 
     # Query for all discs matching the given DiscID.
     try:
-        filter = mbws.ReleaseFilter(discId=discid)
-        results = query.getReleases(filter)
+        rfilter = mbws.ReleaseFilter(discId=discid)
+        results = query.getReleases(rfilter)
     except mbws.WebServiceError, e:
         print "Error:", e
         return
@@ -109,7 +106,6 @@ def musicbrainz(discid):
 
     print "%s - %s" % (release.artist.getUniqueName(), release.title)
 
-    i = 1
     for t in release.tracks:
         track = TrackMetadata()
         if isSingleArtist:
@@ -227,7 +223,6 @@ class Rip(logcommand.LogCommand):
         assert itable.getMusicBrainzDiscId() == ittoc.getMusicBrainzDiscId()
 
         outdir = self.options.output_directory or os.getcwd()
-        lastTrackStart = 0
 
         # check for hidden track one audio
         htoapath = None
@@ -346,24 +341,23 @@ class Rip(logcommand.LogCommand):
         response = None # track which response matches, for all tracks
 
         # loop over tracks
-        for i, sum in enumerate(cuetask.checksums):
+        for i, csum in enumerate(cuetask.checksums):
             status = 'rip NOT accurate'
 
             confidence = None
-            arsum = None
 
             # match against each response's checksum
             for j, r in enumerate(responses):
-                if "%08x" % sum == r.checksums[i]:
+                if "%08x" % csum == r.checksums[i]:
                     if not response:
                         response = r
                     else:
                         assert r == response, \
                             "checksum %s for %d matches wrong response %d, "\
                             "checksum %s" % (
-                                sum, i + 1, j + 1, response.checksums[i])
+                                csum, i + 1, j + 1, response.checksums[i])
                     status = 'rip accurate    '
-                    arsum = sum
+                    # arsum = csum
                     confidence = response.confidences[i]
 
             c = "(not found)"
@@ -381,7 +375,7 @@ class Rip(logcommand.LogCommand):
 
                     ar = ", AR [%s]" % response.checksums[i]
             print "Track %2d: %s %s [%08x]%s" % (
-                i + 1, status, c, sum, ar)
+                i + 1, status, c, csum, ar)
 
 class CD(logcommand.LogCommand):
     summary = "handle CD's"
