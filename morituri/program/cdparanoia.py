@@ -224,8 +224,10 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
     """
     I am a task that reads and verifies a track using cdparanoia.
 
-    @ivar path:     the path where the file is to be stored.
-    @ivar checksum: the checksum of the track.
+    @ivar path:         the path where the file is to be stored.
+    @ivar checksum:     the checksum of the track; set if they match.
+    @ivar testchecksum: the test checksum of the track.
+    @ivar copychecksum: the copy checksum of the track.
     """
 
     def __init__(self, path, table, start, stop, offset=0, device=None):
@@ -264,17 +266,18 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
 
     def stop(self):
         if not self.exception:
-            c1 = self.tasks[1].checksum
-            c2 = self.tasks[3].checksum
+            self.testchecksum = c1 = self.tasks[1].checksum
+            self.copychecksum = c2 = self.tasks[3].checksum
             if c1 == c2:
                 self.info('Checksums match, %08x' % c1)
-                try:
-                    shutil.move(self._tmppath, self.path)
-                    self.checksum = checksum
-                except Exception, e:
-                    self._exception = e
+                self.checksum = self.testchecksum
             else:
-                print 'ERROR: read and verify failed'
-                self.checksum = None
+                self.error('read and verify failed')
+
+            try:
+                shutil.move(self._tmppath, self.path)
+                self.checksum = checksum
+            except Exception, e:
+                self._exception = e
 
         task.MultiSeparateTask.stop(self)
