@@ -7,13 +7,10 @@ SUBDIRS = bin etc morituri doc m4 misc
 
 EXTRA_DIST = morituri.spec morituri.doap RELEASE
 
-check: pychecker check-python check-bash
+check: pychecker check-python
 
 check-python:
-	trial morituri.test
-
-check-bash:
-	$(SHELL) $(top_srcdir)/morituri/test/test_bash_completion.sh $(top_builddir)/etc/bash_completion.d/morituri
+	PYTHONPATH=$(PYTHONPATH):$(top_srcdir) trial morituri.test
 
 _trial_temp/coverage: $(top_srcdir)/morituri/*.py $(top_srcdir)/morituri/*/*.py
 	trial --coverage morituri.test
