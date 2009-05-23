@@ -92,9 +92,13 @@ class TocFile(object, log.Loggable):
         self.table = table.Table()
 
     def parse(self):
-        state = 'HEADER'
+        # these two objects start as None then get set as real objects,
+        # so no need to complain about them here
+        __pychecker__ = 'no-objattrs'
         currentFile = None
         currentTrack = None
+
+        state = 'HEADER'
         counter = 0
         trackNumber = 0
         indexNumber = 0

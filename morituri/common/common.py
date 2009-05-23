@@ -31,13 +31,13 @@ FRAMES_PER_SECOND = 75
 
 def msfToFrames(msf):
     """
-    Converts a string value in MM:SS:FF to frames
+    Converts a string value in MM:SS:FF to frames.
 
-    @param msf:
+    @param msf: the MM:SS:FF value to convert
     @type  msf: str
 
-    @rtype int
-    @returns number of frames
+    @rtype:   int
+    @returns: number of frames
     """
     if not ':' in msf:
         return int(msf)

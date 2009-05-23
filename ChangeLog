@@ -1,3 +1,11 @@
+2009-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	reviewed by: <delete if not using a buddy>
+	patch by: <delete if not someone else's patch>
+
+	* morituri/common/common.py:
+	* morituri/image/toc.py:
+
 2009-05-22  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/checksum.py:
