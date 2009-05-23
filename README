@@ -1,0 +1,28 @@
+rip command tree
+----------------
+rip
+  offset
+    find
+      find drive's read offset using AccurateRip
+    verify
+      verify drive's read offset using AccurateRip
+  cd
+    rip
+      rip the cd
+  htoa
+    find
+    rip
+      rip the htoa if it's there
+  image
+    verify
+      verify the cd image
+
+style guide
+-----------
+
+To avoid confusion:
+
+ - cuefile is used for the CueFile object, which wraps/parses an existing .cue
+   file on disk
+ - tocfile: same
+ - toc: table of contents of a CD; instance of Table
