@@ -1,5 +1,10 @@
 2009-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/image/table.py:
+	  Add a version ivar to help with versioning pickled objects.
+
+2009-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/program/cdparanoia.py:
 	  Add copy and test CRC's to object.
 

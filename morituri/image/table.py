@@ -115,12 +115,15 @@ class Table(object, log.Loggable):
     @type tracks: list of L{Track}
     @ivar catalog: catalog number
     @type catalog: str
+    @ivar version: version number of the object and its API.
     """
 
     tracks = None # list of Track
     leadout = None # offset where the leadout starts
     catalog = None # catalog number; FIXME: is this UPC ?
     cdtext = None
+
+    version = 1
 
     def __init__(self, tracks=None):
         if not tracks:
