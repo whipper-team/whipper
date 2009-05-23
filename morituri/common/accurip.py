@@ -43,7 +43,10 @@ class AccuCache(log.Loggable):
         self.debug("Retrieving AccurateRip URL %s", url)
         path = self._getPath(url)
         self.debug("Cached path: %s", path)
-        if not os.path.exists(path):
+        if force:
+            self.debug("forced to download")
+            self.download(url)
+        elif not os.path.exists(path):
             self.debug("%s does not exist, downloading", path)
             self.download(url)
 

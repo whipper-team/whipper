@@ -101,6 +101,7 @@ def musicbrainz(discid):
         sys.exit(2)
 
 
+    # convert to our objects
     isSingleArtist = release.isSingleArtistRelease()
     metadata.various = not isSingleArtist
     metadata.title = release.title
@@ -121,7 +122,7 @@ def musicbrainz(discid):
 
     return metadata
 
-def getPath(template, metadata, i):
+def getPath(outdir, template, metadata, i):
     # returns without extension
 
     v = {}
@@ -149,7 +150,7 @@ def getPath(template, metadata, i):
     import re
     template = re.sub(r'%(\w)', r'%(\1)s', template)
 
-    return template % v
+    return os.path.join(outdir, template % v)
 
 class Rip(logcommand.LogCommand):
     summary = "rip CD"
@@ -159,8 +160,11 @@ class Rip(logcommand.LogCommand):
         default = 0
         self.parser.add_option('-o', '--offset',
             action="store", dest="offset",
-            help="sample offset (defaults to %d)" % default,
+            help="sample read offset (defaults to %d)" % default,
             default=default)
+        self.parser.add_option('-O', '--output-directory',
+            action="store", dest="output_directory",
+            help="output directory (defaults to current directory)")
         # FIXME: have a cache of these pickles somewhere
         self.parser.add_option('-t', '--table-pickle',
             action="store", dest="table_pickle",
@@ -222,6 +226,7 @@ class Rip(logcommand.LogCommand):
                 itable.getCDDBDiscId(), ittoc.getCDDBDiscId())
         assert itable.getMusicBrainzDiscId() == ittoc.getMusicBrainzDiscId()
 
+        outdir = self.options.output_directory or os.getcwd()
         lastTrackStart = 0
 
         # check for hidden track one audio
@@ -239,7 +244,7 @@ class Rip(logcommand.LogCommand):
             print 'Found Hidden Track One Audio from frame %d to %d' % (start, stop)
                 
             # rip it
-            htoapath = getPath(self.options.track_template, metadata, -1) + '.wav'
+            htoapath = getPath(outdir, self.options.track_template, metadata, -1) + '.wav'
             htoalength = stop - start
             if not os.path.exists(htoapath):
                 print 'Ripping track %d: %s' % (0, os.path.basename(htoapath))
@@ -256,7 +261,7 @@ class Rip(logcommand.LogCommand):
 
 
         for i, track in enumerate(itable.tracks):
-            path = getPath(self.options.track_template, metadata, i) + '.wav'
+            path = getPath(outdir, self.options.track_template, metadata, i) + '.wav'
             dirname = os.path.dirname(path)
             if not os.path.exists(dirname):
                 os.makedirs(dirname)
@@ -280,7 +285,7 @@ class Rip(logcommand.LogCommand):
 
 
         ### write disc files
-        discName = getPath(self.options.disc_template, metadata, i)
+        discName = getPath(outdir, self.options.disc_template, metadata, i)
         dirname = os.path.dirname(discName)
         if not os.path.exists(dirname):
             os.makedirs(dirname)
@@ -302,7 +307,7 @@ class Rip(logcommand.LogCommand):
             handle.write('%s\n' % os.path.basename(htoapath))
 
         for i, track in enumerate(itable.tracks):
-            path = getPath(self.options.track_template, metadata, i) + '.wav'
+            path = getPath(outdir, self.options.track_template, metadata, i) + '.wav'
             handle.write('#EXTINF:%d,%s\n' % (
                 itable.getTrackLength(i + 1) / common.FRAMES_PER_SECOND,
                 os.path.basename(path)))

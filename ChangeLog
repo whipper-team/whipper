@@ -1,5 +1,16 @@
 2009-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/rip/Makefile.am:
+	* morituri/rip/main.py:
+	* morituri/rip/drive.py (added):
+	  Add 'rip drive list' command to list available drives.
+	* morituri/common/accurip.py:
+	  Add force.
+	* morituri/rip/cd.py:
+	  Add --output-directory argument.
+
+2009-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/Makefile.am:
 	* morituri/rip/cd.py:
 	* morituri/common/accurip.py (added):
