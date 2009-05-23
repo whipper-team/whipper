@@ -26,3 +26,14 @@ To avoid confusion:
    file on disk
  - tocfile: same
  - toc: table of contents of a CD; instance of Table
+
+
+test: single rip of kings of leon - only by the night
+
+track  1: frame start      0, 17811 CD frames,
+track  2: frame start  17811, 18481 CD frames
+	  ARCue.pl says  2c15499a
+track 11: frame start 166858, 25103 CD frames (14760564 audio frames)
+
+191961 total CD frames
+
