@@ -1,5 +1,11 @@
 2009-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/Makefile.am:
+	* morituri/common/drive.py (added):
+	  Add drive module.
+
+2009-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/program/cdparanoia.py:
 	* morituri/program/cdrdao.py:
 	* morituri/rip/cd.py:

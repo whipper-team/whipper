@@ -7,6 +7,7 @@ morituri_PYTHON = \
 	accurip.py \
 	checksum.py \
 	common.py \
+	drive.py \
 	log.py \
 	logcommand.py \
 	renamer.py \
