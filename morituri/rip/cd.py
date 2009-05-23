@@ -29,7 +29,7 @@ import shutil
 import gobject
 gobject.threads_init()
 
-from morituri.common import logcommand, task, checksum, common
+from morituri.common import logcommand, task, checksum, common, accurip
 from morituri.image import image, cue, table
 from morituri.program import cdrdao, cdparanoia
 
@@ -201,6 +201,12 @@ class Rip(logcommand.LogCommand):
         print "CDDB disc id", ittoc.getCDDBDiscId()
         metadata = musicbrainz(ittoc.getMusicBrainzDiscId())
 
+        url = ittoc.getAccurateRipURL()
+        print "AccurateRip URL", url
+
+        cache = accurip.AccuCache()
+        responses = cache.retrieve(url)
+
         # now, read the complete index table, which is slower
         ptable = common.Persister(self.options.table_pickle or None)
         if not ptable.object:
@@ -309,18 +315,10 @@ class Rip(logcommand.LogCommand):
         url = itable.getAccurateRipURL()
         print "AccurateRip URL", url
 
-        # FIXME: download url as a task too
-        responses = []
-        import urllib2
-        try:
-            handle = urllib2.urlopen(url)
-            data = handle.read()
-            responses = image.getAccurateRipResponses(data)
-        except urllib2.HTTPError, e:
-            if e.code == 404:
-                print 'Album not found in AccurateRip database'
-            else:
-                raise
+        cache = accurip.AccuCache()
+        responses = cache.retrieve(url)
+        if not responses:
+            print 'Album not found in AccurateRip database'
 
         if responses:
             print '%d AccurateRip reponses found' % len(responses)

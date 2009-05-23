@@ -1,5 +1,13 @@
 2009-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/Makefile.am:
+	* morituri/rip/cd.py:
+	* morituri/common/accurip.py (added):
+	  Add a module for handling a cache of AccurateRip results.
+	  Use it.
+
+2009-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/rip/Makefile.am:
 	* morituri/rip/main.py:
 	* morituri/rip/cd.py (added):

@@ -4,6 +4,7 @@ morituridir = $(PYTHONLIBDIR)/morituri/common
 
 morituri_PYTHON = \
 	__init__.py \
+	accurip.py \
 	checksum.py \
 	common.py \
 	log.py \
