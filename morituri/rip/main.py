@@ -4,7 +4,7 @@
 import sys
 
 from morituri.common import log, logcommand
-from morituri.rip import offset
+from morituri.rip import cd, offset
 
 def main(argv):
     c = Rip()
@@ -31,7 +31,7 @@ Rip gives you a tree of subcommands to work with.
 You can get help on subcommands by using the -h option to the subcommand.
 """
 
-    subCommandClasses = [offset.Offset, ]
+    subCommandClasses = [cd.CD, offset.Offset, ]
 
     def addOptions(self):
         # FIXME: is this the right place ?

@@ -2,6 +2,13 @@
 
 	* morituri/rip/Makefile.am:
 	* morituri/rip/main.py:
+	* morituri/rip/cd.py (added):
+	  Add second command, 'rip cd rip' before factoring out functionality.
+
+2009-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/rip/Makefile.am:
+	* morituri/rip/main.py:
 	* morituri/rip/offset.py (added):
 	  Add first command, 'rip offset find'
 
