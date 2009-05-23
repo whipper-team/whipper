@@ -4,4 +4,5 @@ morituridir = $(PYTHONLIBDIR)/morituri/rip
 
 morituri_PYTHON = \
 	__init__.py \
-	main.py
+	main.py \
+	offset.py
