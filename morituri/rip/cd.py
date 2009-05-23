@@ -29,7 +29,7 @@ import shutil
 import gobject
 gobject.threads_init()
 
-from morituri.common import logcommand, task, checksum, common, accurip
+from morituri.common import logcommand, task, checksum, common, accurip, drive
 from morituri.image import image, cue, table
 from morituri.program import cdrdao, cdparanoia
 
@@ -195,7 +195,7 @@ class Rip(logcommand.LogCommand):
         # first, read the normal TOC, which is fast
         ptoc = common.Persister(self.options.toc_pickle or None)
         if not ptoc.object:
-            t = cdrdao.ReadTOCTask()
+            t = cdrdao.ReadTOCTask(device=self.parentCommand.options.device)
             function(runner, t)
             ptoc.persist(t.table)
         ittoc = ptoc.object
@@ -214,7 +214,7 @@ class Rip(logcommand.LogCommand):
         # now, read the complete index table, which is slower
         ptable = common.Persister(self.options.table_pickle or None)
         if not ptable.object:
-            t = cdrdao.ReadTableTask()
+            t = cdrdao.ReadTableTask(device=self.parentCommand.options.device)
             function(runner, t)
             ptable.persist(t.table)
         itable = ptable.object
@@ -250,7 +250,8 @@ class Rip(logcommand.LogCommand):
                 print 'Ripping track %d: %s' % (0, os.path.basename(htoapath))
                 t = cdparanoia.ReadVerifyTrackTask(htoapath, ittoc,
                     start, stop - 1,
-                    offset=int(self.options.offset))
+                    offset=int(self.options.offset),
+                    device=self.parentCommand.options.device)
                 function(runner, t)
                 if t.checksum:
                     print 'Checksums match for track %d' % 0
@@ -272,7 +273,8 @@ class Rip(logcommand.LogCommand):
                 t = cdparanoia.ReadVerifyTrackTask(path, ittoc,
                     ittoc.getTrackStart(i + 1),
                     ittoc.getTrackEnd(i + 1),
-                    offset=int(self.options.offset))
+                    offset=int(self.options.offset),
+                    device=self.parentCommand.options.device)
                 t.description = 'Reading Track %d' % (i + 1)
                 function(runner, t)
                 if t.checksum:
@@ -385,3 +387,17 @@ class CD(logcommand.LogCommand):
     summary = "handle CD's"
 
     subCommandClasses = [Rip, ]
+
+    def addOptions(self):
+        self.parser.add_option('-d', '--device',
+            action="store", dest="device",
+            help="CD-DA device")
+ 
+    def handleOptions(self, options):
+        if not options.device:
+            drives = drive.getAllDevicePaths()
+            if not drives:
+                self.error('No CD-DA drives found!')
+                return 3
+
+            self.options.device = drives[0]

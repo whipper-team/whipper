@@ -1,5 +1,13 @@
 2009-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/program/cdparanoia.py:
+	* morituri/program/cdrdao.py:
+	* morituri/rip/cd.py:
+	* morituri/rip/offset.py:
+	  Add device argument to ripping/scanning tasks.
+
+2009-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/accurip.py:
 	* morituri/image/image.py:
 	* morituri/test/Makefile.am:

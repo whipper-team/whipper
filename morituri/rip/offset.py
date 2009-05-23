@@ -78,7 +78,7 @@ CD in the AccurateRip database."""
         try:
             handle = urllib2.urlopen(url)
             data = handle.read()
-            responses = image.getAccurateRipResponses(data)
+            responses = accurip.getAccurateRipResponses(data)
         except urllib2.HTTPError, e:
             if e.code == 404:
                 print 'Album not found in AccurateRip database.'

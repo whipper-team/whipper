@@ -198,10 +198,10 @@ class CDRDAOTask(task.Task):
         task.Task.start(self, runner)
 
         bufsize = 1024
-        self._popen = asyncsub.Popen(["cdrdao"] + self.options,
-                  bufsize=bufsize,
-                  stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                  stderr=subprocess.PIPE, close_fds=True)
+        self._popen = asyncsub.Popen(["cdrdao", ] + self.options,
+            bufsize=bufsize,
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE, close_fds=True)
         self.debug('Started cdrdao with pid %d and options %r',
             self._popen.pid, self.options)
 
@@ -263,15 +263,21 @@ class ReadTableTask(CDRDAOTask):
     description = "Scanning indexes..."
     table = None
 
-    def __init__(self):
+    def __init__(self, device=None):
+        """
+        @param device: the device to rip from
+        @type  device: str
+        """
         CDRDAOTask.__init__(self)
         self.parser = OutputParser(self)
         (fd, self._tocfilepath) = tempfile.mkstemp(suffix='.morituri')
         os.close(fd)
         os.unlink(self._tocfilepath)
 
-        self.options = ['read-toc', '--session', '9',
-            self._tocfilepath, ]
+        self.options = ['read-toc', ]
+        if device:
+            self.options.extend(['--device', device, ])
+        self.options.extend(['--session', '9', self._tocfilepath, ])
 
     def readbytes(self, bytes):
         self.parser.read(bytes)
@@ -312,7 +318,11 @@ class ReadTOCTask(CDRDAOTask):
     description = "Reading TOC..."
     table = None
 
-    def __init__(self):
+    def __init__(self, device=None):
+        """
+        @param device: the device to rip from
+        @type  device: str
+        """
         CDRDAOTask.__init__(self)
         self.parser = OutputParser(self)
 
@@ -322,8 +332,10 @@ class ReadTOCTask(CDRDAOTask):
 
         # Reading a non-existent session gives you output for all sessions
         # 9 should be a safe number
-        self.options = ['read-toc', '--fast-toc', '--session', '9',
-            self._toc, ]
+        self.options = ['read-toc', '--fast-toc', ]
+        if device:
+            self.options.extend(['--device', device, ])
+        self.options.extend(['--session', '9', self._toc, ])
 
     def readbytes(self, bytes):
         self.parser.read(bytes)

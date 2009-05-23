@@ -83,7 +83,7 @@ class ReadTrackTask(task.Task):
     description = "Reading Track"
 
 
-    def __init__(self, path, table, start, stop, offset=0):
+    def __init__(self, path, table, start, stop, offset=0, device=None):
         """
         Read the given track.
 
@@ -97,6 +97,8 @@ class ReadTrackTask(task.Task):
         @type  stop:   int
         @param offset: read offset, in samples
         @type  offset: int
+        @param device: the device to rip from
+        @type  device: str
         """
         self.path = path
         self._table = table
@@ -104,6 +106,7 @@ class ReadTrackTask(task.Task):
         self._stop = stop
         self._offset = offset
         self._parser = ProgressParser()
+        self._device = device
 
         self._buffer = "" # accumulate characters
         self._errors = []
@@ -130,13 +133,14 @@ class ReadTrackTask(task.Task):
         self.debug('Stopping at track %d, offset %d', stopTrack, stopOffset)
 
         bufsize = 1024
-        argv = ["cdparanoia",
-            "--sample-offset=%d" % self._offset,
-            "--stderr-progress",
-            "%d[%s]-%d[%s]" % (
+        argv = ["cdparanoia", "--stderr-progress",
+            "--sample-offset=%d" % self._offset, ]
+        if self._device:
+            argv.extend(["--force-cdrom-device", self._device, ])
+        argv.extend(["%d[%s]-%d[%s]" % (
                 startTrack, common.framesToHMSF(startOffset),
                 stopTrack, common.framesToHMSF(stopOffset)),
-            self.path]
+            self.path])
         self.debug('Running %s' % (" ".join(argv), ))
         self._popen = asyncsub.Popen(argv,
             bufsize=bufsize,
@@ -224,7 +228,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
     @ivar checksum: the checksum of the track.
     """
 
-    def __init__(self, path, table, start, stop, offset=0):
+    def __init__(self, path, table, start, stop, offset=0, device=None):
         """
         @param path:   where to store the ripped track
         @type  path:   str
@@ -236,6 +240,8 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         @type  stop:   int
         @param offset: read offset, in samples
         @type  offset: int
+        @param device: the device to rip from
+        @type  device: str
         """
 
         self.path = path
@@ -247,9 +253,9 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
 
         self.tasks = []
         self.tasks.append(
-            ReadTrackTask(tmppath, table, start, stop, offset))
+            ReadTrackTask(tmppath, table, start, stop, offset, device))
         self.tasks.append(checksum.CRC32Task(tmppath))
-        t = ReadTrackTask(tmppath, table, start, stop, offset)
+        t = ReadTrackTask(tmppath, table, start, stop, offset, device)
         t.description = 'Verifying track...'
         self.tasks.append(t)
         self.tasks.append(checksum.CRC32Task(tmppath))
