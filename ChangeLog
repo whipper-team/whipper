@@ -1,5 +1,15 @@
 2009-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/accurip.py:
+	* morituri/image/image.py:
+	* morituri/test/Makefile.am:
+	* morituri/test/test_image_image.py:
+	* morituri/test/test_common_accurip.py (added):
+	  Move accuraterip stuff to the accurip module.
+	  Move/create new test file.
+
+2009-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/rip/Makefile.am:
 	* morituri/rip/main.py:
 	* morituri/rip/drive.py (added):

@@ -1,4 +1,4 @@
-# -*- Mode: Python -*-
+# -*- Mode: Python; test-case-name: morituri.test.test_common_accurip -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
 # Morituri - for those about to RIP
@@ -21,11 +21,11 @@
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import strct
 import urlparse
 import urllib2
 
 from morituri.common import log
-from morituri.image import image
 
 _CACHE_DIR = os.path.join(os.path.expanduser('~'), '.morituri', 'cache')
 
@@ -56,7 +56,7 @@ class AccuCache(log.Loggable):
 
         data = self._read(url)
 
-        return image.getAccurateRipResponses(data)
+        return getAccurateRipResponses(data)
 
     def download(self, url):
         # FIXME: download url as a task too
@@ -89,4 +89,44 @@ class AccuCache(log.Loggable):
         data = handle.read()
         handle.close()
         return data
-        
+
+def getAccurateRipResponses(data):
+    ret = []
+
+    while data:
+        trackCount = struct.unpack("B", data[0])[0]
+        bytes = 1 + 12 + trackCount * (1 + 8)
+
+        ret.append(AccurateRipResponse(data[:bytes]))
+        data = data[bytes:]
+
+    return ret
+
+class AccurateRipResponse(object):
+    """
+    I represent the response of the AccurateRip online database.
+    """
+
+    trackCount = None
+    discId1 = ""
+    discId2 = ""
+    cddbDiscId = ""
+    confidences = None
+    checksums = None
+
+    def __init__(self, data):
+        self.trackCount = struct.unpack("B", data[0])[0]
+        self.discId1 = "%08x" % struct.unpack("<L", data[1:5])[0]
+        self.discId2 = "%08x" % struct.unpack("<L", data[5:9])[0]
+        self.cddbDiscId = "%08x" % struct.unpack("<L", data[9:13])[0]
+
+        self.confidences = []
+        self.checksums = []
+
+        pos = 13
+        for _ in range(self.trackCount):
+            confidence = struct.unpack("B", data[pos])[0]
+            checksum = "%08x" % struct.unpack("<L", data[pos + 1:pos + 5])[0]
+            pos += 9
+            self.confidences.append(confidence)
+            self.checksums.append(checksum) 

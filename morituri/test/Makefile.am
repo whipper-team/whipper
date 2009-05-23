@@ -3,6 +3,7 @@ CLEANFILES = *.py{c,o}
 EXTRA_DIST = \
 	__init__.py \
 	common.py \
+	test_common_accurip.py \
 	test_common_renamer.py \
 	test_image_cue.py \
 	test_image_image.py \
