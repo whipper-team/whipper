@@ -1,3 +1,12 @@
+2009-05-24  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/common.py:
+	  Add a persisted cache so that we can store pickles on discs.
+	  Automatically delete them if the class version is newer than
+	  the object's.
+	* morituri/rip/cd.py:
+	  Use it.
+
 2009-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/image/table.py:

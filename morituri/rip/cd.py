@@ -119,6 +119,20 @@ def musicbrainz(discid):
     return metadata
 
 def getPath(outdir, template, metadata, i):
+    """
+    Based on the template, get a complete path for the given track,
+    minus extension.
+    Also works for the disc name, using disc variables for the template.
+
+    @param outdir:   the directory where to write the files
+    @type  outdir:   str
+    @param template: the template for writing the file
+    @type  template: str
+    @param metadata:
+    @type  metadata: L{DiscMetadata}
+    @param i:        track number (0 for HTOA)
+    @type  i:        int
+    """
     # returns without extension
 
     v = {}
@@ -208,7 +222,10 @@ class Rip(logcommand.LogCommand):
         responses = cache.retrieve(url)
 
         # now, read the complete index table, which is slower
-        ptable = common.Persister(self.options.table_pickle or None)
+        path = os.path.join(os.path.expanduser('~'), '.morituri', 'cache',
+            'table')
+        pcache = common.PersistedCache(path)
+        ptable = pcache.get(ittoc.getCDDBDiscId())
         if not ptable.object:
             t = cdrdao.ReadTableTask(device=self.parentCommand.options.device)
             function(runner, t)

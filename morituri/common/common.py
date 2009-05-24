@@ -136,3 +136,43 @@ class Persister(object):
         handle = open(self._path)
         import pickle
         self.object = pickle.load(handle)
+
+    def delete(self):
+        self.object = None
+        os.unlink(self._path)
+
+
+class PersistedCache(object):
+    """
+    I wrap a directory of persisted objects.
+    """
+
+    path = None
+
+    def __init__(self, path):
+        self.path = path
+        try:
+            os.makedirs(self.path)
+        except OSError, e:
+            if e.errno != 17: # FIXME
+                raise
+
+
+    def _getPath(self, key):
+        return os.path.join(self.path, '%s.pickle' % key)
+
+    def get(self, key):
+        """
+        Returns the persister for the given key.
+        """
+        persister = Persister(self._getPath(key))
+        if persister.object:
+            if hasattr(persister.object, 'version'):
+                o = persister.object
+                if o.version < o.__class__.version:
+                    print 'object needs upgrade'
+                    persister.delete()
+
+        return persister
+
+    
