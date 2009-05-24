@@ -2,6 +2,7 @@
 # vi:si:et:sw=4:sts=4:ts=4
 
 import os
+import copy
 import unittest
 
 from morituri.image import toc
@@ -192,6 +193,31 @@ class CapitalTestCase(unittest.TestCase):
     def testCDDBId(self):
         self.toc.table.absolutize()
         #self.assertEquals(self.toc.table.getCDDBDiscId(), 'b910140c')
+        # output from cd-discid:
+        # b910140c 12 24320 44855 64090 77885 88095 104020 118245 129255 141765 164487 181780 209250 4440
+    testCDDBId.skip = 'not implemented yet'
+
+class CapitalMergeTestCase(unittest.TestCase):
+    def setUp(self):
+        self.toc1 = toc.TocFile(os.path.join(os.path.dirname(__file__),
+            'capital.1.toc'))
+        self.toc1.parse()
+        self.assertEquals(len(self.toc1.table.tracks), 11)
+        self.failUnless(self.toc1.table.tracks[-1].audio)
+
+        self.toc2 = toc.TocFile(os.path.join(os.path.dirname(__file__),
+            'capital.2.toc'))
+        self.toc2.parse()
+        self.assertEquals(len(self.toc2.table.tracks), 1)
+        self.failIf(self.toc2.table.tracks[-1].audio)
+
+        self.table = copy.deepcopy(self.toc1.table)
+        self.table.merge(self.toc2.table)
+
+
+    def testCDDBId(self):
+        self.table.absolutize()
+        self.assertEquals(self.table.getCDDBDiscId(), 'b910140c')
         # output from cd-discid:
         # b910140c 12 24320 44855 64090 77885 88095 104020 118245 129255 141765 164487 181780 209250 4440
     testCDDBId.skip = 'not implemented yet'

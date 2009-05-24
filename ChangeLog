@@ -1,5 +1,17 @@
 2009-05-24  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/test/capital.1.toc (added):
+	* morituri/test/capital.2.toc (added):
+	  Add two .toc's for two sessions of a 2 session disc
+	* morituri/image/table.py:
+	  Add a merge method to merge in a second session.
+	* morituri/test/Makefile.am:
+	* morituri/test/test_image_toc.py:
+	  Add a test for merging the Das Capital sessions, gets
+	  the CDDB disc id right.
+
+2009-05-24  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/common.py:
 	  Add a persisted cache so that we can store pickles on discs.
 	  Automatically delete them if the class version is newer than

@@ -24,6 +24,8 @@
 Wrap Table of Contents.
 """
 
+import copy
+
 from morituri.common import task, common, log
 
 # FIXME: taken from libcdio, but no reference found for these
@@ -84,6 +86,12 @@ class Track:
         indexes = self.indexes.keys()
         indexes.sort()
         return self.indexes[indexes[0]]
+
+    def getLastIndex(self):
+        indexes = self.indexes.keys()
+        indexes.sort()
+        return self.indexes[indexes[-1]]
+
 
 class Index:
     """
@@ -486,6 +494,46 @@ class Table(object, log.Loggable):
                 t, i = self.getNextTrackIndex(t, i)
             except IndexError:
                 break
+
+    def merge(self, other, session=2):
+        """
+        Merges the given table at the end.
+        The other table is assumed to be from an additional session,
+
+
+        @type  other: L{Table}
+        """
+        # From cdrecord multi-session info:
+        # For the first additional session this is 11250 sectors
+        # lead-out/lead-in overhead + 150 sectors for the pre-gap of the first
+        # track after the lead-in = 11400 sectos.
+
+        # For all further session this is 6750 sectors lead-out/lead-in
+        # overhead + 150 sectors for the pre-gap of the first track after the
+        # lead-in = 6900 sectors.
+
+        gap = 11400
+        if session > 2:
+            gap = 6900
+
+        trackCount = len(self.tracks)
+        sourceCounter = self.tracks[-1].getLastIndex().counter
+
+        for track in other.tracks:
+            t = copy.deepcopy(track)
+            t.number = track.number + trackCount
+            for i in t.indexes.values():
+                if i.absolute is not None:
+                    i.absolute += self.leadout + gap
+                    self.debug('Fixing track %02d, index %02d, absolute %d' % (
+                        t.number, i.number, i.absolute))
+                if i.counter is not None:
+                    i.counter += sourceCounter
+                    self.debug('Fixing track %02d, index %02d, counter %d' % (
+                        t.number, i.number, i.counter))
+            self.tracks.append(t)
+
+        self.leadout += other.leadout + gap # FIXME
 
     ### lookups
     def getNextTrackIndex(self, track, index):

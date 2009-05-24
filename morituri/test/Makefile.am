@@ -16,6 +16,8 @@ EXTRA_DIST = \
 	breeders.cue \
 	breeders.toc \
 	capital.fast.toc \
+	capital.1.toc \
+	capital.2.toc \
 	cure.cue \
 	cure.toc \
 	dBAR-011-0010e284-009228a3-9809ff0b.bin \
