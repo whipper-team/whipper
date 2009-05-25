@@ -90,6 +90,7 @@ class TocFile(object, log.Loggable):
         self._path = path
         self._messages = []
         self.table = table.Table()
+        self.logName = '<TocFile %08x>' % id(self)
 
     def parse(self):
         # these two objects start as None then get set as real objects,

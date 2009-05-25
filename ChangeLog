@@ -1,5 +1,10 @@
 2009-05-25  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/image/toc.py:
+	  Add a logName for debugging.
+
+2009-05-25  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/program/cdparanoia.py:
 	* morituri/image/image.py:
 	  Correctly chain up to parent __init__ for MultiTasks
