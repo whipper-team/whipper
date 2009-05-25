@@ -118,6 +118,9 @@ class DummyTask(Task):
 class BaseMultiTask(Task):
     """
     I perform multiple tasks.
+
+    @ivar tasks: the tasks to run
+    @type tasks: list of L{Task}
     """
 
     description = 'Doing various tasks'
@@ -125,34 +128,53 @@ class BaseMultiTask(Task):
 
     def __init__(self):
         self.tasks = []
+        self._task = 0
          
     def addTask(self, task):
+        """
+        Add a task.
+
+        @type task: L{Task}
+        """
         if self.tasks is None:
             self.tasks = []
         self.tasks.append(task)
 
     def start(self, runner):
+        """
+        Start tasks.
+
+        Tasks can still be added while running.  For example,
+        a first task can determine how many additional tasks to run.
+        """
         Task.start(self, runner)
 
         # initialize task tracking
         if not self.tasks:
             self.warning('no tasks')
-        self._task = 0
-        self.__tasks = self.tasks[:]
         self._generic = self.description
 
         self.next()
 
     def next(self):
-        # start next task
-        task = self.__tasks[0]
-        del self.__tasks[0]
-        self.debug('BaseMultiTask.next(): starting task %r', task)
-        self._task += 1
-        self.setDescription("%s (%d of %d) ..." % (
-            task.description, self._task, len(self.tasks)))
-        task.addListener(self)
-        task.start(self.runner)
+        """
+        Start the next task.
+        """
+        try:
+            # start next task
+            task = self.tasks[self._task]
+            self._task += 1
+            self.debug('BaseMultiTask.next(): starting task %r', task)
+            self.setDescription("%s (%d of %d) ..." % (
+                task.description, self._task, len(self.tasks)))
+            task.addListener(self)
+            task.start(self.runner)
+        except Exception, e:
+            self.debug('Got exception during next: %r',
+                log.getExceptionMessage(e))
+            self.exception = e
+            self.stop()
+            return
         
     ### listener methods
     def started(self, task):
@@ -167,7 +189,7 @@ class BaseMultiTask(Task):
             self.stop()
             return
 
-        if not self.__tasks:
+        if self._task == len(self.tasks):
             self.stop()
             return
 
@@ -295,10 +317,13 @@ class SyncRunner(TaskRunner):
         # otherwise the task might complete before we are in it
         gobject.timeout_add(0L, self._task.start, self)
         self._loop.run()
+
         self.debug('done running task %r', task)
-        if self._task.exception:
-            self.debug('raising exception')
-            raise self._task.exception
+        if task.exception:
+            # FIXME: this gave a traceback in the logging module
+            #self.debug('raising exception, %r',
+            #    log.getExceptionMessage(self._task.exception))
+            raise task.exception
 
     def schedule(self, delta, callable, *args, **kwargs):
         def c():

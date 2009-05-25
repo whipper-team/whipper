@@ -1,5 +1,15 @@
 2009-05-25  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/task.py:
+	  Add documentation.
+	  Use a _task counter instead of duplicating tasks to
+	  __tasks; this allows us to add tasks after starting.
+	  Catch Exceptions during next() so that we don't get
+	  stuck in a main loop that doesn't exit.
+	  Raise it later when we're done.
+
+2009-05-25  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/common.py:
 	  Since the version was inherited from the current code
 	  in unpickled objects, separate into classVersion and
