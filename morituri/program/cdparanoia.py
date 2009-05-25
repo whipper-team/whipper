@@ -245,6 +245,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         @param device: the device to rip from
         @type  device: str
         """
+        task.MultiSeparateTask.__init__(self)
 
         self.path = path
 

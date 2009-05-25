@@ -98,6 +98,8 @@ class AccurateRipChecksumTask(task.MultiSeparateTask):
     description = "Checksumming tracks"
 
     def __init__(self, image):
+        task.MultiSeparateTask.__init__(self)
+
         self._image = image
         cue = image.cue
         self.checksums = []
@@ -167,6 +169,8 @@ class ImageVerifyTask(task.MultiSeparateTask):
     lengths = None
 
     def __init__(self, image):
+        task.MultiSeparateTask.__init__(self)
+
         self._image = image
         cue = image.cue
         self._tasks = []
