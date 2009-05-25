@@ -25,6 +25,8 @@ Wrap Table of Contents.
 """
 
 import copy
+import urllib
+import urlparse
 
 from morituri.common import task, common, log
 
@@ -65,11 +67,12 @@ class Track:
     indexes = None
     isrc = None
     cdtext = None
+    session = None
 
     def __repr__(self):
         return '<Track %02d>' % self.number
 
-    def __init__(self, number, audio=True):
+    def __init__(self, number, audio=True, session=None):
         self.number = number
         self.audio = audio
         self.indexes = {}
@@ -123,7 +126,6 @@ class Table(object, log.Loggable):
     @type tracks: list of L{Track}
     @ivar catalog: catalog number
     @type catalog: str
-    @ivar version: version number of the object and its API.
     """
 
     tracks = None # list of Track
@@ -131,7 +133,7 @@ class Table(object, log.Loggable):
     catalog = None # catalog number; FIXME: is this UPC ?
     cdtext = None
 
-    version = 1
+    classVersion = 1
 
     def __init__(self, tracks=None):
         if not tracks:
@@ -139,6 +141,10 @@ class Table(object, log.Loggable):
 
         self.tracks = tracks
         self.cdtext = {}
+        self.logName = "Table 0x%08X" % id(self)
+        # done this way because just having a class-defined instance var
+        # gets overridden when unpickling
+        self.instanceVersion = self.classVersion
 
     def getTrackStart(self, number):
         """
@@ -159,9 +165,20 @@ class Table(object, log.Loggable):
         @returns: the end of the given track number (ie index 1 of next track)
         @rtype:   int
         """
+        # default to end of disc
         end = self.leadout - 1
+
+        # if not last track, calculate it from the next track
         if number < len(self.tracks):
             end = self.tracks[number].getIndex(1).absolute - 1
+
+            # if on a session border, subtract the session leadin
+            this = self.tracks[number - 1]
+            next = self.tracks[number]
+            if next.session > this.session:
+                gap = self._getSessionGap(next.session)
+                end -= gap
+
         return end
 
     def getTrackLength(self, number):
@@ -245,6 +262,8 @@ class Table(object, log.Loggable):
         @rtype:   str
         @returns: the 28-character base64-encoded disc ID
         """
+        values = self._getMusicBrainzValues()
+
         # MusicBrainz disc id does not take into account data tracks
         import sha
         import base64
@@ -252,26 +271,17 @@ class Table(object, log.Loggable):
         sha1 = sha.new()
 
         # number of first track
-        sha1.update("%02X" % 1)
+        sha1.update("%02X" % values[0])
 
         # number of last track
-        sha1.update("%02X" % self.getAudioTracks())
+        sha1.update("%02X" % values[1])
 
-        leadout = self.leadout
-        # if the disc is multi-session, last track is the data track,
-        # and we should subtract 11250 + 150 from the last track's offset
-        # for the leadout
-        if self.hasDataTracks():
-            assert not self.tracks[-1].audio
-            leadout = self.tracks[-1].getIndex(1).absolute - 11250 - 150
-
-        # treat leadout offset as track 0 offset
-        sha1.update("%08X" % (150 + leadout))
+        sha1.update("%08X" % values[2])
 
         # offsets of tracks
         for i in range(1, 100):
             try:
-                offset = self.tracks[i - 1].getIndex(1).absolute + 150
+                offset = values[2 + i]
             except IndexError:
                 #print 'track', i - 1, '0 offset'
                 offset = 0
@@ -294,6 +304,71 @@ class Table(object, log.Loggable):
             "Result should be 28 characters, not %d" % len(result)
 
         return result
+
+    def getMusicBrainzSubmitURL(self):
+        host = 'mm.musicbrainz.org'
+
+        discid = self.getMusicBrainzDiscId()
+        values = self._getMusicBrainzValues()
+
+        query = urllib.urlencode({
+            'id': discid,
+            'toc': ' '.join([str(v) for v in values]),
+            'tracks': self.getAudioTracks()
+        })
+
+        return urlparse.urlunparse((
+            'http', host, '/bare/cdlookup.html', '', query, ''))
+
+
+    def _getMusicBrainzValues(self):
+        """
+        Get all MusicBrainz values needed to calculate disc id and submit URL.
+
+        This includes:
+         - track number of first track
+         - number of audio tracks
+         - leadout of disc
+         - offset of index 1 of each track
+
+        @rtype:   list of int
+        """
+        # MusicBrainz disc id does not take into account data tracks
+
+        result = []
+
+        # number of first track
+        result.append(1)
+
+        # number of last audio track
+        result.append(self.getAudioTracks())
+
+        leadout = self.leadout
+        # if the disc is multi-session, last track is the data track,
+        # and we should subtract 11250 + 150 from the last track's offset
+        # for the leadout
+        if self.hasDataTracks():
+            assert not self.tracks[-1].audio
+            leadout = self.tracks[-1].getIndex(1).absolute - 11250 - 150
+
+        # treat leadout offset as track 0 offset
+        result.append(150 + leadout)
+
+        # offsets of tracks
+        for i in range(1, 100):
+            try:
+                track = self.tracks[i - 1]
+                if not track.audio:
+                    continue
+                offset = track.getIndex(1).absolute + 150
+                result.append(offset)
+            except IndexError:
+                pass
+
+
+        self.debug('Musicbrainz values: %r', result)
+        return result
+
 
     def getAccurateRipIds(self):
         """
@@ -338,7 +413,7 @@ class Table(object, log.Loggable):
         return "http://www.accuraterip.com/accuraterip/" \
             "%s/%s/%s/dBAR-%.3d-%s-%s-%s.bin" % ( 
                 discId1[-1], discId1[-2], discId1[-3],
-                len(self.tracks), discId1, discId2, self.getCDDBDiscId())
+                self.getAudioTracks(), discId1, discId2, self.getCDDBDiscId())
 
     def cue(self, program='Morituri'):
         """
@@ -370,6 +445,10 @@ class Table(object, log.Loggable):
         lines.append('FILE "%s" WAVE' % path)
 
         for i, track in enumerate(self.tracks):
+            # FIXME: skip data tracks for now
+            if not track.audio:
+                continue
+
             # if there is no index 0, but there is a new file, advance
             # FILE line here
             if not track.indexes.has_key(0):
@@ -503,18 +582,7 @@ class Table(object, log.Loggable):
 
         @type  other: L{Table}
         """
-        # From cdrecord multi-session info:
-        # For the first additional session this is 11250 sectors
-        # lead-out/lead-in overhead + 150 sectors for the pre-gap of the first
-        # track after the lead-in = 11400 sectos.
-
-        # For all further session this is 6750 sectors lead-out/lead-in
-        # overhead + 150 sectors for the pre-gap of the first track after the
-        # lead-in = 6900 sectors.
-
-        gap = 11400
-        if session > 2:
-            gap = 6900
+        gap = self._getSessionGap(session)
 
         trackCount = len(self.tracks)
         sourceCounter = self.tracks[-1].getLastIndex().counter
@@ -522,6 +590,7 @@ class Table(object, log.Loggable):
         for track in other.tracks:
             t = copy.deepcopy(track)
             t.number = track.number + trackCount
+            t.session = session
             for i in t.indexes.values():
                 if i.absolute is not None:
                     i.absolute += self.leadout + gap
@@ -534,6 +603,22 @@ class Table(object, log.Loggable):
             self.tracks.append(t)
 
         self.leadout += other.leadout + gap # FIXME
+        self.debug('Fixing leadout, now %d', self.leadout)
+
+    def _getSessionGap(self, session):
+        # From cdrecord multi-session info:
+        # For the first additional session this is 11250 sectors
+        # lead-out/lead-in overhead + 150 sectors for the pre-gap of the first
+        # track after the lead-in = 11400 sectos.
+
+        # For all further session this is 6750 sectors lead-out/lead-in
+        # overhead + 150 sectors for the pre-gap of the first track after the
+        # lead-in = 6900 sectors.
+
+        gap = 11400
+        if session > 2:
+            gap = 6900
+        return gap
 
     ### lookups
     def getNextTrackIndex(self, track, index):
@@ -582,5 +667,22 @@ class Table(object, log.Loggable):
             if t.indexes[1].absolute is None:
                 self.debug('no absolute index 1, no TOC')
                 return False
+
+        return True
+
+    def canCue(self):
+        """
+        Check if this table can be used to generate a .cue file
+        """
+        if not self.hasTOC():
+            self.debug('No TOC, cannot cue')
+            return False
+
+        for t in self.tracks:
+            for i in t.indexes.values():
+                if i.relative is None:
+                    self.debug('Track %02d, Index %02d does not have relative',
+                        t.number, i.number)
+                    return False
 
         return True

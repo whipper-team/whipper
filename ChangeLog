@@ -1,5 +1,47 @@
 2009-05-25  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/rip/cd.py:
+	  Add asserts for comparing id's between the simple toc and
+	  the full table.
+	  Create the output directory before ripping the htoa.
+	  Ignore data tracks for now.
+	  Don't fail if we have no AccurateRip responses.
+	* morituri/image/table.py:
+	  Add a session ivar to Track.
+	  Factor in session leadin when calculating track length
+	  of last track in a session.
+	  add getMusicBrainzSubmitURL()
+	  add _getSessionGap() because the session gap size is different
+	  for session 2 and all following.
+	  Use it in merge() to get offsets right.
+	  Fix getAccurateRipURL by only using the audio tracks for the
+	  'length in tracks' number
+	  Temporarily disable writing out data tracks to a .cue file,
+	  since it's not implemented yet.
+	  Add canCue to see if we can write a .cue file from the given table,
+	  and debug why not if not.
+	* morituri/program/cdrdao.py:
+	  Rework to rip each session separately instead of using session 9.
+	  This fixes session 9 read-toc missing the pregap.
+	  Add a simple LineParser for handling output from disk-info.
+	  Count tracks relatively for the session, because the output for
+	  session 2 for track numbers picks up where session 1 left off.
+	  Don't set leadout from TOC printing since for the same reason
+	  session 2's leadout is absolute, not relative to start of session.
+	  Add a DiscInfoTask.
+	  Convert Table and Toc reading tasks to multitasks, first getting the
+	  number of sessions, then reading table/toc for each session.
+
+	* morituri/test/test_image_table.py:
+	  Fix up MusicBrainz disc id for my Ladyhawke disc.
+	  Add AccurateRip URL verification, compared against EAC's.
+	* morituri/test/test_image_toc.py:
+	  Use two separate session read-toc output files to verify
+	  the case of Das Capital.
+	  Verify musicbrainz URL.
+
+2009-05-25  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/task.py:
 	  Add documentation.
 	  Use a _task counter instead of duplicating tasks to

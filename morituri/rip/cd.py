@@ -150,8 +150,12 @@ def getPath(outdir, template, metadata, i):
         v['A'] = filterForPath(metadata.artist)
         v['d'] = filterForPath(metadata.title)
         if i >= 0:
-            v['a'] = filterForPath(metadata.tracks[i].artist)
-            v['n'] = filterForPath(metadata.tracks[i].title)
+            try:
+                v['a'] = filterForPath(metadata.tracks[i - 1].artist)
+                v['n'] = filterForPath(metadata.tracks[i - 1].title)
+            except IndexError, e:
+                print 'ERROR: no track %d found, %r' % (i, e)
+                raise
         else:
             # htoa defaults to disc's artist
             v['a'] = filterForPath(metadata.artist)
@@ -213,13 +217,12 @@ class Rip(logcommand.LogCommand):
 
         # already show us some info based on this
         print "CDDB disc id", ittoc.getCDDBDiscId()
+        print "MusicBrainz disc id", ittoc.getMusicBrainzDiscId()
+
         metadata = musicbrainz(ittoc.getMusicBrainzDiscId())
-
-        url = ittoc.getAccurateRipURL()
-        print "AccurateRip URL", url
-
-        cache = accurip.AccuCache()
-        responses = cache.retrieve(url)
+        if not metadata:
+            print 'Submit this disc to MusicBrainz at:'
+            print ittoc.getMusicBrainzSubmitURL()
 
         # now, read the complete index table, which is slower
         path = os.path.join(os.path.expanduser('~'), '.morituri', 'cache',
@@ -237,7 +240,12 @@ class Rip(logcommand.LogCommand):
         assert itable.getCDDBDiscId() == ittoc.getCDDBDiscId(), \
             "full table's id %s differs from toc id %s" % (
                 itable.getCDDBDiscId(), ittoc.getCDDBDiscId())
-        assert itable.getMusicBrainzDiscId() == ittoc.getMusicBrainzDiscId()
+        assert itable.getMusicBrainzDiscId() == ittoc.getMusicBrainzDiscId(), \
+            "full table's mb id %s differs from toc id mb %s" % (
+            itable.getMusicBrainzDiscId(), ittoc.getMusicBrainzDiscId())
+        assert itable.getAccurateRipURL() == ittoc.getAccurateRipURL(), \
+            "full table's AR URL %s differs from toc AR URL %s" % (
+            itable.getAccurateRipURL(), ittoc.getAccurateRipURL())
 
         outdir = self.options.output_directory or os.getcwd()
 
@@ -257,6 +265,10 @@ class Rip(logcommand.LogCommand):
                 
             # rip it
             htoapath = getPath(outdir, self.options.track_template, metadata, -1) + '.wav'
+            dirname = os.path.dirname(htoapath)
+            if not os.path.exists(dirname):
+                os.makedirs(dirname)
+
             htoalength = stop - start
             if not os.path.exists(htoapath):
                 print 'Ripping track %d: %s' % (0, os.path.basename(htoapath))
@@ -265,7 +277,7 @@ class Rip(logcommand.LogCommand):
                     offset=int(self.options.offset),
                     device=self.parentCommand.options.device)
                 function(runner, t)
-                if t.checksum:
+                if t.checksum is not None:
                     print 'Checksums match for track %d' % 0
                 else:
                     print 'ERROR: checksums did not match for track %d' % 0
@@ -274,6 +286,12 @@ class Rip(logcommand.LogCommand):
 
 
         for i, track in enumerate(itable.tracks):
+            # FIXME: rip data tracks differently
+            if not track.audio:
+                # FIXME: make it work for now
+                track.indexes[1].relative = 0
+                continue
+
             path = getPath(outdir, self.options.track_template, metadata, i) + '.wav'
             dirname = os.path.dirname(path)
             if not os.path.exists(dirname):
@@ -305,6 +323,7 @@ class Rip(logcommand.LogCommand):
             os.makedirs(dirname)
 
         # write .cue file
+        assert itable.canCue()
         cuePath = '%s.cue' % discName
         handle = open(cuePath, 'w')
         handle.write(itable.cue())
@@ -329,13 +348,12 @@ class Rip(logcommand.LogCommand):
         handle.close()
 
         # verify using accuraterip
-        print "CDDB disc id", itable.getCDDBDiscId()
-        print "MusicBrainz disc id", itable.getMusicBrainzDiscId()
-        url = itable.getAccurateRipURL()
+        url = ittoc.getAccurateRipURL()
         print "AccurateRip URL", url
 
         cache = accurip.AccuCache()
         responses = cache.retrieve(url)
+
         if not responses:
             print 'Album not found in AccurateRip database'
 
@@ -364,7 +382,7 @@ class Rip(logcommand.LogCommand):
             confidence = None
 
             # match against each response's checksum
-            for j, r in enumerate(responses):
+            for j, r in enumerate(responses or []):
                 if "%08x" % csum == r.checksums[i]:
                     if not response:
                         response = r

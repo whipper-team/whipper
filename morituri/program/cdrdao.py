@@ -67,9 +67,41 @@ _POSITION_RE = re.compile(r"""
     (?P<ss>\d\d)         # SS
 """, re.VERBOSE)
 
+class LineParser(object, log.Loggable):
+    """
+    Parse incoming bytes into lines
+    Calls 'parse' on owner for each parsed line.
+    """
+    def __init__(self, owner):
+        self._buffer = ""     # accumulate characters
+        self._lines = []      # accumulate lines
+        self._owner = owner
+
+    def read(self, bytes):
+        self.log('received %d bytes', len(bytes))
+        self._buffer += bytes
+
+        # parse buffer into lines if possible, and parse them
+        if "\n" in self._buffer:
+            self.log('buffer has newline, splitting')
+            lines = self._buffer.split('\n')
+            if lines[-1] != "\n":
+                # last line didn't end yet
+                self.log('last line still in progress')
+                self._buffer = lines[-1]
+                del lines[-1]
+            else:
+                self.log('last line finished, resetting buffer')
+                self._buffer = ""
+
+            for line in lines:
+                self.log('Parsing %s', line)
+                self._owner.parse(line)
+
+            self._lines.extend(lines)
 
 class OutputParser(object, log.Loggable):
-    def __init__(self, taskk):
+    def __init__(self, taskk, session=None):
         self._buffer = ""     # accumulate characters
         self._lines = []      # accumulate lines
         self._errors = []     # accumulate error lines
@@ -77,6 +109,8 @@ class OutputParser(object, log.Loggable):
         self._frames = None   # number of frames
         self._track = None    # which track are we analyzing?
         self._task = taskk
+        self._tracks = 0      # count of tracks, relative to session
+        self._session = session
 
         self.table = table.Table() # the index table for the TOC
 
@@ -154,20 +188,21 @@ class OutputParser(object, log.Loggable):
 
         m = _TRACK_RE.search(line)
         if m:
-            self._tracks = int(m.group('track'))
-            track = table.Track(self._tracks)
+            t = int(m.group('track'))
+            self._tracks += 1
+            track = table.Track(self._tracks, session=self._session)
             track.index(1, absolute=int(m.group('start')))
             self.table.tracks.append(track)
-            self.debug('Found track %d', self._tracks)
+            self.debug('Found absolute track %d, session-relative %d', t,
+                self._tracks)
 
         m = _LEADOUT_RE.search(line)
         if m:
             self.debug('Found leadout line, moving to LEADOUT state')
             self._state = 'LEADOUT'
             self._frames = int(m.group('start'))
-            self.debug('Found leadout at offset %r', self._frames)
-            self.table.leadout = self._frames
-            self.info('%d tracks found', self._tracks)
+            self.debug('Found absolute leadout at offset %r', self._frames)
+            self.info('%d tracks found for this session', self._tracks)
             return
 
     def _parse_LEADOUT(self, line):
@@ -208,11 +243,17 @@ class CDRDAOTask(task.Task):
         self.runner.schedule(1.0, self._read, runner)
 
     def _read(self, runner):
+        ret = self._popen.recv()
+
+        if ret:
+            self.log("read from stdout: %s", ret)
+            self.readbytesout(ret)
+
         ret = self._popen.recv_err()
 
         if ret:
             self.log("read from stderr: %s", ret)
-            self.readbytes(ret)
+            self.readbyteserr(ret)
 
         if self._popen.poll() is None:
             # not finished yet
@@ -239,11 +280,17 @@ class CDRDAOTask(task.Task):
         os.kill(self._popen.pid, signal.SIGTERM)
         self.stop()
 
-    def readbytes(self, bytes):
+    def readbytesout(self, bytes):
+        """
+        Called when bytes have been read from stdout.
+        """
+        pass
+
+    def readbyteserr(self, bytes):
         """
         Called when bytes have been read from stderr.
         """
-        raise NotImplementedError
+        pass
 
     def done(self):
         """
@@ -251,39 +298,86 @@ class CDRDAOTask(task.Task):
         """
         raise NotImplementedError
 
-
-class ReadTableTask(CDRDAOTask):
+class DiscInfoTask(CDRDAOTask):
     """
-    I am a task that reads all indexes of a CD.
+    I am a task that reads information about a disc.
+
+    @ivar sessions: the number of sessions
+    @type sessions: int
+    """
+
+    description = "Scanning disc..."
+    table = None
+
+    def __init__(self, device=None):
+        """
+        @param device:  the device to rip from
+        @type  device:  str
+        """
+        CDRDAOTask.__init__(self)
+
+        self.options = ['disk-info', ]
+        if device:
+            self.options.extend(['--device', device, ])
+
+        self.parser = LineParser(self)
+
+    def readbytesout(self, bytes):
+        self.parser.read(bytes)
+
+    def parse(self, line):
+        # called by parser
+        if line.startswith('Sessions'):
+            self.sessions = int (line[line.find(':') + 1:])
+            self.debug('Found %d sessions', self.sessions)
+
+    def done(self):
+        pass
+
+
+# Read stuff for one session
+class ReadSessionTask(CDRDAOTask):
+    """
+    I am a task that reads things for one session.
 
     @ivar table: the index table
     @type table: L{table.Table}
     """
 
-    description = "Scanning indexes..."
+    description = "Reading session"
     table = None
+    extraOptions = None
 
-    def __init__(self, device=None):
+    def __init__(self, session=None, device=None):
         """
-        @param device: the device to rip from
-        @type  device: str
+        @param session: the session to read
+        @type  session: int
+        @param device:  the device to rip from
+        @type  device:  str
         """
         CDRDAOTask.__init__(self)
         self.parser = OutputParser(self)
-        (fd, self._tocfilepath) = tempfile.mkstemp(suffix='.morituri')
+        (fd, self._tocfilepath) = tempfile.mkstemp(
+            suffix='.readtablesession.morituri')
         os.close(fd)
         os.unlink(self._tocfilepath)
 
         self.options = ['read-toc', ]
         if device:
             self.options.extend(['--device', device, ])
-        self.options.extend(['--session', '9', self._tocfilepath, ])
+        if session:
+            self.options.extend(['--session', str(session)])
+            self.description = "%s of session %d..." % (
+                self.description, session)
+        if self.extraOptions:
+            self.options.extend(self.extraOptions)
 
-    def readbytes(self, bytes):
+        self.options.extend([self._tocfilepath, ])
+
+    def readbyteserr(self, bytes):
         self.parser.read(bytes)
 
     def done(self):
-        # FIXME: instead of reading only a TOC, output a complete Table
         # by merging the TOC info.
         self._tocfile = toc.TocFile(self._tocfilepath)
         self._tocfile.parse()
@@ -302,12 +396,91 @@ class ReadTableTask(CDRDAOTask):
         # copy the leadout from the parser's table
         # FIXME: how do we get the length of the last audio track in the case
         # of a data track ?
-        self.table.leadout = self.parser.table.leadout
+        # self.table.leadout = self.parser.table.leadout
 
         # we should have parsed it from the initial output
         assert self.table.leadout is not None
 
-class ReadTOCTask(CDRDAOTask):
+
+class ReadTableSessionTask(ReadSessionTask):
+    """
+    I am a task that reads all indexes of a CD for a session.
+
+    @ivar table: the index table
+    @type table: L{table.Table}
+    """
+
+    description = "Scanning indexes"
+
+class ReadTOCSessionTask(ReadSessionTask):
+    """
+    I am a task that reads the TOC of a CD, without pregaps.
+
+    @ivar table: the index table that matches the TOC.
+    @type table: L{table.Table}
+    """
+
+    description = "Reading TOC"
+    extraOptions = ['--fast-toc', ]
+
+    def done(self):
+        ReadSessionTask.done(self)
+
+        assert self.table.hasTOC(), "This Table Index should be a TOC"
+
+# read all sessions
+class ReadAllSessionsTask(task.MultiSeparateTask):
+    """
+    I am a base class for tasks that need to read all sessions.
+
+    @ivar table: the index table
+    @type table: L{table.Table}
+    """
+
+    table = None
+    _readClass = None
+
+    def __init__(self, device=None):
+        """
+        @param device:  the device to rip from
+        @type  device:  str
+        """
+        task.MultiSeparateTask.__init__(self)
+
+        self._device = device
+
+        self.tasks = [DiscInfoTask(device=device), ]
+
+    def stopped(self, taskk):
+        # After first task, schedule additional ones
+        if taskk == self.tasks[0]:
+            for i in range(taskk.sessions):
+                self.tasks.append(self._readClass(session=i + 1,
+                    device=self._device))
+
+        if self._task == len(self.tasks):
+            self.table = self.tasks[1].table
+            if len(self.tasks) > 2:
+                for i, t in enumerate(self.tasks[2:]):
+                    self.table.merge(t.table, i + 2)
+
+            assert self.table.leadout is not None
+
+        task.MultiSeparateTask.stopped(self, taskk)
+
+
+class ReadTableTask(ReadAllSessionsTask):
+    """
+    I am a task that reads all indexes of a CD for all sessions.
+
+    @ivar table: the index table
+    @type table: L{table.Table}
+    """
+
+    description = "Scanning indexes..."
+    _readClass = ReadTableSessionTask
+
+class ReadTOCTask(ReadAllSessionsTask):
     """
     I am a task that reads the TOC of a CD, without pregaps.
 
@@ -316,32 +489,4 @@ class ReadTOCTask(CDRDAOTask):
     """
 
     description = "Reading TOC..."
-    table = None
-
-    def __init__(self, device=None):
-        """
-        @param device: the device to rip from
-        @type  device: str
-        """
-        CDRDAOTask.__init__(self)
-        self.parser = OutputParser(self)
-
-        (fd, self._toc) = tempfile.mkstemp(suffix='.morituri')
-        os.close(fd)
-        os.unlink(self._toc)
-
-        # Reading a non-existent session gives you output for all sessions
-        # 9 should be a safe number
-        self.options = ['read-toc', '--fast-toc', ]
-        if device:
-            self.options.extend(['--device', device, ])
-        self.options.extend(['--session', '9', self._toc, ])
-
-    def readbytes(self, bytes):
-        self.parser.read(bytes)
-
-    def done(self):
-        os.unlink(self._toc)
-        self.table = self.parser.table
-
-        assert self.table.hasTOC(), "This Table Index should be a TOC"
+    _readClass = ReadTOCSessionTask

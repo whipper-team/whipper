@@ -1,9 +1,11 @@
 # -*- Mode: Python; test-case-name: morituri.test.test_image_table -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
+from morituri.image import table
+
 import unittest
 
-from morituri.image import table
+from morituri.test import common
 
 def h(i):
     return "0x%08x" % i
@@ -39,13 +41,18 @@ class LadyhawkeTestCase(unittest.TestCase):
         self.assertEquals(self.table.getCDDBDiscId(), "c60af50d")
 
     def testMusicBrainz(self):
-        # track
+        # output from mb-submit-disc:
+        # http://mm.musicbrainz.org/bare/cdlookup.html?toc=1+12+195856+150+15687+31841+51016+66616+81352+99559+116070+133243+149997+161710+177832&tracks=12&id=KnpGsLhvH.lPrNc1PBL21lb9Bg4-
+        # however, not (yet) in musicbrainz database
+
         self.assertEquals(self.table.getMusicBrainzDiscId(),
-            "qrJJkrLvXz5Nkvym3oZM4KI9U4A-")
+            "KnpGsLhvH.lPrNc1PBL21lb9Bg4-")
 
     def testAccurateRip(self):
         self.assertEquals(self.table.getAccurateRipIds(), (
             "0013bd5a", "00b8d489"))
+        self.assertEquals(self.table.getAccurateRipURL(),
+        "http://www.accuraterip.com/accuraterip/a/5/d/dBAR-012-0013bd5a-00b8d489-c60af50d.bin")
 
 class MusicBrainzTestCase(unittest.TestCase):
     # example taken from http://musicbrainz.org/doc/DiscIDCalculation

@@ -179,24 +179,6 @@ class LadyhawkeTestCase(unittest.TestCase):
         # c60af50d 13 150 15687 31841 51016 66616 81352 99559 116070 133243
         # 149997 161710 177832 207256 2807
 
-# Das Capital has a htoa and a data track
-# the fast.toc was generated with cdrdao read-toc --fast-toc --session 9
-class CapitalTestCase(unittest.TestCase):
-    def setUp(self):
-        self.toc = toc.TocFile(os.path.join(os.path.dirname(__file__),
-            'capital.fast.toc'))
-        self.toc.parse()
-        self.assertEquals(len(self.toc.table.tracks), 12)
-        #import code; code.interact(local=locals())
-        self.failIf(self.toc.table.tracks[-1].audio)
-
-    def testCDDBId(self):
-        self.toc.table.absolutize()
-        #self.assertEquals(self.toc.table.getCDDBDiscId(), 'b910140c')
-        # output from cd-discid:
-        # b910140c 12 24320 44855 64090 77885 88095 104020 118245 129255 141765 164487 181780 209250 4440
-    testCDDBId.skip = 'not implemented yet'
-
 class CapitalMergeTestCase(unittest.TestCase):
     def setUp(self):
         self.toc1 = toc.TocFile(os.path.join(os.path.dirname(__file__),
@@ -220,5 +202,9 @@ class CapitalMergeTestCase(unittest.TestCase):
         self.assertEquals(self.table.getCDDBDiscId(), 'b910140c')
         # output from cd-discid:
         # b910140c 12 24320 44855 64090 77885 88095 104020 118245 129255 141765 164487 181780 209250 4440
-    testCDDBId.skip = 'not implemented yet'
+
+    def testMusicBrainz(self):
+        # URL to submit: http://mm.musicbrainz.org/bare/cdlookup.html?toc=1+11+197850+24320+44855+64090+77885+88095+104020+118245+129255+141765+164487+181780&tracks=11&id=MAj3xXf6QMy7G.BIFOyHyq4MySE-
+        self.assertEquals(self.table.getMusicBrainzDiscId(),
+            "MAj3xXf6QMy7G.BIFOyHyq4MySE-")
 
