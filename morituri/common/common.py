@@ -167,10 +167,9 @@ class PersistedCache(object):
         """
         persister = Persister(self._getPath(key))
         if persister.object:
-            if hasattr(persister.object, 'version'):
+            if hasattr(persister.object, 'instanceVersion'):
                 o = persister.object
-                if o.version < o.__class__.version:
-                    print 'object needs upgrade'
+                if o.instanceVersion < o.__class__.classVersion:
                     persister.delete()
 
         return persister

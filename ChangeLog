@@ -1,5 +1,12 @@
 2009-05-25  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/common.py:
+	  Since the version was inherited from the current code
+	  in unpickled objects, separate into classVersion and
+	  an instanceVersion set from __init__.
+
+2009-05-25  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/image/toc.py:
 	  Add a logName for debugging.
 
