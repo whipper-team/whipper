@@ -103,6 +103,8 @@ def getAccurateRipResponses(data):
 class AccurateRipResponse(object):
     """
     I represent the response of the AccurateRip online database.
+
+    @type checksums: list of str
     """
 
     trackCount = None
