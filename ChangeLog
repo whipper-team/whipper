@@ -1,5 +1,12 @@
 2009-05-26  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/encode.py (added):
+	* examples/encode.py (added):
+	  Add an Encode Task, hardcoded to flac for now.
+	  Add an example, that also sets tags.
+
+2009-05-26  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/task.py:
 	  Add debug.
 	* morituri/rip/drive.py:
