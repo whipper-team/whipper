@@ -29,7 +29,11 @@ class List(logcommand.LogCommand):
     summary = "list drives"
 
     def do(self, args):
-        paths = cdio.get_devices_with_cap(pycdio.FS_AUDIO, False)
+        print 'getting paths'
+        
+        # using FS_AUDIO here only makes it list the drive when an audio cd
+        # is inserted
+        paths = cdio.get_devices_with_cap(pycdio.FS_MATCH_ALL, False)
         for path in paths:
             device = cdio.Device(path)
             ok, vendor, model, release = device.get_hwinfo()

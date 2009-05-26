@@ -362,6 +362,7 @@ class SyncRunner(TaskRunner):
             self._report()
 
     def stopped(self, task):
+        self.debug('stopped task %r', task)
         self.progressed(task, 1.0)
         self._loop.quit()
 
