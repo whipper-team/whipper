@@ -1,3 +1,14 @@
+2009-06-01  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/encode.py:
+	* morituri/program/cdparanoia.py:
+	  Add encoding profiles, kept simple for now as a class and
+	  subclasses.  Use them to encode.  Calculate peak level while
+	  encoding, compared to EAC and replaygain's value.
+	* morituri/rip/cd.py:
+	  Use the encoding profiles, ripping with the right extension.
+	  Add a --profile parameter for it.
+
 2009-05-31  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/rip/cd.py:

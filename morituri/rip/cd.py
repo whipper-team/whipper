@@ -22,11 +22,13 @@
 
 import os
 import sys
+import math
 
 import gobject
 gobject.threads_init()
 
-from morituri.common import logcommand, task, checksum, common, accurip, drive
+from morituri.common import logcommand, task, checksum, common, accurip
+from morituri.common import drive, encode
 from morituri.image import image, cue, table
 from morituri.program import cdrdao, cdparanoia
 
@@ -199,6 +201,12 @@ class Rip(logcommand.LogCommand):
             action="store", dest="disc_template",
             help="template for disc file naming (default %s)" % default,
             default=default)
+        default = 'flac'
+        self.parser.add_option('', '--profile',
+            action="store", dest="profile",
+            help="profile for encoding (default '%s', choices '%s')" % (
+                default, "', '".join(encode.PROFILES.keys())),
+            default=default)
 
 
     def do(self, args):
@@ -248,6 +256,8 @@ class Rip(logcommand.LogCommand):
             itable.getAccurateRipURL(), ittoc.getAccurateRipURL())
 
         outdir = self.options.output_directory or os.getcwd()
+        profile = encode.PROFILES[self.options.profile]
+        extension = profile.extension
 
         # check for hidden track one audio
         htoapath = None
@@ -264,7 +274,7 @@ class Rip(logcommand.LogCommand):
             print 'Found Hidden Track One Audio from frame %d to %d' % (start, stop)
                 
             # rip it
-            htoapath = getPath(outdir, self.options.track_template, metadata, 0) + '.wav'
+            htoapath = getPath(outdir, self.options.track_template, metadata, 0) + '.' + extension
             dirname = os.path.dirname(htoapath)
             if not os.path.exists(dirname):
                 os.makedirs(dirname)
@@ -275,12 +285,17 @@ class Rip(logcommand.LogCommand):
                 t = cdparanoia.ReadVerifyTrackTask(htoapath, ittoc,
                     start, stop - 1,
                     offset=int(self.options.offset),
-                    device=self.parentCommand.options.device)
+                    device=self.parentCommand.options.device,
+                    profile=self.options.profile)
                 function(runner, t)
+
                 if t.checksum is not None:
                     print 'Checksums match for track %d' % 0
                 else:
                     print 'ERROR: checksums did not match for track %d' % 0
+                print 'Peak level: %.2f %%' % (math.sqrt(t.peak) * 100.0, )
+                if t.peak == 0.0:
+                    print 'HTOA is completely silent'
                 # overlay this rip onto the Table
             itable.setFile(1, 0, htoapath, htoalength, 0)
 
@@ -292,7 +307,7 @@ class Rip(logcommand.LogCommand):
                 track.indexes[1].relative = 0
                 continue
 
-            path = getPath(outdir, self.options.track_template, metadata, i + 1) + '.wav'
+            path = getPath(outdir, self.options.track_template, metadata, i + 1) + '.' + extension
             dirname = os.path.dirname(path)
             if not os.path.exists(dirname):
                 os.makedirs(dirname)
@@ -304,13 +319,15 @@ class Rip(logcommand.LogCommand):
                     ittoc.getTrackStart(i + 1),
                     ittoc.getTrackEnd(i + 1),
                     offset=int(self.options.offset),
-                    device=self.parentCommand.options.device)
+                    device=self.parentCommand.options.device,
+                    profile=self.options.profile)
                 t.description = 'Reading Track %d' % (i + 1)
                 function(runner, t)
                 if t.checksum:
                     print 'Checksums match for track %d' % (i + 1)
                 else:
                     print 'ERROR: checksums did not match for track %d' % (i + 1)
+                print 'Peak level: %.2f %%' % (math.sqrt(t.peak) * 100.0, )
 
             # overlay this rip onto the Table
             itable.setFile(i + 1, 1, path, ittoc.getTrackLength(i + 1), i + 1)
@@ -340,7 +357,7 @@ class Rip(logcommand.LogCommand):
             handle.write('%s\n' % os.path.basename(htoapath))
 
         for i, track in enumerate(itable.tracks):
-            path = getPath(outdir, self.options.track_template, metadata, i) + '.wav'
+            path = getPath(outdir, self.options.track_template, metadata, i) + '.' + extension
             handle.write('#EXTINF:%d,%s\n' % (
                 itable.getTrackLength(i + 1) / common.FRAMES_PER_SECOND,
                 os.path.basename(path)))

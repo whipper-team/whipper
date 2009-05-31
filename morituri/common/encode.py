@@ -21,6 +21,7 @@
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import math
 import struct
 import zlib
 
@@ -31,33 +32,79 @@ from morituri.common import common, task
 from morituri.common import log
 log.init()
 
+class Profile(object):
+    name = None
+    extension = None
+    pipeline = None
+
+class FlacProfile(Profile):
+    name = 'flac'
+    extension = 'flac'
+    pipeline = 'flacenc name=muxer quality=8'
+
+class AlacProfile(Profile):
+    name = 'alac'
+    extension = 'alac'
+    pipeline = 'ffenc_alac name=muxer'
+
+class WavProfile(Profile):
+    name = 'wav'
+    extension = 'wav'
+    pipeline = 'wavenc name=muxer'
+
+class WavpackProfile(Profile):
+    name = 'wavpack'
+    extension = 'wv'
+    pipeline = 'wavpackenc bitrate=0 name=muxer'
+
+
+PROFILES = {
+    'wav': WavProfile,
+    'flac': FlacProfile,
+    'alac': AlacProfile,
+    'wavpack': WavpackProfile,
+}
+
 class EncodeTask(task.Task):
     """
     I am a task that encodes a .wav file.
     I set tags too.
+    I also calculate the peak level of the track.
+
+    @param peak: the peak power, from 0.0 to 1.0.  To get the peak volume,
+                 square root this value.
+    @type  peak: float
     """
 
     description = 'Encoding'
+    peak = None
 
-    def __init__(self, inpath, outpath, taglist=None):
+    def __init__(self, inpath, outpath, profile, taglist=None):
         """
         """
         self._inpath = inpath
         self._outpath = outpath
         self._taglist = taglist
 
+        self._level = None
+        self._peakdB = None
+        self._profile = PROFILES[profile]
+
     def start(self, runner):
         task.Task.start(self, runner)
         self._pipeline = gst.parse_launch('''
             filesrc location="%s" !
-            decodebin name=decoder ! audio/x-raw-int !
-            flacenc name=muxer !
-            filesink location="%s" name=sink''' % (self._inpath, self._outpath))
+            decodebin name=decoder !
+            audio/x-raw-int,width=16,depth=16,channels=2 !
+            level name=level !
+            %s !
+            filesink location="%s" name=sink''' % (self._inpath,
+                self._profile.pipeline, self._outpath))
 
+        muxer = self._pipeline.get_by_name('muxer')
 
         # set tags
         if self._taglist:
-            muxer = self._pipeline.get_by_name('muxer')
             muxer.merge_tags(self._taglist, gst.TAG_MERGE_APPEND)
 
         self.debug('pausing pipeline')
@@ -79,12 +126,16 @@ class EncodeTask(task.Task):
         # add a probe so we can track progress
         sinkpad = muxer.get_pad('sink')
         srcpad = sinkpad.get_peer()
-        srcpad.add_buffer_probe(self._probe_handler, False)
+        srcpad.add_buffer_probe(self._probe_handler)
 
         # add eos handling
         bus = self._pipeline.get_bus()
         bus.add_signal_watch()
-        bus.connect('message::eos', self._eos_cb)
+        bus.connect('message::eos', self._message_eos_cb)
+
+        # set up level callbacks
+        bus.connect('message::element', self._message_element_cb)
+        self._level = self._pipeline.get_by_name('level')
 
         self.debug('scheduling setting to play')
         # since set_state returns non-False, adding it as timeout_add
@@ -100,15 +151,33 @@ class EncodeTask(task.Task):
         #self._pipeline.set_state(gst.STATE_PLAYING)
         self.debug('scheduled setting to play')
 
-    def _probe_handler(self, pad, buffer, ret):
+    def _probe_handler(self, pad, buffer):
         # marshal to main thread
         self.runner.schedule(0, self.setProgress,
             float(buffer.offset) / self._length)
+
+        # don't drop the buffer
         return True
 
-    def _eos_cb(self, bus, message):
+    def _message_eos_cb(self, bus, message):
         self.debug('eos, scheduling stop')
         self.runner.schedule(0, self.stop)
+
+    def _message_element_cb(self, bus, message):
+        if message.src != self._level:
+            return
+
+        s = message.structure
+        if s.get_name() != 'level':
+            return
+
+
+        if self._peakdB is None:
+            self._peakdB = s['peak'][0]
+
+        for p in s['peak']:
+            if self._peakdB < p:
+                self._peakdB = p
 
     def stop(self):
         self.debug('stopping')
@@ -116,3 +185,6 @@ class EncodeTask(task.Task):
         self._pipeline.set_state(gst.STATE_NULL)
         self.debug('set state to NULL')
         task.Task.stop(self)
+
+    
+        self.peak = math.pow(10, self._peakdB / 10.0)

@@ -27,7 +27,7 @@ import shutil
 import subprocess
 import tempfile
 
-from morituri.common import task, log, common, checksum
+from morituri.common import task, log, common, checksum, encode
 from morituri.extern import asyncsub
 
 class FileSizeError(Exception):
@@ -228,22 +228,25 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
     @ivar checksum:     the checksum of the track; set if they match.
     @ivar testchecksum: the test checksum of the track.
     @ivar copychecksum: the copy checksum of the track.
+    @ivar peak:         the peak level of the track
     """
 
-    def __init__(self, path, table, start, stop, offset=0, device=None):
+    def __init__(self, path, table, start, stop, offset=0, device=None, profile=None):
         """
-        @param path:   where to store the ripped track
-        @type  path:   str
-        @param table:  table of contents of CD
-        @type  table:  L{table.Table}
-        @param start:  first frame to rip
-        @type  start:  int
-        @param stop:   last frame to rip (inclusive)
-        @type  stop:   int
-        @param offset: read offset, in samples
-        @type  offset: int
-        @param device: the device to rip from
-        @type  device: str
+        @param path:    where to store the ripped track
+        @type  path:    str
+        @param table:   table of contents of CD
+        @type  table:   L{table.Table}
+        @param start:   first frame to rip
+        @type  start:   int
+        @param stop:    last frame to rip (inclusive)
+        @type  stop:    int
+        @param offset:  read offset, in samples
+        @type  offset:  int
+        @param device:  the device to rip from
+        @type  device:  str
+        @param profile: the encoding profile
+        @type  profile: str
         """
         task.MultiSeparateTask.__init__(self)
 
@@ -263,10 +266,20 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         self.tasks.append(t)
         self.tasks.append(checksum.CRC32Task(tmppath))
 
+        # FIXME: clean this up
+        fd, tmpoutpath = tempfile.mkstemp(suffix='.morituri.flac')
+        os.close(fd)
+        self._tmppath = tmpoutpath
+        self.tasks.append(encode.EncodeTask(tmppath, tmpoutpath, profile))
+        # make sure our encoding is accurate
+        self.tasks.append(checksum.CRC32Task(tmpoutpath))
+
         self.checksum = None
 
     def stop(self):
         if not self.exception:
+            self.peak = self.tasks[4].peak
+
             self.testchecksum = c1 = self.tasks[1].checksum
             self.copychecksum = c2 = self.tasks[3].checksum
             if c1 == c2:
@@ -275,6 +288,8 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
             else:
                 self.error('read and verify failed')
 
+            if self.tasks[5].checksum != self.checksum:
+                self.error('Encoding failed, checksum does not match')
             try:
                 shutil.move(self._tmppath, self.path)
                 self.checksum = checksum
