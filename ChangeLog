@@ -1,3 +1,8 @@
+2009-05-31  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/rip/cd.py:
+	  Clean up track numbering confusion.
+
 2009-05-26  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/encode.py (added):

@@ -137,7 +137,7 @@ def getPath(outdir, template, metadata, i):
 
     v = {}
 
-    v['t'] = '%02d' % (i + 1)
+    v['t'] = '%02d' % i
 
     # default values
     v['A'] = 'Unknown Artist'
@@ -149,7 +149,7 @@ def getPath(outdir, template, metadata, i):
     if metadata:
         v['A'] = filterForPath(metadata.artist)
         v['d'] = filterForPath(metadata.title)
-        if i >= 0:
+        if i > 0:
             try:
                 v['a'] = filterForPath(metadata.tracks[i - 1].artist)
                 v['n'] = filterForPath(metadata.tracks[i - 1].title)
@@ -264,7 +264,7 @@ class Rip(logcommand.LogCommand):
             print 'Found Hidden Track One Audio from frame %d to %d' % (start, stop)
                 
             # rip it
-            htoapath = getPath(outdir, self.options.track_template, metadata, -1) + '.wav'
+            htoapath = getPath(outdir, self.options.track_template, metadata, 0) + '.wav'
             dirname = os.path.dirname(htoapath)
             if not os.path.exists(dirname):
                 os.makedirs(dirname)
@@ -292,7 +292,7 @@ class Rip(logcommand.LogCommand):
                 track.indexes[1].relative = 0
                 continue
 
-            path = getPath(outdir, self.options.track_template, metadata, i) + '.wav'
+            path = getPath(outdir, self.options.track_template, metadata, i + 1) + '.wav'
             dirname = os.path.dirname(path)
             if not os.path.exists(dirname):
                 os.makedirs(dirname)
