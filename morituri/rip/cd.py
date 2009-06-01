@@ -286,7 +286,7 @@ class Rip(logcommand.LogCommand):
                     start, stop - 1,
                     offset=int(self.options.offset),
                     device=self.parentCommand.options.device,
-                    profile=self.options.profile)
+                    profile=profile)
                 function(runner, t)
 
                 if t.checksum is not None:
@@ -314,13 +314,14 @@ class Rip(logcommand.LogCommand):
 
             # FIXME: optionally allow overriding reripping
             if not os.path.exists(path):
-                print 'Ripping track %d: %s' % (i + 1, os.path.basename(path))
+                print 'Ripping track %d of %d: %s' % (
+                    i + 1, len(itable.tracks), os.path.basename(path))
                 t = cdparanoia.ReadVerifyTrackTask(path, ittoc,
                     ittoc.getTrackStart(i + 1),
                     ittoc.getTrackEnd(i + 1),
                     offset=int(self.options.offset),
                     device=self.parentCommand.options.device,
-                    profile=self.options.profile)
+                    profile=profile)
                 t.description = 'Reading Track %d' % (i + 1)
                 function(runner, t)
                 if t.checksum:

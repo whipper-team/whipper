@@ -231,6 +231,9 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
     @ivar peak:         the peak level of the track
     """
 
+    _tmpwavpath = None
+    _tmppath = None
+
     def __init__(self, path, table, start, stop, offset=0, device=None, profile=None):
         """
         @param path:    where to store the ripped track
@@ -246,7 +249,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         @param device:  the device to rip from
         @type  device:  str
         @param profile: the encoding profile
-        @type  profile: str
+        @type  profile: L{encode.Profile}
         """
         task.MultiSeparateTask.__init__(self)
 
@@ -255,7 +258,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         # FIXME: choose a dir on the same disk/dir as the final path
         fd, tmppath = tempfile.mkstemp(suffix='.morituri.wav')
         os.close(fd)
-        self._tmppath = tmppath
+        self._tmpwavpath = tmppath
 
         self.tasks = []
         self.tasks.append(
@@ -266,8 +269,8 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         self.tasks.append(t)
         self.tasks.append(checksum.CRC32Task(tmppath))
 
-        # FIXME: clean this up
-        fd, tmpoutpath = tempfile.mkstemp(suffix='.morituri.flac')
+        fd, tmpoutpath = tempfile.mkstemp(suffix='.morituri.%s' %
+            profile.extension)
         os.close(fd)
         self._tmppath = tmpoutpath
         self.tasks.append(encode.EncodeTask(tmppath, tmpoutpath, profile))
@@ -290,6 +293,10 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
 
             if self.tasks[5].checksum != self.checksum:
                 self.error('Encoding failed, checksum does not match')
+
+            # delete the unencoded file
+            os.unlink(self._tmpwavpath)
+
             try:
                 shutil.move(self._tmppath, self.path)
                 self.checksum = checksum

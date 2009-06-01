@@ -2,6 +2,15 @@
 
 	* morituri/common/encode.py:
 	* morituri/program/cdparanoia.py:
+	* morituri/rip/cd.py:
+	  Clean up the temporary unencoded file.
+	  Pass profile as objects to tasks, so that temp files have the right
+	  extension.
+
+2009-06-01  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/encode.py:
+	* morituri/program/cdparanoia.py:
 	  Add encoding profiles, kept simple for now as a class and
 	  subclasses.  Use them to encode.  Calculate peak level while
 	  encoding, compared to EAC and replaygain's value.

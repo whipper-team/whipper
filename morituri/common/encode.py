@@ -81,6 +81,8 @@ class EncodeTask(task.Task):
 
     def __init__(self, inpath, outpath, profile, taglist=None):
         """
+        @param profile: encoding profile
+        @type  profile: L{Profile}
         """
         self._inpath = inpath
         self._outpath = outpath
@@ -88,7 +90,7 @@ class EncodeTask(task.Task):
 
         self._level = None
         self._peakdB = None
-        self._profile = PROFILES[profile]
+        self._profile = profile
 
     def start(self, runner):
         task.Task.start(self, runner)
@@ -186,5 +188,4 @@ class EncodeTask(task.Task):
         self.debug('set state to NULL')
         task.Task.stop(self)
 
-    
         self.peak = math.pow(10, self._peakdB / 10.0)
