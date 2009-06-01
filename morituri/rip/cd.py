@@ -27,6 +27,8 @@ import math
 import gobject
 gobject.threads_init()
 
+import gst
+
 from morituri.common import logcommand, task, checksum, common, accurip
 from morituri.common import drive, encode
 from morituri.image import image, cue, table
@@ -168,6 +170,49 @@ def getPath(outdir, template, metadata, i):
 
     return os.path.join(outdir, template % v)
 
+def getTagList(metadata, i):
+    """
+    Based on the metadata, get a gst.TagList for the given track.
+
+    @param metadata:
+    @type  metadata: L{DiscMetadata}
+    @param i:        track number (0 for HTOA)
+    @type  i:        int
+
+    @rtype: L{gst.TagList}
+    """
+    artist = u'Unknown Artist'
+    disc = u'Unknown Disc'
+    title = u'Unknown Track'
+
+    if metadata:
+        artist = metadata.artist
+        disc = metadata.title
+        if i > 0:
+            try:
+                artist = metadata.tracks[i - 1].artist
+                title = metadata.tracks[i - 1].title
+            except IndexError, e:
+                print 'ERROR: no track %d found, %r' % (i, e)
+                raise
+        else:
+            # htoa defaults to disc's artist
+            title = 'Hidden Track One Audio'
+
+    ret = gst.TagList()
+
+    # gst-python 0.10.15.1 does not handle unicode -> utf8 string conversion
+    # see http://bugzilla.gnome.org/show_bug.cgi?id=584445
+    ret[gst.TAG_ARTIST] = artist.encode('utf-8')
+    ret[gst.TAG_TITLE] = title.encode('utf-8')
+    ret[gst.TAG_ALBUM] = disc.encode('utf-8')
+    ret[gst.TAG_TRACK_NUMBER] = i
+    ret[gst.TAG_TRACK_COUNT] = len(metadata.tracks)
+    
+    # FIXME: gst.TAG_ISRC 
+
+    return ret
+
 class Rip(logcommand.LogCommand):
     summary = "rip CD"
 
@@ -286,7 +331,8 @@ class Rip(logcommand.LogCommand):
                     start, stop - 1,
                     offset=int(self.options.offset),
                     device=self.parentCommand.options.device,
-                    profile=profile)
+                    profile=profile,
+                    taglist=getTagList(metadata, 0))
                 function(runner, t)
 
                 if t.checksum is not None:
@@ -321,7 +367,8 @@ class Rip(logcommand.LogCommand):
                     ittoc.getTrackEnd(i + 1),
                     offset=int(self.options.offset),
                     device=self.parentCommand.options.device,
-                    profile=profile)
+                    profile=profile,
+                    taglist=getTagList(metadata, i))
                 t.description = 'Reading Track %d' % (i + 1)
                 function(runner, t)
                 if t.checksum:
@@ -358,7 +405,8 @@ class Rip(logcommand.LogCommand):
             handle.write('%s\n' % os.path.basename(htoapath))
 
         for i, track in enumerate(itable.tracks):
-            path = getPath(outdir, self.options.track_template, metadata, i) + '.' + extension
+            path = getPath(outdir, self.options.track_template, metadata,
+                i + 1) + '.' + extension
             handle.write('#EXTINF:%d,%s\n' % (
                 itable.getTrackLength(i + 1) / common.FRAMES_PER_SECOND,
                 os.path.basename(path)))

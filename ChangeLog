@@ -1,5 +1,13 @@
 2009-06-01  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/program/cdparanoia.py:
+	* morituri/rip/cd.py:
+	  Handle another off-by-one error in the m3u handling.
+	  Add a getTagList function.
+	  Use it to encode tags.
+
+2009-06-01  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/encode.py:
 	* morituri/program/cdparanoia.py:
 	* morituri/rip/cd.py:

@@ -234,7 +234,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
     _tmpwavpath = None
     _tmppath = None
 
-    def __init__(self, path, table, start, stop, offset=0, device=None, profile=None):
+    def __init__(self, path, table, start, stop, offset=0, device=None, profile=None, taglist=None):
         """
         @param path:    where to store the ripped track
         @type  path:    str
@@ -250,11 +250,15 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         @type  device:  str
         @param profile: the encoding profile
         @type  profile: L{encode.Profile}
+        @param taglist: a list of tags
+        @param taglist: L{gst.TagList}
         """
         task.MultiSeparateTask.__init__(self)
 
         self.path = path
 
+        if taglist:
+            self.debug('read and verify with taglist %r', taglist)
         # FIXME: choose a dir on the same disk/dir as the final path
         fd, tmppath = tempfile.mkstemp(suffix='.morituri.wav')
         os.close(fd)
@@ -273,7 +277,8 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
             profile.extension)
         os.close(fd)
         self._tmppath = tmpoutpath
-        self.tasks.append(encode.EncodeTask(tmppath, tmpoutpath, profile))
+        self.tasks.append(encode.EncodeTask(tmppath, tmpoutpath, profile,
+            taglist=taglist))
         # make sure our encoding is accurate
         self.tasks.append(checksum.CRC32Task(tmpoutpath))
 
