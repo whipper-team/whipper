@@ -1,3 +1,10 @@
+goals
+-----
+- support one-command automatic ripping
+- support offline ripping (doing metadata lookup and log rewriting later)
+  - separate the info/result about the rip from the metadata/file generation/...
+
+
 rip command tree
 ----------------
 rip
