@@ -39,10 +39,15 @@ class TrackMetadata(object):
     title = None
 
 class DiscMetadata(object):
+    """
+    @param release: earliest release date, in YYYY-MM-DD
+    @type  release: unicode
+    """
     artist = None
     title = None
     various = False
     tracks = None
+    release = None
 
     def __init__(self):
         self.tracks = []
@@ -107,6 +112,7 @@ def musicbrainz(discid):
     metadata.various = not isSingleArtist
     metadata.title = release.title
     metadata.artist = release.artist.getUniqueName()
+    metadata.release = release.getEarliestReleaseDate()
 
     print "%s - %s" % (release.artist.getUniqueName(), release.title)
 
@@ -206,9 +212,21 @@ def getTagList(metadata, i):
     ret[gst.TAG_ARTIST] = artist.encode('utf-8')
     ret[gst.TAG_TITLE] = title.encode('utf-8')
     ret[gst.TAG_ALBUM] = disc.encode('utf-8')
-    ret[gst.TAG_TRACK_NUMBER] = i
-    ret[gst.TAG_TRACK_COUNT] = len(metadata.tracks)
-    
+
+    # gst-python 0.10.15.1 does not handle tags that are UINT
+    # see gst-python commit 26fa6dd184a8d6d103eaddf5f12bd7e5144413fb
+    # FIXME: no way to compare against 'master' version after 0.10.15
+    if gst.pygst_version >= (0, 10, 15):
+        ret[gst.TAG_TRACK_NUMBER] = i
+    if metadata:
+        if gst.pygst_version >= (0, 10, 15):
+            ret[gst.TAG_TRACK_COUNT] = len(metadata.tracks)
+        # hack to get a GstDate which we cannot instantiate directly in
+        # 0.10.15.1
+        s = gst.structure_from_string('hi,date=(GstDate)%s' %
+            str(metadata.release))
+        ret[gst.TAG_DATE] = s['date']
+        
     # FIXME: gst.TAG_ISRC 
 
     return ret
@@ -301,7 +319,7 @@ class Rip(logcommand.LogCommand):
             itable.getAccurateRipURL(), ittoc.getAccurateRipURL())
 
         outdir = self.options.output_directory or os.getcwd()
-        profile = encode.PROFILES[self.options.profile]
+        profile = encode.PROFILES[self.options.profile]()
         extension = profile.extension
 
         # check for hidden track one audio
@@ -368,7 +386,7 @@ class Rip(logcommand.LogCommand):
                     offset=int(self.options.offset),
                     device=self.parentCommand.options.device,
                     profile=profile,
-                    taglist=getTagList(metadata, i))
+                    taglist=getTagList(metadata, i + 1))
                 t.description = 'Reading Track %d' % (i + 1)
                 function(runner, t)
                 if t.checksum:

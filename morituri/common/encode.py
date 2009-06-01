@@ -37,10 +37,33 @@ class Profile(object):
     extension = None
     pipeline = None
 
+    def test(self):
+        """
+        Test if this profile will work.
+        Can check for elements, ...
+        """
+        pass
+
 class FlacProfile(Profile):
     name = 'flac'
     extension = 'flac'
     pipeline = 'flacenc name=muxer quality=8'
+
+    # FIXME: we should do something better than just printing ERRORS
+    def test(self):
+        plugin = gst.registry_get_default().find_plugin('flac')
+        if not plugin:
+            print 'ERROR: cannot find flac plugin'
+            return False
+
+        versionTuple = tuple([int(x) for x in plugin.get_version().split('.')])
+        if len(versionTuple) < 4:
+            versionTuple = versionTuple + (0, )
+        if versionTuple > (0, 10, 9, 0) and versionTuple <= (0, 10, 15, 0):
+            print 'ERROR: flacenc between 0.10.9 and 0.10.15 has a bug'
+            return False
+
+        return True
 
 class AlacProfile(Profile):
     name = 'alac'
@@ -91,6 +114,8 @@ class EncodeTask(task.Task):
         self._level = None
         self._peakdB = None
         self._profile = profile
+
+        self._profile.test()
 
     def start(self, runner):
         task.Task.start(self, runner)

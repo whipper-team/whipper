@@ -1,3 +1,12 @@
+2009-06-02  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/encode.py:
+	  Add a test() method to the profile so we can warn about bad
+	  flacenc versions.
+	  Encode track number and count, and release date, if possible.
+	* morituri/rip/cd.py:
+	  Fix another off-by-one error in the tag encoding.
+
 2009-06-01  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/program/cdparanoia.py:
