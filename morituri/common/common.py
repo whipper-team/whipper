@@ -46,14 +46,14 @@ def msfToFrames(msf):
 
     return 60 * FRAMES_PER_SECOND * int(m) + FRAMES_PER_SECOND * int(s) + int(f)
 
-def framesToMSF(frames):
+def framesToMSF(frames, frameDelimiter=':'):
     f = frames % FRAMES_PER_SECOND
     frames -= f
     s = (frames / FRAMES_PER_SECOND) % 60
     frames -= s * 60
     m = frames / FRAMES_PER_SECOND / 60
 
-    return "%02d:%02d:%02d" % (m, s, f)
+    return "%02d:%02d%s%02d" % (m, s, frameDelimiter, f)
 
 def framesToHMSF(frames):
     # cdparanoia style

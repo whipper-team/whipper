@@ -94,8 +94,8 @@ class EncodeTask(task.Task):
     I set tags too.
     I also calculate the peak level of the track.
 
-    @param peak: the peak power, from 0.0 to 1.0.  To get the peak volume,
-                 square root this value.
+    @param peak: the peak volume, from 0.0 to 1.0.  This is the sqrt of the
+                 peak power.
     @type  peak: float
     """
 
@@ -213,4 +213,4 @@ class EncodeTask(task.Task):
         self.debug('set state to NULL')
         task.Task.stop(self)
 
-        self.peak = math.pow(10, self._peakdB / 10.0)
+        self.peak = math.sqrt(math.pow(10, self._peakdB / 10.0))

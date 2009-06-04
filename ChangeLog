@@ -1,5 +1,12 @@
 2009-06-04  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/common.py:
+	  Add an argument for the delimiter in formatting.
+	* morituri/common/encode.py:
+	  Most programs use peak volume, not power, so do this too.
+
+2009-06-04  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/test/common.py:
 	  Add a method for diffing multiline strings.
 
