@@ -1,3 +1,13 @@
+2009-06-05  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* configure.ac:
+	* morituri/Makefile.am:
+	* morituri/result (added):
+	* morituri/result/result.py (added):
+	* morituri/result/__init__.py (added):
+	* morituri/result/Makefile.am (added):
+	  Add classes to store track and rip results in.
+
 2009-06-04  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/common.py:

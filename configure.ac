@@ -57,6 +57,7 @@ morituri/configure/installed.py
 morituri/extern/Makefile
 morituri/image/Makefile
 morituri/program/Makefile
+morituri/result/Makefile
 morituri/test/Makefile
 doc/Makefile
 misc/Makefile
