@@ -24,13 +24,16 @@ import os
 import sys
 import math
 
+import cdio
+
 import gobject
 gobject.threads_init()
 
 import gst
 
-from morituri.common import logcommand, task, checksum, common, accurip
+from morituri.common import logcommand, task, checksum, common, accurip, log
 from morituri.common import drive, encode
+from morituri.result import result
 from morituri.image import image, cue, table
 from morituri.program import cdrdao, cdparanoia
 
@@ -344,6 +347,14 @@ class Rip(logcommand.LogCommand):
         profile = encode.PROFILES[self.options.profile]()
         extension = profile.extension
 
+        # result
+        res = result.RipResult()
+        res.offset = int(self.options.offset)
+        res.toctable = itable
+        res.artist = metadata and metadata.artist or 'Unknown Artist'
+        res.title = metadata and metadata.title or 'Unknown Title'
+        _, res.vendor, res.model, __ = cdio.Device(device).get_hwinfo()
+
         # check for hidden track one audio
         htoapath = None
         index = None
@@ -389,11 +400,18 @@ class Rip(logcommand.LogCommand):
         for i, track in enumerate(itable.tracks):
             # FIXME: rip data tracks differently
             if not track.audio:
+                print 'Skipping data track %d' % (i + 1, )
                 # FIXME: make it work for now
                 track.indexes[1].relative = 0
                 continue
 
+            trackResult = result.TrackResult()
+            res.tracks.append(trackResult)
+
             path = getPath(outdir, self.options.track_template, metadata, i + 1) + '.' + extension
+            trackResult.number = i + 1
+            trackResult.filename = path
+
             dirname = os.path.dirname(path)
             if not os.path.exists(dirname):
                 os.makedirs(dirname)
@@ -415,6 +433,10 @@ class Rip(logcommand.LogCommand):
                     print 'Checksums match for track %d' % (i + 1)
                 else:
                     print 'ERROR: checksums did not match for track %d' % (i + 1)
+                trackResult.testcrc = t.testchecksum
+                trackResult.copycrc = t.copychecksum
+                trackResult.peak = t.peak
+
                 print 'Peak level: %.2f %%' % (math.sqrt(t.peak) * 100.0, )
 
             # overlay this rip onto the Table
@@ -486,6 +508,9 @@ class Rip(logcommand.LogCommand):
 
         # loop over tracks
         for i, csum in enumerate(cuetask.checksums):
+            trackResult = res.tracks[i]
+            trackResult.accuripCRC = csum
+
             status = 'rip NOT accurate'
 
             confidence = None
@@ -501,8 +526,12 @@ class Rip(logcommand.LogCommand):
                             "checksum %s" % (
                                 csum, i + 1, j + 1, response.checksums[i])
                     status = 'rip accurate    '
+                    trackResult.accurip = True
+                    # FIXME: maybe checksums should be ints
+                    trackResult.accuripDatabaseCRC = int(response.checksums[i], 16)
                     # arsum = csum
                     confidence = response.confidences[i]
+                    trackResult.accuripDatabaseConfidence = confidence
 
             c = "(not found)"
             ar = "(not in database)"
@@ -520,6 +549,14 @@ class Rip(logcommand.LogCommand):
                     ar = ", AR [%s]" % response.checksums[i]
             print "Track %2d: %s %s [%08x]%s" % (
                 i + 1, status, c, csum, ar)
+
+        # write log file
+        discName = getPath(outdir, self.options.disc_template, metadata, i)
+        logPath = '%s.log' % discName
+        logger = result.getLogger()
+        handle = open(logPath, 'w')
+        handle.write(logger.log(res))
+        handle.close()
 
 class CD(logcommand.LogCommand):
     summary = "handle CD's"

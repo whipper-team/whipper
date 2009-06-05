@@ -1,6 +1,14 @@
 2009-06-05  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/rip/cd.py:
+	  Use RipResult to store result information.
+	* morituri/result/logger.py (added):
+	  Add a Logger to handle the RipResult, much like
+	  EAC's log file.
+
+2009-06-05  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/rip/cd.py:
 	  Comment out number of track setting on tag for now.
 	  MusicBrainz can give us dates in YYYY, YYYY-MM, and YYYY-MM-DD
 	  format, so convert to YYYY-MM-DD always.
