@@ -1,5 +1,10 @@
 2009-06-05  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/result/result.py:
+	  Add a Logger base class.
+
+2009-06-05  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* configure.ac:
 	* morituri/Makefile.am:
 	* morituri/result (added):

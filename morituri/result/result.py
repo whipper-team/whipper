@@ -20,6 +20,10 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
+import time
+
+from morituri.result import logger
+
 class TrackResult:
     """
     @ivar testcrc: 4-byte CRC for the test read
@@ -58,3 +62,22 @@ class RipResult:
 
     def __init__(self):
         self.tracks = []
+
+class Logger(object):
+    """
+    I log the result of a rip.
+    """
+
+    def log(self, ripResult, epoch=time.time()):
+        """
+        Create a log from the given ripresult.
+
+        @param epoch:     when the log file gets generated
+        @type  ripResult: L{RipResult}
+
+        @rtype: str
+        """
+        raise NotImplementedError
+
+def getLogger():
+    return logger.MorituriLogger()
