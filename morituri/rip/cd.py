@@ -219,12 +219,25 @@ def getTagList(metadata, i):
     if gst.pygst_version >= (0, 10, 15):
         ret[gst.TAG_TRACK_NUMBER] = i
     if metadata:
-        if gst.pygst_version >= (0, 10, 15):
-            ret[gst.TAG_TRACK_COUNT] = len(metadata.tracks)
+        # works, but not sure we want this
+        # if gst.pygst_version >= (0, 10, 15):
+        #     ret[gst.TAG_TRACK_COUNT] = len(metadata.tracks)
         # hack to get a GstDate which we cannot instantiate directly in
         # 0.10.15.1
+        # FIXME: The dates are strings and must have the format 'YYYY',
+        # 'YYYY-MM' or 'YYYY-MM-DD'.
+        # GstDate expects a full date, so default to Jan and 1st if MM and DD
+        # are missing
+        date = metadata.release
+        log.debug('metadata',
+            'Converting release date %r to structure', date)
+        if len(date) == 4:
+            date += '-01'
+        if len(date) == 7:
+            date += '-01'
+
         s = gst.structure_from_string('hi,date=(GstDate)%s' %
-            str(metadata.release))
+            str(date))
         ret[gst.TAG_DATE] = s['date']
         
     # FIXME: gst.TAG_ISRC 
@@ -277,10 +290,19 @@ class Rip(logcommand.LogCommand):
         def function(r, t):
             r.run(t)
 
+        # if the device is mounted (data session), unmount it
+        device = self.parentCommand.options.device
+        print 'Checking device', device
+
+        proc = open('/proc/mounts').read()
+        if device in proc:
+            print 'Device %s is mounted, unmounting' % device
+            os.system('umount %s' % device)
+        
         # first, read the normal TOC, which is fast
         ptoc = common.Persister(self.options.toc_pickle or None)
         if not ptoc.object:
-            t = cdrdao.ReadTOCTask(device=self.parentCommand.options.device)
+            t = cdrdao.ReadTOCTask(device=device)
             function(runner, t)
             ptoc.persist(t.table)
         ittoc = ptoc.object
@@ -357,7 +379,7 @@ class Rip(logcommand.LogCommand):
                     print 'Checksums match for track %d' % 0
                 else:
                     print 'ERROR: checksums did not match for track %d' % 0
-                print 'Peak level: %.2f %%' % (math.sqrt(t.peak) * 100.0, )
+                print 'Peak level: %.2f %%' % (t.peak * 100.0, )
                 if t.peak == 0.0:
                     print 'HTOA is completely silent'
                 # overlay this rip onto the Table
@@ -423,6 +445,9 @@ class Rip(logcommand.LogCommand):
             handle.write('%s\n' % os.path.basename(htoapath))
 
         for i, track in enumerate(itable.tracks):
+            if not track.audio:
+                continue
+
             path = getPath(outdir, self.options.track_template, metadata,
                 i + 1) + '.' + extension
             handle.write('#EXTINF:%d,%s\n' % (
@@ -512,5 +537,9 @@ class CD(logcommand.LogCommand):
             if not drives:
                 self.error('No CD-DA drives found!')
                 return 3
-
+        
+            # pick the first
             self.options.device = drives[0]
+
+        # this can be a symlink to another device
+        self.options.device = os.path.realpath(self.options.device)

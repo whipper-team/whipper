@@ -1,5 +1,16 @@
 2009-06-05  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/rip/cd.py:
+	  Comment out number of track setting on tag for now.
+	  MusicBrainz can give us dates in YYYY, YYYY-MM, and YYYY-MM-DD
+	  format, so convert to YYYY-MM-DD always.
+	  Unmount the data part of the CD we want to rip if it is mounted.
+	  Adapt to peak level change.
+	  Don't try to write data tracks to the m3u file.
+	  Resolve the device path to the actual device path.
+
+2009-06-05  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/result/result.py:
 	  Add a Logger base class.
 
