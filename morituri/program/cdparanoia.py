@@ -53,9 +53,30 @@ _PROGRESS_RE = re.compile(r"""
 """, re.VERBOSE)
 
 # from reading cdparanoia source code, it looks like offset is reported in
-# number of single-channel samples, ie. 2 bytes per unit
+# number of single-channel samples, ie. 2 bytes per unit, and absolute
+
 class ProgressParser(object):
-    read = 0
+    read = 0 # last [read] frame
+    wrote = 0 # last [wrote] frame
+    _nframes = None # number of frames read on each [read]
+    _firstFrames = None # number of frames read on first [read]
+    reads = 0 # total number of reads
+
+    def __init__(self, start, stop):
+        """
+        @param start:  first frame to rip
+        @type  start:  int
+        @param stop:   last frame to rip (inclusive)
+        @type  stop:   int
+        """
+        self.start = start
+        self.stop = stop
+
+        # FIXME: privatize
+        self.read = start
+
+        self._reads = {} # read count for each sector
+
 
     def parse(self, line):
         """
@@ -65,23 +86,98 @@ class ProgressParser(object):
         if m:
             # code = int(m.group('code'))
             function = m.group('function')
-            offset = int(m.group('offset'))
+            wordOffset = int(m.group('offset'))
             if function == 'read':
-                if offset % common.WORDS_PER_FRAME != 0:
-                    print 'THOMAS: not a multiple of %d: %d' % (
-                        common.WORDS_PER_FRAME, offset)
-                    print line
-                else:
-                    self.read = offset / common.WORDS_PER_FRAME
+                self._parse_read(wordOffset)
+            elif function == 'wrote':
+                self._parse_wrote(wordOffset)
+
+    def _parse_read(self, wordOffset):
+        if wordOffset % common.WORDS_PER_FRAME != 0:
+            print 'THOMAS: not a multiple of %d: %d' % (
+                common.WORDS_PER_FRAME, wordOffset)
+            print line
+            return
+
+        frameOffset = wordOffset / common.WORDS_PER_FRAME
+
+        # set nframes if not yet set
+        if self._nframes is None and self.read != 0:
+            self._nframes = frameOffset - self.read
+
+        # set firstFrames if not yet set
+        if self._firstFrames is None:
+            self._firstFrames = frameOffset - self.start
+
+        markStart = None
+        markEnd = None
+
+        # verify it either read nframes more or went back for verify
+        if frameOffset > self.read:
+            delta = frameOffset - self.read
+            if self._nframes and delta != self._nframes:
+                # print 'THOMAS: Read %d frames more, not %d' % (delta, self._nframes)
+                # my drive either reads 7 or 13 frames
+                pass
+
+            # update our read sectors hash
+            markStart = self.read
+            markEnd = frameOffset
+        else:
+            # went back to verify
+            # we could use firstFrames as an estimate on how many frames this
+            # read, but this lowers our track quality needlessly where
+            # EAC still reports 100% track quality
+            markStart = frameOffset # - self._firstFrames
+            markEnd = frameOffset
+
+        # FIXME: doing this is way too slow even for a testcase, so disable
+        if False:
+            for frame in range(markStart, markEnd):
+                if not frame in self._reads.keys():
+                    self._reads[frame] = 0
+                self._reads[frame] += 1
+
+        # cdparanoia reads quite a bit beyond the current track before it
+        # goes back to verify; don't count those
+        if markEnd > self.stop:
+            markEnd = self.stop
+        if markStart > self.stop:
+            markStart = self.stop
+
+        self.reads += markEnd - markStart
+
+        # update our read pointer
+        self.read = frameOffset
+
+    def _parse_wrote(self, wordOffset):
+        # cdparanoia outputs most [wrote] calls with one word less than a frame
+        frameOffset = (wordOffset + 1) / common.WORDS_PER_FRAME
+        self.wrote = frameOffset
+        
+    def getTrackQuality(self):
+        """
+        Each frame gets read twice.
+        More than two reads for a frame reduce track quality.
+        """
+        frames = self.stop - self.start + 1
+        reads = self.reads
+
+        # don't go over a 100%; we know cdparanoia reads each frame at least
+        # twice
+        return min(frames * 2.0 / reads, 1.0)
+
 
 # FIXME: handle errors
 class ReadTrackTask(task.Task):
     """
     I am a task that reads a track using cdparanoia.
+
+    @ivar reads: how many reads were done to rip the track
     """
 
     description = "Reading Track"
-
+    quality = None # set at end of reading
 
     def __init__(self, path, table, start, stop, offset=0, device=None):
         """
@@ -105,7 +201,7 @@ class ReadTrackTask(task.Task):
         self._start = start
         self._stop = stop
         self._offset = offset
-        self._parser = ProgressParser()
+        self._parser = ProgressParser(start, stop)
         self._device = device
 
         self._buffer = "" # accumulate characters
@@ -172,10 +268,8 @@ class ReadTrackTask(task.Task):
 
             for line in lines:
                 self._parser.parse(line)
-            # FIXME: self._parser.read *will* go past self._stop,
-            # and only indicates read frames, not written frames.
-            # but we can't rely on anything else.
-            num = float(self._parser.read) - self._start
+
+            num = float(self._parser.wrote) - self._start
             den = float(self._stop) - self._start
             progress = num / den
             if progress < 1.0:
@@ -216,6 +310,8 @@ class ReadTrackTask(task.Task):
             else:
                 self.warning('exit code %r', self._popen.returncode)
                 self.exception = ReturnCodeError(self._popen.returncode)
+
+        self.quality = self._parser.getTrackQuality()
             
         self.stop()
         return
@@ -230,6 +326,12 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
     @ivar copychecksum: the copy checksum of the track.
     @ivar peak:         the peak level of the track
     """
+
+    checksum = None
+    testchecksum = None
+    copychecksum = None
+    peak = None
+    quality = None
 
     _tmpwavpath = None
     _tmppath = None
@@ -286,6 +388,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
 
     def stop(self):
         if not self.exception:
+            self.quality = max(self.tasks[0].quality, self.tasks[2].quality)
             self.peak = self.tasks[4].peak
 
             self.testchecksum = c1 = self.tasks[1].checksum

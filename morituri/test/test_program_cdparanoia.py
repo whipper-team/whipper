@@ -7,13 +7,18 @@ import unittest
 from morituri.program import cdparanoia
 
 class ParseTestCase(unittest.TestCase):
+
     def setUp(self):
+        # report from Afghan Whigs - Sweet Son Of A Bitch
         path = os.path.join(os.path.dirname(__file__),
             'cdparanoia.progress')
-        self._parser = cdparanoia.ProgressParser()
+        self._parser = cdparanoia.ProgressParser(start=45990, stop=47719)
 
         self._handle = open(path)
 
     def testParse(self):
         for line in self._handle.readlines():
             self._parser.parse(line)
+
+        q = '%.01f %%' % (self._parser.getTrackQuality() * 100.0, )
+        self.assertEquals(q, '99.7 %')

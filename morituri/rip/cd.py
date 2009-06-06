@@ -436,8 +436,10 @@ class Rip(logcommand.LogCommand):
                 trackResult.testcrc = t.testchecksum
                 trackResult.copycrc = t.copychecksum
                 trackResult.peak = t.peak
+                trackResult.quality = t.quality
 
                 print 'Peak level: %.2f %%' % (math.sqrt(t.peak) * 100.0, )
+                print 'Rip quality: %.2f %%' % (t.quality * 100.0, )
 
             # overlay this rip onto the Table
             itable.setFile(i + 1, 1, path, ittoc.getTrackLength(i + 1), i + 1)

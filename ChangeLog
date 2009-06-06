@@ -1,3 +1,16 @@
+2009-06-06  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/test/cdparanoia.progress:
+	  Add a shorter test file, 23 seconds.
+	* morituri/test/test_program_cdparanoia.py:
+	  Update the test to adapt.  Check for track quality.
+	* morituri/program/cdparanoia.py:
+	  Add a measure of track quality based on the number of reads.
+	  Use the [wrote] output for progress updates, a bit more
+	  jittery in its output.
+	* morituri/rip/cd.py:
+	  Set track quality on RipResult.
+
 2009-06-05  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/rip/cd.py:
