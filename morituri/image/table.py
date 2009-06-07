@@ -95,6 +95,17 @@ class Track:
         indexes.sort()
         return self.indexes[indexes[-1]]
 
+    def getPregap(self):
+        """
+        Returns the length of the pregap for this track.
+
+        The pregap is 0 if there is no index 0, and the difference between
+        index 1 and index 0 if there is.
+        """
+        if 0 not in self.indexes:
+            return 0
+
+        return self.indexes[1].absolute - self.indexes[0].absolute
 
 class Index:
     """

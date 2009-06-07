@@ -114,10 +114,11 @@ def musicbrainz(discid):
     isSingleArtist = release.isSingleArtistRelease()
     metadata.various = not isSingleArtist
     metadata.title = release.title
-    metadata.artist = release.artist.getUniqueName()
+    # getUniqueName gets disambiguating names like Muse (UK rock band)
+    metadata.artist = release.artist.name
     metadata.release = release.getEarliestReleaseDate()
 
-    print "%s - %s" % (release.artist.getUniqueName(), release.title)
+    print "%s - %s" % (release.artist.name, release.title)
 
     for t in release.tracks:
         track = TrackMetadata()
@@ -131,7 +132,7 @@ def musicbrainz(discid):
 
     return metadata
 
-def getPath(outdir, template, metadata, i):
+def getPath(outdir, template, metadata, mbdiscid, i):
     """
     Based on the template, get a complete path for the given track,
     minus extension.
@@ -154,10 +155,10 @@ def getPath(outdir, template, metadata, i):
 
     # default values
     v['A'] = 'Unknown Artist'
-    v['d'] = 'Unknown Disc'
+    v['d'] = mbdiscid
 
     v['a'] = v['A']
-    v['n'] = 'Unknown Track'
+    v['n'] = 'Unknown Track %d' % i
 
     if metadata:
         v['A'] = filterForPath(metadata.artist)
@@ -232,16 +233,17 @@ def getTagList(metadata, i):
         # GstDate expects a full date, so default to Jan and 1st if MM and DD
         # are missing
         date = metadata.release
-        log.debug('metadata',
-            'Converting release date %r to structure', date)
-        if len(date) == 4:
-            date += '-01'
-        if len(date) == 7:
-            date += '-01'
+        if date:
+            log.debug('metadata',
+                'Converting release date %r to structure', date)
+            if len(date) == 4:
+                date += '-01'
+            if len(date) == 7:
+                date += '-01'
 
-        s = gst.structure_from_string('hi,date=(GstDate)%s' %
-            str(date))
-        ret[gst.TAG_DATE] = s['date']
+            s = gst.structure_from_string('hi,date=(GstDate)%s' %
+                str(date))
+            ret[gst.TAG_DATE] = s['date']
         
     # FIXME: gst.TAG_ISRC 
 
@@ -313,9 +315,10 @@ class Rip(logcommand.LogCommand):
 
         # already show us some info based on this
         print "CDDB disc id", ittoc.getCDDBDiscId()
-        print "MusicBrainz disc id", ittoc.getMusicBrainzDiscId()
+        mbdiscid = ittoc.getMusicBrainzDiscId()
+        print "MusicBrainz disc id", mbdiscid
 
-        metadata = musicbrainz(ittoc.getMusicBrainzDiscId())
+        metadata = musicbrainz(mbdiscid)
         if not metadata:
             print 'Submit this disc to MusicBrainz at:'
             print ittoc.getMusicBrainzSubmitURL()
@@ -370,7 +373,7 @@ class Rip(logcommand.LogCommand):
             print 'Found Hidden Track One Audio from frame %d to %d' % (start, stop)
                 
             # rip it
-            htoapath = getPath(outdir, self.options.track_template, metadata, 0) + '.' + extension
+            htoapath = getPath(outdir, self.options.track_template, metadata, mbdiscid, 0) + '.' + extension
             dirname = os.path.dirname(htoapath)
             if not os.path.exists(dirname):
                 os.makedirs(dirname)
@@ -408,7 +411,7 @@ class Rip(logcommand.LogCommand):
             trackResult = result.TrackResult()
             res.tracks.append(trackResult)
 
-            path = getPath(outdir, self.options.track_template, metadata, i + 1) + '.' + extension
+            path = getPath(outdir, self.options.track_template, metadata, mbdiscid, i + 1) + '.' + extension
             trackResult.number = i + 1
             trackResult.filename = path
 
@@ -437,6 +440,7 @@ class Rip(logcommand.LogCommand):
                 trackResult.copycrc = t.copychecksum
                 trackResult.peak = t.peak
                 trackResult.quality = t.quality
+                trackResult.pregap = itable.tracks[i].getPregap()
 
                 print 'Peak level: %.2f %%' % (math.sqrt(t.peak) * 100.0, )
                 print 'Rip quality: %.2f %%' % (t.quality * 100.0, )
@@ -446,7 +450,7 @@ class Rip(logcommand.LogCommand):
 
 
         ### write disc files
-        discName = getPath(outdir, self.options.disc_template, metadata, i)
+        discName = getPath(outdir, self.options.disc_template, metadata, mbdiscid, i)
         dirname = os.path.dirname(discName)
         if not os.path.exists(dirname):
             os.makedirs(dirname)
@@ -455,7 +459,8 @@ class Rip(logcommand.LogCommand):
         assert itable.canCue()
         cuePath = '%s.cue' % discName
         handle = open(cuePath, 'w')
-        handle.write(itable.cue())
+        # FIXME: do we always want utf-8 ?
+        handle.write(itable.cue().encode('utf-8'))
         handle.close()
 
         # write .m3u file
@@ -473,11 +478,13 @@ class Rip(logcommand.LogCommand):
                 continue
 
             path = getPath(outdir, self.options.track_template, metadata,
-                i + 1) + '.' + extension
-            handle.write('#EXTINF:%d,%s\n' % (
+                mbdiscid, i + 1) + '.' + extension
+            u = u'#EXTINF:%d,%s\n' % (
                 itable.getTrackLength(i + 1) / common.FRAMES_PER_SECOND,
-                os.path.basename(path)))
-            handle.write('%s\n' % os.path.basename(path))
+                os.path.basename(path))
+            handle.write(u.encode('utf-8'))
+            u = '%s\n' % os.path.basename(path)
+            handle.write(u.encode('utf-8'))
         handle.close()
 
         # verify using accuraterip
@@ -553,11 +560,11 @@ class Rip(logcommand.LogCommand):
                 i + 1, status, c, csum, ar)
 
         # write log file
-        discName = getPath(outdir, self.options.disc_template, metadata, i)
+        discName = getPath(outdir, self.options.disc_template, metadata, mbdiscid, i)
         logPath = '%s.log' % discName
         logger = result.getLogger()
         handle = open(logPath, 'w')
-        handle.write(logger.log(res))
+        handle.write(logger.log(res).encode('utf-8'))
         handle.close()
 
 class CD(logcommand.LogCommand):

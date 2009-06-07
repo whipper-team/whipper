@@ -1,3 +1,15 @@
+2009-06-07  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/image/table.py:
+	  Add getPregap() method.
+	* morituri/rip/cd.py:
+	  Use artist.name, not getUniqueName, to avoid monstruous names for
+	  Muse.
+	  Pass mbdiscid to getPath, so Unknown Disc can be saved with it.
+	  Don't set the date if the release doesn't have one.
+	  Set pregap on trackResult using new Track.getPregap()
+	  Write all log/cue/m3u files as utf-8.
+
 2009-06-06  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/test/cdparanoia.progress:
