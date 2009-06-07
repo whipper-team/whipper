@@ -1,6 +1,19 @@
 2009-06-07  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/program.py:
+	  Move getPath to Program.
+	  Remove arguments to ripTrack that can be gotten from
+	  trackResult.
+	* morituri/rip/cd.py:
+	  Continue without musicbrainz metadata.
+	  Unify htoa and normal track ripping.
+	* morituri/result/result.py:
+	  Add getTrackResult so it's easier to look up track results
+	  when there's a HTOA.
+
+2009-06-07  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/program.py:
 	* morituri/rip/cd.py:
 	  Move HTOA checking to program.
 

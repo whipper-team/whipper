@@ -102,9 +102,7 @@ class Rip(logcommand.LogCommand):
             metadatas = program.musicbrainz(mbdiscid)
         except program.MusicBrainzException, e:
             print "Error:", e
-            return
-
-        metadata = None
+            print 'Continuing without metadata'
 
         if metadatas:
             print 'Matching releases:'
@@ -113,7 +111,7 @@ class Rip(logcommand.LogCommand):
                 print 'Title   :', metadata.title
 
             # Select one of the returned releases. We just pick the first one.
-            metadata = metadatas[0]
+            prog.metadata = metadatas[0]
         else:
             print 'Submit this disc to MusicBrainz at:'
             print ittoc.getMusicBrainzSubmitURL()
@@ -138,8 +136,8 @@ class Rip(logcommand.LogCommand):
 
         # result
         prog.result.offset = int(self.options.offset)
-        prog.result.artist = metadata and metadata.artist or 'Unknown Artist'
-        prog.result.title = metadata and metadata.title or 'Unknown Title'
+        prog.result.artist = prog.metadata and prog.metadata.artist or 'Unknown Artist'
+        prog.result.title = prog.metadata and prog.metadata.title or 'Unknown Title'
         # cdio is optional for now
         try:
             import cdio
@@ -148,6 +146,44 @@ class Rip(logcommand.LogCommand):
             print 'WARNING: pycdio not installed, cannot identify drive'
             prog.result.vendor = 'Unknown'
             prog.result.model = 'Unknown'
+
+        def ripIfNotRipped(number):
+            trackResult = result.TrackResult()
+            prog.result.tracks.append(trackResult)
+
+            path = prog.getPath(outdir, self.options.track_template, 
+                mbdiscid, number) + '.' + extension
+            trackResult.number = number
+            trackResult.filename = path
+            if number > 0:
+                trackResult.pregap = itable.tracks[number - 1].getPregap()
+
+            # FIXME: optionally allow overriding reripping
+            if not os.path.exists(path):
+                print 'Ripping track %d of %d: %s' % (
+                    number, len(itable.tracks), os.path.basename(path))
+                prog.ripTrack(runner, trackResult, 
+                    offset=int(self.options.offset),
+                    device=self.parentCommand.options.device,
+                    profile=profile,
+                    taglist=prog.getTagList(number))
+
+                if trackResult.testcrc == trackResult.copycrc:
+                    print 'Checksums match for track %d' % (number)
+                else:
+                    print 'ERROR: checksums did not match for track %d' % (
+                        number)
+                print 'Peak level: %.2f %%' % (math.sqrt(trackResult.peak) * 100.0, )
+                print 'Rip quality: %.2f %%' % (trackResult.quality * 100.0, )
+
+            # overlay this rip onto the Table
+            if number == 0:
+                # HTOA goes on index 0 of track 1
+                itable.setFile(1, 0, path, ittoc.getTrackStart(1),
+                    number)
+            else:
+                itable.setFile(number, 1, path, ittoc.getTrackLength(number),
+                    number)
 
 
         # check for hidden track one audio
@@ -158,33 +194,8 @@ class Rip(logcommand.LogCommand):
                 start, stop)
                 
             # rip it
-            htoapath = program.getPath(outdir, self.options.track_template,
-                metadata, mbdiscid, 0) + '.' + extension
-            dirname = os.path.dirname(htoapath)
-            if not os.path.exists(dirname):
-                os.makedirs(dirname)
-
-            htoalength = stop - start
-            if not os.path.exists(htoapath):
-                print 'Ripping track %d: %s' % (0, os.path.basename(htoapath))
-                t = cdparanoia.ReadVerifyTrackTask(htoapath, ittoc,
-                    start, stop - 1,
-                    offset=int(self.options.offset),
-                    device=self.parentCommand.options.device,
-                    profile=profile,
-                    taglist=prog.getTagList(metadata, 0))
-                function(runner, t)
-
-                if t.checksum is not None:
-                    print 'Checksums match for track %d' % 0
-                else:
-                    print 'ERROR: checksums did not match for track %d' % 0
-                print 'Peak level: %.2f %%' % (t.peak * 100.0, )
-                if t.peak == 0.0:
-                    print 'HTOA is completely silent'
-                # overlay this rip onto the Table
-            itable.setFile(1, 0, htoapath, htoalength, 0)
-
+            ripIfNotRipped(0)
+            htoapath = prog.result.tracks[0].filename
 
         for i, track in enumerate(itable.tracks):
             # FIXME: rip data tracks differently
@@ -195,43 +206,10 @@ class Rip(logcommand.LogCommand):
                 track.indexes[1].relative = 0
                 continue
 
-            trackResult = result.TrackResult()
-            prog.result.tracks.append(trackResult)
-
-            path = program.getPath(outdir, self.options.track_template, metadata,
-                mbdiscid, i + 1) + '.' + extension
-            trackResult.number = i + 1
-            trackResult.filename = path
-            trackResult.pregap = itable.tracks[i].getPregap()
-
-            dirname = os.path.dirname(path)
-            if not os.path.exists(dirname):
-                os.makedirs(dirname)
-
-            # FIXME: optionally allow overriding reripping
-            if not os.path.exists(path):
-                print 'Ripping track %d of %d: %s' % (
-                    i + 1, len(itable.tracks), os.path.basename(path))
-                prog.ripTrack(runner, trackResult, path, i + 1, 
-                    offset=int(self.options.offset),
-                    device=self.parentCommand.options.device,
-                    profile=profile,
-                    taglist=prog.getTagList(metadata, i + 1))
-
-                if trackResult.testcrc == trackResult.copycrc:
-                    print 'Checksums match for track %d' % (i + 1)
-                else:
-                    print 'ERROR: checksums did not match for track %d' % (
-                        i + 1)
-                print 'Peak level: %.2f %%' % (math.sqrt(trackResult.peak) * 100.0, )
-                print 'Rip quality: %.2f %%' % (trackResult.quality * 100.0, )
-
-            # overlay this rip onto the Table
-            itable.setFile(i + 1, 1, path, ittoc.getTrackLength(i + 1), i + 1)
-
+            ripIfNotRipped(i + 1)
 
         ### write disc files
-        discName = program.getPath(outdir, self.options.disc_template, metadata,
+        discName = prog.getPath(outdir, self.options.disc_template, 
             mbdiscid, 0)
         dirname = os.path.dirname(discName)
         if not os.path.exists(dirname):
@@ -245,7 +223,7 @@ class Rip(logcommand.LogCommand):
         handle.write('#EXTM3U\n')
         if htoapath:
             handle.write('#EXTINF:%d,%s\n' % (
-                htoalength / common.FRAMES_PER_SECOND,
+                itable.getTrackStart(1) / common.FRAMES_PER_SECOND,
                     os.path.basename(htoapath[:-4])))
             handle.write('%s\n' % os.path.basename(htoapath))
 
@@ -253,7 +231,7 @@ class Rip(logcommand.LogCommand):
             if not track.audio:
                 continue
 
-            path = program.getPath(outdir, self.options.track_template, metadata,
+            path = prog.getPath(outdir, self.options.track_template, 
                 mbdiscid, i + 1) + '.' + extension
             u = u'#EXTINF:%d,%s\n' % (
                 itable.getTrackLength(i + 1) / common.FRAMES_PER_SECOND,
@@ -293,7 +271,7 @@ class Rip(logcommand.LogCommand):
 
         # loop over tracks
         for i, csum in enumerate(cuetask.checksums):
-            trackResult = prog.result.tracks[i]
+            trackResult = prog.result.getTrackResult(i + 1)
             trackResult.accuripCRC = csum
 
             status = 'rip NOT accurate'

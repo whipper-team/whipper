@@ -121,62 +121,17 @@ def musicbrainz(discid):
 
     return ret
 
-def getPath(outdir, template, metadata, mbdiscid, i):
-    """
-    Based on the template, get a complete path for the given track,
-    minus extension.
-    Also works for the disc name, using disc variables for the template.
-
-    @param outdir:   the directory where to write the files
-    @type  outdir:   str
-    @param template: the template for writing the file
-    @type  template: str
-    @param metadata:
-    @type  metadata: L{DiscMetadata}
-    @param i:        track number (0 for HTOA)
-    @type  i:        int
-    """
-    # returns without extension
-
-    v = {}
-
-    v['t'] = '%02d' % i
-
-    # default values
-    v['A'] = 'Unknown Artist'
-    v['d'] = mbdiscid
-
-    v['a'] = v['A']
-    v['n'] = 'Unknown Track %d' % i
-
-    if metadata:
-        v['A'] = filterForPath(metadata.artist)
-        v['d'] = filterForPath(metadata.title)
-        if i > 0:
-            try:
-                v['a'] = filterForPath(metadata.tracks[i - 1].artist)
-                v['n'] = filterForPath(metadata.tracks[i - 1].title)
-            except IndexError, e:
-                print 'ERROR: no track %d found, %r' % (i, e)
-                raise
-        else:
-            # htoa defaults to disc's artist
-            v['a'] = filterForPath(metadata.artist)
-            v['n'] = filterForPath('Hidden Track One Audio')
-
-    import re
-    template = re.sub(r'%(\w)', r'%(\1)s', template)
-
-    return os.path.join(outdir, template % v)
-
-
 class Program(object):
     """
     I maintain program state and functionality.
+
+    @ivar metadata:
+    @type metadata: L{DiscMetadata}
     """
 
     cuePath = None
     logPath = None
+    metadata = None
 
     def __init__(self):
         self.result = result.RipResult()
@@ -218,14 +173,58 @@ class Program(object):
 
         return itable
 
-    def getTagList(self, metadata, i):
+    def getPath(self, outdir, template, mbdiscid, i):
+        """
+        Based on the template, get a complete path for the given track,
+        minus extension.
+        Also works for the disc name, using disc variables for the template.
+
+        @param outdir:   the directory where to write the files
+        @type  outdir:   str
+        @param template: the template for writing the file
+        @type  template: str
+        @param i:        track number (0 for HTOA)
+        @type  i:        int
+        """
+        # returns without extension
+
+        v = {}
+
+        v['t'] = '%02d' % i
+
+        # default values
+        v['A'] = 'Unknown Artist'
+        v['d'] = mbdiscid
+
+        v['a'] = v['A']
+        v['n'] = 'Unknown Track %d' % i
+
+        if self.metadata:
+            v['A'] = filterForPath(self.metadata.artist)
+            v['d'] = filterForPath(self.metadata.title)
+            if i > 0:
+                try:
+                    v['a'] = filterForPath(self.metadata.tracks[i - 1].artist)
+                    v['n'] = filterForPath(self.metadata.tracks[i - 1].title)
+                except IndexError, e:
+                    print 'ERROR: no track %d found, %r' % (i, e)
+                    raise
+            else:
+                # htoa defaults to disc's artist
+                v['a'] = filterForPath(self.metadata.artist)
+                v['n'] = filterForPath('Hidden Track One Audio')
+
+        import re
+        template = re.sub(r'%(\w)', r'%(\1)s', template)
+
+        return os.path.join(outdir, template % v)
+
+    def getTagList(self, number):
         """
         Based on the metadata, get a gst.TagList for the given track.
 
-        @param metadata:
-        @type  metadata: L{DiscMetadata}
-        @param i:        track number (0 for HTOA)
-        @type  i:        int
+        @param number:   track number (0 for HTOA)
+        @type  number:   int
 
         @rtype: L{gst.TagList}
         """
@@ -233,15 +232,15 @@ class Program(object):
         disc = u'Unknown Disc'
         title = u'Unknown Track'
 
-        if metadata:
-            artist = metadata.artist
-            disc = metadata.title
-            if i > 0:
+        if self.metadata:
+            artist = self.metadata.artist
+            disc = self.metadata.title
+            if number > 0:
                 try:
-                    artist = metadata.tracks[i - 1].artist
-                    title = metadata.tracks[i - 1].title
+                    artist = self.metadata.tracks[number - 1].artist
+                    title = self.metadata.tracks[number - 1].title
                 except IndexError, e:
-                    print 'ERROR: no track %d found, %r' % (i, e)
+                    print 'ERROR: no track %d found, %r' % (number, e)
                     raise
             else:
                 # htoa defaults to disc's artist
@@ -259,18 +258,18 @@ class Program(object):
         # see gst-python commit 26fa6dd184a8d6d103eaddf5f12bd7e5144413fb
         # FIXME: no way to compare against 'master' version after 0.10.15
         if gst.pygst_version >= (0, 10, 15):
-            ret[gst.TAG_TRACK_NUMBER] = i
-        if metadata:
+            ret[gst.TAG_TRACK_NUMBER] = number
+        if self.metadata:
             # works, but not sure we want this
             # if gst.pygst_version >= (0, 10, 15):
-            #     ret[gst.TAG_TRACK_COUNT] = len(metadata.tracks)
+            #     ret[gst.TAG_TRACK_COUNT] = len(self.metadata.tracks)
             # hack to get a GstDate which we cannot instantiate directly in
             # 0.10.15.1
             # FIXME: The dates are strings and must have the format 'YYYY',
             # 'YYYY-MM' or 'YYYY-MM-DD'.
             # GstDate expects a full date, so default to Jan and 1st if MM and DD
             # are missing
-            date = metadata.release
+            date = self.metadata.release
             if date:
                 log.debug('metadata',
                     'Converting release date %r to structure', date)
@@ -300,21 +299,30 @@ class Program(object):
             return None
 
         start = index.absolute
-        stop = track.getIndex(1).absolute
+        stop = track.getIndex(1).absolute - 1
         return (start, stop)
 
-    def ripTrack(self, runner, trackResult, path, number, offset, device, profile, taglist):
+    def ripTrack(self, runner, trackResult, offset, device, profile, taglist):
         """
         @param number: track number (1-based)
         """
-        t = cdparanoia.ReadVerifyTrackTask(path, self.result.table,
-            self.result.table.getTrackStart(number),
-            self.result.table.getTrackEnd(number),
+        if trackResult.number == 0:
+            start, stop = self.getHTOA()
+        else:
+            start = self.result.table.getTrackStart(trackResult.number)
+            stop = self.result.table.getTrackEnd(trackResult.number)
+
+        dirname = os.path.dirname(trackResult.filename)
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
+
+        t = cdparanoia.ReadVerifyTrackTask(trackResult.filename,
+            self.result.table, start, stop,
             offset=offset,
             device=device,
             profile=profile,
             taglist=taglist)
-        t.description = 'Reading Track %d' % (number)
+        t.description = 'Reading Track %d' % trackResult.number 
 
         runner.run(t)
 

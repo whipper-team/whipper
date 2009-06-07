@@ -65,6 +65,19 @@ class RipResult:
     def __init__(self):
         self.tracks = []
 
+    def getTrackResult(self, number):
+        """
+        @param number: the track number (0 for HTOA)
+
+        @type  number: int
+        @rtype: L{TrackResult}
+        """
+        for t in self.tracks:
+            if t.number == number:
+                return t
+
+        return None
+
 class Logger(object):
     """
     I log the result of a rip.
