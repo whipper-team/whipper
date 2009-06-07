@@ -1,0 +1,69 @@
+morituri is a CD ripper aiming for accuracy over speed.
+Its features are modeled to compare with Exact Audio Copy on Windows.
+
+FEATURES
+--------
+- support for MusicBrainz for metadata lookup
+- support for AccurateRip verification
+- detects sample read offset
+- test and copy rip
+
+REQUIREMENTS
+------------
+- cdparanoia, for the actual ripping
+- cdrdao, for session, TOC, pregap, and ISRC extraction
+- GStreamer, for encoding
+- pycdio, for drive identification
+
+KNOWN ISSUES
+------------
+- cdrdao read-toc does not always get pregaps right compared to EAC, still
+  under investigation
+
+GOALS
+-----
+- quality over speed
+- support one-command automatic ripping
+- support offline ripping (doing metadata lookup and log rewriting later)
+  - separate the info/result about the rip from the metadata/file generation/...
+
+
+rip command tree
+----------------
+rip
+  offset
+    find
+      find drive's read offset using AccurateRip
+    verify
+      verify drive's read offset using AccurateRip
+  cd
+    rip
+      rip the cd
+  htoa
+    find
+    rip
+      rip the htoa if it's there
+  image
+    verify
+      verify the cd image
+
+style guide
+-----------
+
+To avoid confusion:
+
+ - cuefile is used for the CueFile object, which wraps/parses an existing .cue
+   file on disk
+ - tocfile: same
+ - toc: table of contents of a CD; instance of Table
+
+
+test: single rip of kings of leon - only by the night
+
+track  1: frame start      0, 17811 CD frames,
+track  2: frame start  17811, 18481 CD frames
+	  ARCue.pl says  2c15499a
+track 11: frame start 166858, 25103 CD frames (14760564 audio frames)
+
+191961 total CD frames
+
