@@ -5,15 +5,20 @@ FEATURES
 --------
 - support for MusicBrainz for metadata lookup
 - support for AccurateRip verification
-- detects sample read offset
-- test and copy rip
+- detects sample read offset of drives
+- performs test and copy rip
+- detects and rips Hidden Track One Audio
+- templates for file and directory naming
+- support for lossless encoding only for now
+- tagging using GStreamer
+- for now, only a command line client (rip) is shipped
 
 REQUIREMENTS
 ------------
 - cdparanoia, for the actual ripping
 - cdrdao, for session, TOC, pregap, and ISRC extraction
 - GStreamer, for encoding
-- pycdio, for drive identification
+- pycdio, for drive identification (optional)
 
 KNOWN ISSUES
 ------------
