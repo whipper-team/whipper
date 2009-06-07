@@ -151,17 +151,9 @@ class Rip(logcommand.LogCommand):
 
 
         # check for hidden track one audio
-        htoapath = None
-        index = None
-        track = itable.tracks[0]
-        try:
-            index = track.getIndex(0)
-        except KeyError:
-            pass
-
-        if index:
-            start = index.absolute
-            stop = track.getIndex(1).absolute
+        htoa = prog.getHTOA()
+        if htoa:
+            start, stop = htoa
             print 'Found Hidden Track One Audio from frame %d to %d' % (
                 start, stop)
                 
@@ -210,6 +202,7 @@ class Rip(logcommand.LogCommand):
                 mbdiscid, i + 1) + '.' + extension
             trackResult.number = i + 1
             trackResult.filename = path
+            trackResult.pregap = itable.tracks[i].getPregap()
 
             dirname = os.path.dirname(path)
             if not os.path.exists(dirname):
@@ -219,28 +212,19 @@ class Rip(logcommand.LogCommand):
             if not os.path.exists(path):
                 print 'Ripping track %d of %d: %s' % (
                     i + 1, len(itable.tracks), os.path.basename(path))
-                t = cdparanoia.ReadVerifyTrackTask(path, ittoc,
-                    ittoc.getTrackStart(i + 1),
-                    ittoc.getTrackEnd(i + 1),
+                prog.ripTrack(runner, trackResult, path, i + 1, 
                     offset=int(self.options.offset),
                     device=self.parentCommand.options.device,
                     profile=profile,
                     taglist=prog.getTagList(metadata, i + 1))
-                t.description = 'Reading Track %d' % (i + 1)
-                function(runner, t)
-                if t.checksum:
+
+                if trackResult.testcrc == trackResult.copycrc:
                     print 'Checksums match for track %d' % (i + 1)
                 else:
                     print 'ERROR: checksums did not match for track %d' % (
                         i + 1)
-                trackResult.testcrc = t.testchecksum
-                trackResult.copycrc = t.copychecksum
-                trackResult.peak = t.peak
-                trackResult.quality = t.quality
-                trackResult.pregap = itable.tracks[i].getPregap()
-
-                print 'Peak level: %.2f %%' % (math.sqrt(t.peak) * 100.0, )
-                print 'Rip quality: %.2f %%' % (t.quality * 100.0, )
+                print 'Peak level: %.2f %%' % (math.sqrt(trackResult.peak) * 100.0, )
+                print 'Rip quality: %.2f %%' % (trackResult.quality * 100.0, )
 
             # overlay this rip onto the Table
             itable.setFile(i + 1, 1, path, ittoc.getTrackLength(i + 1), i + 1)

@@ -287,6 +287,41 @@ class Program(object):
 
         return ret
 
+    def getHTOA(self):
+        """
+        Check if we have hidden track one audio.
+
+        @returns: tuple of (start, stop), or None
+        """
+        track = self.result.table.tracks[0]
+        try:
+            index = track.getIndex(0)
+        except KeyError:
+            return None
+
+        start = index.absolute
+        stop = track.getIndex(1).absolute
+        return (start, stop)
+
+    def ripTrack(self, runner, trackResult, path, number, offset, device, profile, taglist):
+        """
+        @param number: track number (1-based)
+        """
+        t = cdparanoia.ReadVerifyTrackTask(path, self.result.table,
+            self.result.table.getTrackStart(number),
+            self.result.table.getTrackEnd(number),
+            offset=offset,
+            device=device,
+            profile=profile,
+            taglist=taglist)
+        t.description = 'Reading Track %d' % (number)
+
+        runner.run(t)
+
+        trackResult.testcrc = t.testchecksum
+        trackResult.copycrc = t.copychecksum
+        trackResult.peak = t.peak
+        trackResult.quality = t.quality
 
     def writeCue(self, discName):
         assert self.result.table.canCue()

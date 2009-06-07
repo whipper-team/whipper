@@ -1,5 +1,11 @@
 2009-06-07  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/program.py:
+	* morituri/rip/cd.py:
+	  Move HTOA checking to program.
+
+2009-06-07  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/result/logger.py:
 	  Fix for toctable->table
 	* morituri/common/program.py:
