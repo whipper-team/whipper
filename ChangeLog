@@ -1,5 +1,13 @@
 2009-06-07  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/result/logger.py:
+	  Fix for toctable->table
+	* morituri/common/program.py:
+	* morituri/rip/cd.py:
+	  Move lots of functionality to program module.
+
+2009-06-07  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/result/result.py:
 	  Change toctable to table since it's a full index table.
 	* morituri/common/Makefile.am:

@@ -64,7 +64,7 @@ class MorituriLogger(object):
             "     Track |   Start           |  Length")
         lines.append(
             "     ------------------------------------------------")
-        table = ripResult.toctable
+        table = ripResult.table
 
 
         for t in table.tracks:

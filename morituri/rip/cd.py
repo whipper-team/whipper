@@ -21,13 +21,10 @@
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import sys
 import math
 
 import gobject
 gobject.threads_init()
-
-import gst
 
 from morituri.common import logcommand, task, checksum, common, accurip, log
 from morituri.common import drive, encode, program
@@ -35,217 +32,6 @@ from morituri.result import result
 from morituri.image import image, cue, table
 from morituri.program import cdrdao, cdparanoia
 
-class TrackMetadata(object):
-    artist = None
-    title = None
-
-class DiscMetadata(object):
-    """
-    @param release: earliest release date, in YYYY-MM-DD
-    @type  release: unicode
-    """
-    artist = None
-    title = None
-    various = False
-    tracks = None
-    release = None
-
-    def __init__(self):
-        self.tracks = []
-
-def filterForPath(text):
-    return "-".join(text.split("/"))
-
-def musicbrainz(discid):
-    metadata = DiscMetadata()
-
-    #import musicbrainz2.disc as mbdisc
-    import musicbrainz2.webservice as mbws
-
-
-    # Setup a Query object.
-    service = mbws.WebService()
-    query = mbws.Query(service)
-
-
-    # Query for all discs matching the given DiscID.
-    try:
-        rfilter = mbws.ReleaseFilter(discId=discid)
-        results = query.getReleases(rfilter)
-    except mbws.WebServiceError, e:
-        print "Error:", e
-        return
-
-
-    # No disc matching this DiscID has been found.
-    if len(results) == 0:
-        print "Disc is not yet in the MusicBrainz database."
-        print "Consider adding it."
-        return
-
-
-    # Display the returned results to the user.
-    print 'Matching releases:'
-
-    for result in results:
-        release = result.release
-        print 'Artist  :', release.artist.name
-        print 'Title   :', release.title
-        print
-
-
-    # Select one of the returned releases. We just pick the first one.
-    selectedRelease = results[0].release
-
-
-    # The returned release object only contains title and artist, but no tracks.
-    # Query the web service once again to get all data we need.
-    try:
-        inc = mbws.ReleaseIncludes(artist=True, tracks=True, releaseEvents=True)
-        release = query.getReleaseById(selectedRelease.getId(), inc)
-    except mbws.WebServiceError, e:
-        print "Error:", e
-        sys.exit(2)
-
-
-    # convert to our objects
-    isSingleArtist = release.isSingleArtistRelease()
-    metadata.various = not isSingleArtist
-    metadata.title = release.title
-    # getUniqueName gets disambiguating names like Muse (UK rock band)
-    metadata.artist = release.artist.name
-    metadata.release = release.getEarliestReleaseDate()
-
-    print "%s - %s" % (release.artist.name, release.title)
-
-    for t in release.tracks:
-        track = TrackMetadata()
-        if isSingleArtist:
-            track.artist = metadata.artist
-            track.title = t.title
-        else:
-            track.artist = t.artist.name
-            track.title = t.title
-        metadata.tracks.append(track)
-
-    return metadata
-
-def getPath(outdir, template, metadata, mbdiscid, i):
-    """
-    Based on the template, get a complete path for the given track,
-    minus extension.
-    Also works for the disc name, using disc variables for the template.
-
-    @param outdir:   the directory where to write the files
-    @type  outdir:   str
-    @param template: the template for writing the file
-    @type  template: str
-    @param metadata:
-    @type  metadata: L{DiscMetadata}
-    @param i:        track number (0 for HTOA)
-    @type  i:        int
-    """
-    # returns without extension
-
-    v = {}
-
-    v['t'] = '%02d' % i
-
-    # default values
-    v['A'] = 'Unknown Artist'
-    v['d'] = mbdiscid
-
-    v['a'] = v['A']
-    v['n'] = 'Unknown Track %d' % i
-
-    if metadata:
-        v['A'] = filterForPath(metadata.artist)
-        v['d'] = filterForPath(metadata.title)
-        if i > 0:
-            try:
-                v['a'] = filterForPath(metadata.tracks[i - 1].artist)
-                v['n'] = filterForPath(metadata.tracks[i - 1].title)
-            except IndexError, e:
-                print 'ERROR: no track %d found, %r' % (i, e)
-                raise
-        else:
-            # htoa defaults to disc's artist
-            v['a'] = filterForPath(metadata.artist)
-            v['n'] = filterForPath('Hidden Track One Audio')
-
-    import re
-    template = re.sub(r'%(\w)', r'%(\1)s', template)
-
-    return os.path.join(outdir, template % v)
-
-def getTagList(metadata, i):
-    """
-    Based on the metadata, get a gst.TagList for the given track.
-
-    @param metadata:
-    @type  metadata: L{DiscMetadata}
-    @param i:        track number (0 for HTOA)
-    @type  i:        int
-
-    @rtype: L{gst.TagList}
-    """
-    artist = u'Unknown Artist'
-    disc = u'Unknown Disc'
-    title = u'Unknown Track'
-
-    if metadata:
-        artist = metadata.artist
-        disc = metadata.title
-        if i > 0:
-            try:
-                artist = metadata.tracks[i - 1].artist
-                title = metadata.tracks[i - 1].title
-            except IndexError, e:
-                print 'ERROR: no track %d found, %r' % (i, e)
-                raise
-        else:
-            # htoa defaults to disc's artist
-            title = 'Hidden Track One Audio'
-
-    ret = gst.TagList()
-
-    # gst-python 0.10.15.1 does not handle unicode -> utf8 string conversion
-    # see http://bugzilla.gnome.org/show_bug.cgi?id=584445
-    ret[gst.TAG_ARTIST] = artist.encode('utf-8')
-    ret[gst.TAG_TITLE] = title.encode('utf-8')
-    ret[gst.TAG_ALBUM] = disc.encode('utf-8')
-
-    # gst-python 0.10.15.1 does not handle tags that are UINT
-    # see gst-python commit 26fa6dd184a8d6d103eaddf5f12bd7e5144413fb
-    # FIXME: no way to compare against 'master' version after 0.10.15
-    if gst.pygst_version >= (0, 10, 15):
-        ret[gst.TAG_TRACK_NUMBER] = i
-    if metadata:
-        # works, but not sure we want this
-        # if gst.pygst_version >= (0, 10, 15):
-        #     ret[gst.TAG_TRACK_COUNT] = len(metadata.tracks)
-        # hack to get a GstDate which we cannot instantiate directly in
-        # 0.10.15.1
-        # FIXME: The dates are strings and must have the format 'YYYY',
-        # 'YYYY-MM' or 'YYYY-MM-DD'.
-        # GstDate expects a full date, so default to Jan and 1st if MM and DD
-        # are missing
-        date = metadata.release
-        if date:
-            log.debug('metadata',
-                'Converting release date %r to structure', date)
-            if len(date) == 4:
-                date += '-01'
-            if len(date) == 7:
-                date += '-01'
-
-            s = gst.structure_from_string('hi,date=(GstDate)%s' %
-                str(date))
-            ret[gst.TAG_DATE] = s['date']
-        
-    # FIXME: gst.TAG_ISRC 
-
-    return ret
 
 class Rip(logcommand.LogCommand):
     summary = "rip CD"
@@ -311,10 +97,27 @@ class Rip(logcommand.LogCommand):
         mbdiscid = ittoc.getMusicBrainzDiscId()
         print "MusicBrainz disc id", mbdiscid
 
-        metadata = musicbrainz(mbdiscid)
-        if not metadata:
+        # look up disc on musicbrainz
+        try:
+            metadatas = program.musicbrainz(mbdiscid)
+        except program.MusicBrainzException, e:
+            print "Error:", e
+            return
+
+        metadata = None
+
+        if metadatas:
+            print 'Matching releases:'
+            for metadata in metadatas:
+                print 'Artist  :', metadata.artist
+                print 'Title   :', metadata.title
+
+            # Select one of the returned releases. We just pick the first one.
+            metadata = metadatas[0]
+        else:
             print 'Submit this disc to MusicBrainz at:'
             print ittoc.getMusicBrainzSubmitURL()
+        print
 
         # now, read the complete index table, which is slower
         itable = prog.getTable(runner, ittoc.getCDDBDiscId(), device)
@@ -334,18 +137,17 @@ class Rip(logcommand.LogCommand):
         extension = profile.extension
 
         # result
-        res = prog.result
-        res.offset = int(self.options.offset)
-        res.artist = metadata and metadata.artist or 'Unknown Artist'
-        res.title = metadata and metadata.title or 'Unknown Title'
+        prog.result.offset = int(self.options.offset)
+        prog.result.artist = metadata and metadata.artist or 'Unknown Artist'
+        prog.result.title = metadata and metadata.title or 'Unknown Title'
         # cdio is optional for now
         try:
             import cdio
-            _, res.vendor, res.model, __ = cdio.Device(device).get_hwinfo()
+            _, prog.result.vendor, prog.result.model, __ = cdio.Device(device).get_hwinfo()
         except ImportError:
             print 'WARNING: pycdio not installed, cannot identify drive'
-            res.vendor = 'Unknown'
-            res.model = 'Unknown'
+            prog.result.vendor = 'Unknown'
+            prog.result.model = 'Unknown'
 
 
         # check for hidden track one audio
@@ -364,8 +166,8 @@ class Rip(logcommand.LogCommand):
                 start, stop)
                 
             # rip it
-            htoapath = getPath(outdir, self.options.track_template, metadata,
-                mbdiscid, 0) + '.' + extension
+            htoapath = program.getPath(outdir, self.options.track_template,
+                metadata, mbdiscid, 0) + '.' + extension
             dirname = os.path.dirname(htoapath)
             if not os.path.exists(dirname):
                 os.makedirs(dirname)
@@ -378,7 +180,7 @@ class Rip(logcommand.LogCommand):
                     offset=int(self.options.offset),
                     device=self.parentCommand.options.device,
                     profile=profile,
-                    taglist=getTagList(metadata, 0))
+                    taglist=prog.getTagList(metadata, 0))
                 function(runner, t)
 
                 if t.checksum is not None:
@@ -402,9 +204,9 @@ class Rip(logcommand.LogCommand):
                 continue
 
             trackResult = result.TrackResult()
-            res.tracks.append(trackResult)
+            prog.result.tracks.append(trackResult)
 
-            path = getPath(outdir, self.options.track_template, metadata,
+            path = program.getPath(outdir, self.options.track_template, metadata,
                 mbdiscid, i + 1) + '.' + extension
             trackResult.number = i + 1
             trackResult.filename = path
@@ -423,7 +225,7 @@ class Rip(logcommand.LogCommand):
                     offset=int(self.options.offset),
                     device=self.parentCommand.options.device,
                     profile=profile,
-                    taglist=getTagList(metadata, i + 1))
+                    taglist=prog.getTagList(metadata, i + 1))
                 t.description = 'Reading Track %d' % (i + 1)
                 function(runner, t)
                 if t.checksum:
@@ -445,7 +247,7 @@ class Rip(logcommand.LogCommand):
 
 
         ### write disc files
-        discName = getPath(outdir, self.options.disc_template, metadata,
+        discName = program.getPath(outdir, self.options.disc_template, metadata,
             mbdiscid, 0)
         dirname = os.path.dirname(discName)
         if not os.path.exists(dirname):
@@ -467,7 +269,7 @@ class Rip(logcommand.LogCommand):
             if not track.audio:
                 continue
 
-            path = getPath(outdir, self.options.track_template, metadata,
+            path = program.getPath(outdir, self.options.track_template, metadata,
                 mbdiscid, i + 1) + '.' + extension
             u = u'#EXTINF:%d,%s\n' % (
                 itable.getTrackLength(i + 1) / common.FRAMES_PER_SECOND,
@@ -507,7 +309,7 @@ class Rip(logcommand.LogCommand):
 
         # loop over tracks
         for i, csum in enumerate(cuetask.checksums):
-            trackResult = res.tracks[i]
+            trackResult = prog.result.tracks[i]
             trackResult.accuripCRC = csum
 
             status = 'rip NOT accurate'
