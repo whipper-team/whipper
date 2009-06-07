@@ -132,6 +132,7 @@ class Program(object):
     cuePath = None
     logPath = None
     metadata = None
+    outdir = None
 
     def __init__(self):
         self.result = result.RipResult()

@@ -130,9 +130,8 @@ class Rip(logcommand.LogCommand):
             "full table's AR URL %s differs from toc AR URL %s" % (
             itable.getAccurateRipURL(), ittoc.getAccurateRipURL())
 
-        outdir = self.options.output_directory or os.getcwd()
+        prog.outdir = self.options.output_directory or os.getcwd()
         profile = encode.PROFILES[self.options.profile]()
-        extension = profile.extension
 
         # result
         prog.result.offset = int(self.options.offset)
@@ -147,12 +146,13 @@ class Rip(logcommand.LogCommand):
             prog.result.vendor = 'Unknown'
             prog.result.model = 'Unknown'
 
+        # FIXME: turn this into a method
         def ripIfNotRipped(number):
             trackResult = result.TrackResult()
             prog.result.tracks.append(trackResult)
 
-            path = prog.getPath(outdir, self.options.track_template, 
-                mbdiscid, number) + '.' + extension
+            path = prog.getPath(prog.outdir, self.options.track_template, 
+                mbdiscid, number) + '.' + profile.extension
             trackResult.number = number
             trackResult.filename = path
             if number > 0:
@@ -209,7 +209,7 @@ class Rip(logcommand.LogCommand):
             ripIfNotRipped(i + 1)
 
         ### write disc files
-        discName = prog.getPath(outdir, self.options.disc_template, 
+        discName = prog.getPath(prog.outdir, self.options.disc_template, 
             mbdiscid, 0)
         dirname = os.path.dirname(discName)
         if not os.path.exists(dirname):
@@ -231,8 +231,8 @@ class Rip(logcommand.LogCommand):
             if not track.audio:
                 continue
 
-            path = prog.getPath(outdir, self.options.track_template, 
-                mbdiscid, i + 1) + '.' + extension
+            path = prog.getPath(prog.outdir, self.options.track_template, 
+                mbdiscid, i + 1) + '.' + profile.extension
             u = u'#EXTINF:%d,%s\n' % (
                 itable.getTrackLength(i + 1) / common.FRAMES_PER_SECOND,
                 os.path.basename(path))

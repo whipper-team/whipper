@@ -18,6 +18,7 @@ REQUIREMENTS
 - cdparanoia, for the actual ripping
 - cdrdao, for session, TOC, pregap, and ISRC extraction
 - GStreamer, for encoding
+- python musicbrainz2, for metadata lookup
 - pycdio, for drive identification (optional)
 
 KNOWN ISSUES
