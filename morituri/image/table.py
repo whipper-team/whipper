@@ -144,7 +144,7 @@ class Table(object, log.Loggable):
     catalog = None # catalog number; FIXME: is this UPC ?
     cdtext = None
 
-    classVersion = 1
+    classVersion = 2
 
     def __init__(self, tracks=None):
         if not tracks:

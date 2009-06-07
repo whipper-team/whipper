@@ -151,7 +151,7 @@ class AudioLengthTask(task.Task):
 
         try:
             length, format = sink.query_duration(gst.FORMAT_DEFAULT)
-        except gst.QueryError, e:
+        except gst.QueryError:
             print 'failed to query %s' % self._path
         # wavparse 0.10.14 returns in bytes
         if format == gst.FORMAT_BYTES:

@@ -20,10 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
 import math
-import struct
-import zlib
 
 import gst
 
@@ -140,7 +137,6 @@ class EncodeTask(task.Task):
         self.debug('paused pipeline')
 
         # get length
-        decoder = self._pipeline.get_by_name('decoder')
         self.debug('query duration')
         length, format = muxer.query_duration(gst.FORMAT_DEFAULT)
         # wavparse 0.10.14 returns in bytes

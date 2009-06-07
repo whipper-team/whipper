@@ -31,7 +31,7 @@ class List(logcommand.LogCommand):
         try:
             import pycdio
             import cdio
-        except ImportError, e:
+        except ImportError:
             self.info('pycdio not installed, cannot list drives')
             found = False
             for c in ['/dev/cdrom', '/dev/cdrecorder']:

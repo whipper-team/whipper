@@ -96,7 +96,6 @@ class ProgressParser(object):
         if wordOffset % common.WORDS_PER_FRAME != 0:
             print 'THOMAS: not a multiple of %d: %d' % (
                 common.WORDS_PER_FRAME, wordOffset)
-            print line
             return
 
         frameOffset = wordOffset / common.WORDS_PER_FRAME
