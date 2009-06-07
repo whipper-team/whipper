@@ -22,3 +22,4 @@ TODO:
 - persist RipResult so rips can be aborted and continued too; needs verification
   of previously ripped files
 - write moovida plugin
+- cache results of MusicBrainz lookups

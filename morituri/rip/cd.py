@@ -98,6 +98,7 @@ class Rip(logcommand.LogCommand):
         print "MusicBrainz disc id", mbdiscid
 
         # look up disc on musicbrainz
+        metadatas = None
         try:
             metadatas = program.musicbrainz(mbdiscid)
         except program.MusicBrainzException, e:
