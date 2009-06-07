@@ -1,5 +1,28 @@
-goals
+morituri is a CD ripper aiming for accuracy over speed.
+Its features are modeled to compare with Exact Audio Copy on Windows.
+
+FEATURES
+--------
+- support for MusicBrainz for metadata lookup
+- support for AccurateRip verification
+- detects sample read offset
+- test and copy rip
+
+REQUIREMENTS
+------------
+- cdparanoia, for the actual ripping
+- cdrdao, for session, TOC, pregap, and ISRC extraction
+- GStreamer, for encoding
+- pycdio, for drive identification
+
+KNOWN ISSUES
+------------
+- cdrdao read-toc does not always get pregaps right compared to EAC, still
+  under investigation
+
+GOALS
 -----
+- quality over speed
 - support one-command automatic ripping
 - support offline ripping (doing metadata lookup and log rewriting later)
   - separate the info/result about the rip from the metadata/file generation/...
