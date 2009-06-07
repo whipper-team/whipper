@@ -19,3 +19,6 @@ TODO:
 - rip the data session
 - add AccurateRip validation for ripped images to rip command
 - add GUI
+- persist RipResult so rips can be aborted and continued too; needs verification
+  of previously ripped files
+- write moovida plugin
