@@ -10,6 +10,7 @@ morituri_PYTHON = \
 	drive.py \
 	log.py \
 	logcommand.py \
+	program.py \
 	renamer.py \
 	task.py \
 	taskgtk.py

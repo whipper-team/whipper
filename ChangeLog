@@ -1,5 +1,15 @@
 2009-06-07  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/result/result.py:
+	  Change toctable to table since it's a full index table.
+	* morituri/common/Makefile.am:
+	* morituri/common/program.py (added):
+	  Add module and class for program state.
+	* morituri/rip/cd.py:
+	  Use the program state to clean up the do() function.
+
+2009-06-07  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/rip/cd.py:
 	  Massage into 80 characters per line.
 	  Make pycdio/cdio optional.

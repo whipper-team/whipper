@@ -50,10 +50,12 @@ class RipResult:
     I can be used to write log files.
 
     @ivar offset: sample read offset
+    @ivar table:  the full index table
+    @type table:  L{morituri.common.table.Table}
     """
 
     offset = 0
-    toctable = None
+    table = None
     artist = None
     title = None
 

@@ -30,7 +30,7 @@ gobject.threads_init()
 import gst
 
 from morituri.common import logcommand, task, checksum, common, accurip, log
-from morituri.common import drive, encode
+from morituri.common import drive, encode, program
 from morituri.result import result
 from morituri.image import image, cue, table
 from morituri.program import cdrdao, cdparanoia
@@ -261,10 +261,6 @@ class Rip(logcommand.LogCommand):
             action="store", dest="output_directory",
             help="output directory (defaults to current directory)")
         # FIXME: have a cache of these pickles somewhere
-        self.parser.add_option('-t', '--table-pickle',
-            action="store", dest="table_pickle",
-            help="pickle to use for reading and writing the table",
-            default=default)
         self.parser.add_option('-T', '--toc-pickle',
             action="store", dest="toc_pickle",
             help="pickle to use for reading and writing the TOC",
@@ -289,7 +285,9 @@ class Rip(logcommand.LogCommand):
 
 
     def do(self, args):
+        prog = program.Program()
         runner = task.SyncRunner()
+
         def function(r, t):
             r.run(t)
 
@@ -297,10 +295,7 @@ class Rip(logcommand.LogCommand):
         device = self.parentCommand.options.device
         print 'Checking device', device
 
-        proc = open('/proc/mounts').read()
-        if device in proc:
-            print 'Device %s is mounted, unmounting' % device
-            os.system('umount %s' % device)
+        prog.unmountDevice(device)
         
         # first, read the normal TOC, which is fast
         ptoc = common.Persister(self.options.toc_pickle or None)
@@ -322,17 +317,7 @@ class Rip(logcommand.LogCommand):
             print ittoc.getMusicBrainzSubmitURL()
 
         # now, read the complete index table, which is slower
-        path = os.path.join(os.path.expanduser('~'), '.morituri', 'cache',
-            'table')
-        pcache = common.PersistedCache(path)
-        ptable = pcache.get(ittoc.getCDDBDiscId())
-        if not ptable.object:
-            t = cdrdao.ReadTableTask(device=self.parentCommand.options.device)
-            function(runner, t)
-            ptable.persist(t.table)
-        itable = ptable.object
-
-        assert itable.hasTOC()
+        itable = prog.getTable(runner, ittoc.getCDDBDiscId(), device)
 
         assert itable.getCDDBDiscId() == ittoc.getCDDBDiscId(), \
             "full table's id %s differs from toc id %s" % (
@@ -349,9 +334,8 @@ class Rip(logcommand.LogCommand):
         extension = profile.extension
 
         # result
-        res = result.RipResult()
+        res = prog.result
         res.offset = int(self.options.offset)
-        res.toctable = itable
         res.artist = metadata and metadata.artist or 'Unknown Artist'
         res.title = metadata and metadata.title or 'Unknown Title'
         # cdio is optional for now
@@ -462,18 +446,12 @@ class Rip(logcommand.LogCommand):
 
         ### write disc files
         discName = getPath(outdir, self.options.disc_template, metadata,
-            mbdiscid, i)
+            mbdiscid, 0)
         dirname = os.path.dirname(discName)
         if not os.path.exists(dirname):
             os.makedirs(dirname)
 
-        # write .cue file
-        assert itable.canCue()
-        cuePath = '%s.cue' % discName
-        handle = open(cuePath, 'w')
-        # FIXME: do we always want utf-8 ?
-        handle.write(itable.cue().encode('utf-8'))
-        handle.close()
+        prog.writeCue(discName)
 
         # write .m3u file
         m3uPath = '%s.m3u' % discName
@@ -519,7 +497,7 @@ class Rip(logcommand.LogCommand):
            
         # FIXME: put accuraterip verification into a separate task/function
         # and apply here
-        cueImage = image.Image(cuePath)
+        cueImage = image.Image(prog.cuePath)
         verifytask = image.ImageVerifyTask(cueImage)
         cuetask = image.AccurateRipChecksumTask(cueImage)
         function(runner, verifytask)
@@ -573,13 +551,9 @@ class Rip(logcommand.LogCommand):
                 i + 1, status, c, csum, ar)
 
         # write log file
-        discName = getPath(outdir, self.options.disc_template, metadata,
-            mbdiscid, i)
-        logPath = '%s.log' % discName
         logger = result.getLogger()
-        handle = open(logPath, 'w')
-        handle.write(logger.log(res).encode('utf-8'))
-        handle.close()
+        prog.writeLog(discName, logger)
+
 
 class CD(logcommand.LogCommand):
     summary = "handle CD's"
