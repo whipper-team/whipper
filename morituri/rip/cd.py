@@ -24,8 +24,6 @@ import os
 import sys
 import math
 
-import cdio
-
 import gobject
 gobject.threads_init()
 
@@ -356,7 +354,15 @@ class Rip(logcommand.LogCommand):
         res.toctable = itable
         res.artist = metadata and metadata.artist or 'Unknown Artist'
         res.title = metadata and metadata.title or 'Unknown Title'
-        _, res.vendor, res.model, __ = cdio.Device(device).get_hwinfo()
+        # cdio is optional for now
+        try:
+            import cdio
+            _, res.vendor, res.model, __ = cdio.Device(device).get_hwinfo()
+        except ImportError:
+            print 'WARNING: pycdio not installed, cannot identify drive'
+            res.vendor = 'Unknown'
+            res.model = 'Unknown'
+
 
         # check for hidden track one audio
         htoapath = None
@@ -370,10 +376,12 @@ class Rip(logcommand.LogCommand):
         if index:
             start = index.absolute
             stop = track.getIndex(1).absolute
-            print 'Found Hidden Track One Audio from frame %d to %d' % (start, stop)
+            print 'Found Hidden Track One Audio from frame %d to %d' % (
+                start, stop)
                 
             # rip it
-            htoapath = getPath(outdir, self.options.track_template, metadata, mbdiscid, 0) + '.' + extension
+            htoapath = getPath(outdir, self.options.track_template, metadata,
+                mbdiscid, 0) + '.' + extension
             dirname = os.path.dirname(htoapath)
             if not os.path.exists(dirname):
                 os.makedirs(dirname)
@@ -403,7 +411,8 @@ class Rip(logcommand.LogCommand):
         for i, track in enumerate(itable.tracks):
             # FIXME: rip data tracks differently
             if not track.audio:
-                print 'Skipping data track %d' % (i + 1, )
+                print 'WARNING: skipping data track %d, not implemented' % (
+                    i + 1, )
                 # FIXME: make it work for now
                 track.indexes[1].relative = 0
                 continue
@@ -411,7 +420,8 @@ class Rip(logcommand.LogCommand):
             trackResult = result.TrackResult()
             res.tracks.append(trackResult)
 
-            path = getPath(outdir, self.options.track_template, metadata, mbdiscid, i + 1) + '.' + extension
+            path = getPath(outdir, self.options.track_template, metadata,
+                mbdiscid, i + 1) + '.' + extension
             trackResult.number = i + 1
             trackResult.filename = path
 
@@ -435,7 +445,8 @@ class Rip(logcommand.LogCommand):
                 if t.checksum:
                     print 'Checksums match for track %d' % (i + 1)
                 else:
-                    print 'ERROR: checksums did not match for track %d' % (i + 1)
+                    print 'ERROR: checksums did not match for track %d' % (
+                        i + 1)
                 trackResult.testcrc = t.testchecksum
                 trackResult.copycrc = t.copychecksum
                 trackResult.peak = t.peak
@@ -450,7 +461,8 @@ class Rip(logcommand.LogCommand):
 
 
         ### write disc files
-        discName = getPath(outdir, self.options.disc_template, metadata, mbdiscid, i)
+        discName = getPath(outdir, self.options.disc_template, metadata,
+            mbdiscid, i)
         dirname = os.path.dirname(discName)
         if not os.path.exists(dirname):
             os.makedirs(dirname)
@@ -553,14 +565,16 @@ class Rip(logcommand.LogCommand):
                     c = "(max confidence %3d)" % maxConfidence
                     if confidence is not None:
                         if confidence < maxConfidence:
-                            c = "(confidence %3d of %3d)" % (confidence, maxConfidence)
+                            c = "(confidence %3d of %3d)" % (
+                                confidence, maxConfidence)
 
                     ar = ", AR [%s]" % response.checksums[i]
             print "Track %2d: %s %s [%08x]%s" % (
                 i + 1, status, c, csum, ar)
 
         # write log file
-        discName = getPath(outdir, self.options.disc_template, metadata, mbdiscid, i)
+        discName = getPath(outdir, self.options.disc_template, metadata,
+            mbdiscid, i)
         logPath = '%s.log' % discName
         logger = result.getLogger()
         handle = open(logPath, 'w')

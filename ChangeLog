@@ -1,5 +1,11 @@
 2009-06-07  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/rip/cd.py:
+	  Massage into 80 characters per line.
+	  Make pycdio/cdio optional.
+
+2009-06-07  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/rip/drive.py:
 	  Make pycdio and cdio optional.
 
