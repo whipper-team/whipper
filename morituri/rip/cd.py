@@ -93,6 +93,7 @@ class Rip(logcommand.LogCommand):
         assert ittoc.hasTOC()
 
         # already show us some info based on this
+        prog.getRipResult(ittoc.getCDDBDiscId())
         print "CDDB disc id", ittoc.getCDDBDiscId()
         mbdiscid = ittoc.getMusicBrainzDiscId()
         print "MusicBrainz disc id", mbdiscid
@@ -135,6 +136,7 @@ class Rip(logcommand.LogCommand):
         profile = encode.PROFILES[self.options.profile]()
 
         # result
+
         prog.result.offset = int(self.options.offset)
         prog.result.artist = prog.metadata and prog.metadata.artist or 'Unknown Artist'
         prog.result.title = prog.metadata and prog.metadata.title or 'Unknown Title'
@@ -149,8 +151,11 @@ class Rip(logcommand.LogCommand):
 
         # FIXME: turn this into a method
         def ripIfNotRipped(number):
-            trackResult = result.TrackResult()
-            prog.result.tracks.append(trackResult)
+            # we can have a previous result
+            trackResult = prog.result.getTrackResult(number)
+            if not trackResult:
+                trackResult = result.TrackResult()
+                prog.result.tracks.append(trackResult)
 
             path = prog.getPath(prog.outdir, self.options.track_template, 
                 mbdiscid, number) + '.' + profile.extension
@@ -185,6 +190,8 @@ class Rip(logcommand.LogCommand):
             else:
                 itable.setFile(number, 1, path, ittoc.getTrackLength(number),
                     number)
+
+            prog.saveRipResult()
 
 
         # check for hidden track one audio

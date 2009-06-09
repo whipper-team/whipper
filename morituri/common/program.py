@@ -127,19 +127,24 @@ class Program(object):
 
     @ivar metadata:
     @type metadata: L{DiscMetadata}
+    @ivar result:   the rip's result
+    @type result:   L{result.RipResult}
     """
 
     cuePath = None
     logPath = None
     metadata = None
     outdir = None
-
-    def __init__(self):
-        self.result = result.RipResult()
+    result = None
 
     def _getTableCachePath(self):
         path = os.path.join(os.path.expanduser('~'), '.morituri', 'cache',
             'table')
+        return path
+
+    def _getResultCachePath(self):
+        path = os.path.join(os.path.expanduser('~'), '.morituri', 'cache',
+            'result')
         return path
 
     def unmountDevice(self, device):
@@ -173,6 +178,32 @@ class Program(object):
         self.result.table = itable
 
         return itable
+
+    def getRipResult(self, cddbdiscid):
+        """
+        Retrieve the persistable RipResult either from our cache (from a
+        previous, possibly aborted rip), or return a new one.
+
+        @rtype: L{result.RipResult}
+        """
+        assert self.result is None
+
+        path = self._getResultCachePath()
+
+        pcache = common.PersistedCache(path)
+        presult = pcache.get(cddbdiscid)
+
+        if not presult.object:
+            presult.object = result.RipResult()
+            presult.persist(self.result)
+
+        self.result = presult.object
+        self._presult = presult
+
+        return self.result
+
+    def saveRipResult(self):
+        self._presult.persist()
 
     def getPath(self, outdir, template, mbdiscid, i):
         """
