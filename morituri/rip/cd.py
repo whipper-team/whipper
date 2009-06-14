@@ -195,6 +195,7 @@ class Rip(logcommand.LogCommand):
 
 
         # check for hidden track one audio
+        htoapath = None
         htoa = prog.getHTOA()
         if htoa:
             start, stop = htoa
