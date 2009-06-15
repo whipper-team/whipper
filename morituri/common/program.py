@@ -418,7 +418,6 @@ class Program(log.Loggable):
 
     def writeCue(self, discName):
         self.debug('write .cue file')
-        import code; code.interact(local=locals())
         assert self.result.table.canCue()
 
         cuePath = '%s.cue' % discName
