@@ -165,6 +165,13 @@ class Rip(logcommand.LogCommand):
                 trackResult.pregap = itable.tracks[number - 1].getPregap()
 
             # FIXME: optionally allow overriding reripping
+            if os.path.exists(path):
+                print 'Verifying track %d of %d: %s' % (
+                    number, len(itable.tracks), os.path.basename(path))
+                if not prog.verifyTrack(runner, trackResult):
+                    print 'Verification failed, reripping...'
+                    os.unlink(path)
+
             if not os.path.exists(path):
                 print 'Ripping track %d of %d: %s' % (
                     number, len(itable.tracks), os.path.basename(path))
@@ -224,6 +231,7 @@ class Rip(logcommand.LogCommand):
         if not os.path.exists(dirname):
             os.makedirs(dirname)
 
+        self.debug('writing cue file for %s', discName)
         prog.writeCue(discName)
 
         # write .m3u file
@@ -270,58 +278,30 @@ class Rip(logcommand.LogCommand):
            
         # FIXME: put accuraterip verification into a separate task/function
         # and apply here
-        cueImage = image.Image(prog.cuePath)
-        verifytask = image.ImageVerifyTask(cueImage)
-        cuetask = image.AccurateRipChecksumTask(cueImage)
-        function(runner, verifytask)
-        function(runner, cuetask)
-
-        response = None # track which response matches, for all tracks
+        prog.verifyImage(runner, responses)
 
         # loop over tracks
-        for i, csum in enumerate(cuetask.checksums):
-            trackResult = prog.result.getTrackResult(i + 1)
-            trackResult.accuripCRC = csum
+        for trackResult in prog.result.tracks:
 
             status = 'rip NOT accurate'
 
-            confidence = None
-
-            # match against each response's checksum
-            for j, r in enumerate(responses or []):
-                if "%08x" % csum == r.checksums[i]:
-                    if not response:
-                        response = r
-                    else:
-                        assert r == response, \
-                            "checksum %s for %d matches wrong response %d, "\
-                            "checksum %s" % (
-                                csum, i + 1, j + 1, response.checksums[i])
+            if trackResult.accurip:
                     status = 'rip accurate    '
-                    trackResult.accurip = True
-                    # FIXME: maybe checksums should be ints
-                    trackResult.accuripDatabaseCRC = int(response.checksums[i], 16)
-                    # arsum = csum
-                    confidence = response.confidences[i]
-                    trackResult.accuripDatabaseConfidence = confidence
 
             c = "(not found)"
             ar = "(not in database)"
-            if responses:
-                if not response:
-                    print 'ERROR: none of the responses matched.'
-                else:
-                    maxConfidence = max(r.confidences[i] for r in responses)
-                         
-                    c = "(max confidence %3d)" % maxConfidence
-                    if confidence is not None:
-                        if confidence < maxConfidence:
-                            c = "(confidence %3d of %3d)" % (
-                                confidence, maxConfidence)
+            if trackResult.accuripDatabaseMaxConfidence:
+                c = "(max confidence %3d)" % trackResult.accuripDatabaseMaxConfidence
+                if trackResult.accuripDatabaseConfidence is not None:
+                    if trackResult.accuripDatabaseConfidence \
+                            < trackResult.accuripDatabaseMaxConfidence:
+                        c = "(confidence %3d of %3d)" % (
+                            trackResult.accuripDatabaseConfidence,
+                            trackResult.accuripDatabaseMaxConfidence)
 
-                    ar = ", AR [%s]" % response.checksums[i]
-            print "Track %2d: %s %s [%08x]%s" % (
-                i + 1, status, c, csum, ar)
+                ar = ", AR [%08x]" % trackResult.accuripDatabaseCRC
+                print "Track %2d: %s %s [%08x]%s" % (
+                    i + 1, status, c, trackResult.accuripDatabaseCRC, ar)
 
         # write log file
         logger = result.getLogger()

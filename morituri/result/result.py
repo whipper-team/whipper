@@ -43,6 +43,9 @@ class TrackResult:
     accuripCRC = None
     accuripDatabaseCRC = None
     accuripDatabaseConfidence = None
+    accuripDatabaseMaxConfidence = None
+
+    classVersion = 2
 
 class RipResult:
     """

@@ -26,9 +26,10 @@ Common functionality and class for all programs using morituri.
 
 import os
 
-from morituri.common import common, log
+from morituri.common import common, log, checksum
 from morituri.result import result
 from morituri.program import cdrdao, cdparanoia
+from morituri.image import image
 
 import gst
 
@@ -121,7 +122,7 @@ def musicbrainz(discid):
 
     return ret
 
-class Program(object):
+class Program(log.Loggable):
     """
     I maintain program state and functionality.
 
@@ -229,7 +230,11 @@ class Program(object):
         v['d'] = mbdiscid
 
         v['a'] = v['A']
-        v['n'] = 'Unknown Track %d' % i
+        if i == 0:
+            v['n'] = 'Hidden Track One Audio'
+        else:
+            v['n'] = 'Unknown Track %d' % i
+
 
         if self.metadata:
             v['A'] = filterForPath(self.metadata.artist)
@@ -244,7 +249,6 @@ class Program(object):
             else:
                 # htoa defaults to disc's artist
                 v['a'] = filterForPath(self.metadata.artist)
-                v['n'] = filterForPath('Hidden Track One Audio')
 
         import re
         template = re.sub(r'%(\w)', r'%(\1)s', template)
@@ -334,6 +338,13 @@ class Program(object):
         stop = track.getIndex(1).absolute - 1
         return (start, stop)
 
+    def verifyTrack(self, runner, trackResult):
+        t = checksum.CRC32Task(trackResult.filename)
+
+        runner.run(t)
+
+        return trackResult.testcrc == t.checksum
+
     def ripTrack(self, runner, trackResult, offset, device, profile, taglist):
         """
         @param number: track number (1-based)
@@ -363,7 +374,51 @@ class Program(object):
         trackResult.peak = t.peak
         trackResult.quality = t.quality
 
+    def verifyImage(self, runner, responses):
+
+        cueImage = image.Image(self.cuePath)
+        verifytask = image.ImageVerifyTask(cueImage)
+        cuetask = image.AccurateRipChecksumTask(cueImage)
+        runner.run(verifytask)
+        runner.run(cuetask)
+
+        response = None # track which response matches, for all tracks
+
+        # loop over tracks
+        for i, csum in enumerate(cuetask.checksums):
+            trackResult = self.result.getTrackResult(i + 1)
+            trackResult.accuripCRC = csum
+
+            confidence = None
+
+            # match against each response's checksum
+            for j, r in enumerate(responses or []):
+                if "%08x" % csum == r.checksums[i]:
+                    if not response:
+                        response = r
+                    else:
+                        assert r == response, \
+                            "checksum %s for %d matches wrong response %d, "\
+                            "checksum %s" % (
+                                csum, i + 1, j + 1, response.checksums[i])
+                    trackResult.accurip = True
+                    # FIXME: maybe checksums should be ints
+                    trackResult.accuripDatabaseCRC = int(response.checksums[i], 16)
+                    # arsum = csum
+                    confidence = response.confidences[i]
+                    trackResult.accuripDatabaseConfidence = confidence
+
+            if responses:
+                maxConfidence = max(r.confidences[i] for r in responses)
+                self.debug('found max confidence %d' % maxConfidence)
+                trackResult.accuripDatabaseMaxConfidence = maxConfidence
+                if not response:
+                    self.warning('none of the responses matched.')
+
+
     def writeCue(self, discName):
+        self.debug('write .cue file')
+        import code; code.interact(local=locals())
         assert self.result.table.canCue()
 
         cuePath = '%s.cue' % discName
