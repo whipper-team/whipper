@@ -1,3 +1,8 @@
+2009-06-15  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/image/cue.py:
+	  Better debug.
+
 2009-06-09  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/program.py:
