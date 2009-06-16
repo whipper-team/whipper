@@ -308,6 +308,7 @@ class DiscInfoTask(CDRDAOTask):
 
     description = "Scanning disc..."
     table = None
+    sessions = None
 
     def __init__(self, device=None):
         """
