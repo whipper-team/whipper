@@ -26,7 +26,7 @@ import tempfile
 import gobject
 gobject.threads_init()
 
-from morituri.common import logcommand, task, checksum, accurip
+from morituri.common import logcommand, task, checksum, accurip, drive
 from morituri.image import image
 from morituri.program import cdrdao, cdparanoia
 
@@ -45,6 +45,9 @@ CD in the AccurateRip database."""
             help="list of offsets, comma-separated, "
                 "colon-separated for ranges (defaults to %s)" % default,
             default=default)
+        self.parser.add_option('-d', '--device',
+            action="store", dest="device",
+            help="CD-DA device")
 
     def handleOptions(self, options):
         self.options = options
@@ -59,11 +62,23 @@ CD in the AccurateRip database."""
 
         self.debug('Trying with offsets %r', self._offsets)
 
+        if not options.device:
+            drives = drive.getAllDevicePaths()
+            if not drives:
+                self.error('No CD-DA drives found!')
+                return 3
+        
+            # pick the first
+            self.options.device = drives[0]
+
+        # this can be a symlink to another device
+
+
     def do(self, args):
         runner = task.SyncRunner()
 
         # first get the Table Of Contents of the CD
-        t = cdrdao.ReadTOCTask()
+        t = cdrdao.ReadTOCTask(device=self.options.device)
 
         runner.run(t)
         table = t.table

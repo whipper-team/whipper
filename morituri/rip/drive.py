@@ -28,27 +28,15 @@ class List(logcommand.LogCommand):
     summary = "list drives"
 
     def do(self, args):
-        try:
-            import pycdio
-            import cdio
-        except ImportError:
-            self.info('pycdio not installed, cannot list drives')
-            found = False
-            for c in ['/dev/cdrom', '/dev/cdrecorder']:
-                if os.path.exists(c):
-                    print "drive: %s", c
-                    found = True
+        paths = drive.getAllDevicePaths()
 
-            if not found:
-                print 'No drives found.'
-                print 'Create /dev/cdrom if you have a CD drive, '
-                print 'or install pycdio for better detection.'
+        if not paths:
+            print 'No drives found.'
+            print 'Create /dev/cdrom if you have a CD drive, '
+            print 'or install pycdio for better detection.'
 
             return
 
-        # using FS_AUDIO here only makes it list the drive when an audio cd
-        # is inserted
-        paths = cdio.get_devices_with_cap(pycdio.FS_MATCH_ALL, False)
         for path in paths:
             device = cdio.Device(path)
             ok, vendor, model, release = device.get_hwinfo()

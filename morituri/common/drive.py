@@ -20,8 +20,31 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
-import pycdio
-import cdio
+import os
+
+from morituri.common import log
 
 def getAllDevicePaths():
-    return cdio.get_devices_with_cap(pycdio.FS_AUDIO, False)
+    try:
+        return _getAllDevicePathsPyCdio()
+    except ImportError:
+        log.info('drive', 'Cannot import pycdio')
+        return _getAllDevicePathsStatic()
+        
+def _getAllDevicePathsPyCdio():
+    import pycdio
+    import cdio
+
+    # using FS_AUDIO here only makes it list the drive when an audio cd
+    # is inserted
+    return cdio.get_devices_with_cap(pycdio.FS_MATCH_ALL, False)
+
+def _getAllDevicePathsStatic():
+    ret = []
+
+    for c in ['/dev/cdrom', '/dev/cdrecorder']:
+        if os.path.exists(c):
+            ret.append(c)
+
+    return ret
+
