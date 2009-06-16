@@ -301,7 +301,7 @@ class Rip(logcommand.LogCommand):
 
                 ar = ", AR [%08x]" % trackResult.accuripDatabaseCRC
                 print "Track %2d: %s %s [%08x]%s" % (
-                    i + 1, status, c, trackResult.accuripDatabaseCRC, ar)
+                    i + 1, status, c, trackResult.accuripCRC, ar)
 
         # write log file
         logger = result.getLogger()

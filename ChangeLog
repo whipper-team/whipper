@@ -1,5 +1,14 @@
 2009-06-16  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/rip/main.py:
+	* morituri/rip/image.py (added):
+	  Add command to verify an image.
+	* morituri/common/program.py:
+	* morituri/rip/cd.py:
+	  Fix AccurateRip checksum output.
+
+2009-06-16  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/drive.py:
 	  Really make pycdio and cdio optional.
 	* morituri/rip/drive.py:

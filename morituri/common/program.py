@@ -409,12 +409,19 @@ class Program(log.Loggable):
                     trackResult.accuripDatabaseConfidence = confidence
 
             if responses:
-                maxConfidence = max(r.confidences[i] for r in responses)
+                maxConfidence = 0
+                maxResponse = None
+                for r in responses:
+                    if r.confidences[i] > maxConfidence:
+                        maxConfidence = r.confidences[i]
+                        maxResponse = r
+
                 self.debug('found max confidence %d' % maxConfidence)
                 trackResult.accuripDatabaseMaxConfidence = maxConfidence
                 if not response:
                     self.warning('none of the responses matched.')
-
+                    trackResult.accuripDatabaseCRC = int(
+                        maxResponse.checksums[i], 16)
 
     def writeCue(self, discName):
         self.debug('write .cue file')
