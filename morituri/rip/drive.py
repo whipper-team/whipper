@@ -20,8 +20,6 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-
 from morituri.common import logcommand, drive
 
 class List(logcommand.LogCommand):
