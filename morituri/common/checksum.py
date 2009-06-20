@@ -82,9 +82,9 @@ class ChecksumTask(task.Task):
 
         if self._frameLength < 0:
             self.debug('query duration')
-            length, format = sink.query_duration(gst.FORMAT_DEFAULT)
+            length, qformat = sink.query_duration(gst.FORMAT_DEFAULT)
             # wavparse 0.10.14 returns in bytes
-            if format == gst.FORMAT_BYTES:
+            if qformat == gst.FORMAT_BYTES:
                 self.debug('query returned in BYTES format')
                 length /= 4
             self.debug('total length: %r', length)
@@ -301,7 +301,7 @@ class TRMTask(task.Task):
         gst.debug('query duration')
         sink = self._pipeline.get_by_name('sink')
 
-        self._length, format = self._pipeline.query_duration(gst.FORMAT_TIME)
+        self._length, qformat = self._pipeline.query_duration(gst.FORMAT_TIME)
         gst.debug('total length: %r' % self._length)
         gst.debug('scheduling setting to play')
         # since set_state returns non-False, adding it as timeout_add

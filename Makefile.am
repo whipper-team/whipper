@@ -26,7 +26,8 @@ PYCHECKER_WHITELIST = \
 	morituri/*/*.py
 
 PYCHECKER_BLACKLIST = \
-	morituri/extern/asyncsub.py
+	morituri/extern/asyncsub.py \
+	morituri/extern/log/log.py
 
 release: dist
 	make $(PACKAGE)-$(VERSION).tar.bz2.md5

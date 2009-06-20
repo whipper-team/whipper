@@ -184,10 +184,10 @@ class Table(object, log.Loggable):
             end = self.tracks[number].getIndex(1).absolute - 1
 
             # if on a session border, subtract the session leadin
-            this = self.tracks[number - 1]
-            next = self.tracks[number]
-            if next.session > this.session:
-                gap = self._getSessionGap(next.session)
+            thisTrack = self.tracks[number - 1]
+            nextTrack = self.tracks[number]
+            if nextTrack.session > thisTrack.session:
+                gap = self._getSessionGap(nextTrack.session)
                 end -= gap
 
         return end

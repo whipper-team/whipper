@@ -22,7 +22,7 @@
 
 import os
 
-from morituri.common import logcommand
+from morituri.common import logcommand, drive
 
 class List(logcommand.LogCommand):
     summary = "list drives"
@@ -35,6 +35,12 @@ class List(logcommand.LogCommand):
             print 'Create /dev/cdrom if you have a CD drive, '
             print 'or install pycdio for better detection.'
 
+            return
+
+        try:
+            import cdio
+        except ImportError:
+            print 'Install pycdio for vendora/model/release detection.'
             return
 
         for path in paths:

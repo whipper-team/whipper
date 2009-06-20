@@ -138,9 +138,9 @@ class EncodeTask(task.Task):
 
         # get length
         self.debug('query duration')
-        length, format = muxer.query_duration(gst.FORMAT_DEFAULT)
+        length, qformat = muxer.query_duration(gst.FORMAT_DEFAULT)
         # wavparse 0.10.14 returns in bytes
-        if format == gst.FORMAT_BYTES:
+        if qformat == gst.FORMAT_BYTES:
             self.debug('query returned in BYTES format')
             length /= 4
         self.debug('total length: %r', length)

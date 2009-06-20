@@ -93,10 +93,10 @@ def getAccurateRipResponses(data):
 
     while data:
         trackCount = struct.unpack("B", data[0])[0]
-        bytes = 1 + 12 + trackCount * (1 + 8)
+        nbytes = 1 + 12 + trackCount * (1 + 8)
 
-        ret.append(AccurateRipResponse(data[:bytes]))
-        data = data[bytes:]
+        ret.append(AccurateRipResponse(data[:nbytes]))
+        data = data[nbytes:]
 
     return ret
 

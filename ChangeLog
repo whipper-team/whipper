@@ -1,3 +1,15 @@
+2009-06-20  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* Makefile.am:
+	* misc/pycheckerrc:
+	* morituri/common/accurip.py:
+	* morituri/common/checksum.py:
+	* morituri/common/encode.py:
+	* morituri/image/table.py:
+	* morituri/rip/drive.py:
+	  Fix up for pychecker warnings for 2.6
+	  Fix rip drive list, which forgot some modules.
+
 2009-06-16  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/rip/main.py:
