@@ -386,7 +386,7 @@ class Program(log.Loggable):
         """
 
         self.debug('verifying Image against %d AccurateRip responses',
-            len(responses))
+            len(responses or []))
 
         cueImage = image.Image(self.cuePath)
         verifytask = image.ImageVerifyTask(cueImage)
