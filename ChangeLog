@@ -1,5 +1,10 @@
 2009-06-24  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/result/result.py:
+	  Document some more.
+
+2009-06-24  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/test/Makefile.am:
 	* morituri/test/dBAR-020-002e5023-029d8e49-040eaa14.bin (added):
 	  Add AR result for Luke Haines Is Dead disc 1

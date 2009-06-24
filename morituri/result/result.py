@@ -30,6 +30,15 @@ class TrackResult:
     @type testcrc: int
     @ivar copycrc: 4-byte CRC for the copy read
     @type copycrc: int
+
+    @var  accuripCRC: our calculated 4 byte AccurateRip CRC for this track.
+    @type accuripCRC: int
+    @var  accurip: whether this track's AR CRC was found in the database,
+                   and thus whether the track is considered accurately ripped.
+    @type accurip: bool
+    @var  accuripDatabaseMaxConfidence: maximum confidence in the AccurateRip
+                                        database for this track; can still be
+                                        0.  If None, the track was not found.
     """
     number = None
     filename = None
