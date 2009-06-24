@@ -26,19 +26,30 @@ from morituri.result import logger
 
 class TrackResult:
     """
-    @ivar testcrc: 4-byte CRC for the test read
-    @type testcrc: int
-    @ivar copycrc: 4-byte CRC for the copy read
-    @type copycrc: int
+    @ivar testcrc:           4-byte CRC for the test read
+    @type testcrc:           int
+    @ivar copycrc:           4-byte CRC for the copy read
+    @type copycrc:           int
 
-    @var  ARCRC: our calculated 4 byte AccurateRip CRC for this track.
-    @type ARCRC: int
-    @var  accurip: whether this track's AR CRC was found in the database,
-                   and thus whether the track is considered accurately ripped.
-    @type accurip: bool
+    @var  accurip:           whether this track's AR CRC was found in the
+                             database, and thus whether the track is considered
+                             accurately ripped.  @type accurip: bool
+    @type accurip:           bool
+
+    @var  ARCRC:             our calculated 4 byte AccurateRip CRC for this
+                             track.
+    @type ARCRC:             int
+
+    @var  ARDBCRC:           the 4-byte AccurateRip CRC this
+                             track did or should have matched in the database.
+                             If None, the track is not in the database.
+    @type ARDBCRC:           int
+    @var  ARDBConfidence:    confidence for the matched AccurateRip CRC for
+                             this track in the database.
+                             If None, the track is not in the database.
     @var  ARDBMaxConfidence: maximum confidence in the AccurateRip database for
-                             this track; can still be 0.  If None, the track
-                             was not found.
+                             this track; can still be 0.
+                             If None, the track is not in the database.
     """
     number = None
     filename = None
