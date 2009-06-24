@@ -451,7 +451,7 @@ class Program(log.Loggable):
                 i + 1, maxConfidence))
             trackResult.ARDBMaxConfidence = maxConfidence
             if not response:
-                self.warning('iTrack %02d: none of the responses matched.',
+                self.warning('Track %02d: none of the responses matched.',
                     i + 1)
                 trackResult.ARDBCRC = int(
                     maxResponse.checksums[i], 16)
