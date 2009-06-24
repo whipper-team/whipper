@@ -33,7 +33,10 @@ class TrackResult:
 
     @var  accurip:           whether this track's AR CRC was found in the
                              database, and thus whether the track is considered
-                             accurately ripped.  @type accurip: bool
+                             accurately ripped.
+                             If false, it can be ripped wrong, not exist in
+                             the database, ...
+    @type accurip: bool
     @type accurip:           bool
 
     @var  ARCRC:             our calculated 4 byte AccurateRip CRC for this
