@@ -29,7 +29,7 @@ gobject.threads_init()
 import gtk
 
 from morituri.image import image
-from morituri.common import task, taskgtk, checksum, log
+from morituri.common import task, taskgtk, checksum, log, accurip
 
 def gtkmain(runner, taskk):
     runner.connect('stop', lambda _: gtk.main_quit())
@@ -89,7 +89,7 @@ def main(argv):
     try:
         handle = urllib2.urlopen(url)
         data = handle.read()
-        responses = image.getAccurateRipResponses(data)
+        responses = accurip.getAccurateRipResponses(data)
     except urllib2.HTTPError, e:
         if e.code == 404:
             print 'Album not found in AccurateRip database'
