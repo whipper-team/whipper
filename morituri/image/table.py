@@ -276,18 +276,23 @@ class Table(object, log.Loggable):
         values = self._getMusicBrainzValues()
 
         # MusicBrainz disc id does not take into account data tracks
-        import sha
+        # P2.3
+        try:
+            import hashlib
+            sha1 = hashlib.sha1
+        except ImportError:
+            from sha import sha as sha1
         import base64
 
-        sha1 = sha.new()
+        sha = sha1()
 
         # number of first track
-        sha1.update("%02X" % values[0])
+        sha.update("%02X" % values[0])
 
         # number of last track
-        sha1.update("%02X" % values[1])
+        sha.update("%02X" % values[1])
 
-        sha1.update("%08X" % values[2])
+        sha.update("%08X" % values[2])
 
         # offsets of tracks
         for i in range(1, 100):
@@ -296,9 +301,9 @@ class Table(object, log.Loggable):
             except IndexError:
                 #print 'track', i - 1, '0 offset'
                 offset = 0
-            sha1.update("%08X" % offset)
+            sha.update("%08X" % offset)
 
-        digest = sha1.digest()
+        digest = sha.digest()
         assert len(digest) == 20, \
             "digest should be 20 chars, not %d" % len(digest)
 

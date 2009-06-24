@@ -1,5 +1,10 @@
 2009-06-24  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/image/table.py:
+	  Fix deprecationwarning for python 2.6
+
+2009-06-24  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/test/test_common_program.py (added):
 	* morituri/common/program.py:
 	  Break verifyImage into two so we can test it.
