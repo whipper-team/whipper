@@ -4,6 +4,7 @@ EXTRA_DIST = \
 	__init__.py \
 	common.py \
 	test_common_accurip.py \
+	test_common_program.py \
 	test_common_renamer.py \
 	test_image_cue.py \
 	test_image_image.py \
@@ -21,6 +22,7 @@ EXTRA_DIST = \
 	cure.cue \
 	cure.toc \
 	dBAR-011-0010e284-009228a3-9809ff0b.bin \
+	dBAR-020-002e5023-029d8e49-040eaa14.bin \
 	kanye.cue \
 	kings-separate.cue \
 	kings-single.cue \
@@ -37,7 +39,6 @@ regenerate: track.flac
 %.regenerate:
 	rm $*
 	make $*
-
 
 track.flac:
 	gst-launch audiotestsrc num-buffers=10 samplesperbuffer=588 ! audioconvert ! audio/x-raw-int,channels=2,width=16,height=16,rate=44100 ! flacenc ! filesink location=track.flac
