@@ -150,11 +150,11 @@ class AudioLengthTask(task.Task):
         assert sink, 'Error constructing pipeline'
 
         try:
-            length, format = sink.query_duration(gst.FORMAT_DEFAULT)
+            length, qformat = sink.query_duration(gst.FORMAT_DEFAULT)
         except gst.QueryError:
             print 'failed to query %s' % self._path
         # wavparse 0.10.14 returns in bytes
-        if format == gst.FORMAT_BYTES:
+        if qformat == gst.FORMAT_BYTES:
             self.debug('query returned in BYTES format')
             length /= 4
         self.debug('total length of %s in samples: %d', self._path, length)
