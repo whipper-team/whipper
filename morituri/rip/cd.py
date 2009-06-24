@@ -276,32 +276,9 @@ class Rip(logcommand.LogCommand):
                     responses[0].cddbDiscId
 
            
-        # FIXME: put accuraterip verification into a separate task/function
-        # and apply here
         prog.verifyImage(runner, responses)
 
-        # loop over tracks
-        for trackResult in prog.result.tracks:
-
-            status = 'rip NOT accurate'
-
-            if trackResult.accurip:
-                    status = 'rip accurate    '
-
-            c = "(not found)"
-            ar = "(not in database)"
-            if trackResult.ARDBMaxConfidence:
-                c = "(max confidence %3d)" % trackResult.ARDBMaxConfidence
-                if trackResult.ARDBConfidence is not None:
-                    if trackResult.ARDBConfidence \
-                            < trackResult.ARDBMaxConfidence:
-                        c = "(confidence %3d of %3d)" % (
-                            trackResult.ARDBConfidence,
-                            trackResult.ARDBMaxConfidence)
-
-                ar = ", AR [%08x]" % trackResult.ARDBCRC
-                print "Track %2d: %s %s [%08x]%s" % (
-                    i + 1, status, c, trackResult.ARCRC, ar)
+        print "\n".join(prog.getAccurateRipResults()) + "\n"
 
         # write log file
         logger = result.getLogger()

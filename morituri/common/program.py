@@ -458,6 +458,37 @@ class Program(log.Loggable):
             else:
                 trackResult.ARDBCRC = int(response.checksums[i], 16)
 
+    def getAccurateRipResults(self):
+        """
+        @rtype: list of str
+        """
+        res = []
+
+        # loop over tracks
+        for i, trackResult in enumerate(self.result.tracks):
+
+            status = 'rip NOT accurate'
+
+            if trackResult.accurip:
+                    status = 'rip accurate    '
+
+            c = "(not found)         "
+            ar = ", DB [notfound]"
+            if trackResult.ARDBMaxConfidence:
+                c = "(max confidence %3d)" % trackResult.ARDBMaxConfidence
+                if trackResult.ARDBConfidence is not None:
+                    if trackResult.ARDBConfidence \
+                            < trackResult.ARDBMaxConfidence:
+                        c = "(confidence %3d of %3d)" % (
+                            trackResult.ARDBConfidence,
+                            trackResult.ARDBMaxConfidence)
+
+                ar = ", DB [%08x]" % trackResult.ARDBCRC
+            res.append("Track %2d: %s %s [%08x]%s" % (
+                i + 1, status, c, trackResult.ARCRC, ar))
+
+        return res
+
     def writeCue(self, discName):
         self.debug('write .cue file')
         assert self.result.table.canCue()

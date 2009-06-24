@@ -51,3 +51,14 @@ class TrackImageVerifyTestCase(unittest.TestCase):
         self.assertEquals(tr.ARDBMaxConfidence, 2)
         # we know track 10 was ripped wrong
         self.assertNotEquals(tr.ARDBCRC, checksums[10 - 1])
+
+        res = prog.getAccurateRipResults()
+        self.assertEquals(res[1 - 1],
+            "Track  1: rip NOT accurate (not found)          "
+            "[620b0797], DB [notfound]")
+        self.assertEquals(res[2 - 1],
+            "Track  2: rip accurate     (max confidence   2) "
+            "[af8c44c5], DB [af8c44c5]")
+        self.assertEquals(res[10 - 1],
+            "Track 10: rip NOT accurate (max confidence   2) "
+            "[16457a5a], DB [eb6e55b4]")

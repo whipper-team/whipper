@@ -1,5 +1,15 @@
 2009-06-24  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/test/test_common_program.py:
+	* morituri/common/program.py:
+	  Extract a common method to get textual representation of
+	  AccurateRip results, and test it.
+	* morituri/rip/cd.py:
+	* morituri/rip/image.py:
+	  Use the method.
+
+2009-06-24  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/image/table.py:
 	  Fix deprecationwarning for python 2.6
 

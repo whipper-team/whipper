@@ -22,6 +22,7 @@
 
 from morituri.common import logcommand, task, checksum, accurip, program
 from morituri.image import image, cue
+from morituri.result import result
 from morituri.program import cdrdao, cdparanoia
 
 
@@ -40,11 +41,17 @@ class Verify(logcommand.LogCommand):
             url = cueImage.table.getAccurateRipURL()
             responses = cache.retrieve(url)
 
-            return
-            
-            # FIXME: finish implementation
+            # FIXME: this feels like we're poking at internals.
             prog.cuePath = arg
+            prog.result = result.RipResult()
+            for track in cueImage.table.tracks:
+                tr = result.TrackResult()
+                tr.number = track.number
+                prog.result.tracks.append(tr)
+
             prog.verifyImage(runner, responses) 
+
+            print "\n".join(prog.getAccurateRipResults()) + "\n"
 
 class Image(logcommand.LogCommand):
     summary = "handle images"
