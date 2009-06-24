@@ -387,7 +387,7 @@ class Program(log.Loggable):
         # loop over tracks
         for i, csum in enumerate(cuetask.checksums):
             trackResult = self.result.getTrackResult(i + 1)
-            trackResult.accuripCRC = csum
+            trackResult.ARCRC = csum
 
             confidence = None
 
@@ -403,10 +403,10 @@ class Program(log.Loggable):
                                 csum, i + 1, j + 1, response.checksums[i])
                     trackResult.accurip = True
                     # FIXME: maybe checksums should be ints
-                    trackResult.accuripDatabaseCRC = int(response.checksums[i], 16)
+                    trackResult.ARDBCRC = int(response.checksums[i], 16)
                     # arsum = csum
                     confidence = response.confidences[i]
-                    trackResult.accuripDatabaseConfidence = confidence
+                    trackResult.ARDBConfidence = confidence
 
             if responses:
                 maxConfidence = 0
@@ -417,10 +417,10 @@ class Program(log.Loggable):
                         maxResponse = r
 
                 self.debug('found max confidence %d' % maxConfidence)
-                trackResult.accuripDatabaseMaxConfidence = maxConfidence
+                trackResult.ARDBMaxConfidence = maxConfidence
                 if not response:
                     self.warning('none of the responses matched.')
-                    trackResult.accuripDatabaseCRC = int(
+                    trackResult.ARDBCRC = int(
                         maxResponse.checksums[i], 16)
 
     def writeCue(self, discName):

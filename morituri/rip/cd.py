@@ -290,18 +290,18 @@ class Rip(logcommand.LogCommand):
 
             c = "(not found)"
             ar = "(not in database)"
-            if trackResult.accuripDatabaseMaxConfidence:
-                c = "(max confidence %3d)" % trackResult.accuripDatabaseMaxConfidence
-                if trackResult.accuripDatabaseConfidence is not None:
-                    if trackResult.accuripDatabaseConfidence \
-                            < trackResult.accuripDatabaseMaxConfidence:
+            if trackResult.ARDBMaxConfidence:
+                c = "(max confidence %3d)" % trackResult.ARDBMaxConfidence
+                if trackResult.ARDBConfidence is not None:
+                    if trackResult.ARDBConfidence \
+                            < trackResult.ARDBMaxConfidence:
                         c = "(confidence %3d of %3d)" % (
-                            trackResult.accuripDatabaseConfidence,
-                            trackResult.accuripDatabaseMaxConfidence)
+                            trackResult.ARDBConfidence,
+                            trackResult.ARDBMaxConfidence)
 
-                ar = ", AR [%08x]" % trackResult.accuripDatabaseCRC
+                ar = ", AR [%08x]" % trackResult.ARDBCRC
                 print "Track %2d: %s %s [%08x]%s" % (
-                    i + 1, status, c, trackResult.accuripCRC, ar)
+                    i + 1, status, c, trackResult.ARCRC, ar)
 
         # write log file
         logger = result.getLogger()
