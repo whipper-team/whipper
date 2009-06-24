@@ -1,5 +1,14 @@
 2009-06-24  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/test/test_common_program.py (added):
+	* morituri/common/program.py:
+	  Break verifyImage into two so we can test it.
+	  Test it using an AccurateRip result for Luke Haines Is Dead
+	  which had a wrongly ripped track 10.
+
+
+2009-06-24  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/result/result.py:
 	  Document some more.
 

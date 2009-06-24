@@ -347,7 +347,10 @@ class Program(log.Loggable):
 
     def ripTrack(self, runner, trackResult, offset, device, profile, taglist):
         """
-        @param number: track number (1-based)
+        @param trackResult: the object to store information in.
+        @type  trackResult: L{result.TrackResult}
+        @param number:      track number (1-based)
+        @type  number:      int
         """
         if trackResult.number == 0:
             start, stop = self.getHTOA()
@@ -375,6 +378,15 @@ class Program(log.Loggable):
         trackResult.quality = t.quality
 
     def verifyImage(self, runner, responses):
+        """
+        Verify our image against the given AccurateRip responses.
+
+        Needs an initialized self.result.
+        Will set accurip and friends on each TrackResult.
+        """
+
+        self.debug('verifying Image against %d AccurateRip responses',
+            len(responses))
 
         cueImage = image.Image(self.cuePath)
         verifytask = image.ImageVerifyTask(cueImage)
@@ -382,17 +394,29 @@ class Program(log.Loggable):
         runner.run(verifytask)
         runner.run(cuetask)
 
-        response = None # track which response matches, for all tracks
+        self._verifyImageWithChecksums(responses, cuetask.checksums)
 
-        # loop over tracks
-        for i, csum in enumerate(cuetask.checksums):
+    def _verifyImageWithChecksums(self, responses, checksums):
+        # loop over tracks to set our calculated AccurateRip CRC's
+        for i, csum in enumerate(checksums):
             trackResult = self.result.getTrackResult(i + 1)
             trackResult.ARCRC = csum
 
+
+        if not responses:
+            self.warning('No AccurateRip responses, cannot verify.')
+            return
+
+        response = None # track which response matches, for all tracks
+
+        # now loop to match responses
+        for i, csum in enumerate(checksums):
+            trackResult = self.result.getTrackResult(i + 1)
+
             confidence = None
 
-            # match against each response's checksum
-            for j, r in enumerate(responses or []):
+            # match against each response's checksum for this track
+            for j, r in enumerate(responses):
                 if "%08x" % csum == r.checksums[i]:
                     if not response:
                         response = r
@@ -401,6 +425,8 @@ class Program(log.Loggable):
                             "checksum %s for %d matches wrong response %d, "\
                             "checksum %s" % (
                                 csum, i + 1, j + 1, response.checksums[i])
+                    self.debug("Track: %02d matched in AccurateRip database",
+                        i + 1)
                     trackResult.accurip = True
                     # FIXME: maybe checksums should be ints
                     trackResult.ARDBCRC = int(response.checksums[i], 16)
@@ -408,20 +434,29 @@ class Program(log.Loggable):
                     confidence = response.confidences[i]
                     trackResult.ARDBConfidence = confidence
 
-            if responses:
-                maxConfidence = 0
-                maxResponse = None
-                for r in responses:
-                    if r.confidences[i] > maxConfidence:
-                        maxConfidence = r.confidences[i]
-                        maxResponse = r
+            if not trackResult.accurip:
+                self.warning("Track %02d: not matched in AccurateRip database",
+                    i + 1)
 
-                self.debug('found max confidence %d' % maxConfidence)
-                trackResult.ARDBMaxConfidence = maxConfidence
-                if not response:
-                    self.warning('none of the responses matched.')
-                    trackResult.ARDBCRC = int(
-                        maxResponse.checksums[i], 16)
+            # I have seen AccurateRip responses with 0 as confidence
+            # for example, Best of Luke Haines, disc 1, track 1
+            maxConfidence = -1
+            maxResponse = None
+            for r in responses:
+                if r.confidences[i] > maxConfidence:
+                    maxConfidence = r.confidences[i]
+                    maxResponse = r
+
+            self.debug('Track %02d: found max confidence %d' % (
+                i + 1, maxConfidence))
+            trackResult.ARDBMaxConfidence = maxConfidence
+            if not response:
+                self.warning('iTrack %02d: none of the responses matched.',
+                    i + 1)
+                trackResult.ARDBCRC = int(
+                    maxResponse.checksums[i], 16)
+            else:
+                trackResult.ARDBCRC = int(response.checksums[i], 16)
 
     def writeCue(self, discName):
         self.debug('write .cue file')
