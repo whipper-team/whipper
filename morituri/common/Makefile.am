@@ -8,6 +8,7 @@ morituri_PYTHON = \
 	checksum.py \
 	common.py \
 	drive.py \
+	encode.py \
 	log.py \
 	logcommand.py \
 	program.py \

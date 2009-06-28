@@ -6,5 +6,6 @@ morituri_PYTHON = \
 	__init__.py \
 	cd.py \
 	drive.py \
+	image.py \
 	main.py \
 	offset.py
