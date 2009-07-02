@@ -29,11 +29,16 @@ from morituri.common import log
 class Task(object, log.Loggable):
     """
     I wrap a task in an asynchronous interface.
-    I can be listened to for starting, stopping, and progress updates.
+    I can be listened to for starting, stopping, description changes
+    and progress updates.
+
+    I communicate an error by setting self.exception to an exception and
+    stopping myself from running.
+    The listener can then handle the Task.exception.
 
     @ivar  description: what am I doing
     @ivar  exception:   set if an exception happened during the task
-                        execution.
+                        execution.  Will be raised through run() at the end.
     """
     description = 'I am doing something.'
 
@@ -63,6 +68,9 @@ class Task(object, log.Loggable):
         Stop the task.
 
         Subclasses should chain up to me at the end.
+
+        Listeners will get notified that the task is stopped,
+        whether successfully or with an exception.
         """
         self.debug('stopping')
         self.running = False
@@ -100,7 +108,42 @@ class Task(object, log.Loggable):
             for l in self._listeners:
                 getattr(l, methodName)(self, *args, **kwargs)
 
-# this is a Dummy task that can be used if this works at all
+# FIXME: should this become a real interface, like in zope ?
+class ITaskListener(object):
+    """
+    I am an interface for objects listening to tasks.
+    """
+    ### listener callbacks
+    def progressed(self, task, value):
+        """
+        Implement me to be informed about progress.
+
+        @type  value: float
+        @param value: progress, from 0.0 to 1.0
+        """
+
+    def described(self, task, description):
+        """
+        Implement me to be informed about description changes.
+
+        @type  description: str
+        @param description: description
+        """
+
+    def started(self, task):
+        """
+        Implement me to be informed about the task starting.
+        """
+
+    def stopped(self, task):
+        """
+        Implement me to be informed about the task stopping.
+        If the task had an error, task.exception will be set.
+        """
+
+
+
+# this is a Dummy task that can be used to test if this works at all
 class DummyTask(Task):
     def start(self, runner):
         Task.start(self, runner)
@@ -115,7 +158,7 @@ class DummyTask(Task):
 
         self.runner.schedule(1.0, self._wind)
 
-class BaseMultiTask(Task):
+class BaseMultiTask(Task, ITaskListener):
     """
     I perform multiple tasks.
 
@@ -176,7 +219,7 @@ class BaseMultiTask(Task):
             self.stop()
             return
         
-    ### listener methods
+    ### ITaskListener methods
     def started(self, task):
         pass
 
@@ -184,16 +227,24 @@ class BaseMultiTask(Task):
         pass
 
     def stopped(self, task):
+        """
+        Subclasses should chain up to me at the end of their implementation.
+        They should fall through to chaining up if there is an exception.
+        """
+        self.log('BaseMultiTask.stopped: task %r', task)
         if task.exception:
+            self.log('BaseMultiTask.stopped: exception %r', task.exception)
             self.exception = task.exception
             self.stop()
             return
 
         if self._task == len(self.tasks):
+            self.log('BaseMultiTask.stopped: all tasks done')
             self.stop()
             return
 
         # pick another
+        self.log('BaseMultiTask.stopped: pick next task')
         self.next()
 
 
@@ -214,7 +265,7 @@ class MultiSeparateTask(BaseMultiTask):
         self.progress = 0.0 # reset progress for each task
         BaseMultiTask.next(self)
         
-    ### listener methods
+    ### ITaskListener methods
     def progressed(self, task, value):
         self.setProgress(value)
 
@@ -231,7 +282,7 @@ class MultiCombinedTask(BaseMultiTask):
     description = 'Doing various tasks combined'
     _stopped = 0
        
-    ### listener methods
+    ### ITaskListener methods
     def progressed(self, task, value):
         self.setProgress(float(self._stopped + value) / len(self.tasks))
 
@@ -267,35 +318,8 @@ class TaskRunner(object, log.Loggable):
         """
         raise NotImplementedError
 
-    ### listener callbacks
-    def progressed(self, task, value):
-        """
-        Implement me to be informed about progress.
 
-        @type  value: float
-        @param value: progress, from 0.0 to 1.0
-        """
-
-    def described(self, task, description):
-        """
-        Implement me to be informed about description changes.
-
-        @type  description: str
-        @param description: description
-        """
-
-    def started(self, task):
-        """
-        Implement me to be informed about the task starting.
-        """
-
-    def stopped(self, task):
-        """
-        Implement me to be informed about the task starting.
-        """
-
-
-class SyncRunner(TaskRunner):
+class SyncRunner(TaskRunner, ITaskListener):
     """
     I run the task synchronously in a gobject MainLoop.
     """
@@ -331,6 +355,7 @@ class SyncRunner(TaskRunner):
             return False
         gobject.timeout_add(int(delta * 1000L), c)
 
+    ### ITaskListener methods
     def progressed(self, task, value):
         if not self._verboseRun:
             return
