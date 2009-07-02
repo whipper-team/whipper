@@ -67,6 +67,8 @@ _POSITION_RE = re.compile(r"""
     (?P<ss>\d\d)         # SS
 """, re.VERBOSE)
 
+_ERROR_RE = re.compile(r"""^ERROR: (?P<error>.*)""")
+
 class LineParser(object, log.Loggable):
     """
     Parse incoming bytes into lines
@@ -178,9 +180,16 @@ class OutputParser(object, log.Loggable):
     def _parse_START(self, line):
         if line.startswith('Track'):
             self.debug('Found possible track line')
-        if line == "Track   Mode    Flags  Start                Length":
-            self.debug('Found track line, moving to TRACK state')
-            self._state = 'TRACK'
+            if line == "Track   Mode    Flags  Start                Length":
+                self.debug('Found track line, moving to TRACK state')
+                self._state = 'TRACK'
+                return
+
+        m = _ERROR_RE.search(line)
+        if m:
+            error = m.group('error')
+            self._errors.append(error)
+
 
     def _parse_TRACK(self, line):
         if line.startswith('---'):
@@ -263,12 +272,16 @@ class CDRDAOTask(task.Task):
         self._done()
 
     def _done(self):
+            self.debug('Return code was %d', self._popen.returncode)
             self.setProgress(1.0)
+
             if self._popen.returncode != 0:
                 if self._errors:
-                    print "\n".join(self._errors)
+                    self.exception = DeviceOpenException(
+                        "\n".join(self._errors))
                 else:
-                    print 'ERROR: exit code %r' % self._popen.returncode
+                    self.exception = ProgramFailedException(
+                        self._popen.returncode)
             else:
                 self.done()
 
@@ -326,11 +339,19 @@ class DiscInfoTask(CDRDAOTask):
     def readbytesout(self, bytes):
         self.parser.read(bytes)
 
+    def readbyteserr(self, bytes):
+        self.parser.read(bytes)
+
+
     def parse(self, line):
         # called by parser
         if line.startswith('Sessions'):
             self.sessions = int (line[line.find(':') + 1:])
             self.debug('Found %d sessions', self.sessions)
+        m = _ERROR_RE.search(line)
+        if m:
+            error = m.group('error')
+            self._errors.append(error)
 
     def done(self):
         pass
@@ -453,19 +474,20 @@ class ReadAllSessionsTask(task.MultiSeparateTask):
         self.tasks = [DiscInfoTask(device=device), ]
 
     def stopped(self, taskk):
-        # After first task, schedule additional ones
-        if taskk == self.tasks[0]:
-            for i in range(taskk.sessions):
-                self.tasks.append(self._readClass(session=i + 1,
-                    device=self._device))
+        if not taskk.exception:
+            # After first task, schedule additional ones
+            if taskk == self.tasks[0]:
+                for i in range(taskk.sessions):
+                    self.tasks.append(self._readClass(session=i + 1,
+                        device=self._device))
 
-        if self._task == len(self.tasks):
-            self.table = self.tasks[1].table
-            if len(self.tasks) > 2:
-                for i, t in enumerate(self.tasks[2:]):
-                    self.table.merge(t.table, i + 2)
+            if self._task == len(self.tasks):
+                self.table = self.tasks[1].table
+                if len(self.tasks) > 2:
+                    for i, t in enumerate(self.tasks[2:]):
+                        self.table.merge(t.table, i + 2)
 
-            assert self.table.leadout is not None
+                assert self.table.leadout is not None
 
         task.MultiSeparateTask.stopped(self, taskk)
 
@@ -491,3 +513,14 @@ class ReadTOCTask(ReadAllSessionsTask):
 
     description = "Reading TOC..."
     _readClass = ReadTOCSessionTask
+
+class DeviceOpenException(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+        self.args = (msg, )
+
+class ProgramFailedException(Exception):
+    def __init__(self, code):
+        self.code = code
+        self.args = (code, )
+

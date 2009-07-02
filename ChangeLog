@@ -1,5 +1,10 @@
 2009-07-02  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/program/cdrdao.py:
+	  Handle errors.  Tested by not having a CD in the drive.
+
+2009-07-02  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/task.py:
 	  Document better.
 	  Create an ITaskListener interface where we can document.
