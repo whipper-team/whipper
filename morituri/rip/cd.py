@@ -88,6 +88,10 @@ class Rip(logcommand.LogCommand):
         if not ptoc.object:
             t = cdrdao.ReadTOCTask(device=device)
             function(runner, t)
+            version = t.tasks[1].parser.version
+            from pkg_resources import parse_version as V
+            if V(version) <= V('1.2.3'):
+                print 'Warning: cdrdao 1.2.3 and older have a pre-gap length bug.'
             ptoc.persist(t.table)
         ittoc = ptoc.object
         assert ittoc.hasTOC()

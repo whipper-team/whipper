@@ -1,3 +1,12 @@
+2009-09-06  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/program/cdrdao.py:
+	  Parse version number.
+	* morituri/rip/cd.py:
+	  Warn about cdrdao versions with a bug.
+	* morituri/test/test_program_cdrdao.py:
+	  Test that we can parse the version.
+
 2009-07-02  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/program/cdrdao.py:

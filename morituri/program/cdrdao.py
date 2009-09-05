@@ -41,6 +41,8 @@ class ProgramError(Exception):
 
 states = ['START', 'TRACK', 'LEADOUT', 'DONE']
 
+_VERSION_RE = re.compile(r'^Cdrdao version (?P<version>.*) - \(C\)')
+
 _ANALYZING_RE = re.compile(r'^Analyzing track (?P<track>\d+).*')
 
 _TRACK_RE = re.compile(r"""
@@ -114,7 +116,9 @@ class OutputParser(object, log.Loggable):
         self._tracks = 0      # count of tracks, relative to session
         self._session = session
 
+
         self.table = table.Table() # the index table for the TOC
+        self.version = None # cdrdao version
 
     def read(self, bytes):
         self.log('received %d bytes in state %s', len(bytes), self._state)
@@ -178,6 +182,10 @@ class OutputParser(object, log.Loggable):
             getattr(self, methodName)(line)
 
     def _parse_START(self, line):
+        if line.startswith('Cdrdao version'):
+            m = _VERSION_RE.search(line)
+            self.version = m.group('version')
+
         if line.startswith('Track'):
             self.debug('Found possible track line')
             if line == "Track   Mode    Flags  Start                Length":

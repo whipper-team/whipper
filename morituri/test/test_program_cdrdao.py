@@ -28,3 +28,5 @@ class ParseTestCase(unittest.TestCase):
              100219, 116291, 136188, 157504, 175275]):
             track = self._parser.table.tracks[i]
             self.assertEquals(track.getIndex(1).absolute, offset)
+
+        self.assertEquals(self._parser.version, '1.2.2')
