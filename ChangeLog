@@ -1,5 +1,14 @@
 2009-09-06  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* README:
+	  Fix up dependencies.
+	* morituri.spec.in:
+	  Fix dependencies and noarch install location.
+	* morituri/common/Makefile.am:
+	  Add result.py to dist
+
+2009-09-06  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* configure.ac:
 	* m4/Makefile.am:
 	* m4/as-ac-expand.m4 (added):
