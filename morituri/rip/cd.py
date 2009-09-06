@@ -90,8 +90,12 @@ class Rip(logcommand.LogCommand):
             function(runner, t)
             version = t.tasks[1].parser.version
             from pkg_resources import parse_version as V
-            if V(version) <= V('1.2.3'):
-                print 'Warning: cdrdao 1.2.3 and older have a pre-gap length bug.'
+            # we've built a cdrdao 1.2.3rc2 modified package with the patch
+            if V(version) < V('1.2.3rc2p1'):
+                print '''
+Warning: cdrdao older than 1.2.3 has a pre-gap length bug.
+See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=102171
+'''
             ptoc.persist(t.table)
         ittoc = ptoc.object
         assert ittoc.hasTOC()
