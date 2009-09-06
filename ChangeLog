@@ -1,5 +1,13 @@
 2009-09-06  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* configure.ac:
+	* m4/Makefile.am:
+	* m4/as-ac-expand.m4 (added):
+	  Correctly set installation dir for noarch python files so that it
+	  works on 64 bit.
+
+2009-09-06  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/program/cdrdao.py:
 	  Parse version number.
 	* morituri/rip/cd.py:

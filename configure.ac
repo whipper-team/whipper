@@ -27,9 +27,11 @@ dnl check for python
 AS_PATH_PYTHON(2.3)
 
 dnl check for where to install our python stuff
-dnl PYTHONLIBDIR=`$PYTHON -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"`
 PYVER=[`$PYTHON -c "import sys ; print sys.version[:3]"`]
-PYTHONLIBDIR=\${libdir}/python$PYVER/site-packages
+
+dnl This is the best way of installing in an arch-independent location for now
+AS_AC_EXPAND(PYTHONLIBDIR, "\${exec_prefix}/lib/python$PYVER/site-packages")
+
 AC_MSG_NOTICE(Installing python code in $PYTHONLIBDIR)
 AC_SUBST(PYTHONLIBDIR)
 
