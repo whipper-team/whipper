@@ -2,6 +2,8 @@
 # vi:si:et:sw=4:sts=4:ts=4
 
 import os
+import pickle
+
 import unittest
 
 from morituri.result import result
@@ -62,3 +64,18 @@ class TrackImageVerifyTestCase(unittest.TestCase):
         self.assertEquals(res[10 - 1],
             "Track 10: rip NOT accurate (max confidence   2) "
             "[16457a5a], DB [eb6e55b4]")
+
+class HTOATestCase(unittest.TestCase):
+    def setUp(self):
+        path = os.path.join(os.path.dirname(__file__),
+            'silentalarm.result.pickle')
+        self._tracks = pickle.load(open(path, 'rb'))
+        
+    def testGetAccurateRipResults(self):
+        prog = program.Program()
+        prog.result = result.RipResult()
+        prog.result.tracks = self._tracks
+
+        prog.getAccurateRipResults()
+
+

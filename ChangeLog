@@ -1,5 +1,14 @@
 2009-09-07  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/program.py:
+	  Fix getting AccurateRip results for albums with a HTOA.
+	* morituri/test/Makefile.am:
+	* morituri/test/test_common_program.py:
+	* morituri/test/silentalarm.result.pickle (added):
+	  Add testcase for it, Bloc Party's Silent Alarm.
+
+2009-09-07  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri.spec.in:
 	  Update requirements to work around known bugs.
 

@@ -31,6 +31,7 @@ EXTRA_DIST = \
 	track-single.cue \
 	cdparanoia.progress \
 	cdrdao.readtoc.progress \
+	silentalarm.result.pickle \
 	track.flac
 
 # re-generation of test files when needed

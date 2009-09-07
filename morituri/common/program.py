@@ -466,7 +466,6 @@ class Program(log.Loggable):
 
         # loop over tracks
         for i, trackResult in enumerate(self.result.tracks):
-
             status = 'rip NOT accurate'
 
             if trackResult.accurip:
@@ -484,8 +483,14 @@ class Program(log.Loggable):
                             trackResult.ARDBMaxConfidence)
 
                 ar = ", DB [%08x]" % trackResult.ARDBCRC
-            res.append("Track %2d: %s %s [%08x]%s" % (
-                i + 1, status, c, trackResult.ARCRC, ar))
+            # htoa tracks (i == 0) do not have an ARCRC
+            if trackResult.ARCRC is None:
+                assert trackResult.number is 0, \
+                    'no trackResult.ARCRC on non-HTOA track'
+                res.append("Track  0: unknown          (not tracked)")
+            else:
+                res.append("Track %2d: %s %s [%08x]%s" % (
+                    trackResult.number, status, c, trackResult.ARCRC, ar))
 
         return res
 
