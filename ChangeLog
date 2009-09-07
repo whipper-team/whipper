@@ -1,3 +1,8 @@
+2009-09-07  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri.spec.in:
+	  Update requirements to work around known bugs.
+
 2009-09-06  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/rip/cd.py:

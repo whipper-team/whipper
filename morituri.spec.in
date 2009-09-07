@@ -17,8 +17,8 @@ BuildRequires:  pygobject2
 BuildRequires:  gstreamer-python
 
 Requires:       cdparanoia
-Requires:       cdrdao
-Requires:       gstreamer-plugins-good
+Requires:       cdrdao > 1.2.3-0.rc2.2
+Requires:       gstreamer-plugins-good >= 0.10.16
 Requires:       gstreamer-python
 Requires:       python-musicbrainz2
 
