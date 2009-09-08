@@ -1,11 +1,3 @@
-MILESTONES:
-- read CD TOC including pre-gap information
-- detect read offset
-  (using a CD in AccurateRip and ripping with various offsets)
-  (can be delayed since we can get the number from EAC)
-- rip a CD with HTOA and other pre-gap tracks, creating separate track for HTOA
-- parse .toc files (see cdrdao)
-
 TODO:
 - check pregaps more than once, to see if results are consistent, or with
   different methods
@@ -13,8 +5,6 @@ TODO:
   or not putting the disk in)
 - check if it's simple to listen to each track in a multitrack completing
 - save trms to a pickle, after finishing each track
-- figure out if cdrdao detects the pregap with one frame missing, or if EAC
-  detects pregap with one frame too many
 - add a way to store configuration data per drive, like offset
 - rip the data session
 - add AccurateRip validation for ripped images to rip command
@@ -24,3 +14,6 @@ TODO:
 - write moovida plugin
 - cache results of MusicBrainz lookups
 - on ana, Goldfrapp tells me I have offset 0!
+- don't keep short HTOA's if their peak level is low
+  (see Pixies Planet of Sound single)
+- lossy encoding
