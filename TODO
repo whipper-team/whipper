@@ -17,3 +17,6 @@ TODO:
 - don't keep short HTOA's if their peak level is low
   (see Pixies Planet of Sound single)
 - lossy encoding
+- consider basing ripping progress not only on read (reaches 100% before
+  writes are done) or writes (very bursty in cdparanoia) but a combo of the
+  two, each counting for half.
