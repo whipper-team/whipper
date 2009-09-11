@@ -28,3 +28,4 @@ unicode
 - morituri.extern.log.log is not unicode-safe; don't pass it unicode objects;
   for example, always use %r to log paths
 - run with RIP_DEBUG=5 once in a while to catch unicode/logging errors.
+- Also use unicode prefix/suffix in tempfile.* methods; to force unicode.

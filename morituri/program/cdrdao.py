@@ -282,7 +282,6 @@ class CDRDAOTask(task.Task):
         except Exception, e:
             self.debug('exception during _read()')
             self.debug(log.getExceptionMessage(e))
-            import code; code.interact(local=locals())
             self.exception = e
             self.stop()
 
@@ -395,7 +394,7 @@ class ReadSessionTask(CDRDAOTask):
         CDRDAOTask.__init__(self)
         self.parser = OutputParser(self)
         (fd, self._tocfilepath) = tempfile.mkstemp(
-            suffix='.readtablesession.morituri')
+            suffix=u'.readtablesession.morituri')
         os.close(fd)
         os.unlink(self._tocfilepath)
 
