@@ -16,7 +16,7 @@ def h(i):
 class TrackSingleTestCase(unittest.TestCase):
     def setUp(self):
         self.image = image.Image(os.path.join(os.path.dirname(__file__),
-            'track-single.cue'))
+            u'track-single.cue'))
         self.runner = task.SyncRunner(verbose=False)
         self.image.setup(self.runner)
 
@@ -46,7 +46,7 @@ class TrackSingleTestCase(unittest.TestCase):
 class TrackSeparateTestCase(unittest.TestCase):
     def setUp(self):
         self.image = image.Image(os.path.join(os.path.dirname(__file__),
-            'track-separate.cue'))
+            u'track-separate.cue'))
         self.runner = task.SyncRunner(verbose=False)
         self.image.setup(self.runner)
 
@@ -75,7 +75,7 @@ class TrackSeparateTestCase(unittest.TestCase):
 
 class AudioLengthTestCase(unittest.TestCase):
     def testLength(self):
-        path = os.path.join(os.path.dirname(__file__), 'track.flac')
+        path = os.path.join(os.path.dirname(__file__), u'track.flac')
         t = image.AudioLengthTask(path)
         runner = task.SyncRunner()
         runner.run(t, verbose=False)

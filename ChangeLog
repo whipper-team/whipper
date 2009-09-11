@@ -1,5 +1,18 @@
 2009-09-11  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* HACKING:
+	  Note unicode handling.
+	* morituri/test/test_image_image.py:
+	* morituri/image/table.py:
+	* morituri/program/cdparanoia.py:
+	* morituri/common/checksum.py:
+	  Use unicode for paths.
+	  Use repr for path representation.
+	* morituri/test/test_common_checksum.py:
+	  Add test for unicode audio file name.
+
+2009-09-11  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/image/cue.py:
 	* morituri/image/toc.py:
 	* morituri/test/test_image_cue.py:

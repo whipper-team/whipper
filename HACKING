@@ -17,3 +17,14 @@ track  2: frame start  17811, 18481 CD frames
 track 11: frame start 166858, 25103 CD frames (14760564 audio frames)
 
 191961 total CD frames
+
+unicode
+-------
+- All text files should be read and written as unicode.
+- All strings that came from the outside should be converted to unicode objects.
+- Use asserts liberally to ensure this so we catch problems earlier.
+- All gst.parse_launch() pipelines should be passed as utf-8; use
+  encode('utf-8')
+- morituri.extern.log.log is not unicode-safe; don't pass it unicode objects;
+  for example, always use %r to log paths
+- run with RIP_DEBUG=5 once in a while to catch unicode/logging errors.

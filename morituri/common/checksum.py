@@ -46,13 +46,17 @@ class ChecksumTask(task.Task):
         ie 16 bit stereo is 4 bytes per frame.
         If frameLength < 0 it is treated as 'unknown' and calculated.
 
+        @type  path:       unicode
         @type  frameStart: int
         @param frameStart: the frame to start at
         """
-        self.debug('Creating checksum task on %s from %d to %d',
+        assert type(path) is unicode, "%r is not unicode" % path
+
+        # use repr/%r because path can be unicode
+        self.debug('Creating checksum task on %r from %d to %d',
             path, frameStart, frameLength)
         if not os.path.exists(path):
-            raise IndexError, '%s does not exist' % path
+            raise IndexError, '%r does not exist' % path
 
         self._path = path
         self._frameStart = frameStart
@@ -71,7 +75,8 @@ class ChecksumTask(task.Task):
         self._pipeline = gst.parse_launch('''
             filesrc location="%s" !
             decodebin ! audio/x-raw-int !
-            appsink name=sink sync=False emit-signals=True''' % self._path)
+            appsink name=sink sync=False emit-signals=True''' %
+                self._path.encode('utf-8'))
 
         self.debug('pausing pipeline')
         self._pipeline.set_state(gst.STATE_PAUSED)
@@ -108,8 +113,9 @@ class ChecksumTask(task.Task):
             gst.SEEK_FLAG_FLUSH,
             gst.SEEK_TYPE_SET, self._frameStart,
             gst.SEEK_TYPE_SET, self._frameEnd + 1) # half-inclusive interval
-        gst.debug('CRCing %s from sector %d to sector %d' % (
-            self._path, self._frameStart / common.SAMPLES_PER_FRAME,
+        gst.debug('CRCing %r from sector %d to sector %d' % (
+            self._path,
+            self._frameStart / common.SAMPLES_PER_FRAME,
             (self._frameEnd + 1) / common.SAMPLES_PER_FRAME))
         # FIXME: sending it with frameEnd set screws up the seek, we don't get
         # everything for flac; fixed in recent -good
@@ -182,7 +188,7 @@ class ChecksumTask(task.Task):
         if not self._last:
             # see http://bugzilla.gnome.org/show_bug.cgi?id=578612
             print 'ERROR: not a single buffer gotten'
-            #raise
+            # FIXME: instead of print, do something useful
         else:
             self._checksum = self._checksum % 2 ** 32
             self.debug("last offset %r", self._last.offset)
@@ -226,7 +232,7 @@ class AccurateRipChecksumTask(ChecksumTask):
         self._discFrameCounter = 0 # 1-based
 
     def __repr__(self):
-        return "<AccurateRipCheckSumTask of track %d in %s>" % (
+        return "<AccurateRipCheckSumTask of track %d in %r>" % (
             self._trackNumber, self._path)
 
     def do_checksum_buffer(self, buf, checksum):

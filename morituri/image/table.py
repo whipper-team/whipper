@@ -79,6 +79,12 @@ class Track:
         self.cdtext = {}
 
     def index(self, number, absolute=None, path=None, relative=None, counter=None):
+        """
+        @type path:  unicode or None
+        """
+        if path is not None:
+            assert type(path) is unicode, "%r is not unicode" % path
+
         i = Index(number, absolute, path, relative, counter)
         self.indexes[number] = i
 
@@ -111,6 +117,7 @@ class Index:
     """
     @ivar counter: counter for the index source; distinguishes between
                    the matching FILE lines in .cue files for example
+    @type path:    unicode or None
     """
     number = None
     absolute = None
@@ -119,6 +126,10 @@ class Index:
     counter = None
 
     def __init__(self, number, absolute=None, path=None, relative=None, counter=None):
+
+        if path is not None:
+            assert type(path) is unicode, "%r is not unicode" % path
+
         self.number = number
         self.absolute = absolute
         self.path = path
@@ -528,7 +539,7 @@ class Table(object, log.Loggable):
 
         Assumes all indexes have an absolute offset and will raise if not.
         """
-        self.debug('setFile: track %d, index %d, path %s, '
+        self.debug('setFile: track %d, index %d, path %r, '
             'length %r, counter %r', track, index, path, length, counter)
 
         t = self.tracks[track - 1]
@@ -542,7 +553,7 @@ class Table(object, log.Loggable):
             i.path = path
             i.relative = i.absolute - start
             i.counter = counter
-            self.debug('Setting path %s, relative %r on '
+            self.debug('Setting path %r, relative %r on '
                 'track %d, index %d, counter %r',
                 path, i.relative, track, index, counter)
             try:

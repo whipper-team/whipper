@@ -362,6 +362,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
             self.debug('read and verify with taglist %r', taglist)
         # FIXME: choose a dir on the same disk/dir as the final path
         fd, tmppath = tempfile.mkstemp(suffix='.morituri.wav')
+        tmppath = unicode(tmppath)
         os.close(fd)
         self._tmpwavpath = tmppath
 
@@ -376,6 +377,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
 
         fd, tmpoutpath = tempfile.mkstemp(suffix='.morituri.%s' %
             profile.extension)
+        tmpoutpath = unicode(tmpoutpath)
         os.close(fd)
         self._tmppath = tmpoutpath
         self.tasks.append(encode.EncodeTask(tmppath, tmpoutpath, profile,
