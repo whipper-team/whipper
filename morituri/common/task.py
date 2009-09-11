@@ -339,7 +339,7 @@ class SyncRunner(TaskRunner, ITaskListener):
         self._task.addListener(self)
         # only start the task after going into the mainloop,
         # otherwise the task might complete before we are in it
-        gobject.timeout_add(0L, self._task.start, self)
+        gobject.timeout_add(0L, self._startWrap, self._task)
         self._loop.run()
 
         self.debug('done running task %r', task)
@@ -348,6 +348,16 @@ class SyncRunner(TaskRunner, ITaskListener):
             #self.debug('raising exception, %r',
             #    log.getExceptionMessage(self._task.exception))
             raise task.exception
+
+    def _startWrap(self, task):
+        # wrap task start such that we can report any exceptions and
+        # never hang
+        try:
+            task.start(self)
+        except Exception, e:
+            task.exception = e
+            self.stopped(task)
+
 
     def schedule(self, delta, callable, *args, **kwargs):
         def c():

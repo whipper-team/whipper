@@ -1,5 +1,11 @@
 2009-09-11  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/task.py:
+	  Make SyncRunner wrap start() so we correctly handle any
+	  exception being thrown.
+	  
+2009-09-11  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/checksum.py:
 	* morituri/test/Makefile.am:
 	* morituri/test/test_common_checksum.py (added):
