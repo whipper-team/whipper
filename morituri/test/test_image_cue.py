@@ -12,7 +12,7 @@ from morituri.image import table, cue
 class KingsSingleTestCase(unittest.TestCase):
     def setUp(self):
         self.cue = cue.CueFile(os.path.join(os.path.dirname(__file__),
-            'kings-single.cue'))
+            u'kings-single.cue'))
         self.cue.parse()
         self.assertEquals(len(self.cue.table.tracks), 11)
 
@@ -26,7 +26,7 @@ class KingsSingleTestCase(unittest.TestCase):
 class KingsSeparateTestCase(unittest.TestCase):
     def setUp(self):
         self.cue = cue.CueFile(os.path.join(os.path.dirname(__file__),
-            'kings-separate.cue'))
+            u'kings-separate.cue'))
         self.cue.parse()
         self.assertEquals(len(self.cue.table.tracks), 11)
 
@@ -40,7 +40,7 @@ class KingsSeparateTestCase(unittest.TestCase):
 class KanyeMixedTestCase(unittest.TestCase):
     def setUp(self):
         self.cue = cue.CueFile(os.path.join(os.path.dirname(__file__),
-            'kanye.cue'))
+            u'kanye.cue'))
         self.cue.parse()
         self.assertEquals(len(self.cue.table.tracks), 13)
 
@@ -51,18 +51,19 @@ class KanyeMixedTestCase(unittest.TestCase):
 
 class WriteCueFileTestCase(unittest.TestCase):
     def testWrite(self):
-        fd, path = tempfile.mkstemp(suffix='morituri.test.cue')
+        fd, path = tempfile.mkstemp(suffix=u'morituri.test.cue')
         os.close(fd)
 
         it = table.Table()
 
         t = table.Track(1)
-        t.index(1, absolute=0, path='track01.wav', relative=0, counter=1)
+        t.index(1, absolute=0, path=u'track01.wav', relative=0, counter=1)
         it.tracks.append(t)
 
         t = table.Track(2)
-        t.index(0, absolute=1000, path='track01.wav', relative=1000, counter=1)
-        t.index(1, absolute=2000, path='track02.wav', relative=0, counter=2)
+        t.index(0, absolute=1000, path=u'track01.wav',
+            relative=1000, counter=1)
+        t.index(1, absolute=2000, path=u'track02.wav', relative=0, counter=2)
         it.tracks.append(t)
         it.absolutize()
         it.leadout = 3000

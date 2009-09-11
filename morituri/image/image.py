@@ -37,8 +37,11 @@ class Image(object, log.Loggable):
 
     def __init__(self, path):
         """
+        @type  path: unicode
         @param path: .cue path
         """
+        assert type(path) is unicode, "%r is not unicode" % path
+        
         self._path = path
         self.cue = cue.CueFile(path)
         self.cue.parse()
@@ -50,7 +53,11 @@ class Image(object, log.Loggable):
     def getRealPath(self, path):
         """
         Translate the .cue's FILE to an existing path.
+
+        @param path: .cue path
         """
+        assert type(path) is unicode, "%r is not unicode" % path
+
         return self.cue.getRealPath(path)
 
     def setup(self, runner):
@@ -132,6 +139,11 @@ class AudioLengthTask(task.Task):
     length = None
 
     def __init__(self, path):
+        """
+        @type  path: unicode
+        """
+        assert type(path) is unicode, "%r is not unicode" % path
+
         self._path = path
 
     def start(self, runner):
@@ -139,7 +151,7 @@ class AudioLengthTask(task.Task):
         self._pipeline = gst.parse_launch('''
             filesrc location="%s" !
             decodebin ! audio/x-raw-int !
-            fakesink name=sink''' % self._path)
+            fakesink name=sink''' % self._path.encode('utf-8'))
         self.debug('pausing')
         self._pipeline.set_state(gst.STATE_PAUSED)
         self._pipeline.get_state()
@@ -152,12 +164,12 @@ class AudioLengthTask(task.Task):
         try:
             length, qformat = sink.query_duration(gst.FORMAT_DEFAULT)
         except gst.QueryError:
-            print 'failed to query %s' % self._path
+            print 'failed to query %r' % self._path
         # wavparse 0.10.14 returns in bytes
         if qformat == gst.FORMAT_BYTES:
             self.debug('query returned in BYTES format')
             length /= 4
-        self.debug('total length of %s in samples: %d', self._path, length)
+        self.debug('total length of %r in samples: %d', self._path, length)
         self.length = length
         self._pipeline.set_state(gst.STATE_NULL)
         
@@ -186,7 +198,8 @@ class ImageVerifyTask(task.MultiSeparateTask):
 
             if length == -1:
                 path = image.getRealPath(index.path)
-                self.debug('schedule scan of audio length of %s', path)
+                assert type(path) is unicode, "%r is not unicode" % path
+                self.debug('schedule scan of audio length of %r', path)
                 taskk = AudioLengthTask(path)
                 self.addTask(taskk)
                 self._tasks.append((trackIndex + 1, track, taskk))

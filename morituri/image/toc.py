@@ -26,6 +26,7 @@ Reading .toc files
 
 import os
 import re
+import codecs
 
 from morituri.common import common, log
 from morituri.image import table
@@ -87,6 +88,10 @@ _INDEX_RE = re.compile(r"""
 
 class TocFile(object, log.Loggable):
     def __init__(self, path):
+        """
+        @type  path: unicode
+        """
+        assert type(path) is unicode, "%r is not unicode" % path
         self._path = path
         self._messages = []
         self.table = table.Table()
@@ -113,7 +118,7 @@ class TocFile(object, log.Loggable):
         # the first track's INDEX 1 can only be gotten from the .toc
         # file once the first pregap is calculated; so we add INDEX 1
         # at the end of each parsed  TRACK record
-        handle = open(self._path, 'r')
+        handle = codecs.open(self._path, "r", "utf-8")
 
         for number, line in enumerate(handle.readlines()):
             line = line.rstrip()
@@ -313,7 +318,11 @@ class TocFile(object, log.Loggable):
     def getRealPath(self, path):
         """
         Translate the .cue's FILE to an existing path.
+
+        @type  path: unicode
         """
+        assert type(path) is unicode, "%r is not unicode" % path
+
         if os.path.exists(path):
             return path
 
@@ -339,16 +348,21 @@ class TocFile(object, log.Loggable):
                 if os.path.exists(cpath):
                     return cpath
 
-        raise KeyError, "Cannot find file for %s" % path
+        raise KeyError, "Cannot find file for %r" % path
 
 class File:
     """
     I represent a FILE line in a .toc file.
     """
     def __init__(self, path, start, length):
+        """
+        @type  path: unicode
+        """
+        assert type(path) is unicode, "%r is not unicode" % path
+
         self.path = path
         #self.start = start
         #self.length = length
 
     def __repr__(self):
-        return '<File "%s">' % (self.path, )
+        return '<File %r>' % (self.path, )

@@ -28,6 +28,7 @@ See http://digitalx.org/cuesheetsyntax.php
 
 import os
 import re
+import codecs
 
 from morituri.common import common, log
 from morituri.image import table
@@ -65,6 +66,11 @@ class CueFile(object, log.Loggable):
     @ivar table: the index table.
     """
     def __init__(self, path):
+        """
+        @type  path: unicode
+        """
+        assert type(path) is unicode, "%r is not unicode" % path
+
         self._path = path
         self._rems = {}
         self._messages = []
@@ -77,8 +83,8 @@ class CueFile(object, log.Loggable):
         currentTrack = None
         counter = 0
 
-        self.info('Parsing .cue file %s', self._path)
-        handle = open(self._path, 'r')
+        self.info('Parsing .cue file %r', self._path)
+        handle = codecs.open(self._path, 'r', 'utf-8')
 
         for number, line in enumerate(handle.readlines()):
             line = line.rstrip()
@@ -134,7 +140,7 @@ class CueFile(object, log.Loggable):
                     + seconds * common.FRAMES_PER_SECOND \
                     + minutes * common.FRAMES_PER_SECOND * 60
 
-                self.debug('found index %d of track %r in %s:%d',
+                self.debug('found index %d of track %r in %r:%d',
                     indexNumber, currentTrack, currentFile.path, frameOffset)
                 # FIXME: what do we do about File's FORMAT ?
                 currentTrack.index(indexNumber,
@@ -173,7 +179,11 @@ class CueFile(object, log.Loggable):
     def getRealPath(self, path):
         """
         Translate the .cue's FILE to an existing path.
+
+        @type  path: unicode
         """
+        assert type(path) is unicode, "%r is not unicode" % path
+
         if os.path.exists(path):
             return path
 
@@ -199,7 +209,7 @@ class CueFile(object, log.Loggable):
                 if os.path.exists(cpath):
                     return cpath
 
-        raise KeyError, "Cannot find file for %s" % path
+        raise KeyError, "Cannot find file for %r" % path
 
 
 class File:
@@ -207,8 +217,13 @@ class File:
     I represent a FILE line in a cue file.
     """
     def __init__(self, path, format):
+        """
+        @type  path: unicode
+        """
+        assert type(path) is unicode, "%r is not unicode" % path
+
         self.path = path
         self.format = format
 
     def __repr__(self):
-        return '<File "%s" of format %s>' % (self.path, self.format)
+        return '<File %r of format %s>' % (self.path, self.format)

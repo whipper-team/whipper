@@ -12,7 +12,7 @@ from morituri.test import common
 class CureTestCase(unittest.TestCase):
     def setUp(self):
         self.toc = toc.TocFile(os.path.join(os.path.dirname(__file__),
-            'cure.toc'))
+            u'cure.toc'))
         self.toc.parse()
         self.assertEquals(len(self.toc.table.tracks), 13)
 
@@ -93,7 +93,7 @@ class CureTestCase(unittest.TestCase):
 class BlocTestCase(unittest.TestCase):
     def setUp(self):
         self.toc = toc.TocFile(os.path.join(os.path.dirname(__file__),
-            'bloc.toc'))
+            u'bloc.toc'))
         self.toc.parse()
         self.assertEquals(len(self.toc.table.tracks), 13)
 
@@ -140,7 +140,7 @@ class BlocTestCase(unittest.TestCase):
 class BreedersTestCase(unittest.TestCase):
     def setUp(self):
         self.toc = toc.TocFile(os.path.join(os.path.dirname(__file__),
-            'breeders.toc'))
+            u'breeders.toc'))
         self.toc.parse()
         self.assertEquals(len(self.toc.table.tracks), 13)
 
@@ -166,7 +166,7 @@ class BreedersTestCase(unittest.TestCase):
 class LadyhawkeTestCase(unittest.TestCase):
     def setUp(self):
         self.toc = toc.TocFile(os.path.join(os.path.dirname(__file__),
-            'ladyhawke.toc'))
+            u'ladyhawke.toc'))
         self.toc.parse()
         self.assertEquals(len(self.toc.table.tracks), 13)
         #import code; code.interact(local=locals())
@@ -182,13 +182,13 @@ class LadyhawkeTestCase(unittest.TestCase):
 class CapitalMergeTestCase(unittest.TestCase):
     def setUp(self):
         self.toc1 = toc.TocFile(os.path.join(os.path.dirname(__file__),
-            'capital.1.toc'))
+            u'capital.1.toc'))
         self.toc1.parse()
         self.assertEquals(len(self.toc1.table.tracks), 11)
         self.failUnless(self.toc1.table.tracks[-1].audio)
 
         self.toc2 = toc.TocFile(os.path.join(os.path.dirname(__file__),
-            'capital.2.toc'))
+            u'capital.2.toc'))
         self.toc2.parse()
         self.assertEquals(len(self.toc2.table.tracks), 1)
         self.failIf(self.toc2.table.tracks[-1].audio)

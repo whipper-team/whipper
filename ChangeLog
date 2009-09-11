@@ -1,5 +1,16 @@
 2009-09-11  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/image/cue.py:
+	* morituri/image/toc.py:
+	* morituri/test/test_image_cue.py:
+	* morituri/test/test_image_toc.py:
+	  Read input file as utf-8.  Fix logging of paths.
+	* morituri/image/image.py:
+	  Document and add asserts for unicodeness of paths.
+	  Encode path in launch lines as utf-8
+
+2009-09-11  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/task.py:
 	  Make SyncRunner wrap start() so we correctly handle any
 	  exception being thrown.
