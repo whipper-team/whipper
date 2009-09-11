@@ -1,3 +1,11 @@
+2009-09-11  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/checksum.py:
+	* morituri/test/Makefile.am:
+	* morituri/test/test_common_checksum.py (added):
+	  Add a check to make sure that checksumming an empty file doesn't
+	  hang.  Fix the hang.
+
 2009-09-08  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri.spec.in:

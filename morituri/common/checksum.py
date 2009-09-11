@@ -82,7 +82,13 @@ class ChecksumTask(task.Task):
 
         if self._frameLength < 0:
             self.debug('query duration')
-            length, qformat = sink.query_duration(gst.FORMAT_DEFAULT)
+            try:
+                length, qformat = sink.query_duration(gst.FORMAT_DEFAULT)
+            except gst.QueryError, e:
+                self.exception = e
+                self.stop()
+                return
+
             # wavparse 0.10.14 returns in bytes
             if qformat == gst.FORMAT_BYTES:
                 self.debug('query returned in BYTES format')
@@ -176,7 +182,7 @@ class ChecksumTask(task.Task):
         if not self._last:
             # see http://bugzilla.gnome.org/show_bug.cgi?id=578612
             print 'ERROR: not a single buffer gotten'
-            raise
+            #raise
         else:
             self._checksum = self._checksum % 2 ** 32
             self.debug("last offset %r", self._last.offset)
@@ -328,6 +334,7 @@ class TRMTask(task.Task):
 
     def _bus_error_cb(self, bus, message):
         error = message.parse_error()
+        # FIXME: handle properly
         print error
 
     def _new_buffer_cb(self, sink):
