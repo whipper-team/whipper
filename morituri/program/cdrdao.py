@@ -260,24 +260,31 @@ class CDRDAOTask(task.Task):
         self.runner.schedule(1.0, self._read, runner)
 
     def _read(self, runner):
-        ret = self._popen.recv()
+        try:
+            ret = self._popen.recv()
 
-        if ret:
-            self.log("read from stdout: %s", ret)
-            self.readbytesout(ret)
+            if ret:
+                self.log("read from stdout: %s", ret)
+                self.readbytesout(ret)
 
-        ret = self._popen.recv_err()
+            ret = self._popen.recv_err()
 
-        if ret:
-            self.log("read from stderr: %s", ret)
-            self.readbyteserr(ret)
+            if ret:
+                self.log("read from stderr: %s", ret)
+                self.readbyteserr(ret)
 
-        if self._popen.poll() is None:
-            # not finished yet
-            self.runner.schedule(1.0, self._read, runner)
-            return
+            if self._popen.poll() is None:
+                # not finished yet
+                self.runner.schedule(1.0, self._read, runner)
+                return
 
-        self._done()
+            self._done()
+        except Exception, e:
+            self.debug('exception during _read()')
+            self.debug(log.getExceptionMessage(e))
+            import code; code.interact(local=locals())
+            self.exception = e
+            self.stop()
 
     def _done(self):
             self.debug('Return code was %d', self._popen.returncode)

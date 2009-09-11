@@ -345,8 +345,8 @@ class SyncRunner(TaskRunner, ITaskListener):
         self.debug('done running task %r', task)
         if task.exception:
             # FIXME: this gave a traceback in the logging module
-            #self.debug('raising exception, %r',
-            #    log.getExceptionMessage(self._task.exception))
+            self.debug('raising exception, %r',
+                log.getExceptionMessage(task.exception))
             raise task.exception
 
     def _startWrap(self, task):
@@ -355,6 +355,8 @@ class SyncRunner(TaskRunner, ITaskListener):
         try:
             task.start(self)
         except Exception, e:
+            self.debug('exception during start: %r',
+                log.getExceptionMessage(e))
             task.exception = e
             self.stopped(task)
 

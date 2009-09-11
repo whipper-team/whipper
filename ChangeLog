@@ -1,5 +1,12 @@
 2009-09-11  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/program/cdrdao.py:
+	  Wrap read in an exception handler.
+	* morituri/common/task.py:
+	  Debug exceptions more.
+
+2009-09-11  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* HACKING:
 	  Note unicode handling.
 	* morituri/test/test_image_image.py:
