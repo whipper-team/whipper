@@ -69,6 +69,9 @@ class Rip(logcommand.LogCommand):
                 default, "', '".join(encode.PROFILES.keys())),
             default=default)
 
+    def handleOptions(self, options):
+        options.track_template = options.track_template.decode('utf-8')
+        options.disc_template = options.disc_template.decode('utf-8')
 
     def do(self, args):
         prog = program.Program()
@@ -117,8 +120,8 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
         if metadatas:
             print 'Matching releases:'
             for metadata in metadatas:
-                print 'Artist  :', metadata.artist
-                print 'Title   :', metadata.title
+                print 'Artist  : %s' % metadata.artist.encode('utf-8')
+                print 'Title   : %s' % metadata.title.encode('utf-8')
 
             # Select one of the returned releases. We just pick the first one.
             prog.metadata = metadatas[0]
@@ -140,7 +143,8 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
             "full table's AR URL %s differs from toc AR URL %s" % (
             itable.getAccurateRipURL(), ittoc.getAccurateRipURL())
 
-        prog.outdir = self.options.output_directory or os.getcwd()
+        prog.outdir = (self.options.output_directory or os.getcwd())
+        prog.outdir = prog.outdir.decode('utf-8')
         profile = encode.PROFILES[self.options.profile]()
 
         # result
@@ -168,6 +172,8 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
             path = prog.getPath(prog.outdir, self.options.track_template, 
                 mbdiscid, number) + '.' + profile.extension
             trackResult.number = number
+            
+            assert type(path) is unicode, "%r is not unicode" % path
             trackResult.filename = path
             if number > 0:
                 trackResult.pregap = itable.tracks[number - 1].getPregap()
@@ -175,14 +181,16 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
             # FIXME: optionally allow overriding reripping
             if os.path.exists(path):
                 print 'Verifying track %d of %d: %s' % (
-                    number, len(itable.tracks), os.path.basename(path))
+                    number, len(itable.tracks),
+                    os.path.basename(path).encode('utf-8'))
                 if not prog.verifyTrack(runner, trackResult):
                     print 'Verification failed, reripping...'
                     os.unlink(path)
 
             if not os.path.exists(path):
                 print 'Ripping track %d of %d: %s' % (
-                    number, len(itable.tracks), os.path.basename(path))
+                    number, len(itable.tracks),
+                    os.path.basename(path).encode('utf-8'))
                 prog.ripTrack(runner, trackResult, 
                     offset=int(self.options.offset),
                     device=self.parentCommand.options.device,
@@ -239,18 +247,18 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
         if not os.path.exists(dirname):
             os.makedirs(dirname)
 
-        self.debug('writing cue file for %s', discName)
+        self.debug('writing cue file for %r', discName)
         prog.writeCue(discName)
 
         # write .m3u file
-        m3uPath = '%s.m3u' % discName
+        m3uPath = u'%s.m3u' % discName
         handle = open(m3uPath, 'w')
-        handle.write('#EXTM3U\n')
+        handle.write(u'#EXTM3U\n')
         if htoapath:
-            handle.write('#EXTINF:%d,%s\n' % (
+            handle.write(u'#EXTINF:%d,%s\n' % (
                 itable.getTrackStart(1) / common.FRAMES_PER_SECOND,
                     os.path.basename(htoapath[:-4])))
-            handle.write('%s\n' % os.path.basename(htoapath))
+            handle.write(u'%s\n' % os.path.basename(htoapath))
 
         for i, track in enumerate(itable.tracks):
             if not track.audio:

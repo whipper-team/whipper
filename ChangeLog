@@ -1,3 +1,15 @@
+2009-09-12  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* HACKING:
+	  More unicode notes.
+	* morituri/common/program.py:
+	* morituri/image/table.py:
+	* morituri/image/toc.py:
+	* morituri/result/result.py:
+	* morituri/rip/cd.py:
+	* morituri/test/test_image_toc.py:
+	  Further unicode fixes, for options, CD-Text, paths, ...
+
 2009-09-11  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/program/cdrdao.py:

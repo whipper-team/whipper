@@ -60,6 +60,8 @@ class Track:
     @type indexes: dict of number -> L{Index}
     @ivar isrc:    ISRC code (12 alphanumeric characters)
     @type isrc:    str
+    @ivar cdtext:  dictionary of CD Text information; see L{CDTEXT_KEYS}.
+    @type cdtext:  str -> unicode
     """
 
     number = None

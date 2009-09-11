@@ -26,6 +26,7 @@ from morituri.result import logger
 
 class TrackResult:
     """
+    @type filename:          unicode
     @ivar testcrc:           4-byte CRC for the test read
     @type testcrc:           int
     @ivar copycrc:           4-byte CRC for the copy read

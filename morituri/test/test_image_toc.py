@@ -208,3 +208,22 @@ class CapitalMergeTestCase(unittest.TestCase):
         self.assertEquals(self.table.getMusicBrainzDiscId(),
             "MAj3xXf6QMy7G.BIFOyHyq4MySE-")
 
+class UnicodeTestCase(unittest.TestCase):
+    def setUp(self):
+        self._performer = u'Jos\xe9 Gonz\xe1lez'
+        self.toc = toc.TocFile(os.path.join(os.path.dirname(__file__),
+            '%s.toc' % self._performer))
+        self.toc.parse()
+        self.assertEquals(len(self.toc.table.tracks), 10)
+
+    def testGetTrackLength(self):
+        t = self.toc.table.tracks[0]
+        # first track has known length because the .toc is a single file
+        self.assertEquals(self.toc.getTrackLength(t), 12001)
+        # last track has unknown length
+        t = self.toc.table.tracks[-1]
+        self.assertEquals(self.toc.getTrackLength(t), -1)
+
+    def testGetTrackPerformer(self):
+        t = self.toc.table.tracks[0]
+        self.assertEquals(t.cdtext['PERFORMER'], self._performer)

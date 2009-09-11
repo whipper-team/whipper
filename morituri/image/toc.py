@@ -128,16 +128,21 @@ class TocFile(object, log.Loggable):
             if m:
                 key = m.group('key')
                 value = m.group('value')
+                # usually, value is encoded with octal escapes and in latin-1
+                # FIXME: other encodings are possible, does cdrdao handle
+                # them ?
+                value = value.decode('string-escape').decode('latin-1')
                 if key in table.CDTEXT_FIELDS:
                     # FIXME: consider ISRC separate for now, but this
                     # is a limitation of our parser approach
                     if state == 'HEADER':
                         self.table.cdtext[key] = value
-                        self.debug('Found disc CD-Text %s: %s', key, value)
+                        self.debug('Found disc CD-Text %s: %r', key, value)
                     elif state == 'TRACK':
                         if key != 'ISRC' or not currentTrack \
                             or currentTrack.isrc is not None:
-                            self.debug('Found track CD-Text %s: %s', key, value)
+                            self.debug('Found track CD-Text %s: %r',
+                                key, value)
                             currentTrack.cdtext[key] = value
 
             # look for header elements

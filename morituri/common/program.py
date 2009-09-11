@@ -213,12 +213,17 @@ class Program(log.Loggable):
         Also works for the disc name, using disc variables for the template.
 
         @param outdir:   the directory where to write the files
-        @type  outdir:   str
+        @type  outdir:   unicode
         @param template: the template for writing the file
-        @type  template: str
+        @type  template: unicode
         @param i:        track number (0 for HTOA)
         @type  i:        int
+
+        @rtype: unicode
         """
+        assert type(outdir) is unicode, "%r is not unicode" % outdir
+        assert type(template) is unicode, "%r is not unicode" % template
+
         # returns without extension
 
         v = {}

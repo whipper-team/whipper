@@ -29,3 +29,9 @@ unicode
   for example, always use %r to log paths
 - run with RIP_DEBUG=5 once in a while to catch unicode/logging errors.
 - Also use unicode prefix/suffix in tempfile.* methods; to force unicode.
+- filesystems on Unix do not have an encoding.  file names are bytes.
+  However, most distros default to a utf-8 interpretation
+- You can either treat paths as byte strings all the way without interpreting
+  (even when writing them to other files), or assume utf-8 on in and out.
+- also direct output to a file; redirection sets codec to ASCII and brings out
+  unicode bugs
