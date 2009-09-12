@@ -1,4 +1,5 @@
 TODO:
+- at least mention the data track somewhere in the log
 - check pregaps more than once, to see if results are consistent, or with
   different methods
 - handle errors on cdrdao spawning (for example, not having cdrecorder,

@@ -130,6 +130,7 @@ class Program(log.Loggable):
     @type metadata: L{DiscMetadata}
     @ivar result:   the rip's result
     @type result:   L{result.RipResult}
+    @type outdir:   unicode
     """
 
     cuePath = None
