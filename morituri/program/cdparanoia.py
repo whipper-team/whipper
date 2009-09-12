@@ -183,7 +183,7 @@ class ReadTrackTask(task.Task):
         Read the given track.
 
         @param path:   where to store the ripped track
-        @type  path:   str
+        @type  path:   unicode
         @param table:  table of contents of CD
         @type  table:  L{table.Table}
         @param start:  first frame to rip
@@ -195,6 +195,8 @@ class ReadTrackTask(task.Task):
         @param device: the device to rip from
         @type  device: str
         """
+        assert type(path) is unicode, "%r is not unicode" % path
+
         self.path = path
         self._table = table
         self._start = start

@@ -1,5 +1,11 @@
 2009-09-12  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/program/cdparanoia.py:
+	* morituri/rip/offset.py:
+	  Another unicode fix.
+
+2009-09-12  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* HACKING:
 	  More unicode notes.
 	* morituri/common/program.py:
