@@ -225,9 +225,12 @@ class ReadTrackTask(task.Task):
                 stopTrack = i + 1
                 stopOffset = self._stop - self._table.getTrackStart(i + 1)
 
-        self.debug('Ripping from %d to %d (inclusive)', self._start, self._stop)
-        self.debug('Starting at track %d, offset %d', startTrack, startOffset)
-        self.debug('Stopping at track %d, offset %d', stopTrack, stopOffset)
+        self.debug('Ripping from %d to %d (inclusive)',
+            self._start, self._stop)
+        self.debug('Starting at track %d, offset %d',
+            startTrack, startOffset)
+        self.debug('Stopping at track %d, offset %d',
+            stopTrack, stopOffset)
 
         bufsize = 1024
         argv = ["cdparanoia", "--stderr-progress",
@@ -370,9 +373,11 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
 
         self.tasks = []
         self.tasks.append(
-            ReadTrackTask(tmppath, table, start, stop, offset, device))
+            ReadTrackTask(tmppath, table, start, stop,
+                offset=offset, device=device))
         self.tasks.append(checksum.CRC32Task(tmppath))
-        t = ReadTrackTask(tmppath, table, start, stop, offset, device)
+        t = ReadTrackTask(tmppath, table, start, stop,
+            offset=offset, device=device)
         t.description = 'Verifying track...'
         self.tasks.append(t)
         self.tasks.append(checksum.CRC32Task(tmppath))
