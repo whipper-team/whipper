@@ -1,3 +1,9 @@
+2009-09-19  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/rip/offset.py:
+	  Pass device parameter to ReadTrackTask.  Thanks to Alex B for
+	  spotting this on my blog.
+
 2009-09-12  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/program/cdparanoia.py:
