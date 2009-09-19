@@ -21,10 +21,80 @@ REQUIREMENTS
 - python musicbrainz2, for metadata lookup
 - pycdio, for drive identification (optional)
 
+GETTING MORITURI
+----------------
+
+If you are building from a source tarball or checkout, you can choose to
+use morituri installed or uninstalled.
+
+- getting:
+  - Change to a directory where you want to put the morituri source code
+    (For example, $HOME/dev/ext or $HOME/prefix/src)
+  - source: download tarball, unpack, and change to its directory
+  - checkout:
+    svn co https://thomas.apestaart.org/morituri/svn/trunk morituri
+    cd morituri
+    ./autogen.sh
+
+- building:
+  ./configure
+  make
+
+- you can now choose to install it or run it uninstalled.
+  - installing:
+    make install
+  - running uninstalled:
+    ln -sf `pwd`/misc/morituri-uninstalled $HOME/bin/morituri-trunk
+    morituri-trunk
+    (this drops you in a shell where everything is set up to use morituri)
+
+RUNNING MORITURI
+----------------
+
+morituri currently only has a command-line interface called 'rip'
+
+rip is self-documenting.
+rip -h gives you the basic instructions.
+
+rip implements a tree of commands; for example, the top-level 'changelog'
+command has a number of sub-commands.
+
+Positioning of arguments is important;
+  rip cd -d (device) rip
+is correct, while
+  rip cd rip -d (device)
+is not, because the -d argument applies to the rip command.
+
+GETTING STARTED
+---------------
+
+The simplest way to get started making accurate rips is:
+
+- pick a relatively popular CD that has a good change of being in the
+  AccurateRip database
+- find the drive's offset by running
+  rip offset find
+- wait for it to complete; this might take a while
+- optionally, confirm this offset with two more discs
+- rip the disc by running
+  rip cd rip --offset (the number you got before)
+  
+FILING BUGS
+-----------
+
+morituri's bug tracker is at https://thomas.apestaart.org/morituri/trac/
+When filing bugs, please run the failing command with the environment variable
+RIP_DEBUG set; for example:
+
+  RIP_DEBUG=5 rip offset find > morituri.log 2>&1
+  gzip morituri.log
+
+And attach the gzipped log file to your bug report.
+
 KNOWN ISSUES
 ------------
-- cdrdao read-toc does not always get pregaps right compared to EAC, still
-  under investigation
+- no lossy encoding yet
+- no GUI yet
 
 GOALS
 -----
