@@ -1,0 +1,41 @@
+Release procedure for morituri
+------------------------------
+
+- Pick a new version number and set it:
+  export VERSION=0.1.0
+- Update configure.ac
+- Pick a release name
+- Update .doap file
+- verify the update with moap doap show
+- Add coverage data to NEWS
+- Add list of new features to NEWS
+- Update bugs fixed in NEWS:
+  moap doap bug query -f "- %(id)3s: %(summary)s" "milestone=$VERSION"
+- Update README and home page with relevant new features, as well as version
+- Update RELEASE, copying sections from NEWS, and adding contributors with
+  moap cl cont
+- Run moap cl prep and add comment about release
+- Update ChangeLog; add === release x.y.z === line
+- make distcheck
+- make release
+- build rpm
+- copy files to website and upload
+- commit to TRUNK
+- create release tag:
+  cd ..
+  svn cp trunk tags/morituri-$VERSION
+  svn commit -m "releasing new version" tags
+  cd trunk
+- announce to freshmeat:
+  moap doap -v $VERSION freshmeat -b Default
+- send out release mails:
+  - first test:
+    moap doap -v $VERSION mail -f thomas@apestaart.org thomas@apestaart.org
+  - wait for it and read it
+  - then for real:
+    moap doap -v $VERSION mail -f thomas@apestaart.org cdrdao-devel@lists.sourceforge.net
+- add new milestone to trac and make it the default
+- add this new version to trac
+- update the homepage
+- bump configure.ac and commit
+- why don't you blog about it ?
