@@ -477,7 +477,7 @@ class Program(log.Loggable):
             if trackResult.accurip:
                     status = 'rip accurate    '
 
-            c = "(not found)             "
+            c = "(not found)            "
             ar = ", DB [notfound]"
             if trackResult.ARDBMaxConfidence:
                 c = "(max confidence    %3d)" % trackResult.ARDBMaxConfidence
