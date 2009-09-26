@@ -23,11 +23,10 @@ Release procedure for morituri
 - commit to TRUNK
 - create release tag:
   cd ..
-  svn cp trunk tags/morituri-$VERSION
-  svn commit -m "releasing new version" tags
+  svn cp svn+ssh://$SERVER_PATH/trunk svn+ssh://$SERVER_PATH/tags/$VERSION
   cd trunk
 - announce to freshmeat:
-  moap doap -v $VERSION freshmeat -b Default
+  moap doap -v $VERSION freshmeat
 - send out release mails:
   - first test:
     moap doap -v $VERSION mail -f thomas@apestaart.org thomas@apestaart.org
