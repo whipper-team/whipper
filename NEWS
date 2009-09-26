@@ -1,0 +1,17 @@
+This is morituri 0.1.0, "Youngblood"
+
+Coverage in 0.1.0: 62 %   (1348 / 2150), 49 python tests
+
+Features added in 0.1.0:
+
+- support for MusicBrainz for metadata lookup
+- support for AccurateRip verification
+- detects sample read offset of drives
+- performs test and copy rip
+- detects and rips Hidden Track One Audio
+- templates for file and directory naming
+- support for lossless encoding only for now
+- tagging using GStreamer
+- for now, only a command line client (rip) is shipped
+
+

@@ -1,8 +1,8 @@
 dnl initialize autoconf
 dnl when going to/from release please remove/add the nano (fourth number)
 dnl releases only do Wall, cvs and prerelease does Werror too
-AC_INIT(morituri, 0.0.0.1,
-   http://thomas.apestaart.org/thomas/trac/newticket?component=morituri,
+AC_INIT(morituri, 0.1.0,
+   http://thomas.apestaart.org/morituri/trac/newticket,
    morituri)
 
 dnl initialize automake
