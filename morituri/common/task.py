@@ -47,6 +47,7 @@ class Task(object, log.Loggable):
     running = False
     runner = None
     exception = None
+    exceptionMessage = None
 
     _listeners = None
 
@@ -213,9 +214,10 @@ class BaseMultiTask(Task, ITaskListener):
             task.addListener(self)
             task.start(self.runner)
         except Exception, e:
-            self.debug('Got exception during next: %r',
-                log.getExceptionMessage(e))
+            m = log.getExceptionMessage(e)
+            self.debug('Got exception during next: %r', m)
             self.exception = e
+            self.exceptionMessage = m
             self.stop()
             return
         
@@ -345,8 +347,7 @@ class SyncRunner(TaskRunner, ITaskListener):
         self.debug('done running task %r', task)
         if task.exception:
             # FIXME: this gave a traceback in the logging module
-            self.debug('raising exception, %r',
-                log.getExceptionMessage(task.exception))
+            self.debug('raising exception, %r', task.exceptionMessage)
             raise task.exception
 
     def _startWrap(self, task):
@@ -355,9 +356,12 @@ class SyncRunner(TaskRunner, ITaskListener):
         try:
             task.start(self)
         except Exception, e:
-            self.debug('exception during start: %r',
-                log.getExceptionMessage(e))
+            # getExceptionMessage uses global exception state that doesn't
+            # hang around, so store the message
+            m = log.getExceptionMessage(e)
+            self.debug('exception during start: %r', m)
             task.exception = e
+            task.exceptionMessage = m
             self.stopped(task)
 
 
