@@ -1,0 +1,167 @@
+CD_DA
+
+CD_TEXT {
+  LANGUAGE_MAP {
+    0: 9
+  }
+  LANGUAGE 0 {
+    TITLE "In Our Nature"
+    PERFORMER "Jos\351 Gonz\341lez"
+    GENRE { 0,  0,  0}
+    SIZE_INFO { 1,  1, 10,  0, 12, 13,  0,  0,  0,  0,  0,  1,
+                0,  0,  0,  0,  0,  0,  0,  3, 28,  0,  0,  0,
+                0,  0,  0,  0,  9,  0,  0,  0,  0,  0,  0,  0}
+  }
+}
+
+// Track 1
+TRACK AUDIO
+NO COPY
+NO PRE_EMPHASIS
+TWO_CHANNEL_AUDIO
+ISRC "SEVVX0700301"
+CD_TEXT {
+  LANGUAGE 0 {
+    TITLE "How Low"
+    PERFORMER "Jos\351 Gonz\341lez"
+  }
+}
+FILE "data.wav" 0 02:40:01
+
+
+// Track 2
+TRACK AUDIO
+NO COPY
+NO PRE_EMPHASIS
+TWO_CHANNEL_AUDIO
+ISRC "SEVVX0700302"
+CD_TEXT {
+  LANGUAGE 0 {
+    TITLE "Down The Line"
+    PERFORMER "Jos\351 Gonz\341lez"
+  }
+}
+FILE "data.wav" 02:40:01 03:10:62
+
+
+// Track 3
+TRACK AUDIO
+NO COPY
+NO PRE_EMPHASIS
+TWO_CHANNEL_AUDIO
+ISRC "SEVVX0700303"
+CD_TEXT {
+  LANGUAGE 0 {
+    TITLE "Killing For Love"
+    PERFORMER "Jos\351 Gonz\341lez"
+  }
+}
+FILE "data.wav" 05:50:63 03:02:67
+
+
+// Track 4
+TRACK AUDIO
+NO COPY
+NO PRE_EMPHASIS
+TWO_CHANNEL_AUDIO
+ISRC "SEVVX0700304"
+CD_TEXT {
+  LANGUAGE 0 {
+    TITLE "In Our Nature"
+    PERFORMER "Jos\351 Gonz\341lez"
+  }
+}
+FILE "data.wav" 08:53:55 02:42:51
+
+
+// Track 5
+TRACK AUDIO
+NO COPY
+NO PRE_EMPHASIS
+TWO_CHANNEL_AUDIO
+ISRC "SEVVX0700305"
+CD_TEXT {
+  LANGUAGE 0 {
+    TITLE "Teardrop"
+    PERFORMER "Jos\351 Gonz\341lez"
+  }
+}
+FILE "data.wav" 11:36:31 03:20:64
+
+
+// Track 6
+TRACK AUDIO
+NO COPY
+NO PRE_EMPHASIS
+TWO_CHANNEL_AUDIO
+ISRC "SEVVX0700306"
+CD_TEXT {
+  LANGUAGE 0 {
+    TITLE "Abram"
+    PERFORMER "Jos\351 Gonz\341lez"
+  }
+}
+FILE "data.wav" 14:57:20 01:58:56
+START 00:12:24
+
+
+// Track 7
+TRACK AUDIO
+NO COPY
+NO PRE_EMPHASIS
+TWO_CHANNEL_AUDIO
+ISRC "SEVVX0700307"
+CD_TEXT {
+  LANGUAGE 0 {
+    TITLE "Time To Send Someone Away"
+    PERFORMER "Jos\351 Gonz\341lez"
+  }
+}
+FILE "data.wav" 16:56:01 02:49:68
+START 00:02:05
+
+
+// Track 8
+TRACK AUDIO
+NO COPY
+NO PRE_EMPHASIS
+TWO_CHANNEL_AUDIO
+ISRC "SEVVX0700308"
+CD_TEXT {
+  LANGUAGE 0 {
+    TITLE "The Nest"
+    PERFORMER "Jos\351 Gonz\341lez"
+  }
+}
+FILE "data.wav" 19:45:69 02:23:66
+
+
+// Track 9
+TRACK AUDIO
+NO COPY
+NO PRE_EMPHASIS
+TWO_CHANNEL_AUDIO
+ISRC "SEVVX0700309"
+CD_TEXT {
+  LANGUAGE 0 {
+    TITLE "Fold"
+    PERFORMER "Jos\351 Gonz\341lez"
+  }
+}
+FILE "data.wav" 22:09:60 02:54:58
+
+
+// Track 10
+TRACK AUDIO
+NO COPY
+NO PRE_EMPHASIS
+TWO_CHANNEL_AUDIO
+ISRC "SEVVX0700310"
+CD_TEXT {
+  LANGUAGE 0 {
+    TITLE "Cycling Trivialities"
+    PERFORMER "Jos\351 Gonz\341lez"
+  }
+}
+FILE "data.wav" 25:04:43 08:09:16
+
