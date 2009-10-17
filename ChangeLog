@@ -1,5 +1,18 @@
 2009-10-17  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/image/image.py:
+	  Add ImageEncodeTask to encode a disk image to a different profile
+	  and directory.
+	* morituri/common/encode.py:
+	  Add lossy encoding profiles for mp3 and vorbis.
+	  Rename muxer to tagger since that's what we use it for.
+	  Do progress probe after level to make sure we get samples for
+	  offsets.
+	* morituri/rip/image.py:
+	  Add rip image encode command.
+
+2009-10-17  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/test/José González.toc (added):
 	  Add test file for a test.
 

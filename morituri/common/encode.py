@@ -33,6 +33,7 @@ class Profile(object):
     name = None
     extension = None
     pipeline = None
+    losless = None
 
     def test(self):
         """
@@ -44,7 +45,8 @@ class Profile(object):
 class FlacProfile(Profile):
     name = 'flac'
     extension = 'flac'
-    pipeline = 'flacenc name=muxer quality=8'
+    pipeline = 'flacenc name=tagger quality=8'
+    lossless = True
 
     # FIXME: we should do something better than just printing ERRORS
     def test(self):
@@ -65,25 +67,48 @@ class FlacProfile(Profile):
 class AlacProfile(Profile):
     name = 'alac'
     extension = 'alac'
-    pipeline = 'ffenc_alac name=muxer'
+    pipeline = 'ffenc_alac name=tagger'
+    lossless = True
 
 class WavProfile(Profile):
     name = 'wav'
     extension = 'wav'
-    pipeline = 'wavenc name=muxer'
+    pipeline = 'wavenc name=tagger'
+    lossless = True
 
 class WavpackProfile(Profile):
     name = 'wavpack'
     extension = 'wv'
-    pipeline = 'wavpackenc bitrate=0 name=muxer'
+    pipeline = 'wavpackenc bitrate=0 name=tagger'
+    lossless = True
+
+class MP3Profile(Profile):
+    name = 'mp3'
+    extension = 'mp3'
+    pipeline = 'lame name=tagger quality=0 ! id3v2mux'
+    lossless = False
+
+class VorbisProfile(Profile):
+    name = 'vorbis'
+    extension = 'oga'
+    pipeline = 'audioconvert ! vorbisenc name=tagger ! oggmux'
+    lossless = False
 
 
 PROFILES = {
-    'wav': WavProfile,
-    'flac': FlacProfile,
-    'alac': AlacProfile,
+    'wav':     WavProfile,
+    'flac':    FlacProfile,
+    'alac':    AlacProfile,
     'wavpack': WavpackProfile,
 }
+
+LOSSY_PROFILES = {
+    'mp3':     MP3Profile,
+    'vorbis':  VorbisProfile,
+}
+
+ALL_PROFILES = PROFILES.copy()
+ALL_PROFILES.update(LOSSY_PROFILES)
 
 class EncodeTask(task.Task):
     """
@@ -125,11 +150,11 @@ class EncodeTask(task.Task):
             filesink location="%s" name=sink''' % (self._inpath,
                 self._profile.pipeline, self._outpath))
 
-        muxer = self._pipeline.get_by_name('muxer')
+        tagger = self._pipeline.get_by_name('tagger')
 
         # set tags
         if self._taglist:
-            muxer.merge_tags(self._taglist, gst.TAG_MERGE_APPEND)
+            tagger.merge_tags(self._taglist, gst.TAG_MERGE_APPEND)
 
         self.debug('pausing pipeline')
         self._pipeline.set_state(gst.STATE_PAUSED)
@@ -138,18 +163,13 @@ class EncodeTask(task.Task):
 
         # get length
         self.debug('query duration')
-        length, qformat = muxer.query_duration(gst.FORMAT_DEFAULT)
+        length, qformat = tagger.query_duration(gst.FORMAT_DEFAULT)
         # wavparse 0.10.14 returns in bytes
         if qformat == gst.FORMAT_BYTES:
             self.debug('query returned in BYTES format')
             length /= 4
         self.debug('total length: %r', length)
         self._length = length
-
-        # add a probe so we can track progress
-        sinkpad = muxer.get_pad('sink')
-        srcpad = sinkpad.get_peer()
-        srcpad.add_buffer_probe(self._probe_handler)
 
         # add eos handling
         bus = self._pipeline.get_bus()
@@ -159,6 +179,10 @@ class EncodeTask(task.Task):
         # set up level callbacks
         bus.connect('message::element', self._message_element_cb)
         self._level = self._pipeline.get_by_name('level')
+        # add a probe so we can track progress
+        # we connect to level because this gives us offset in samples
+        srcpad = self._level.get_static_pad('src')
+        srcpad.add_buffer_probe(self._probe_handler)
 
         self.debug('scheduling setting to play')
         # since set_state returns non-False, adding it as timeout_add
@@ -175,6 +199,8 @@ class EncodeTask(task.Task):
         self.debug('scheduled setting to play')
 
     def _probe_handler(self, pad, buffer):
+        # update progress based on buffer offset (expected to be in samples)
+        # versus length in samples
         # marshal to main thread
         self.runner.schedule(0, self.setProgress,
             float(buffer.offset) / self._length)

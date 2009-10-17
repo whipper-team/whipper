@@ -24,9 +24,11 @@
 Wrap on-disk CD images based on the .cue file.
 """
 
+import os
+
 import gst
 
-from morituri.common import task, checksum, log, common
+from morituri.common import task, checksum, log, common, encode
 from morituri.image import cue, table
 
 class Image(object, log.Loggable):
@@ -215,3 +217,45 @@ class ImageVerifyTask(task.MultiSeparateTask):
             self.lengths[trackIndex] = end - index.relative
 
         task.MultiSeparateTask.stop(self)
+
+class ImageEncodeTask(task.MultiSeparateTask):
+    """
+    I encode a disk image to a different format.
+    """
+    
+    description = "Encoding tracks"
+
+    def __init__(self, image, profile, outdir):
+        task.MultiSeparateTask.__init__(self)
+
+        self._image = image
+        self._profile = profile
+        cue = image.cue
+        self._tasks = []
+        self.lengths = {}
+
+        def add(index):
+            path = image.getRealPath(index.path)
+            assert type(path) is unicode, "%r is not unicode" % path
+            self.debug('schedule encode of %r', path)
+            root, ext = os.path.splitext(os.path.basename(path))
+            outpath = os.path.join(outdir, root + '.' + profile.extension)
+            self.debug('schedule encode to %r', outpath)
+            taskk = encode.EncodeTask(path, os.path.join(outdir,
+                root + '.' + profile.extension), profile)
+            self.addTask(taskk)
+
+        try:
+            htoa = cue.table.tracks[0].indexes[0]
+            self.debug('encoding htoa track')
+            add(htoa)
+        except IndexError:
+            self.debug('no htoa track')
+            pass
+
+        for trackIndex, track in enumerate(cue.table.tracks):
+            self.debug('encoding track %d', trackIndex + 1)
+            index = track.indexes[1]
+            add(index)
+
+
