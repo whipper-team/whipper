@@ -7,7 +7,7 @@ Release:        @PACKAGE_VERSION_RELEASE@%{?dist}
 Summary:        CD ripper
 Source:         %{name}-%{version}.tar.bz2
 URL:            http://thomas.apestaart.org/thomas/trac/
-License:        GPLv2
+License:        GPLv3
 Group:          Applications/Archiving
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
