@@ -1,4 +1,9 @@
 TODO:
+- .cue file:
+  - add version to morituri comment
+  - add DATE and CATALOG and PERFORMER and TITLE to top of cue
+  - add TITLE AND PERFORMER to each track
+- change format to be %2d - %performer by default
 - at least mention the data track somewhere in the log
 - check pregaps more than once, to see if results are consistent, or with
   different methods
@@ -21,3 +26,4 @@ TODO:
 - consider basing ripping progress not only on read (reaches 100% before
   writes are done) or writes (very bursty in cdparanoia) but a combo of the
   two, each counting for half.
+- if disk not found in accuraterip, it doesn't mean that it's not accurate
