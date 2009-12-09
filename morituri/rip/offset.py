@@ -80,7 +80,12 @@ CD in the AccurateRip database."""
         # first get the Table Of Contents of the CD
         t = cdrdao.ReadTOCTask(device=self.options.device)
 
-        runner.run(t)
+        try:
+            runner.run(t)
+        except cdrdao.DeviceOpenException, e:
+            self.error(e.msg)
+            return 3
+            
         table = t.table
 
         self.debug("CDDB disc id: %r", table.getCDDBDiscId())
