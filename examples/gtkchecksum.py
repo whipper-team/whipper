@@ -49,7 +49,7 @@ path = 'test.flac'
 start = 0
 end = -1
 try:
-    path = sys.argv[1]
+    path = unicode(sys.argv[1])
     start = int(sys.argv[2])
     end = int(sys.argv[3])
 except IndexError:
