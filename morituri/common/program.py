@@ -75,7 +75,8 @@ def getMetadata(release):
             track.artist = metadata.artist
             track.title = t.title
         else:
-            track.artist = t.artist.name
+            # various artists discs can have tracks with no artist
+            track.artist = t.artist and t.artist.name or release.artist.name
             track.title = t.title
         metadata.tracks.append(track)
 

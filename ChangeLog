@@ -1,3 +1,9 @@
+2009-12-28  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/program.py:
+	  For Various Artists releases, fall back to the release artist if
+	  the track artist is None.
+
 2009-10-17  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/image/image.py:
