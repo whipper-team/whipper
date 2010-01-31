@@ -1,3 +1,9 @@
+2010-01-31  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/accurip.py:
+	  The AccuRip cache dir could exist without the file; handle that
+	  case.
+
 2009-12-28  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/program.py:

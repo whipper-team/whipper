@@ -20,6 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
+import errno
 import os
 import struct
 import urlparse
@@ -75,7 +76,14 @@ class AccuCache(log.Loggable):
 
     def _cache(self, url, data):
         path = self._getPath(url)
-        os.makedirs(os.path.dirname(path))
+        try:
+            os.makedirs(os.path.dirname(path))
+        except OSError, e:
+            self.debug('Could not make dir %s: %r' % (
+                path, log.getExceptionMessage(e)))
+            if e.errno != errno.EEXIST:
+                raise
+
         handle = open(path, 'wb')
         handle.write(data)
         handle.close()
