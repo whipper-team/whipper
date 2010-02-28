@@ -60,6 +60,9 @@ def filterForPath(text):
     return "-".join(text.split("/"))
 
 def getMetadata(release):
+    """
+    @rtype: L{DiscMetadata}
+    """
     metadata = DiscMetadata()
 
     isSingleArtist = release.isSingleArtistRelease()
@@ -84,6 +87,9 @@ def getMetadata(release):
 
 
 def musicbrainz(discid):
+    """
+    @rtype: list of L{DiscMetadata}
+    """
     #import musicbrainz2.disc as mbdisc
     import musicbrainz2.webservice as mbws
 
@@ -110,12 +116,16 @@ def musicbrainz(discid):
 
     for result in results:
         release = result.release
+        log.debug('program', 'result: artist %r, title %r' % (
+            release.artist.getName(), release.title))
         # The returned release object only contains title and artist, but no
         # tracks.  Query the web service once again to get all data we need.
         try:
             inc = mbws.ReleaseIncludes(artist=True, tracks=True,
                 releaseEvents=True)
-            release = query.getReleaseById(release.getId(), inc)
+            # Arid - Under the Cold Street Lights has getId() None
+            if release.getId():
+                release = query.getReleaseById(release.getId(), inc)
         except mbws.WebServiceError, e:
             raise MusicBrainzException(e)
 
