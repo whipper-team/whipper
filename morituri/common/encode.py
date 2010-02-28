@@ -129,6 +129,10 @@ class EncodeTask(task.Task):
         @param profile: encoding profile
         @type  profile: L{Profile}
         """
+        assert type(inpath) is unicode, "inpath %r is not unicode" % inpath
+        assert type(outpath) is unicode, \
+            "outpath %r is not unicode" % outpath
+        
         self._inpath = inpath
         self._outpath = outpath
         self._taglist = taglist
@@ -147,8 +151,10 @@ class EncodeTask(task.Task):
             audio/x-raw-int,width=16,depth=16,channels=2 !
             level name=level !
             %s !
-            filesink location="%s" name=sink''' % (self._inpath,
-                self._profile.pipeline, self._outpath))
+            filesink location="%s" name=sink''' % (
+                self._inpath.encode('utf-8'),
+                self._profile.pipeline,
+                self._outpath.encode('utf-8')))
 
         tagger = self._pipeline.get_by_name('tagger')
 

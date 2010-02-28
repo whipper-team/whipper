@@ -1,5 +1,10 @@
 2010-02-28  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/encode.py:
+	  Handle utf-8 properly.
+
+2010-02-28  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/program.py:
 	  Fix a problem with Arid's new album of not having an id.
 
