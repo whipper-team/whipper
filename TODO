@@ -27,3 +27,5 @@ TODO:
   writes are done) or writes (very bursty in cdparanoia) but a combo of the
   two, each counting for half.
 - if disk not found in accuraterip, it doesn't mean that it's not accurate
+- discs we should rip:
+	LCD soundsystem disc 2 (data track)
