@@ -1,5 +1,10 @@
 2010-03-14  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/rip/offset.py:
+	  Add a more complete list of offsets, obtained using misc/offsets.py
+
+2010-03-14  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* misc/offsets.py (added):
 	  Add a script to calculate list of offsets based on AccurateRip's
 	  online database, according to popularity.

@@ -30,6 +30,19 @@ from morituri.common import logcommand, task, checksum, accurip, drive
 from morituri.image import image
 from morituri.program import cdrdao, cdparanoia
 
+# see http://www.accuraterip.com/driveoffsets.htm
+# and misc/offsets.py
+OFFSETS = "+6, +48, +102, +667, +12, +30, +618, +594, +738, -472, " + \
+          "+98, +116, +96, +733, +120, +691, +685, +97, +600, " + \
+          "+690, +1292, +99, +676, +686, +1182, -24, +704, +572, " + \
+          "+688, +91, +696, +103, -491, +689, +145, +708, +697, " + \
+          "+564, +86, +679, +355, -496, -1164, +1160, +694, 0, " + \
+          "-436, +79, +94, +684, +681, +106, +692, +943, +1194, " + \
+          "+92, +117, +680, +682, +1268, +678, -582, +1473, +1279, " + \
+          "-54, +1508, +740, +1272, +534, +976, +687, +675, +1303, " + \
+          "+674, +1263, +108, +974, +122, +111, -489, +772, +732, " + \
+          "-495, -494, +975, +935, +87, +668, +1776, +1364, +1336, " + \
+          "+1127"
 
 class Find(logcommand.LogCommand):
     summary = "find drive read offset"
@@ -37,9 +50,7 @@ class Find(logcommand.LogCommand):
 CD in the AccurateRip database."""
 
     def addOptions(self):
-        # see http://www.accuraterip.com/driveoffsets.htm
-        default = "0, 6, 12, 48, 91, 97, 102, 108, 120, " + \
-            "564, 594, 667, 685, 691, 704, 738, 1194, 1292, 1336, 1776, -582"
+        default = OFFSETS
         self.parser.add_option('-o', '--offsets',
             action="store", dest="offsets",
             help="list of offsets, comma-separated, "
