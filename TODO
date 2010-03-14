@@ -29,3 +29,4 @@ TODO:
 - if disk not found in accuraterip, it doesn't mean that it's not accurate
 - discs we should rip:
 	LCD soundsystem disc 2 (data track)
+- check if cdda2wav or icedax analyze pregaps correctly
