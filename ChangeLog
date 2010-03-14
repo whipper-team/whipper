@@ -1,3 +1,9 @@
+2010-03-14  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* misc/offsets.py (added):
+	  Add a script to calculate list of offsets based on AccurateRip's
+	  online database, according to popularity.
+
 2010-02-28  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/encode.py:
