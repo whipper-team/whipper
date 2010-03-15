@@ -22,6 +22,7 @@ EXTRA_DIST = \
 	capital.2.toc \
 	cure.cue \
 	cure.toc \
+	JoséGonzález.toc \
 	dBAR-011-0010e284-009228a3-9809ff0b.bin \
 	dBAR-020-002e5023-029d8e49-040eaa14.bin \
 	kanye.cue \
@@ -35,6 +36,7 @@ EXTRA_DIST = \
 	silentalarm.result.pickle \
 	track.flac
 
+
 # re-generation of test files when needed
 regenerate: track.flac
 
@@ -44,4 +46,3 @@ regenerate: track.flac
 
 track.flac:
 	gst-launch audiotestsrc num-buffers=10 samplesperbuffer=588 ! audioconvert ! audio/x-raw-int,channels=2,width=16,height=16,rate=44100 ! flacenc ! filesink location=track.flac
-

@@ -210,9 +210,9 @@ class CapitalMergeTestCase(unittest.TestCase):
 
 class UnicodeTestCase(unittest.TestCase):
     def setUp(self):
+        path = u'Jos\xe9Gonz\xe1lez.toc'
         self._performer = u'Jos\xe9 Gonz\xe1lez'
-        self.toc = toc.TocFile(os.path.join(os.path.dirname(__file__),
-            '%s.toc' % self._performer))
+        self.toc = toc.TocFile(os.path.join(os.path.dirname(__file__), path))
         self.toc.parse()
         self.assertEquals(len(self.toc.table.tracks), 10)
 

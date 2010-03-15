@@ -1,5 +1,15 @@
 2010-03-15  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/Makefile.am:
+	  Add missing result.py
+	* morituri/test/Makefile.am:
+	* morituri/test/test_image_toc.py:
+	* morituri/test/JoséGonzález.toc (added):
+	* morituri/test/José González.toc (deleted):
+	  automake doesn't handle spaces in names, so move it.
+
+2010-03-15  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* bin/rip.in:
 	  Add our PYTHONLIBDIR to sys.path if needed.  Should make this
 	  work when doing ./configure; sudo checkinstall make install
