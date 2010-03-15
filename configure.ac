@@ -44,6 +44,8 @@ AC_CHECK_PROG(PYCHECKER, pychecker, yes, no)
 AM_CONDITIONAL(HAVE_PYCHECKER, test "x$PYCHECKER" = "xyes")
 
 dnl output stuff
+AC_CONFIG_FILES([bin/rip], [chmod +x bin/rip])
+
 AC_OUTPUT(
 Makefile
 bin/Makefile

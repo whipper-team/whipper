@@ -1,3 +1,10 @@
+2010-03-15  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* configure.ac:
+	* bin/rip.in (added):
+	* bin/rip (deleted):
+	  Generate bin/rip so we can do sys.path stuff.
+
 2010-03-14  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/rip/offset.py:
