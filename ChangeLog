@@ -1,5 +1,12 @@
 2010-03-15  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* bin/rip.in:
+	  Add our PYTHONLIBDIR to sys.path if needed.  Should make this
+	  work when doing ./configure; sudo checkinstall make install
+	  on e.g. Ubuntu.
+
+2010-03-15  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* configure.ac:
 	* bin/rip.in (added):
 	* bin/rip (deleted):

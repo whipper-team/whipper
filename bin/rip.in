@@ -4,6 +4,13 @@
 
 import sys
 
+# /usr/local/bin typically is on PATH, making it possible to find this file.
+# However, /usr/local/lib/pythonX.Y/*-packages usually isn't, so let's
+# make sure here it is.
+
+if not "@PYTHONLIBDIR@" in sys.path:
+    sys.path.append("@PYTHONLIBDIR@")
+
 # first try to import morituri
 try:
     import morituri
