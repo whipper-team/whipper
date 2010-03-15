@@ -1,3 +1,3 @@
-bin_SCRIPTS_IN = rip.in
+bin_SCRIPTS = rip
 
-EXTRA_DIST = $(bin_SCRIPTS_IN)
+EXTRA_DIST = rip.in

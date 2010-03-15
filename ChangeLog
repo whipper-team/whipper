@@ -1,5 +1,10 @@
 2010-03-15  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* bin/Makefile.am:
+	  Install rip as the script.
+
+2010-03-15  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/Makefile.am:
 	  Add missing result.py
 	* morituri/test/Makefile.am:
