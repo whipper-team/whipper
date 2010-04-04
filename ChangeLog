@@ -1,5 +1,11 @@
 2010-04-05  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/task.py:
+	  Wrap exceptions during tasks in a TaskException, storing the
+	  message, for improved error reporting later on.
+
+2010-04-05  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* doc/Makefile.am:
 	* morituri.spec.in:
 	* morituri/extern/Makefile.am:

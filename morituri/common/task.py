@@ -26,6 +26,18 @@ import gobject
 
 from morituri.common import log
 
+class TaskException(Exception):
+    """
+    I wrap an exception that happened during task execution.
+    """
+
+    exception = None # original exception
+
+    def __init__(self, exception, message=None):
+        self.exception = exception
+        self.exceptionMessage = message
+        self.args = (exception, message, )
+
 class Task(object, log.Loggable):
     """
     I wrap a task in an asynchronous interface.
@@ -93,6 +105,11 @@ class Task(object, log.Loggable):
         if description != self.description:
             self._notifyListeners('described', description)
             self.description = description
+
+    def setException(self, exception):
+        self.exception = exception
+        self.exceptionMessage = log.getExceptionMessage(exception)
+        self.debug('set exception, %r' % self.exceptionMessage)
 
     def addListener(self, listener):
         """
@@ -214,10 +231,8 @@ class BaseMultiTask(Task, ITaskListener):
             task.addListener(self)
             task.start(self.runner)
         except Exception, e:
-            m = log.getExceptionMessage(e)
-            self.debug('Got exception during next: %r', m)
-            self.exception = e
-            self.exceptionMessage = m
+            self.setException(e)
+            self.debug('Got exception during next: %r', self.exceptionMessage)
             self.stop()
             return
         
@@ -235,8 +250,10 @@ class BaseMultiTask(Task, ITaskListener):
         """
         self.log('BaseMultiTask.stopped: task %r', task)
         if task.exception:
-            self.log('BaseMultiTask.stopped: exception %r', task.exception)
+            self.log('BaseMultiTask.stopped: exception %r',
+                task.exceptionMessage)
             self.exception = task.exception
+            self.exceptionMessage = task.exceptionMessage
             self.stop()
             return
 
@@ -346,9 +363,10 @@ class SyncRunner(TaskRunner, ITaskListener):
 
         self.debug('done running task %r', task)
         if task.exception:
+            # catch the exception message
             # FIXME: this gave a traceback in the logging module
             self.debug('raising exception, %r', task.exceptionMessage)
-            raise task.exception
+            raise TaskException(task.exception, message=task.exceptionMessage)
 
     def _startWrap(self, task):
         # wrap task start such that we can report any exceptions and
@@ -358,10 +376,8 @@ class SyncRunner(TaskRunner, ITaskListener):
         except Exception, e:
             # getExceptionMessage uses global exception state that doesn't
             # hang around, so store the message
-            m = log.getExceptionMessage(e)
-            self.debug('exception during start: %r', m)
-            task.exception = e
-            task.exceptionMessage = m
+            task.setException(e)
+            self.debug('exception during start: %r', task.exceptionMessage)
             self.stopped(task)
 
 
