@@ -1,3 +1,10 @@
+2010-04-05  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* doc/Makefile.am:
+	* morituri.spec.in:
+	* morituri/extern/Makefile.am:
+	  Use help2man.py to generate manpage.
+
 2010-04-04  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/encode.py:

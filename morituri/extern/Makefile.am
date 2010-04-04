@@ -18,4 +18,4 @@ command_PYTHON = \
 	command/__init__.py \
 	command/command.py
 
-EXTRA_DIST = log/test_log.py command/test_command.py
+EXTRA_DIST = log/test_log.py command/test_command.py command/help2man.py
