@@ -8,7 +8,8 @@ import gobject
 gobject.threads_init()
 
 from morituri.image import image
-from morituri.common import task, common
+from morituri.common import task, common, log
+log.init()
 
 def h(i):
     return "0x%08x" % i
