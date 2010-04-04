@@ -26,9 +26,7 @@ Wrap on-disk CD images based on the .cue file.
 
 import os
 
-import gst
-
-from morituri.common import task, checksum, log, common, encode
+from morituri.common import task, log, common
 from morituri.image import cue, table
 
 class Image(object, log.Loggable):
@@ -120,6 +118,10 @@ class AccurateRipChecksumTask(task.MultiSeparateTask):
             self.debug('track %d has length %d' % (trackIndex + 1, length))
 
             path = image.getRealPath(index.path)
+
+            # here to avoid import gst eating our options
+            from morituri.common import checksum
+
             checksumTask = checksum.AccurateRipChecksumTask(path,
                 trackNumber=trackIndex + 1, trackCount=len(cue.table.tracks),
                 frameStart=index.relative * common.SAMPLES_PER_FRAME,
@@ -149,6 +151,9 @@ class AudioLengthTask(task.Task):
         self._path = path
 
     def start(self, runner):
+        # here to avoid import gst eating our options
+        import gst
+
         task.Task.start(self, runner)
         self._pipeline = gst.parse_launch('''
             filesrc location="%s" !
@@ -235,6 +240,9 @@ class ImageEncodeTask(task.MultiSeparateTask):
         self.lengths = {}
 
         def add(index):
+            # here to avoid import gst eating our options
+            from morituri.common import encode
+
             path = image.getRealPath(index.path)
             assert type(path) is unicode, "%r is not unicode" % path
             self.debug('schedule encode of %r', path)

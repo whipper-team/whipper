@@ -26,12 +26,10 @@ Common functionality and class for all programs using morituri.
 
 import os
 
-from morituri.common import common, log, checksum
+from morituri.common import common, log
 from morituri.result import result
 from morituri.program import cdrdao, cdparanoia
 from morituri.image import image
-
-import gst
 
 class MusicBrainzException(Exception):
     def __init__(self, exc):
@@ -299,6 +297,9 @@ class Program(log.Loggable):
                 # htoa defaults to disc's artist
                 title = 'Hidden Track One Audio'
 
+        # here to avoid import gst eating our options
+        import gst
+
         ret = gst.TagList()
 
         # gst-python 0.10.15.1 does not handle unicode -> utf8 string conversion
@@ -356,6 +357,9 @@ class Program(log.Loggable):
         return (start, stop)
 
     def verifyTrack(self, runner, trackResult):
+        # here to avoid import gst eating our options
+        from morituri.common import checksum
+
         t = checksum.CRC32Task(trackResult.filename)
 
         runner.run(t)

@@ -26,8 +26,8 @@ import math
 import gobject
 gobject.threads_init()
 
-from morituri.common import logcommand, task, checksum, common, accurip, log
-from morituri.common import drive, encode, program
+from morituri.common import logcommand, task, common, accurip, log
+from morituri.common import drive, program
 from morituri.result import result
 from morituri.image import image, cue, table
 from morituri.program import cdrdao, cdparanoia
@@ -63,6 +63,10 @@ class Rip(logcommand.LogCommand):
             help="template for disc file naming (default %s)" % default,
             default=default)
         default = 'flac'
+
+        # here to avoid import gst eating our options
+        from morituri.common import encode
+
         self.parser.add_option('', '--profile',
             action="store", dest="profile",
             help="profile for encoding (default '%s', choices '%s')" % (
@@ -145,6 +149,8 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
 
         prog.outdir = (self.options.output_directory or os.getcwd())
         prog.outdir = prog.outdir.decode('utf-8')
+        # here to avoid import gst eating our options
+        from morituri.common import encode
         profile = encode.PROFILES[self.options.profile]()
 
         # result

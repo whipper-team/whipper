@@ -27,7 +27,7 @@ import shutil
 import subprocess
 import tempfile
 
-from morituri.common import task, log, common, checksum, encode
+from morituri.common import task, log, common
 from morituri.extern import asyncsub
 
 class FileSizeError(Exception):
@@ -371,6 +371,9 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         os.close(fd)
         self._tmpwavpath = tmppath
 
+        # here to avoid import gst eating our options
+        from morituri.common import checksum
+
         self.tasks = []
         self.tasks.append(
             ReadTrackTask(tmppath, table, start, stop,
@@ -387,6 +390,10 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         tmpoutpath = unicode(tmpoutpath)
         os.close(fd)
         self._tmppath = tmpoutpath
+
+        # here to avoid import gst eating our options
+        from morituri.common import encode
+
         self.tasks.append(encode.EncodeTask(tmppath, tmpoutpath, profile,
             taglist=taglist))
         # make sure our encoding is accurate
@@ -415,7 +422,6 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
 
             try:
                 shutil.move(self._tmppath, self.path)
-                self.checksum = checksum
             except Exception, e:
                 self._exception = e
 

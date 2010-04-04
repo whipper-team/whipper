@@ -26,7 +26,7 @@ import tempfile
 import gobject
 gobject.threads_init()
 
-from morituri.common import logcommand, task, checksum, accurip, drive
+from morituri.common import logcommand, task, accurip, drive
 from morituri.image import image
 from morituri.program import cdrdao, cdparanoia
 
@@ -181,6 +181,9 @@ CD in the AccurateRip database."""
         t.description = 'Ripping track %d with read offset %d' % (
             track, offset)
         runner.run(t)
+
+        # here to avoid import gst eating our options
+        from morituri.common import checksum
 
         t = checksum.AccurateRipChecksumTask(path, trackNumber=track,
             trackCount=len(table.tracks))

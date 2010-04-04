@@ -22,8 +22,6 @@
 
 import math
 
-import gst
-
 from morituri.common import common, task
 
 from morituri.common import log
@@ -50,6 +48,10 @@ class FlacProfile(Profile):
 
     # FIXME: we should do something better than just printing ERRORS
     def test(self):
+
+        # here to avoid import gst eating our options
+        import gst
+
         plugin = gst.registry_get_default().find_plugin('flac')
         if not plugin:
             print 'ERROR: cannot find flac plugin'
@@ -145,6 +147,10 @@ class EncodeTask(task.Task):
 
     def start(self, runner):
         task.Task.start(self, runner)
+
+        # here to avoid import gst eating our options
+        import gst
+
         self._pipeline = gst.parse_launch('''
             filesrc location="%s" !
             decodebin name=decoder !
@@ -235,6 +241,9 @@ class EncodeTask(task.Task):
                 self._peakdB = p
 
     def stop(self):
+        # here to avoid import gst eating our options
+        import gst
+
         self.debug('stopping')
         self.debug('setting state to NULL')
         self._pipeline.set_state(gst.STATE_NULL)

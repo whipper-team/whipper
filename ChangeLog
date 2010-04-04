@@ -1,3 +1,16 @@
+2010-04-04  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/encode.py:
+	* morituri/common/program.py:
+	* morituri/image/image.py:
+	* morituri/program/cdparanoia.py:
+	* morituri/rip/cd.py:
+	* morituri/rip/image.py:
+	* morituri/rip/offset.py:
+	  Move all gst-using imports inside functions and classes
+	  to avoid 'import gst' eating our options.
+	  Fixes #12.
+
 2010-03-15  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* bin/Makefile.am:

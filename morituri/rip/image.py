@@ -22,8 +22,7 @@
 
 import os
 
-from morituri.common import logcommand, task, checksum, accurip, program
-from morituri.common import encode
+from morituri.common import logcommand, task, accurip, program
 from morituri.image import image, cue
 from morituri.result import result
 from morituri.program import cdrdao, cdparanoia
@@ -39,6 +38,10 @@ class Encode(logcommand.LogCommand):
             help="output directory (defaults to current directory)")
 
         default = 'vorbis'
+
+        # here to avoid import gst eating our options
+        from morituri.common import encode
+
         self.parser.add_option('', '--profile',
             action="store", dest="profile",
             help="profile for encoding (default '%s', choices '%s')" % (
@@ -50,6 +53,10 @@ class Encode(logcommand.LogCommand):
         prog = program.Program()
         prog.outdir = (self.options.output_directory or os.getcwd())
         prog.outdir = prog.outdir.decode('utf-8')
+
+        # here to avoid import gst eating our options
+        from morituri.common import encode
+
         profile = encode.ALL_PROFILES[self.options.profile]()
 
         runner = task.SyncRunner()
