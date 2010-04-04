@@ -1,5 +1,10 @@
 2010-04-05  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* doc/Makefile.am:
+	  Don't put rip.1 manpage in subdir.
+
+2010-04-05  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/common.py:
 	  add quoteParse function to quote properly for gst.parse_launch()
 	* morituri/common/checksum.py:
