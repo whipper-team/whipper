@@ -158,7 +158,8 @@ class AudioLengthTask(task.Task):
         self._pipeline = gst.parse_launch('''
             filesrc location="%s" !
             decodebin ! audio/x-raw-int !
-            fakesink name=sink''' % self._path.encode('utf-8'))
+            fakesink name=sink''' %
+                common.quoteParse(self._path).encode('utf-8'))
         self.debug('pausing')
         self._pipeline.set_state(gst.STATE_PAUSED)
         self._pipeline.get_state()
@@ -171,7 +172,9 @@ class AudioLengthTask(task.Task):
         try:
             length, qformat = sink.query_duration(gst.FORMAT_DEFAULT)
         except gst.QueryError:
-            print 'failed to query %r' % self._path
+            self.info('failed to query duration of %r' % self._path)
+            raise
+
         # wavparse 0.10.14 returns in bytes
         if qformat == gst.FORMAT_BYTES:
             self.debug('query returned in BYTES format')

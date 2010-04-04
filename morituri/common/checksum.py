@@ -76,7 +76,7 @@ class ChecksumTask(task.Task):
             filesrc location="%s" !
             decodebin ! audio/x-raw-int !
             appsink name=sink sync=False emit-signals=True''' %
-                self._path.encode('utf-8'))
+                common.quoteParse(self._path).encode('utf-8'))
 
         self.debug('pausing pipeline')
         self._pipeline.set_state(gst.STATE_PAUSED)
@@ -90,7 +90,7 @@ class ChecksumTask(task.Task):
             try:
                 length, qformat = sink.query_duration(gst.FORMAT_DEFAULT)
             except gst.QueryError, e:
-                self.exception = e
+                self.setException(e)
                 self.stop()
                 return
 
@@ -187,7 +187,7 @@ class ChecksumTask(task.Task):
 
         if not self._last:
             # see http://bugzilla.gnome.org/show_bug.cgi?id=578612
-            print 'ERROR: not a single buffer gotten'
+            print 'ERROR: checksum: not a single buffer gotten'
             # FIXME: instead of print, do something useful
         else:
             self._checksum = self._checksum % 2 ** 32

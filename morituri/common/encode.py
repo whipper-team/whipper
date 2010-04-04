@@ -158,9 +158,9 @@ class EncodeTask(task.Task):
             level name=level !
             %s !
             filesink location="%s" name=sink''' % (
-                self._inpath.encode('utf-8'),
+                common.quoteParse(self._inpath).encode('utf-8'),
                 self._profile.pipeline,
-                self._outpath.encode('utf-8')))
+                common.quoteParse(self._outpath).encode('utf-8')))
 
         tagger = self._pipeline.get_by_name('tagger')
 

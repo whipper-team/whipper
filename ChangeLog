@@ -1,5 +1,27 @@
 2010-04-05  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/common.py:
+	  add quoteParse function to quote properly for gst.parse_launch()
+	* morituri/common/checksum.py:
+	  Fix single quote problem.
+	  use self.setException()
+	* morituri/common/encode.py:
+	  Fix single quote problem.
+	* morituri/image/image.py:
+	  Fix single quote problem.
+	  Reraise gst.QueryError.
+	* morituri/test/test_common_encode.py:
+	* morituri/test/test_common_encode.py (added):
+	  Add tests for unicode/single/double quote.
+	* morituri/test/test_image_image.py:
+	* morituri/test/test_common_checksum.py:
+	  Add tests for single/double quote.
+	* morituri/test/common.py:
+	  add twisted-like failUnlessRaises to TestCase that returns
+	  the exception, so we can check wrapped exceptions in TaskException.
+
+2010-04-05  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/task.py:
 	  Wrap exceptions during tasks in a TaskException, storing the
 	  message, for improved error reporting later on.

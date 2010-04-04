@@ -2,13 +2,18 @@
 # vi:si:et:sw=4:sts=4:ts=4
 
 import os
+import tempfile
 import unittest
 
 import gobject
 gobject.threads_init()
 
+import gst
+
 from morituri.image import image
 from morituri.common import task, common, log
+from morituri.test import common as tcommon
+
 log.init()
 
 def h(i):
@@ -81,3 +86,26 @@ class AudioLengthTestCase(unittest.TestCase):
         runner = task.SyncRunner()
         runner.run(t, verbose=False)
         self.assertEquals(t.length, 10 * common.SAMPLES_PER_FRAME)
+
+class AudioLengthPathTestCase(tcommon.TestCase):
+    def _testSuffix(self, suffix):
+        self.runner = task.SyncRunner(verbose=False)
+        fd, path = tempfile.mkstemp(suffix=suffix)
+        t = image.AudioLengthTask(path)
+        e = self.assertRaises(task.TaskException, self.runner.run,
+            t, verbose=False)
+        self.failUnless(isinstance(e.exception, gst.QueryError),
+            "%r is not a gst.QueryError" % e.exceptionMessage)
+        os.unlink(path)
+
+    def testUnicodePath(self):
+        # this test makes sure we can checksum a unicode path
+        self._testSuffix(u'morituri.test.B\xeate Noire.empty')
+
+    def testSingleQuote(self):
+        self._testSuffix(u"morituri.test.Guns 'N Roses")
+
+    def testDoubleQuote(self):
+        # This test makes sure we can checksum files with double quote in
+        # their name
+        self._testSuffix(u'morituri.test.12" edit')

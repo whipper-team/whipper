@@ -1,6 +1,9 @@
 # -*- Mode: Python -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
+import sys
+import unittest
+
 from morituri.common import log
 
 log.init()
@@ -30,3 +33,23 @@ def diffStrings(orig, new, desc='input'):
     return _diff(_tolines(orig),
                  _tolines(new),
                  desc=desc)
+
+class TestCase(unittest.TestCase):
+    # unittest.TestCase.failUnlessRaises does not return the exception,
+    # and we'd like to check for the actual exception under TaskException,
+    # so override the way twisted.trial.unittest does, without failure
+    def failUnlessRaises(self, exception, f, *args, **kwargs):
+        try:
+            result = f(*args, **kwargs)
+        except exception, inst:
+            return inst
+        except exception, e:
+            raise self.failureException('%s raised instead of %s:\n %s'
+                                        % (sys.exc_info()[0],
+                                           exception.__name__,
+                                           log.getExceptionMessage(e)))
+        else:
+            raise self.failureException('%s not raised (%r returned)'
+                                        % (exception.__name__, result))
+
+    assertRaises = failUnlessRaises
