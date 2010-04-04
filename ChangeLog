@@ -19,6 +19,7 @@
 	* morituri/test/common.py:
 	  add twisted-like failUnlessRaises to TestCase that returns
 	  the exception, so we can check wrapped exceptions in TaskException.
+	  Fixes #16.
 
 2010-04-05  Thomas Vander Stichele  <thomas at apestaart dot org>
 
