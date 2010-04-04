@@ -1,4 +1,5 @@
 EXTRA_DIST = morituri.rss2 morituri.ics $(man_MANS)
+DISTCLEANFILES = $(man_MANS)
 
 all-local: feeds reference
 
