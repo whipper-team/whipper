@@ -65,6 +65,8 @@ class CueFile(object, log.Loggable):
     @type table: L{table.Table}
     @ivar table: the index table.
     """
+    logCategory = 'CueFile'
+
     def __init__(self, path):
         """
         @type  path: unicode

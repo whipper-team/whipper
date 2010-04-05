@@ -1,5 +1,13 @@
 2010-04-06  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/task.py:
+	* morituri/image/cue.py:
+	  Add logCategory.
+	* morituri/image/image.py:
+	  If subtasks had an exception, retrigger the exception and stop.
+
+2010-04-06  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/image/image.py:
 	  Fix AudioLengthTask for the case where we don't have the decoder,
 	  by instead of doing get_state, waiting for an ASYNC_DONE or ERROR

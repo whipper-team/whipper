@@ -34,6 +34,7 @@ class Image(object, log.Loggable):
     @ivar table: The Table of Contents for this image.
     @type table: L{table.Table}
     """
+    logCategory = 'Image'
 
     def __init__(self, path):
         """
@@ -138,6 +139,7 @@ class AudioLengthTask(task.Task):
 
     @ivar  length: length of the decoded audio file, in audio frames.
     """
+    logCategory = 'AudioLengthTask'
 
     description = 'Getting length of audio track'
     length = None
@@ -211,6 +213,8 @@ class ImageVerifyTask(task.MultiSeparateTask):
     I verify a disk image and get the necessary track lengths.
     """
     
+    logCategory = 'ImageVerifyTask'
+
     description = "Checking tracks"
     lengths = None
 
@@ -239,6 +243,12 @@ class ImageVerifyTask(task.MultiSeparateTask):
 
     def stop(self):
         for trackIndex, track, taskk in self._tasks:
+            if taskk.exception:
+                self.debug('subtask %r had exception %r, shutting down' % (
+                    taskk, taskk.exception))
+                self.setException(taskk.exception)
+                break
+
             # print '%d has length %d' % (trackIndex, taskk.length)
             index = track.indexes[1]
             assert taskk.length % common.SAMPLES_PER_FRAME == 0

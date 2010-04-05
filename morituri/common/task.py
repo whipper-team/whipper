@@ -52,6 +52,8 @@ class Task(object, log.Loggable):
     @ivar  exception:   set if an exception happened during the task
                         execution.  Will be raised through run() at the end.
     """
+    logCategory = 'Task'
+
     description = 'I am doing something.'
 
     progress = 0.0
