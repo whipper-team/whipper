@@ -160,10 +160,19 @@ class AudioLengthTask(task.Task):
             decodebin ! audio/x-raw-int !
             fakesink name=sink''' %
                 common.quoteParse(self._path).encode('utf-8'))
+        self._bus = self._pipeline.get_bus()
+        self._bus.add_signal_watch()
+        self._bus.connect('message::error', self._error_cb)
+
         self.debug('pausing')
         self._pipeline.set_state(gst.STATE_PAUSED)
-        self._pipeline.get_state()
-        self.debug('paused')
+        self.debug('waiting for ASYNC_DONE or ERROR')
+        message = self._bus.timed_pop_filtered(gst.CLOCK_TIME_NONE,
+            gst.MESSAGE_ASYNC_DONE | gst.MESSAGE_ERROR)
+        if message.type == gst.MESSAGE_ERROR:
+            self._error_cb(self._bus, message)
+            self._pipeline.set_state(gst.STATE_NULL)
+            return
 
         self.debug('query duration')
         sink = self._pipeline.get_by_name('sink')
@@ -183,6 +192,18 @@ class AudioLengthTask(task.Task):
         self.length = length
         self._pipeline.set_state(gst.STATE_NULL)
         
+        self.stop()
+
+    def _error_cb(self, bus, msg):
+        error, debug = msg.parse_error()
+        self.debug('Got GStreamer error: %r, debug: %r' % (
+            error.message, debug))
+        # give us an exception stack for debugging
+        try:
+            raise error
+        except:
+            pass
+        self.setException(error)
         self.stop()
 
 class ImageVerifyTask(task.MultiSeparateTask):

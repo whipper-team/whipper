@@ -94,8 +94,11 @@ class AudioLengthPathTestCase(tcommon.TestCase):
         t = image.AudioLengthTask(path)
         e = self.assertRaises(task.TaskException, self.runner.run,
             t, verbose=False)
-        self.failUnless(isinstance(e.exception, gst.QueryError),
-            "%r is not a gst.QueryError" % e.exceptionMessage)
+        self.failUnless(isinstance(e.exception, gst.GError),
+            "%r is not a gst.GError" % e.exceptionMessage)
+        self.assertEquals(e.exception.domain, gst.STREAM_ERROR)
+        # our empty file triggers TYPE_NOT_FOUND
+        self.assertEquals(e.exception.code, gst.STREAM_ERROR_TYPE_NOT_FOUND)
         os.unlink(path)
 
     def testUnicodePath(self):

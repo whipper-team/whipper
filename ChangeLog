@@ -1,3 +1,17 @@
+2010-04-06  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/image/image.py:
+	  Fix AudioLengthTask for the case where we don't have the decoder,
+	  by instead of doing get_state, waiting for an ASYNC_DONE or ERROR
+	  message.  Properly raise a gst.GError in that case.
+	* morituri/common/task.py:
+	  Add some debug.
+	* morituri/test/test_image_image.py:
+	  After this fix, we now catch the TYPE_NOT_FOUND because of an
+	  empty stream instead of the later gst.QueryError.
+	* morituri/test/test_common_encode.py:
+	  Let us know what it is if not a gst.QueryError.
+
 2010-04-05  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* doc/Makefile.am:

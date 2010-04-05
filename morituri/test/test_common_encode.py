@@ -24,7 +24,8 @@ class PathTestCase(common.TestCase):
             encode.WavProfile())
         e = self.assertRaises(task.TaskException, self.runner.run,
             encodetask, verbose=False)
-        self.failUnless(isinstance(e.exception, gst.QueryError))
+        self.failUnless(isinstance(e.exception, gst.QueryError),
+            "%r is not a gst.QueryError" % e.exception)
         os.unlink(path)
 
     def testUnicodePath(self):
