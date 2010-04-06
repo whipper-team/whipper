@@ -46,6 +46,7 @@ class DiscMetadata(object):
     @type  release: unicode
     """
     artist = None
+    sortName = None
     title = None
     various = False
     tracks = None
