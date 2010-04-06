@@ -182,5 +182,3 @@ class PersistedCache(object):
                     persister.delete()
 
         return persister
-
-    
