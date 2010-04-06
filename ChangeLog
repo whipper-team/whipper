@@ -1,5 +1,13 @@
 2010-04-06  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	patch by: Peter Oliver.
+
+	* morituri/common/program.py:
+	  Allow using sortName for artist/track using %S/%s.
+	  Fixes #19.
+
+2010-04-06  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* doc/release:
 	  Document having clean test run.
 	* morituri/common/encode.py:

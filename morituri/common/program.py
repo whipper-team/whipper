@@ -68,16 +68,19 @@ def getMetadata(release):
     metadata.title = release.title
     # getUniqueName gets disambiguating names like Muse (UK rock band)
     metadata.artist = release.artist.name
+    metadata.sortName = release.artist.sortName
     metadata.release = release.getEarliestReleaseDate()
 
     for t in release.tracks:
         track = TrackMetadata()
         if isSingleArtist:
             track.artist = metadata.artist
+            track.sortName = metadata.sortName
             track.title = t.title
         else:
             # various artists discs can have tracks with no artist
             track.artist = t.artist and t.artist.name or release.artist.name
+            track.sortName = t.artist.sortName
             track.title = t.title
         metadata.tracks.append(track)
 
@@ -253,10 +256,12 @@ class Program(log.Loggable):
 
         if self.metadata:
             v['A'] = filterForPath(self.metadata.artist)
+            v['S'] = filterForPath(self.metadata.sortName)
             v['d'] = filterForPath(self.metadata.title)
             if i > 0:
                 try:
                     v['a'] = filterForPath(self.metadata.tracks[i - 1].artist)
+                    v['s'] = filterForPath(self.metadata.tracks[i - 1].sortName)
                     v['n'] = filterForPath(self.metadata.tracks[i - 1].title)
                 except IndexError, e:
                     print 'ERROR: no track %d found, %r' % (i, e)
