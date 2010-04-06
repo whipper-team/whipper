@@ -26,14 +26,16 @@ class PathTestCase(common.TestCase):
             encodetask, verbose=False)
         self.failUnless(isinstance(e.exception, gst.QueryError),
             "%r is not a gst.QueryError" % e.exception)
+        os.close(fd)
         os.unlink(path)
+        os.unlink(path + '.out')
 
     def testUnicodePath(self):
         # this test makes sure we can checksum a unicode path
-        self._testSuffix(u'morituri.test.B\xeate Noire.empty')
+        self._testSuffix(u'.morituri.test_encode.B\xeate Noire')
 
     def testSingleQuote(self):
-        self._testSuffix(u"morituri.test.Guns 'N Roses")
+        self._testSuffix(u".morituri.test_encode.Guns 'N Roses")
 
     def testDoubleQuote(self):
-        self._testSuffix(u'morituri.test.12" edit')
+        self._testSuffix(u'.morituri.test_encode.12" edit')

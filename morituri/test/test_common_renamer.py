@@ -10,7 +10,7 @@ from morituri.common import renamer
 
 class RenameInFileTestcase(unittest.TestCase):
     def setUp(self):
-        (fd, self._path) = tempfile.mkstemp(suffix='morituri')
+        (fd, self._path) = tempfile.mkstemp(suffix='.morituri.renamer.infile')
         os.write(fd, 'This is a test\nThis is another\n')
         os.close(fd)
 
@@ -25,6 +25,7 @@ class RenameInFileTestcase(unittest.TestCase):
         o.do()
         output = open(self._path).read()
         self.assertEquals(output, 'That was some test\nThat was somenother\n')
+        os.unlink(self._path)
 
     def testSerialize(self):
         o = renamer.RenameInFile(self._path, 'is is a', 'at was some')
@@ -33,13 +34,15 @@ class RenameInFileTestcase(unittest.TestCase):
         o2.do()
         output = open(self._path).read()
         self.assertEquals(output, 'That was some test\nThat was somenother\n')
+        os.unlink(self._path)
         
 class RenameFileTestcase(unittest.TestCase):
     def setUp(self):
-        (fd, self._source) = tempfile.mkstemp(suffix='morituri')
+        (fd, self._source) = tempfile.mkstemp(suffix='.morituri.renamer.file')
         os.write(fd, 'This is a test\nThis is another\n')
         os.close(fd)
-        (fd, self._destination) = tempfile.mkstemp(suffix='morituri')
+        (fd, self._destination) = tempfile.mkstemp(
+            suffix='.morituri.renamer.file')
         os.close(fd)
         os.unlink(self._destination)
         self._operation = renamer.RenameFile(self._source, self._destination)
@@ -61,6 +64,7 @@ class RenameFileTestcase(unittest.TestCase):
         self._operation.do()
         output = open(self._destination).read()
         self.assertEquals(output, 'This is a test\nThis is another\n')
+        os.unlink(self._destination)
 
     def testSerialize(self):
         data = self._operation.serialize()
@@ -68,22 +72,28 @@ class RenameFileTestcase(unittest.TestCase):
         o.do()
         output = open(self._destination).read()
         self.assertEquals(output, 'This is a test\nThis is another\n')
+        os.unlink(self._destination)
   
 class OperatorTestCase(unittest.TestCase):
     def setUp(self):
-        self._statePath = tempfile.mkdtemp(suffix='.morituri')
+        self._statePath = tempfile.mkdtemp(suffix='.morituri.renamer.operator')
         self._operator = renamer.Operator(self._statePath, 'test')
 
-        (fd, self._source) = tempfile.mkstemp(suffix='morituri')
+        (fd, self._source) = tempfile.mkstemp(
+            suffix='.morituri.renamer.operator')
         os.write(fd, 'This is a test\nThis is another\n')
         os.close(fd)
-        (fd, self._destination) = tempfile.mkstemp(suffix='morituri')
+        (fd, self._destination) = tempfile.mkstemp(
+            suffix='.morituri.renamer.operator')
         os.close(fd)
         os.unlink(self._destination)
         self._operator.addOperation(
             renamer.RenameInFile(self._source, 'is is a', 'at was some'))
         self._operator.addOperation(
             renamer.RenameFile(self._source, self._destination))
+
+    def tearDown(self):
+        os.system('rm -rf %s' % self._statePath)
 
     def testLoadNoneDone(self):
         self._operator.save()
@@ -93,6 +103,7 @@ class OperatorTestCase(unittest.TestCase):
 
         self.assertEquals(o._todo, self._operator._todo)
         self.assertEquals(o._done, [])
+        os.unlink(self._source)
 
     def testLoadOneDone(self):
         self.assertEquals(len(self._operator._done), 0)
@@ -110,6 +121,7 @@ class OperatorTestCase(unittest.TestCase):
         # now continue
         o.next()
         self.assertEquals(len(o._done), 2)
+        os.unlink(self._destination)
 
     def testLoadOneInterrupted(self):
         self.assertEquals(len(self._operator._done), 0)
@@ -132,3 +144,5 @@ class OperatorTestCase(unittest.TestCase):
         self.assertEquals(len(o._done), 1)
         o.next()
         self.assertEquals(len(o._done), 2)
+
+        os.unlink(self._destination)

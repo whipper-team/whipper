@@ -175,7 +175,13 @@ class EncodeTask(task.Task):
 
         # get length
         self.debug('query duration')
-        length, qformat = tagger.query_duration(gst.FORMAT_DEFAULT)
+        try:
+            length, qformat = tagger.query_duration(gst.FORMAT_DEFAULT)
+        except gst.QueryError, e:
+            self.setException(e)
+            self.stop()
+            return
+
         # wavparse 0.10.14 returns in bytes
         if qformat == gst.FORMAT_BYTES:
             self.debug('query returned in BYTES format')
@@ -250,4 +256,5 @@ class EncodeTask(task.Task):
         self.debug('set state to NULL')
         task.Task.stop(self)
 
-        self.peak = math.sqrt(math.pow(10, self._peakdB / 10.0))
+        if self._peakdB:
+            self.peak = math.sqrt(math.pow(10, self._peakdB / 10.0))

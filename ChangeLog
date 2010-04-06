@@ -1,5 +1,17 @@
 2010-04-06  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* doc/release:
+	  Document having clean test run.
+	* morituri/common/encode.py:
+	  Catch and properly stop on gst.QueryError.
+	  Don't set peak in stop if we had an error.
+	* morituri/test/test_common_encode.py:
+	* morituri/test/test_common_renamer.py:
+	* morituri/test/test_image_cue.py:
+	  Clean up after tests.
+
+2010-04-06  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/task.py:
 	* morituri/image/cue.py:
 	  Add logCategory.

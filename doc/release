@@ -1,6 +1,11 @@
 Release procedure for morituri
 ------------------------------
 
+- Verify that all tests run.
+- Verify that test run doesn't leave anything around in /tmp:
+  ls /tmp/*morituri*
+- Verify that all buildbots are green.
+
 - Pick a new version number and set it:
   export VERSION=0.1.0
 - Update configure.ac

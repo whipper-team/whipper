@@ -51,7 +51,7 @@ class KanyeMixedTestCase(unittest.TestCase):
 
 class WriteCueFileTestCase(unittest.TestCase):
     def testWrite(self):
-        fd, path = tempfile.mkstemp(suffix=u'morituri.test.cue')
+        fd, path = tempfile.mkstemp(suffix=u'.morituri.test.cue')
         os.close(fd)
 
         it = table.Table()
@@ -78,5 +78,4 @@ FILE "track01.wav" WAVE
 FILE "track02.wav" WAVE
     INDEX 01 00:00:00
 """)
-
-        
+        os.unlink(path)
