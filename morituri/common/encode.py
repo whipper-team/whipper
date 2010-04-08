@@ -123,6 +123,8 @@ class EncodeTask(task.Task):
     @type  peak: float
     """
 
+    logCategory = 'EncodeTask'
+
     description = 'Encoding'
     peak = None
 
@@ -244,6 +246,7 @@ class EncodeTask(task.Task):
 
         for p in s['peak']:
             if self._peakdB < p:
+                self.log('higher peakdB found, now %r', self._peakdB)
                 self._peakdB = p
 
     def stop(self):
@@ -256,5 +259,8 @@ class EncodeTask(task.Task):
         self.debug('set state to NULL')
         task.Task.stop(self)
 
-        if self._peakdB:
+        if self._peakdB is not None:
+            self.debug('peakdB %r', self._peakdB)
             self.peak = math.sqrt(math.pow(10, self._peakdB / 10.0))
+        else:
+            self.warning('No peak found, something went wrong!')

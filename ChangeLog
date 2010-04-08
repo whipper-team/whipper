@@ -1,3 +1,12 @@
+2010-04-08  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/program/cdparanoia.py:
+	  Add some debug.
+	* morituri/common/encode.py:
+	  Add more debug.
+	  Handle the case where peak is full scale, and peakdB thus 0,
+	  which triggered not setting self.peak.
+
 2010-04-06  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	patch by: Peter Oliver.

@@ -405,6 +405,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         if not self.exception:
             self.quality = max(self.tasks[0].quality, self.tasks[2].quality)
             self.peak = self.tasks[4].peak
+            self.debug('peak: %r', self.peak)
 
             self.testchecksum = c1 = self.tasks[1].checksum
             self.copychecksum = c2 = self.tasks[3].checksum
@@ -424,5 +425,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
                 shutil.move(self._tmppath, self.path)
             except Exception, e:
                 self._exception = e
+        else:
+            self.debug('stop: exception %r', self.exception)
 
         task.MultiSeparateTask.stop(self)
