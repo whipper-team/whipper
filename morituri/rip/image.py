@@ -62,7 +62,7 @@ class Encode(logcommand.LogCommand):
         runner = task.SyncRunner()
 
         for arg in args:
-            arg = unicode(arg)
+            arg = arg.decode('utf-8')
             indir = os.path.dirname(arg)
             cueImage = image.Image(arg)
             cueImage.setup(runner)

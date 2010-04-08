@@ -1,5 +1,10 @@
 2010-04-08  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/rip/image.py:
+	  Fix problem to encode from files with unicode chars.
+
+2010-04-08  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/program/cdparanoia.py:
 	  Add some debug.
 	* morituri/common/encode.py:
