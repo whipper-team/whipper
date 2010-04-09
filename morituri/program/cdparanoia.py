@@ -115,7 +115,8 @@ class ProgressParser(object):
         if frameOffset > self.read:
             delta = frameOffset - self.read
             if self._nframes and delta != self._nframes:
-                # print 'THOMAS: Read %d frames more, not %d' % (delta, self._nframes)
+                # print 'THOMAS: Read %d frames more, not %d' % (
+                # delta, self._nframes)
                 # my drive either reads 7 or 13 frames
                 pass
 
@@ -340,7 +341,8 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
     _tmpwavpath = None
     _tmppath = None
 
-    def __init__(self, path, table, start, stop, offset=0, device=None, profile=None, taglist=None):
+    def __init__(self, path, table, start, stop, offset=0, device=None,
+                 profile=None, taglist=None):
         """
         @param path:    where to store the ripped track
         @type  path:    str

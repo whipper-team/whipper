@@ -1,3 +1,9 @@
+2010-04-09  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/image/table.py:
+	* morituri/program/cdparanoia.py:
+	  Do some 80 character cleanups.
+
 2010-04-08  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/rip/image.py:

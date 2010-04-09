@@ -80,7 +80,8 @@ class Track:
         self.indexes = {}
         self.cdtext = {}
 
-    def index(self, number, absolute=None, path=None, relative=None, counter=None):
+    def index(self, number, absolute=None, path=None, relative=None,
+              counter=None):
         """
         @type path:  unicode or None
         """
@@ -127,7 +128,8 @@ class Index:
     relative = None
     counter = None
 
-    def __init__(self, number, absolute=None, path=None, relative=None, counter=None):
+    def __init__(self, number, absolute=None, path=None, relative=None,
+                 counter=None):
 
         if path is not None:
             assert type(path) is unicode, "%r is not unicode" % path
