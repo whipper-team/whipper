@@ -67,7 +67,7 @@ class Encode(logcommand.LogCommand):
             cueImage = image.Image(arg)
             cueImage.setup(runner)
             # FIXME: find a decent way to get an album-specific outdir
-            root, ext = os.path.splitext(os.path.basename(indir))
+            root = os.path.basename(indir)
             outdir = os.path.join(prog.outdir, root)
             try:
                 os.makedirs(outdir)

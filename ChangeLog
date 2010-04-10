@@ -1,3 +1,9 @@
+2010-04-11  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/rip/image.py:
+	  Don't splitext on inputdir; fixes encoding of directories like
+	  Sigur Ros - Takk... (which removed a period)
+
 2010-04-09  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/image/table.py:
