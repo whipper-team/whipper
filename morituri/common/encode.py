@@ -90,6 +90,13 @@ class MP3Profile(Profile):
     pipeline = 'lame name=tagger quality=0 ! id3v2mux'
     lossless = False
 
+class MP3VBRProfile(Profile):
+    name = 'mp3vbr'
+    extension = 'mp3'
+    pipeline = 'lame name=tagger quality=0 vbr=new vbr-mean-bitrate=192 ! id3v2mux'
+    lossless = False
+
+
 class VorbisProfile(Profile):
     name = 'vorbis'
     extension = 'oga'
@@ -106,6 +113,7 @@ PROFILES = {
 
 LOSSY_PROFILES = {
     'mp3':     MP3Profile,
+    'mp3vbr':  MP3VBRProfile,
     'vorbis':  VorbisProfile,
 }
 

@@ -1,5 +1,10 @@
 2010-04-11  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/encode.py:
+	  Add a vbr profile.
+
+2010-04-11  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/rip/image.py:
 	  Don't splitext on inputdir; fixes encoding of directories like
 	  Sigur Ros - Takk... (which removed a period)
