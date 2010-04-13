@@ -105,11 +105,16 @@ class Retag(logcommand.LogCommand):
         runner = task.SyncRunner()
 
         for arg in args:
+            print 'Retagging image %r' % arg
             arg = unicode(arg)
             cueImage = image.Image(arg)
             cueImage.setup(runner)
 
             mbdiscid = cueImage.table.getMusicBrainzDiscId()
+            if not mbdiscid:
+                print 'Not in MusicBrainz database, skipping'
+                continue
+
             prog.metadata = prog.getMusicBrainz(cueImage.table, mbdiscid)
 
             # FIXME: this feels like we're poking at internals.
