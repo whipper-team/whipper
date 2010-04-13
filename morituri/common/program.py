@@ -53,6 +53,9 @@ class DiscMetadata(object):
     tracks = None
     release = None
 
+    mbid = None
+    mbidArtist = None
+
     def __init__(self):
         self.tracks = []
 
@@ -73,7 +76,7 @@ def getMetadata(release):
     metadata.sortName = release.artist.sortName
     metadata.release = release.getEarliestReleaseDate()
     metadata.mbid = urlparse.urlparse(release.id)[2].split("/")[-1]
-    metadata.artistMBID = urlparse.urlparse(release.artist.id)[2].split("/")[-1]
+    metadata.mbidArtist = urlparse.urlparse(release.artist.id)[2].split("/")[-1]
 
 
     for t in release.tracks:
@@ -81,7 +84,7 @@ def getMetadata(release):
         if isSingleArtist:
             track.artist = metadata.artist
             track.sortName = metadata.sortName
-            track.artistMBID = metadata.artistMBID
+            track.mbidArtist = metadata.mbidArtist
         else:
             # various artists discs can have tracks with no artist
             track.artist = t.artist and t.artist.name or release.artist.name
@@ -326,15 +329,15 @@ class Program(log.Loggable):
         if self.metadata:
             artist = self.metadata.artist
             disc = self.metadata.title
-            albumMBID = self.metadata.mbid
-            albumArtistMBID = self.metadata.artistMBID
+            mbidAlbum = self.metadata.mbid
+            mbidTrackAlbum = self.metadata.mbidArtist
 
             if number > 0:
                 try:
                     artist = self.metadata.tracks[number - 1].artist
                     title = self.metadata.tracks[number - 1].title
-                    trackMBID = self.metadata.tracks[number - 1].mbid
-                    trackArtistMBID = self.metadata.tracks[number - 1].artistMBID
+                    mbidTrack = self.metadata.tracks[number - 1].mbid
+                    mbidTrackArtist = self.metadata.tracks[number - 1].mbidArtist
                 except IndexError, e:
                     print 'ERROR: no track %d found, %r' % (number, e)
                     raise
@@ -381,10 +384,10 @@ class Program(log.Loggable):
                     str(date))
                 ret[gst.TAG_DATE] = s['date']
             
-            ret["musicbrainz-trackid"] = trackMBID
-            ret["musicbrainz-artistid"] = trackArtistMBID
-            ret["musicbrainz-albumid"] = albumMBID
-            ret["musicbrainz-albumartistid"] = albumArtistMBID
+            ret["musicbrainz-trackid"] = mbidTrack
+            ret["musicbrainz-artistid"] = mbidTrackArtist
+            ret["musicbrainz-albumid"] = mbidAlbum
+            ret["musicbrainz-albumartistid"] = mbidTrackAlbum
             
         # FIXME: gst.TAG_ISRC 
 
