@@ -103,7 +103,6 @@ class Retag(logcommand.LogCommand):
     def do(self, args):
         prog = program.Program()
         runner = task.SyncRunner()
-        cache = accurip.AccuCache()
 
         for arg in args:
             arg = unicode(arg)
