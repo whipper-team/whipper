@@ -460,7 +460,6 @@ class SafeRetagTask(task.MultiSeparateTask):
 
     def stopped(self, taskk):
         if not taskk.exception:
-            import gst
             # Check if the tags are different or not
             if taskk == self.tasks[0]:
                 taglist = taskk.taglist.copy()
