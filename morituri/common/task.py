@@ -108,6 +108,24 @@ class Task(object, log.Loggable):
             self._notifyListeners('described', description)
             self.description = description
 
+    def setAndRaiseException(self, exception):
+        import traceback
+
+        stack = traceback.extract_stack()[:-1]
+        (filename, line, func, text) = stack[-1]
+        exc = exception.__class__.__name__
+        msg = ""
+        # a shortcut to extract a useful message out of most exceptions
+        # for now
+        if str(exception):
+            msg = ": %s" % str(exception)
+        line = "exception %(exc)s at %(filename)s:%(line)s: %(func)s()%(msg)s" \
+            % locals()
+
+        self.exception = exception
+        self.exceptionMessage = line
+        self.debug('set exception, %r' % self.exceptionMessage)
+
     def setException(self, exception):
         self.exception = exception
         self.exceptionMessage = log.getExceptionMessage(exception)

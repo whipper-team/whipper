@@ -32,10 +32,12 @@ from morituri.common import common, task
 
 class ChecksumTask(task.Task):
     """
-    I am a task that calculates a checksum.
+    I am a task that calculates a checksum of the decoded audio data.
 
     @ivar checksum: the resulting checksum
     """
+
+    logCategory = 'ChecksumTask'
 
     # this object needs a main loop to stop
     description = 'Calculating checksum'

@@ -182,3 +182,26 @@ class PersistedCache(object):
                     persister.delete()
 
         return persister
+
+def tagListToDict(tl):
+    """
+    Removes audio-codec and video-codec since we never set them ourselves.
+    """
+    import gst
+
+    d = {}
+    for key in tl.keys():
+        if key == gst.TAG_DATE:
+            date = tl[key]
+            d[key] = "%4d-%2d-%2d" % (date.year, date.month, date.day)
+        elif key in [gst.TAG_AUDIO_CODEC, gst.TAG_VIDEO_CODEC]:
+            pass
+        else:
+            d[key] = tl[key]
+    return d
+ 
+def tagListEquals(tl1, tl2):
+    d1 = tagListToDict(tl1)    
+    d2 = tagListToDict(tl2)    
+
+    return d1 == d2

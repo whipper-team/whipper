@@ -1,5 +1,15 @@
 2010-04-13  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/checksum.py:
+	  Style fixes.
+	* morituri/common/common.py:
+	  Add functions to convert a gst.TagList to a dict and compare them.
+	* morituri/common/task.py:
+	  Add setAndRaiseException which gives us an appropriate
+	  exceptionMessage as if we raised where we called this new function.
+
+2010-04-13  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/encode.py:
 	  pychecker fix.
 
