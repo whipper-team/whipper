@@ -49,3 +49,66 @@ class TagReadTestCase(common.TestCase):
         self.failUnless(t.taglist)
         self.assertEquals(t.taglist['audio-codec'], 'FLAC')
         self.assertEquals(t.taglist['description'], 'audiotest wave')
+
+class TagWriteTestCase(common.TestCase):
+    def testWrite(self):
+        fd, inpath = tempfile.mkstemp(suffix=u'.morituri.tagwrite.flac')
+        
+        os.system('gst-launch '
+            'audiotestsrc num-buffers=10 samplesperbuffer=588 ! '
+            'audioconvert ! '
+            'audio/x-raw-int,channels=2,width=16,height=16,rate=44100 ! '
+            'flacenc ! filesink location=%s > /dev/null 2>&1' % inpath)
+        os.close(fd)
+
+        fd, outpath = tempfile.mkstemp(suffix=u'.morituri.tagwrite.flac')
+        self.runner = task.SyncRunner(verbose=False)
+        taglist = gst.TagList()
+        taglist[gst.TAG_ARTIST] = 'Artist'
+        taglist[gst.TAG_TITLE] = 'Title'
+
+        t = encode.TagWriteTask(inpath, outpath, taglist)
+        self.runner.run(t)
+
+        t = encode.TagReadTask(outpath)
+        self.runner.run(t)
+        self.failUnless(t.taglist)
+        self.assertEquals(t.taglist['audio-codec'], 'FLAC')
+        self.assertEquals(t.taglist['description'], 'audiotest wave')
+        self.assertEquals(t.taglist[gst.TAG_ARTIST], 'Artist')
+        self.assertEquals(t.taglist[gst.TAG_TITLE], 'Title')
+
+        os.unlink(inpath)
+        os.unlink(outpath)
+        
+class SafeRetagTestCase(common.TestCase):
+    def setUp(self):
+        self._fd, self._path = tempfile.mkstemp(suffix=u'.morituri.retag.flac')
+        
+        os.system('gst-launch '
+            'audiotestsrc num-buffers=10 samplesperbuffer=588 ! '
+            'audioconvert ! '
+            'audio/x-raw-int,channels=2,width=16,height=16,rate=44100 ! '
+            'flacenc ! filesink location=%s > /dev/null 2>&1' % self._path)
+        os.close(self._fd)
+        self.runner = task.SyncRunner(verbose=False)
+
+    def tearDown(self):
+        os.unlink(self._path)
+
+    def testNoChange(self):
+        taglist = gst.TagList()
+        taglist[gst.TAG_DESCRIPTION] = 'audiotest wave'
+        taglist[gst.TAG_AUDIO_CODEC] = 'FLAC'
+
+        t = encode.SafeRetagTask(self._path, taglist)
+        self.runner.run(t)
+
+    def testChange(self):
+        taglist = gst.TagList()
+        taglist[gst.TAG_DESCRIPTION] = 'audiotest retagged'
+        taglist[gst.TAG_AUDIO_CODEC] = 'FLAC'
+        taglist[gst.TAG_ARTIST] = 'Artist'
+
+        t = encode.SafeRetagTask(self._path, taglist)
+        self.runner.run(t)

@@ -1,5 +1,12 @@
 2010-04-13  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/encode.py:
+	  Add tasks to read, write, and safely retag flac files.
+	* morituri/test/test_common_encode.py:
+	  Add tests for this.
+
+2010-04-13  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/checksum.py:
 	  Style fixes.
 	* morituri/common/common.py:
