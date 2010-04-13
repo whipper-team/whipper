@@ -485,7 +485,7 @@ class SafeRetagTask(task.MultiSeparateTask):
                     c1 = self.tasks[1].checksum
                     c2 = self.tasks[3].checksum
                     self.debug('comparing checksums %08x and %08x' % (c1, c2))
-                    if False: #c1 == c2:
+                    if c1 == c2:
                         # data is fine, so we can now move
                         self.debug('moving temporary file to %r' % self._path)
                         os.rename(self._tmppath, self._path)
