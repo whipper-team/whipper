@@ -113,26 +113,7 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
         mbdiscid = ittoc.getMusicBrainzDiscId()
         print "MusicBrainz disc id", mbdiscid
 
-        # look up disc on musicbrainz
-        metadatas = None
-        try:
-            metadatas = program.musicbrainz(mbdiscid)
-        except program.MusicBrainzException, e:
-            print "Error:", e
-            print 'Continuing without metadata'
-
-        if metadatas:
-            print 'Matching releases:'
-            for metadata in metadatas:
-                print 'Artist  : %s' % metadata.artist.encode('utf-8')
-                print 'Title   : %s' % metadata.title.encode('utf-8')
-
-            # Select one of the returned releases. We just pick the first one.
-            prog.metadata = metadatas[0]
-        else:
-            print 'Submit this disc to MusicBrainz at:'
-            print ittoc.getMusicBrainzSubmitURL()
-        print
+        prog.metadata = prog.getMusicBrainz(ittoc, mbdiscid)
 
         # now, read the complete index table, which is slower
         itable = prog.getTable(runner, ittoc.getCDDBDiscId(), device)

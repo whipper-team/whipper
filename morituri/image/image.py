@@ -200,12 +200,7 @@ class AudioLengthTask(task.Task):
         error, debug = msg.parse_error()
         self.debug('Got GStreamer error: %r, debug: %r' % (
             error.message, debug))
-        # give us an exception stack for debugging
-        try:
-            raise error
-        except:
-            pass
-        self.setException(error)
+        self.setAndRaiseException(error)
         self.stop()
 
 class ImageVerifyTask(task.MultiSeparateTask):
@@ -300,4 +295,30 @@ class ImageEncodeTask(task.MultiSeparateTask):
             index = track.indexes[1]
             add(index)
 
+class ImageRetagTask(task.MultiSeparateTask):
+    """
+    I retag files in a disk image.
+    """
+    
+    description = "Retagging tracks"
 
+    def __init__(self, image, taglists):
+        task.MultiSeparateTask.__init__(self)
+
+        # here to avoid import gst eating our options
+        from morituri.common import encode
+
+        self._image = image
+        self._taglists = taglists
+        cue = image.cue
+        self._tasks = []
+        self.lengths = {}
+
+        for trackIndex, track in enumerate(cue.table.tracks):
+            self.debug('retagging track %d', trackIndex + 1)
+            index = track.indexes[1]
+            path = image.getRealPath(index.path)
+            assert type(path) is unicode, "%r is not unicode" % path
+            self.debug('schedule retag of %r', path)
+            root, ext = os.path.splitext(os.path.basename(path))
+            taskk = encode.RetagTask(path, taglists[trackIndex])

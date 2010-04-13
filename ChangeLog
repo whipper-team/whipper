@@ -1,5 +1,17 @@
 2010-04-13  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/program.py:
+	  Add a retagging command.
+	  Add a getMusicBrainz() method.
+	* morituri/rip/cd.py:
+	  Use it.
+	* morituri/image/image.py:
+	  Add a task to retag an image.
+	* morituri/rip/image.py:
+	  Add a command to retag an image.
+
+2010-04-13  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/encode.py:
 	  Add tasks to read, write, and safely retag flac files.
 	* morituri/test/test_common_encode.py:

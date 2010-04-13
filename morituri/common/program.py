@@ -25,6 +25,7 @@ Common functionality and class for all programs using morituri.
 """
 
 import os
+import urlparse
 
 from morituri.common import common, log
 from morituri.result import result
@@ -71,18 +72,23 @@ def getMetadata(release):
     metadata.artist = release.artist.name
     metadata.sortName = release.artist.sortName
     metadata.release = release.getEarliestReleaseDate()
+    metadata.mbid = urlparse.urlparse(release.id)[2].split("/")[-1]
+    metadata.artistMBID = urlparse.urlparse(release.artist.id)[2].split("/")[-1]
+
 
     for t in release.tracks:
         track = TrackMetadata()
         if isSingleArtist:
             track.artist = metadata.artist
             track.sortName = metadata.sortName
-            track.title = t.title
+            track.artistMBID = metadata.artistMBID
         else:
             # various artists discs can have tracks with no artist
             track.artist = t.artist and t.artist.name or release.artist.name
             track.sortName = t.artist.sortName
-            track.title = t.title
+
+        track.title = t.title
+        track.mbid = urlparse.urlparse(t.id)[2].split("/")[-1]
         metadata.tracks.append(track)
 
     return metadata
@@ -276,6 +282,34 @@ class Program(log.Loggable):
 
         return os.path.join(outdir, template % v)
 
+    def getMusicBrainz(self, ittoc, mbdiscid):
+        # look up disc on musicbrainz
+        ret = None
+
+        metadatas = None
+        try:
+            metadatas = musicbrainz(mbdiscid)
+        except MusicBrainzException, e:
+            print "Error:", e
+            print 'Continuing without metadata'
+
+        if metadatas:
+            print 'Matching releases:'
+            for metadata in metadatas:
+                print 'Artist  : %s' % metadata.artist.encode('utf-8')
+                print 'Title   : %s' % metadata.title.encode('utf-8')
+
+            # Select one of the returned releases. We just pick the first one.
+            ret = metadatas[0]
+        else:
+            print 'Submit this disc to MusicBrainz at:'
+            print ittoc.getMusicBrainzSubmitURL()
+            ret = None
+
+        print
+        return ret
+
+
     def getTagList(self, number):
         """
         Based on the metadata, get a gst.TagList for the given track.
@@ -292,10 +326,15 @@ class Program(log.Loggable):
         if self.metadata:
             artist = self.metadata.artist
             disc = self.metadata.title
+            albumMBID = self.metadata.mbid
+            albumArtistMBID = self.metadata.artistMBID
+
             if number > 0:
                 try:
                     artist = self.metadata.tracks[number - 1].artist
                     title = self.metadata.tracks[number - 1].title
+                    trackMBID = self.metadata.tracks[number - 1].mbid
+                    trackArtistMBID = self.metadata.tracks[number - 1].artistMBID
                 except IndexError, e:
                     print 'ERROR: no track %d found, %r' % (number, e)
                     raise
@@ -341,6 +380,11 @@ class Program(log.Loggable):
                 s = gst.structure_from_string('hi,date=(GstDate)%s' %
                     str(date))
                 ret[gst.TAG_DATE] = s['date']
+            
+            ret["musicbrainz-trackid"] = trackMBID
+            ret["musicbrainz-artistid"] = trackArtistMBID
+            ret["musicbrainz-albumid"] = albumMBID
+            ret["musicbrainz-albumartistid"] = albumArtistMBID
             
         # FIXME: gst.TAG_ISRC 
 
@@ -403,6 +447,11 @@ class Program(log.Loggable):
         trackResult.copycrc = t.copychecksum
         trackResult.peak = t.peak
         trackResult.quality = t.quality
+
+    def retagImage(self, runner, taglists):
+        cueImage = image.Image(self.cuePath)
+        t = image.ImageRetagTask(cueImage, taglists)
+        runner.run(t)
 
     def verifyImage(self, runner, responses):
         """

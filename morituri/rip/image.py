@@ -22,7 +22,7 @@
 
 import os
 
-from morituri.common import logcommand, task, accurip, program
+from morituri.common import logcommand, task, accurip, program, encode
 from morituri.image import image, cue
 from morituri.result import result
 from morituri.program import cdrdao, cdparanoia
@@ -97,6 +97,32 @@ class Encode(logcommand.LogCommand):
                         outm3u.write('%s' % root)
                 outm3u.close()
 
+class Retag(logcommand.LogCommand):
+    summary = "retag image files"
+
+    def do(self, args):
+        prog = program.Program()
+        runner = task.SyncRunner()
+        cache = accurip.AccuCache()
+
+        for arg in args:
+            arg = unicode(arg)
+            cueImage = image.Image(arg)
+            cueImage.setup(runner)
+
+            mbdiscid = cueImage.table.getMusicBrainzDiscId()
+            prog.metadata = prog.getMusicBrainz(cueImage.table, mbdiscid)
+
+            # FIXME: this feels like we're poking at internals.
+            prog.cuePath = arg
+            prog.result = result.RipResult()
+            for track in cueImage.table.tracks:
+                path = track.indexes[1].path
+                taglist = prog.getTagList(track.number)
+                self.debug('possibly retagging %r with taglist %r',
+                    path, taglist)
+                runner.run(encode.SafeRetagTask(path, taglist))
+
 class Verify(logcommand.LogCommand):
     summary = "verify image"
 
@@ -128,4 +154,4 @@ class Verify(logcommand.LogCommand):
 class Image(logcommand.LogCommand):
     summary = "handle images"
 
-    subCommandClasses = [Encode, Verify, ]
+    subCommandClasses = [Encode, Retag, Verify, ]
