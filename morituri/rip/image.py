@@ -111,11 +111,11 @@ class Retag(logcommand.LogCommand):
             cueImage.setup(runner)
 
             mbdiscid = cueImage.table.getMusicBrainzDiscId()
-            if not mbdiscid:
+            prog.metadata = prog.getMusicBrainz(cueImage.table, mbdiscid)
+
+            if not prog.metadata:
                 print 'Not in MusicBrainz database, skipping'
                 continue
-
-            prog.metadata = prog.getMusicBrainz(cueImage.table, mbdiscid)
 
             # FIXME: this feels like we're poking at internals.
             prog.cuePath = arg
