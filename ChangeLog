@@ -1,5 +1,10 @@
 2010-04-14  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/image/image.py:
+	  Remove dead code.
+
+2010-04-14  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/encode.py:
 	  Fix wrong code for checksum comparison.
 
