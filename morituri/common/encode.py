@@ -272,3 +272,82 @@ class EncodeTask(task.Task):
             self.peak = math.sqrt(math.pow(10, self._peakdB / 10.0))
         else:
             self.warning('No peak found, something went wrong!')
+
+class TagReadTask(task.Task):
+    """
+    I am a task that reads tags.
+
+    @ivar  taglist: the tag list read from the file.
+    @type  taglist: L{gst.TagList}
+    """
+
+    logCategory = 'TagReadTask'
+
+    description = 'Reading Tags'
+
+    taglist = None
+
+    def __init__(self, path):
+        """
+        """
+        assert type(path) is unicode, "inpath %r is not unicode" % inpath
+        
+        self._path = path
+
+    def start(self, runner):
+        task.Task.start(self, runner)
+
+        # here to avoid import gst eating our options
+        import gst
+
+        self._pipeline = gst.parse_launch('''
+            filesrc location="%s" !
+            decodebin name=decoder !
+            fakesink''' % (
+                common.quoteParse(self._path).encode('utf-8')))
+
+        self.debug('pausing pipeline')
+        self._pipeline.set_state(gst.STATE_PAUSED)
+        self._pipeline.get_state()
+        self.debug('paused pipeline')
+
+        # add eos handling
+        bus = self._pipeline.get_bus()
+        bus.add_signal_watch()
+        bus.connect('message::eos', self._message_eos_cb)
+
+        # set up tag callbacks
+        bus.connect('message::tag', self._message_tag_cb)
+
+        self.debug('scheduling setting to play')
+        # since set_state returns non-False, adding it as timeout_add
+        # will repeatedly call it, and block the main loop; so
+        #   gobject.timeout_add(0L, self._pipeline.set_state, gst.STATE_PLAYING)
+        # would not work.
+
+        def play():
+            self._pipeline.set_state(gst.STATE_PLAYING)
+            return False
+        self.runner.schedule(0, play)
+
+        #self._pipeline.set_state(gst.STATE_PLAYING)
+        self.debug('scheduled setting to play')
+
+    def _message_eos_cb(self, bus, message):
+        self.debug('eos, scheduling stop')
+        self.runner.schedule(0, self.stop)
+
+    def _message_tag_cb(self, bus, message):
+        taglist = message.parse_tag()
+        self.taglist = taglist
+
+    def stop(self):
+        # here to avoid import gst eating our options
+        import gst
+
+        self.debug('stopping')
+        self.debug('setting state to NULL')
+        self._pipeline.set_state(gst.STATE_NULL)
+        self.debug('set state to NULL')
+        task.Task.stop(self)
+

@@ -39,3 +39,13 @@ class PathTestCase(common.TestCase):
 
     def testDoubleQuote(self):
         self._testSuffix(u'.morituri.test_encode.12" edit')
+
+class TagReadTestCase(common.TestCase):
+    def testRead(self):
+        path = os.path.join(os.path.dirname(__file__), u'track.flac')
+        self.runner = task.SyncRunner(verbose=False)
+        t = encode.TagReadTask(path)
+        self.runner.run(t)
+        self.failUnless(t.taglist)
+        self.assertEquals(t.taglist['audio-codec'], 'FLAC')
+        self.assertEquals(t.taglist['description'], 'audiotest wave')
