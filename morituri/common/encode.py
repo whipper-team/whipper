@@ -290,7 +290,7 @@ class TagReadTask(task.Task):
     def __init__(self, path):
         """
         """
-        assert type(path) is unicode, "inpath %r is not unicode" % inpath
+        assert type(path) is unicode, "path %r is not unicode" % path
         
         self._path = path
 

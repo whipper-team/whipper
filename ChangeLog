@@ -1,6 +1,11 @@
 2010-04-13  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/encode.py:
+	  pychecker fix.
+
+2010-04-13  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/encode.py:
 	  Add a task to read tags.
 	* morituri/test/test_common_encode.py:
 	  Add a test.
