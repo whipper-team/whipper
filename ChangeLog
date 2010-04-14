@@ -1,5 +1,10 @@
 2010-04-14  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/program.py:
+	  Commit one missing line from patch in #4 for multi-artist discs.
+
+2010-04-14  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	patch by: Peter Oliver.
 
 	* morituri/common/program.py:
