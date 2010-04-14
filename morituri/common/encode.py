@@ -22,6 +22,7 @@
 
 import math
 import os
+import shutil
 import tempfile
 
 from morituri.common import common, task, checksum
@@ -487,6 +488,8 @@ class SafeRetagTask(task.MultiSeparateTask):
                     self.debug('comparing checksums %08x and %08x' % (c1, c2))
                     if c1 == c2:
                         # data is fine, so we can now move
+                        # but first, copy original mode to our temporary file
+                        shutil.copymode(self._path, self._tmppath)
                         self.debug('moving temporary file to %r' % self._path)
                         os.rename(self._tmppath, self._path)
                     else:
