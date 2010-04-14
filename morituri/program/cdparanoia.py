@@ -403,6 +403,10 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
 
         self.checksum = None
 
+        umask = os.umask(0)
+        os.umask(umask)
+        self.file_mode = 0666 - umask
+
     def stop(self):
         if not self.exception:
             self.quality = max(self.tasks[0].quality, self.tasks[2].quality)
@@ -422,6 +426,8 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
 
             # delete the unencoded file
             os.unlink(self._tmpwavpath)
+
+            os.chmod(self._tmppath, self.file_mode)
 
             try:
                 shutil.move(self._tmppath, self.path)
