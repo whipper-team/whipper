@@ -23,6 +23,8 @@
 	* morituri/common/program.py:
 	  Add a retagging command.
 	  Add a getMusicBrainz() method.
+	  Also store musicbrainz track/album/artist ids.
+	  Patch provided by Peter Oliver.  Fixes #4.
 	* morituri/rip/cd.py:
 	  Use it.
 	* morituri/image/image.py:
