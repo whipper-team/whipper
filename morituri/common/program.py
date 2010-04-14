@@ -89,7 +89,7 @@ def getMetadata(release):
             # various artists discs can have tracks with no artist
             track.artist = t.artist and t.artist.name or release.artist.name
             track.sortName = t.artist.sortName
-            track.mbidArtist = urlparse(t.artist.id)[2].split("/")[-1] 
+            track.mbidArtist = urlparse.urlparse(t.artist.id)[2].split("/")[-1] 
 
         track.title = t.title
         track.mbid = urlparse.urlparse(t.id)[2].split("/")[-1]
