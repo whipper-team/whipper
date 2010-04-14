@@ -106,7 +106,7 @@ class Retag(logcommand.LogCommand):
 
         for arg in args:
             print 'Retagging image %r' % arg
-            arg = unicode(arg)
+            arg = arg.decode('utf-8')
             cueImage = image.Image(arg)
             cueImage.setup(runner)
 
@@ -136,7 +136,7 @@ class Verify(logcommand.LogCommand):
         cache = accurip.AccuCache()
 
         for arg in args:
-            arg = unicode(arg)
+            arg = arg.decode('utf-8')
             cueImage = image.Image(arg)
             cueImage.setup(runner)
 

@@ -1,5 +1,10 @@
 2010-04-14  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/rip/image.py:
+	  Fix more utf-8 issues.
+
+2010-04-14  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/image/image.py:
 	  Remove dead code.
 
