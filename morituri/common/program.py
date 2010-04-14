@@ -81,7 +81,7 @@ def getMetadata(release):
 
     for t in release.tracks:
         track = TrackMetadata()
-        if isSingleArtist:
+        if isSingleArtist or t.artist == None:
             track.artist = metadata.artist
             track.sortName = metadata.sortName
             track.mbidArtist = metadata.mbidArtist

@@ -1,5 +1,13 @@
 2010-04-14  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	patch by: Peter Oliver.
+
+	* morituri/common/program.py:
+	  Handle multi-artist releases where track artist is unset.
+	  Fixes #14.
+
+2010-04-14  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/rip/image.py:
 	  Fix more utf-8 issues.
 
