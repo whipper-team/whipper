@@ -492,6 +492,7 @@ class SafeRetagTask(task.MultiSeparateTask):
                         shutil.copymode(self._path, self._tmppath)
                         self.debug('moving temporary file to %r' % self._path)
                         os.rename(self._tmppath, self._path)
+                        self.changed = True
                     else:
                         # FIXME: don't raise TypeError
                         e = TypeError("Checksums failed")

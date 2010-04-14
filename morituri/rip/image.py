@@ -125,7 +125,14 @@ class Retag(logcommand.LogCommand):
                 taglist = prog.getTagList(track.number)
                 self.debug('possibly retagging %r with taglist %r',
                     path, taglist)
-                runner.run(encode.SafeRetagTask(path, taglist))
+                t = encode.SafeRetagTask(path, taglist)
+                runner.run(t)
+                path = os.path.basename(path)
+                if t.changed:
+                    print 'Retagged %s' % path
+                else:
+                    print '%s already tagged correctly' % path
+            print
 
 class Verify(logcommand.LogCommand):
     summary = "verify image"
