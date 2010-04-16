@@ -25,10 +25,8 @@ import os
 import shutil
 import tempfile
 
-from morituri.common import common, task, checksum
-
-from morituri.common import log
-log.init()
+from morituri.common import common, task
+print 'here we are'
 
 class Profile(object):
     name = None
@@ -460,6 +458,8 @@ class SafeRetagTask(task.MultiSeparateTask):
         self.tasks = [TagReadTask(path), ]
 
     def stopped(self, taskk):
+        from morituri.common import checksum
+
         if not taskk.exception:
             # Check if the tags are different or not
             if taskk == self.tasks[0]:
