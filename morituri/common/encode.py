@@ -26,7 +26,6 @@ import shutil
 import tempfile
 
 from morituri.common import common, task
-print 'here we are'
 
 class Profile(object):
     name = None
