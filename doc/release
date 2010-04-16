@@ -37,11 +37,17 @@ release
 - make distcheck
 - make release
 - build rpm using rpmbuild and mach
+- gpg sign
+  rpm --addsign /var/tmp/mach/fedora-*/morituri-$VERSION-*/*.rpm
 - install it
 - rip a test cd
 - copy files to website and upload
+  cp morituri-$VERSION.tar* /home/thomas/www/thomas.apestaart.org/data/download/morituri
+  cp /var/tmp/mach/fedora-*/morituri-$VERSION-*/*.rpm /home/thomas/www/thomas.apestaart.org/data/download/morituri
+  tao-put
 - commit to TRUNK
 - create release tag:
+  SERVER_PATH=`svn info | grep URL | cut -c 16-53`; echo $SERVER_PATH
   cd ..
   svn cp svn+ssh://$SERVER_PATH/trunk svn+ssh://$SERVER_PATH/tags/$VERSION
   cd trunk
