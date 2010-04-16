@@ -385,10 +385,12 @@ class Program(log.Loggable):
                     str(date))
                 ret[gst.TAG_DATE] = s['date']
             
-            ret["musicbrainz-trackid"] = mbidTrack
-            ret["musicbrainz-artistid"] = mbidTrackArtist
-            ret["musicbrainz-albumid"] = mbidAlbum
-            ret["musicbrainz-albumartistid"] = mbidTrackAlbum
+            # no musicbrainz info for htoa tracks
+            if number > 0:
+                ret["musicbrainz-trackid"] = mbidTrack
+                ret["musicbrainz-artistid"] = mbidTrackArtist
+                ret["musicbrainz-albumid"] = mbidAlbum
+                ret["musicbrainz-albumartistid"] = mbidTrackAlbum
             
         # FIXME: gst.TAG_ISRC 
 
