@@ -35,9 +35,9 @@ class ProgramError(Exception):
     """
     The program had a fatal error.
     """
-    def __init__(self, message):
-        self.args = (message, )
-        self.message = message
+    def __init__(self, errorMessage):
+        self.args = (errorMessage, )
+        self.errorMessage = errorMessage
 
 states = ['START', 'TRACK', 'LEADOUT', 'DONE']
 
