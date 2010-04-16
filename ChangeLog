@@ -1,3 +1,15 @@
+=== release 0.1.1 ===
+
+2010-04-16  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* NEWS:
+	* README:
+	* RELEASE:
+	* configure.ac:
+	* doc/release:
+	* morituri.doap:
+	  Releasing 0.1.1, 'Dead'
+
 2010-04-15  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/encode.py:
@@ -24,7 +36,7 @@
 
 2010-04-14  Thomas Vander Stichele  <thomas at apestaart dot org>
 
-	patch by: Peter Oliver.
+	patch by: Peter Oliver
 
 	* morituri/common/program.py:
 	  Handle multi-artist releases where track artist is unset.
@@ -126,7 +138,7 @@
 
 2010-04-06  Thomas Vander Stichele  <thomas at apestaart dot org>
 
-	patch by: Peter Oliver.
+	patch by: Peter Oliver
 
 	* morituri/common/program.py:
 	  Allow using sortName for artist/track using %S/%s.

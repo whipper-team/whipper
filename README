@@ -1,17 +1,24 @@
 morituri is a CD ripper aiming for accuracy over speed.
 Its features are modeled to compare with Exact Audio Copy on Windows.
 
+
+RATIONALE
+---------
+For a more detailed rationale, see my wiki page 'The Art of the Rip'
+at https://thomas.apestaart.org/thomas/trac/wiki/DAD/Rip
+
 FEATURES
 --------
-- support for MusicBrainz for metadata lookup
-- support for AccurateRip verification
-- detects sample read offset of drives
-- performs test and copy rip
-- detects and rips Hidden Track One Audio
-- templates for file and directory naming
-- support for lossless encoding only for now
-- tagging using GStreamer
-- for now, only a command line client (rip) is shipped
+* support for MusicBrainz for metadata lookup
+* support for AccurateRip verification
+* detects sample read offset of drives
+* performs test and copy rip
+* detects and rips Hidden Track One Audio
+* templates for file and directory naming
+* support for lossless encoding and lossy encoding or re-encoding of images
+* tagging using GStreamer, including embedding MusicBrainz id's
+* retagging of images
+* for now, only a command line client (rip) is shipped 
 
 REQUIREMENTS
 ------------
@@ -23,7 +30,6 @@ REQUIREMENTS
 
 GETTING MORITURI
 ----------------
-
 If you are building from a source tarball or checkout, you can choose to
 use morituri installed or uninstalled.
 
@@ -50,7 +56,6 @@ use morituri installed or uninstalled.
 
 RUNNING MORITURI
 ----------------
-
 morituri currently only has a command-line interface called 'rip'
 
 rip is self-documenting.
@@ -65,9 +70,10 @@ is correct, while
   rip cd rip -d (device)
 is not, because the -d argument applies to the rip command.
 
+Check the man page (rip(1)) for more information.
+
 GETTING STARTED
 ---------------
-
 The simplest way to get started making accurate rips is:
 
 - pick a relatively popular CD that has a good change of being in the
@@ -81,7 +87,6 @@ The simplest way to get started making accurate rips is:
   
 FILING BUGS
 -----------
-
 morituri's bug tracker is at https://thomas.apestaart.org/morituri/trac/
 When filing bugs, please run the failing command with the environment variable
 RIP_DEBUG set; for example:
@@ -93,7 +98,6 @@ And attach the gzipped log file to your bug report.
 
 KNOWN ISSUES
 ------------
-- no lossy encoding yet
 - no GUI yet
 
 GOALS
@@ -122,3 +126,7 @@ rip
   image
     verify
       verify the cd image
+    encode
+      encode to a different codec
+    retag
+      retag the image with current MusicBrainz data

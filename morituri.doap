@@ -42,6 +42,27 @@ Morituri is a CD ripper aiming for maximum quality.
 
  <release>
   <Version>
+   <revision>0.1.1</revision>
+   <branch>trunk</branch>
+   <name>Dead</name>
+   <created>2010-04-16</created>
+   <file-release rdf:resource="http://thomas.apestaart.org/download/morituri/morituri-0.1.1.tar.bz2" />
+   <file-release rdf:resource="http://thomas.apestaart.org/download/morituri/morituri-0.1.1-1.noarch.rpm" />
+   <dc:description>
+- added 'rip image encode' command to encode an image to a lossy codec.
+- provided lossy codec profiles for vorbis, mp3, and mp3vbr
+- added a complete list of known drive offsets from AccurateRip
+- added a generated man page
+- better exception handling in tasks
+- tag audio files with musicbrainz id's
+- added 'rip image retag' command to retag audio files in an image
+- bug fixes
+    </dc:description>
+  </Version>
+ </release>
+
+ <release>
+  <Version>
    <revision>0.1.0</revision>
    <branch>trunk</branch>
    <name>Youngblood</name>

@@ -1,4 +1,25 @@
-This is morituri 0.1.0, "Youngblood"
+This is morituri 0.1.1, "Dead"
+
+Coverage in 0.1.1: 64 %   (1575 / 2440), 61 python tests
+
+Features added in 0.1.1:
+
+- added 'rip image encode' command to encode an image to a lossy codec.
+- provided lossy codec profiles for vorbis, mp3, and mp3vbr
+- added a complete list of known drive offsets from AccurateRip
+- added a generated man page
+- better exception handling in tasks
+- tag audio files with musicbrainz id's
+- added 'rip image retag' command to retag audio files in an image
+
+Bugs fixed in 0.1.1:
+
+-  11: AccurateRip failure on similar URL
+-  12: morituri: 'rip -h' shows gstreamer help, not morituri help, but 'rip help' works fine.
+-  14: AttributeError: 'NoneType' object has no attribute 'name'
+-  16: Fatal error passing unescaped unicode strings to GStreamer
+-  17: Incorrect file permissions
+-  19: Use sortname in filenames
 
 Coverage in 0.1.0: 62 %   (1348 / 2150), 49 python tests
 

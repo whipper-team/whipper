@@ -1,11 +1,23 @@
 Release procedure for morituri
 ------------------------------
 
+pre-release checklist
+---------------------
 - Verify that all tests run.
 - Verify that test run doesn't leave anything around in /tmp:
   ls /tmp/*morituri*
-- Verify that all buildbots are green.
+- Verify that help output shows no gstreamer:
+  rip -h
+- Verify that all buildbots are green:
+  http://build.fluendo.com:8120/grid
+- add new milestone to trac and make it the default
+- verify with ticket query that all fixed tickets for this milestone are
+  correct:
+  https://thomas.apestaart.org/morituri/trac/query?order=priority&col=id&col=summary&col=status&col=type&col=priority&col=milestone&col=component&milestone=0.1.1
+- remilestone still open tickets to next release
 
+release
+-------
 - Pick a new version number and set it:
   export VERSION=0.1.0
 - Update configure.ac
@@ -13,6 +25,7 @@ Release procedure for morituri
 - Update .doap file
 - verify the update with moap doap show
 - Add coverage data to NEWS
+  Coverage: 64 %   (1575 / 2440)
 - Add list of new features to NEWS
 - Update bugs fixed in NEWS:
   moap doap bug query -f "- %(id)3s: %(summary)s" "milestone=$VERSION"
@@ -23,7 +36,9 @@ Release procedure for morituri
 - Update ChangeLog; add === release x.y.z === line
 - make distcheck
 - make release
-- build rpm
+- build rpm using rpmbuild and mach
+- install it
+- rip a test cd
 - copy files to website and upload
 - commit to TRUNK
 - create release tag:
@@ -38,7 +53,6 @@ Release procedure for morituri
   - wait for it and read it
   - then for real:
     moap doap -v $VERSION mail -f thomas@apestaart.org cdrdao-devel@lists.sourceforge.net
-- add new milestone to trac and make it the default
 - add this new version to trac
 - update the homepage
 - bump configure.ac and commit

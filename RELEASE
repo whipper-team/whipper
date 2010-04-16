@@ -1,100 +1,34 @@
 morituri is a CD ripper aiming for accuracy over speed.
 Its features are modeled to compare with Exact Audio Copy on Windows.
 
-This is morituri 0.1.0 "Youngblood", the first public release of morituri!
+This is morituri 0.1.1 "Dead".
 This is intended as a release for daring and curious people who've had enough
 of the fact that Windows has a more accurate CD ripper than Linux.
 
-This is a release to open up morituri to wider feedback and to start having
-people using it.
+Coverage in 0.1.1: 64 %   (1575 / 2440), 61 python tests
 
-FEATURES
---------
-- support for MusicBrainz for metadata lookup
-- support for AccurateRip verification
-- detects sample read offset of drives
-- performs test and copy rip
-- detects and rips Hidden Track One Audio
-- templates for file and directory naming
-- support for lossless encoding only for now
-- tagging using GStreamer
-- for now, only a command line client (rip) is shipped
+Features added in 0.1.1:
 
-REQUIREMENTS
-------------
-- cdparanoia, for the actual ripping
-- cdrdao, for session, TOC, pregap, and ISRC extraction
-- GStreamer and its python bindings, for encoding
-- python musicbrainz2, for metadata lookup
-- pycdio, for drive identification (optional)
+- added 'rip image encode' command to encode an image to a lossy codec.
+- provided lossy codec profiles for vorbis, mp3, and mp3vbr
+- added a complete list of known drive offsets from AccurateRip
+- added a generated man page
+- better exception handling in tasks
+- tag audio files with musicbrainz id's
+- added 'rip image retag' command to retag audio files in an image
 
-GETTING MORITURI
-----------------
+Bugs fixed in 0.1.1:
 
-If you are building from a source tarball or checkout, you can choose to
-use morituri installed or uninstalled.
+-  11: AccurateRip failure on similar URL
+-  12: morituri: 'rip -h' shows gstreamer help, not morituri help, but 'rip help' works fine.
+-  14: AttributeError: 'NoneType' object has no attribute 'name'
+-  16: Fatal error passing unescaped unicode strings to GStreamer
+-  17: Incorrect file permissions
+-  19: Use sortname in filenames
 
-- getting:
-  - Change to a directory where you want to put the morituri source code
-    (For example, $HOME/dev/ext or $HOME/prefix/src)
-  - source: download tarball, unpack, and change to its directory
-  - checkout:
-    svn co https://thomas.apestaart.org/morituri/svn/trunk morituri
-    cd morituri
-    ./autogen.sh
+morituri 0.1.1 is brought to you by:
 
-- building:
-  ./configure
-  make
+Peter Oliver
+Thomas Vander Stichele
 
-- you can now choose to install it or run it uninstalled.
-  - installing:
-    make install
-  - running uninstalled:
-    ln -sf `pwd`/misc/morituri-uninstalled $HOME/bin/morituri-trunk
-    morituri-trunk
-    (this drops you in a shell where everything is set up to use morituri)
-
-RUNNING MORITURI
-----------------
-
-morituri currently only has a command-line interface called 'rip'
-
-rip is self-documenting.
-rip -h gives you the basic instructions.
-
-rip implements a tree of commands; for example, the top-level 'changelog'
-command has a number of sub-commands.
-
-Positioning of arguments is important;
-  rip cd -d (device) rip
-is correct, while
-  rip cd rip -d (device)
-is not, because the -d argument applies to the rip command.
-
-GETTING STARTED
----------------
-
-The simplest way to get started making accurate rips is:
-
-- pick a relatively popular CD that has a good change of being in the
-  AccurateRip database
-- find the drive's offset by running
-  rip offset find
-- wait for it to complete; this might take a while
-- optionally, confirm this offset with two more discs
-- rip the disc by running
-  rip cd rip --offset (the number you got before)
-  
-FILING BUGS
------------
-
-morituri's bug tracker is at https://thomas.apestaart.org/morituri/trac/
-When filing bugs, please run the failing command with the environment variable
-RIP_DEBUG set; for example:
-
-  RIP_DEBUG=5 rip offset find > morituri.log 2>&1
-  gzip morituri.log
-
-And attach the gzipped log file to your bug report.
 
