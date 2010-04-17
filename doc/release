@@ -55,10 +55,14 @@ release
   moap doap -v $VERSION freshmeat
 - send out release mails:
   - first test:
-    moap doap -v $VERSION mail -f thomas@apestaart.org thomas@apestaart.org
+    export AT=@
+    moap doap -v $VERSION mail -f thomas${AT}apestaart.org thomas${AT}@apestaart.org
   - wait for it and read it
   - then for real:
-    moap doap -v $VERSION mail -f thomas@apestaart.org cdrdao-devel@lists.sourceforge.net
+    moap doap -v $VERSION mail -f thomas${AT}apestaart.org cdrdao-devel${AT}@lists.sourceforge.net cfergeau@mandriva.com morituri${AT}packages.debian.org
+- announce on hydrogenaudio:
+  http://www.hydrogenaudio.org/forums/index.php?showforum=22
+- tweet it
 - add this new version to trac
 - update the homepage
 - bump configure.ac and commit
