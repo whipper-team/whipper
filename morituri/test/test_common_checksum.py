@@ -40,10 +40,12 @@ class PathTestCase(common.TestCase):
         self.failUnless(isinstance(e.exception, gst.QueryError))
         os.unlink(path)
 
+class UnicodePathTestCase(PathTestCase, common.UnicodeTestMixin):
     def testUnicodePath(self):
         # this test makes sure we can checksum a unicode path
         self._testSuffix(u'morituri.test.B\xeate Noire.empty')
 
+class NormalPathTestCase(PathTestCase):
     def testSingleQuote(self):
         self._testSuffix(u"morituri.test.Guns 'N Roses")
 

@@ -1,8 +1,11 @@
 # -*- Mode: Python -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
+import os
 import sys
-import unittest
+
+# twisted's unittests have skip support, standard unittest don't
+from twisted.trial import unittest
 
 from morituri.common import log
 
@@ -53,3 +56,13 @@ class TestCase(unittest.TestCase):
                                         % (exception.__name__, result))
 
     assertRaises = failUnlessRaises
+
+class UnicodeTestMixin:
+    # A helper mixin to skip tests if we're not in a UTF-8 locale
+    try:
+        os.stat(u'morituri.test.B\xeate Noire.empty')
+    except UnicodeEncodeError:
+        skip = 'No UTF-8 locale'
+    except OSError:
+        pass
+

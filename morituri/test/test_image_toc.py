@@ -3,13 +3,14 @@
 
 import os
 import copy
-import unittest
+import shutil
+import tempfile
 
 from morituri.image import toc
 
 from morituri.test import common
 
-class CureTestCase(unittest.TestCase):
+class CureTestCase(common.TestCase):
     def setUp(self):
         self.toc = toc.TocFile(os.path.join(os.path.dirname(__file__),
             u'cure.toc'))
@@ -90,7 +91,7 @@ class CureTestCase(unittest.TestCase):
             '3/c/4/dBAR-013-0019d4c3-00fe8924-b90c650d.bin')
 
 # Bloc Party - Silent Alarm has a Hidden Track One Audio
-class BlocTestCase(unittest.TestCase):
+class BlocTestCase(common.TestCase):
     def setUp(self):
         self.toc = toc.TocFile(os.path.join(os.path.dirname(__file__),
             u'bloc.toc'))
@@ -137,7 +138,7 @@ class BlocTestCase(unittest.TestCase):
             'e/d/2/dBAR-013-001af2de-0105994e-ad0be00d.bin')
 
 # The Breeders - Mountain Battles has CDText
-class BreedersTestCase(unittest.TestCase):
+class BreedersTestCase(common.TestCase):
     def setUp(self):
         self.toc = toc.TocFile(os.path.join(os.path.dirname(__file__),
             u'breeders.toc'))
@@ -163,7 +164,7 @@ class BreedersTestCase(unittest.TestCase):
         self.assertEquals(cue, ref)
 
 # Ladyhawke has a data track
-class LadyhawkeTestCase(unittest.TestCase):
+class LadyhawkeTestCase(common.TestCase):
     def setUp(self):
         self.toc = toc.TocFile(os.path.join(os.path.dirname(__file__),
             u'ladyhawke.toc'))
@@ -179,7 +180,7 @@ class LadyhawkeTestCase(unittest.TestCase):
         # c60af50d 13 150 15687 31841 51016 66616 81352 99559 116070 133243
         # 149997 161710 177832 207256 2807
 
-class CapitalMergeTestCase(unittest.TestCase):
+class CapitalMergeTestCase(common.TestCase):
     def setUp(self):
         self.toc1 = toc.TocFile(os.path.join(os.path.dirname(__file__),
             u'capital.1.toc'))
@@ -208,13 +209,22 @@ class CapitalMergeTestCase(unittest.TestCase):
         self.assertEquals(self.table.getMusicBrainzDiscId(),
             "MAj3xXf6QMy7G.BIFOyHyq4MySE-")
 
-class UnicodeTestCase(unittest.TestCase):
+class UnicodeTestCase(common.TestCase, common.UnicodeTestMixin):
     def setUp(self):
+        # we copy the normal non-utf8 filename to a utf-8 filename
+        # in this test because builds with LANG=C fail if we include
+        # utf-8 filenames in the dist
         path = u'Jos\xe9Gonz\xe1lez.toc'
         self._performer = u'Jos\xe9 Gonz\xe1lez'
-        self.toc = toc.TocFile(os.path.join(os.path.dirname(__file__), path))
+        source = os.path.join(os.path.dirname(__file__), 'jose.toc')
+        self.dest = os.path.join(os.path.dirname(__file__), path)
+        shutil.copy(source, self.dest)
+        self.toc = toc.TocFile(self.dest)
         self.toc.parse()
         self.assertEquals(len(self.toc.table.tracks), 10)
+
+    def tearDown(self):
+        os.unlink(self.dest)
 
     def testGetTrackLength(self):
         t = self.toc.table.tracks[0]

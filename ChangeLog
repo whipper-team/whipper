@@ -1,3 +1,17 @@
+2010-04-18  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/test/Makefile.am:
+	* morituri/test/jose.toc (added):
+	* morituri/test/JoséGonzález.toc (deleted):
+	  Rename utf-8 file to a normal file.
+	* morituri/test/common.py:
+	* morituri/test/test_common_checksum.py:
+	* morituri/test/test_common_encode.py:
+	* morituri/test/test_image_image.py:
+	* morituri/test/test_image_toc.py:
+	  Copy the normal file first to the utf-8 filename, if supported.
+	  Skip tests that need unicode when we are not in a utf-8 locale.
+
 2010-04-17  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* configure.ac:

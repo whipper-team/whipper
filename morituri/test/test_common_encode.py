@@ -13,8 +13,6 @@ from morituri.test import common
 
 from morituri.common import task, encode, log
 
-from morituri.test import common
-
 class PathTestCase(common.TestCase):
     def _testSuffix(self, suffix):
         self.runner = task.SyncRunner(verbose=False)
@@ -30,10 +28,12 @@ class PathTestCase(common.TestCase):
         os.unlink(path)
         os.unlink(path + '.out')
 
+class UnicodePathTestCase(PathTestCase, common.UnicodeTestMixin):
     def testUnicodePath(self):
         # this test makes sure we can checksum a unicode path
         self._testSuffix(u'.morituri.test_encode.B\xeate Noire')
 
+class NormalPathTestCase(PathTestCase):
     def testSingleQuote(self):
         self._testSuffix(u".morituri.test_encode.Guns 'N Roses")
 

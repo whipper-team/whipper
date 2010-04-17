@@ -3,7 +3,6 @@
 
 import os
 import tempfile
-import unittest
 
 import gobject
 gobject.threads_init()
@@ -19,7 +18,7 @@ log.init()
 def h(i):
     return "0x%08x" % i
 
-class TrackSingleTestCase(unittest.TestCase):
+class TrackSingleTestCase(tcommon.TestCase):
     def setUp(self):
         self.image = image.Image(os.path.join(os.path.dirname(__file__),
             u'track-single.cue'))
@@ -49,7 +48,7 @@ class TrackSingleTestCase(unittest.TestCase):
         self.assertEquals(self.image.table.getAccurateRipIds(), (
             "00000016", "0000005b"))
 
-class TrackSeparateTestCase(unittest.TestCase):
+class TrackSeparateTestCase(tcommon.TestCase):
     def setUp(self):
         self.image = image.Image(os.path.join(os.path.dirname(__file__),
             u'track-separate.cue'))
@@ -79,7 +78,7 @@ class TrackSeparateTestCase(unittest.TestCase):
         self.assertEquals(self.image.table.getAccurateRipIds(), (
             "00000064", "00000191"))
 
-class AudioLengthTestCase(unittest.TestCase):
+class AudioLengthTestCase(tcommon.TestCase):
     def testLength(self):
         path = os.path.join(os.path.dirname(__file__), u'track.flac')
         t = image.AudioLengthTask(path)
@@ -101,10 +100,7 @@ class AudioLengthPathTestCase(tcommon.TestCase):
         self.assertEquals(e.exception.code, gst.STREAM_ERROR_TYPE_NOT_FOUND)
         os.unlink(path)
 
-    def testUnicodePath(self):
-        # this test makes sure we can checksum a unicode path
-        self._testSuffix(u'morituri.test.B\xeate Noire.empty')
-
+class NormalAudioLengthPathTestCase(AudioLengthPathTestCase):
     def testSingleQuote(self):
         self._testSuffix(u"morituri.test.Guns 'N Roses")
 
@@ -112,3 +108,9 @@ class AudioLengthPathTestCase(tcommon.TestCase):
         # This test makes sure we can checksum files with double quote in
         # their name
         self._testSuffix(u'morituri.test.12" edit')
+
+class UnicodeAudioLengthPathTestCase(AudioLengthPathTestCase, tcommon.UnicodeTestMixin):
+    def testUnicodePath(self):
+        # this test makes sure we can checksum a unicode path
+        self._testSuffix(u'morituri.test.B\xeate Noire.empty')
+        

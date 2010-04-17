@@ -22,7 +22,7 @@ EXTRA_DIST = \
 	capital.2.toc \
 	cure.cue \
 	cure.toc \
-	JoséGonzález.toc \
+	jose.toc \
 	dBAR-011-0010e284-009228a3-9809ff0b.bin \
 	dBAR-020-002e5023-029d8e49-040eaa14.bin \
 	kanye.cue \
