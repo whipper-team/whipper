@@ -37,6 +37,8 @@ You can get help on subcommands by using the -h option to the subcommand.
     def addOptions(self):
         # FIXME: is this the right place ?
         log.init()
+        from morituri.configure import configure
+        log.debug("morituri", "This is morituri version %s" % configure.version)
 
         self.parser.add_option('-v', '--version',
                           action="store_true", dest="version",

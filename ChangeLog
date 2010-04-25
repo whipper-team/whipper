@@ -1,3 +1,8 @@
+2010-04-25  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/rip/main.py:
+	  Fix another UnicodeEncodeError problem as mentioned in #25.
+
 2010-04-18  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/test/Makefile.am:
