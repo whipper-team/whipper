@@ -1,5 +1,10 @@
 2010-04-25  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/rip/cd.py:
+	  Log the version at the beginning to help in bug reports.
+
+2010-04-25  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/rip/main.py:
 	  Fix another UnicodeEncodeError problem as mentioned in #25.
 

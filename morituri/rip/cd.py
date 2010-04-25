@@ -242,10 +242,12 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
         handle = open(m3uPath, 'w')
         handle.write(u'#EXTM3U\n')
         if htoapath:
-            handle.write(u'#EXTINF:%d,%s\n' % (
+            u = u'#EXTINF:%d,%s\n' % (
                 itable.getTrackStart(1) / common.FRAMES_PER_SECOND,
-                    os.path.basename(htoapath[:-4])))
-            handle.write(u'%s\n' % os.path.basename(htoapath))
+                    os.path.basename(htoapath[:-4]))
+            handle.write(u.encode('utf-8'))
+            u = '%s\n' % os.path.basename(htoapath)
+            handle.write(u.encode('utf-8'))
 
         for i, track in enumerate(itable.tracks):
             if not track.audio:
