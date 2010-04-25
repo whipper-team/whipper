@@ -217,7 +217,8 @@ class UnicodeTestCase(common.TestCase, common.UnicodeTestMixin):
         path = u'Jos\xe9Gonz\xe1lez.toc'
         self._performer = u'Jos\xe9 Gonz\xe1lez'
         source = os.path.join(os.path.dirname(__file__), 'jose.toc')
-        self.dest = os.path.join(os.path.dirname(__file__), path)
+        (fd, self.dest) = tempfile.mkstemp(suffix=path)
+        os.close(fd)
         shutil.copy(source, self.dest)
         self.toc = toc.TocFile(self.dest)
         self.toc.parse()
