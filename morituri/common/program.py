@@ -505,7 +505,7 @@ class Program(log.Loggable):
                         response = r
                     else:
                         assert r == response, \
-                            "checksum %s for %d matches wrong response %d, "\
+                            "checksum %08x for %d matches wrong response %d, "\
                             "checksum %s" % (
                                 csum, i + 1, j + 1, response.checksums[i])
                     self.debug("Track: %02d matched in AccurateRip database",
