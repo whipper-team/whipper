@@ -23,6 +23,9 @@ Requires:       gstreamer-python
 Requires:       python-musicbrainz2
 Requires:       pycdio
 
+# we use parse_version in code
+Requires:       python-setuptools
+
 %description
 Morituri is a CD ripper.
 
@@ -49,6 +52,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/bash_completion.d/rip
 
 %changelog
+* Sun May 23 2010 Thomas Vander Stichele <thomas at apestaart dot org>
+- Add python-setuptools requirement
+
 * Sun Sep 06 2009 Thomas Vander Stichele <thomas at apestaart dot org>
 - added requires
 

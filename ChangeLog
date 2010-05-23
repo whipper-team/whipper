@@ -1,5 +1,11 @@
 2010-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri.spec.in:
+	  Add requires for python-setuptools since we use parse_version.
+	  Fixes #32.
+
+2010-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/program.py:
 	  Set results by default so that it is set even if we get an
 	  exception getting them.
