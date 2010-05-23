@@ -105,6 +105,7 @@ def musicbrainz(discid):
     #import musicbrainz2.disc as mbdisc
     import musicbrainz2.webservice as mbws
 
+    results = []
 
     # Setup a Query object.
     service = mbws.WebService()

@@ -1,3 +1,10 @@
+2010-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/program.py:
+	  Set results by default so that it is set even if we get an
+	  exception getting them.
+	  Fixes #35.
+
 2010-04-25  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/test/test_image_toc.py:
