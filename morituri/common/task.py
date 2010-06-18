@@ -62,6 +62,7 @@ class Task(object, log.Loggable):
     runner = None
     exception = None
     exceptionMessage = None
+    exceptionTraceback = None
 
     _listeners = None
 
@@ -124,11 +125,15 @@ class Task(object, log.Loggable):
 
         self.exception = exception
         self.exceptionMessage = line
+        self.exceptionTraceback = traceback.format_exc()
         self.debug('set exception, %r' % self.exceptionMessage)
 
     def setException(self, exception):
+        import traceback
+
         self.exception = exception
         self.exceptionMessage = log.getExceptionMessage(exception)
+        self.exceptionTraceback = traceback.format_exc()
         self.debug('set exception, %r' % self.exceptionMessage)
 
     def addListener(self, listener):
@@ -386,8 +391,12 @@ class SyncRunner(TaskRunner, ITaskListener):
         if task.exception:
             # catch the exception message
             # FIXME: this gave a traceback in the logging module
-            self.debug('raising exception, %r', task.exceptionMessage)
-            raise TaskException(task.exception, message=task.exceptionMessage)
+            self.debug('raising TaskException for %r, %r' % (
+                task.exceptionMessage, task.exceptionTraceback))
+            msg = task.exceptionMessage
+            if task.exceptionTraceback:
+                msg += "\n" + task.exceptionTraceback
+            raise TaskException(task.exception, message=msg)
 
     def _startWrap(self, task):
         # wrap task start such that we can report any exceptions and
