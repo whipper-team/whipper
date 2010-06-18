@@ -250,10 +250,18 @@ class CDRDAOTask(task.Task):
         task.Task.start(self, runner)
 
         bufsize = 1024
-        self._popen = asyncsub.Popen(["cdrdao", ] + self.options,
-            bufsize=bufsize,
-            stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE, close_fds=True)
+        try:
+            self._popen = asyncsub.Popen(["cdrdao", ] + self.options,
+                bufsize=bufsize,
+                stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE, close_fds=True)
+        except OSError, e:
+            import errno
+            if e.errno == errno.ENOENT:
+                raise common.MissingDependencyException('cdrdao')
+
+            raise
+
         self.debug('Started cdrdao with pid %d and options %r',
             self._popen.pid, self.options)
 

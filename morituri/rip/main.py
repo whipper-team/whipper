@@ -3,7 +3,7 @@
 
 import sys
 
-from morituri.common import log, logcommand
+from morituri.common import log, logcommand, common, task
 from morituri.rip import cd, offset, drive, image
 
 def main(argv):
@@ -18,6 +18,12 @@ def main(argv):
         raise
         # deps.handleImportError(e)
         # ret = -1
+    except task.TaskException, e:
+        if isinstance(e.exception, common.MissingDependencyException):
+            sys.stderr.write('rip: error: missing dependency "%s"\n' %
+                e.exception.dependency)
+            return 255
+        raise
 
     if ret is None:
         return 0
