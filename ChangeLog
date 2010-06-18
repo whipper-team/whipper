@@ -1,5 +1,10 @@
 2010-06-19  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/program/cdparanoia.py:
+	  Warn about missing cdparanoia too.
+
+2010-06-19  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/common.py:
 	  Add MissingDependencyException.
 	* morituri/program/cdrdao.py:

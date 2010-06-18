@@ -243,10 +243,17 @@ class ReadTrackTask(task.Task):
                 stopTrack, common.framesToHMSF(stopOffset)),
             self.path])
         self.debug('Running %s' % (" ".join(argv), ))
-        self._popen = asyncsub.Popen(argv,
-            bufsize=bufsize,
-            stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE, close_fds=True)
+        try:
+            self._popen = asyncsub.Popen(argv,
+                bufsize=bufsize,
+                stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE, close_fds=True)
+        except OSError, e:
+            import errno
+            if e.errno == errno.ENOENT:
+                raise common.MissingDependencyException('cdparanoia')
+
+            raise
 
         self.runner.schedule(1.0, self._read, runner)
 
