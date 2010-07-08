@@ -249,6 +249,8 @@ class Program(log.Loggable):
         assert type(outdir) is unicode, "%r is not unicode" % outdir
         assert type(template) is unicode, "%r is not unicode" % template
 
+        # the template is similar to grip, except for %s/%S
+
         # returns without extension
 
         v = {}

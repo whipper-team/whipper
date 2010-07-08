@@ -36,6 +36,21 @@ from morituri.program import cdrdao, cdparanoia
 class Rip(logcommand.LogCommand):
     summary = "rip CD"
 
+    description = """
+Rips a CD.
+
+Tracks are named according to the track template:
+ - %t: track number
+ - %a: track artist
+ - %n: track title
+ - %s: track sort name
+
+Discs are named according to the disc template:
+ - %A: album artist
+ - %S: album sort name
+ - %d: disc title
+"""
+
     def addOptions(self):
         # FIXME: get from config
         default = 0
