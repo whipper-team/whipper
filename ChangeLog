@@ -1,3 +1,10 @@
+2010-11-08  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/program/cdrdao.py:
+	  Add logCategory to CDRDAO tasks.
+	  Remove errors from parser, set them publically on task.
+	  Properly raise exceptions on data cd's with correct stack origin.
+
 2010-07-08  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/program.py:

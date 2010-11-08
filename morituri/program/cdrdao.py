@@ -108,7 +108,6 @@ class OutputParser(object, log.Loggable):
     def __init__(self, taskk, session=None):
         self._buffer = ""     # accumulate characters
         self._lines = []      # accumulate lines
-        self._errors = []     # accumulate error lines
         self._state = 'START'
         self._frames = None   # number of frames
         self._track = None    # which track are we analyzing?
@@ -166,8 +165,12 @@ class OutputParser(object, log.Loggable):
                 self._buffer = ""
             for line in lines:
                 self.log('Parsing %s', line)
-                if line.startswith('ERROR:'):
-                    self._task.exception = ProgramError(line)
+                m = _ERROR_RE.search(line)
+                if m:
+                    error = m.group('error')
+                    self._task.errors.append(error)
+                    self.debug('Found ERROR: output: %s', error)
+                    self._task.exception = ProgramError(error)
                     self._task.abort()
                     return
 
@@ -196,7 +199,7 @@ class OutputParser(object, log.Loggable):
         m = _ERROR_RE.search(line)
         if m:
             error = m.group('error')
-            self._errors.append(error)
+            self._task.errors.append(error)
 
 
     def _parse_TRACK(self, line):
@@ -240,11 +243,12 @@ class CDRDAOTask(task.Task):
     I am a task base class that runs CDRDAO.
     """
 
+    logCategory = 'CDRDAOTask'
     description = "Reading TOC..."
     options = None
 
     def __init__(self):
-        self._errors = []
+        self.errors = []
 
     def start(self, runner):
         task.Task.start(self, runner)
@@ -264,6 +268,7 @@ class CDRDAOTask(task.Task):
 
         self.debug('Started cdrdao with pid %d and options %r',
             self._popen.pid, self.options)
+        self.debug('command: cdrdao %s', ' '.join(self.options))
 
         self.runner.schedule(1.0, self._read, runner)
 
@@ -281,7 +286,7 @@ class CDRDAOTask(task.Task):
                 self.log("read from stderr: %s", ret)
                 self.readbyteserr(ret)
 
-            if self._popen.poll() is None:
+            if self._popen.poll() is None and self.runner:
                 # not finished yet
                 self.runner.schedule(1.0, self._read, runner)
                 return
@@ -290,20 +295,25 @@ class CDRDAOTask(task.Task):
         except Exception, e:
             self.debug('exception during _read()')
             self.debug(log.getExceptionMessage(e))
-            self.exception = e
+            self.setException(e)
             self.stop()
 
     def _done(self):
-            self.debug('Return code was %d', self._popen.returncode)
+            assert self._popen.returncode is not None, "No returncode"
+
+            if self._popen.returncode >= 0:
+                self.debug('Return code was %d', self._popen.returncode)
+            else:
+                self.debug('Terminated with signal %d',
+                    -self._popen.returncode)
+
             self.setProgress(1.0)
 
             if self._popen.returncode != 0:
-                if self._errors:
-                    self.exception = DeviceOpenException(
-                        "\n".join(self._errors))
+                if self.errors:
+                    raise DeviceOpenException("\n".join(self.errors))
                 else:
-                    self.exception = ProgramFailedException(
-                        self._popen.returncode)
+                    raise ProgramFailedException(self._popen.returncode)
             else:
                 self.done()
 
@@ -313,7 +323,7 @@ class CDRDAOTask(task.Task):
     def abort(self):
         self.debug('Aborting, sending SIGTERM to %d', self._popen.pid)
         os.kill(self._popen.pid, signal.SIGTERM)
-        self.stop()
+        # self.stop()
 
     def readbytesout(self, bytes):
         """
@@ -341,6 +351,7 @@ class DiscInfoTask(CDRDAOTask):
     @type sessions: int
     """
 
+    logCategory = 'DiscInfoTask'
     description = "Scanning disc..."
     table = None
     sessions = None
@@ -373,7 +384,7 @@ class DiscInfoTask(CDRDAOTask):
         m = _ERROR_RE.search(line)
         if m:
             error = m.group('error')
-            self._errors.append(error)
+            self._task.errors.append(error)
 
     def done(self):
         pass
@@ -388,6 +399,7 @@ class ReadSessionTask(CDRDAOTask):
     @type table: L{table.Table}
     """
 
+    logCategory = 'ReadSessionTask'
     description = "Reading session"
     table = None
     extraOptions = None
@@ -454,6 +466,7 @@ class ReadTableSessionTask(ReadSessionTask):
     @type table: L{table.Table}
     """
 
+    logCategory = 'ReadTableSessionTask'
     description = "Scanning indexes"
 
 class ReadTOCSessionTask(ReadSessionTask):
@@ -464,6 +477,7 @@ class ReadTOCSessionTask(ReadSessionTask):
     @type table: L{table.Table}
     """
 
+    logCategory = 'ReadTOCSessionTask'
     description = "Reading TOC"
     extraOptions = ['--fast-toc', ]
 
@@ -481,6 +495,7 @@ class ReadAllSessionsTask(task.MultiSeparateTask):
     @type table: L{table.Table}
     """
 
+    logCategory = 'ReadAllSessionsTask'
     table = None
     _readClass = None
 
@@ -522,6 +537,7 @@ class ReadTableTask(ReadAllSessionsTask):
     @type table: L{table.Table}
     """
 
+    logCategory = 'ReadTableTask'
     description = "Scanning indexes..."
     _readClass = ReadTableSessionTask
 
@@ -533,6 +549,7 @@ class ReadTOCTask(ReadAllSessionsTask):
     @type table: L{table.Table}
     """
 
+    logCategory = 'ReadTOCTask'
     description = "Reading TOC..."
     _readClass = ReadTOCSessionTask
 
