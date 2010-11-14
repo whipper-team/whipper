@@ -139,7 +139,7 @@ def main(argv):
             raise
 
     if responses:
-        print '%d AccurateRip reponses found' % len(responses)
+        print '%d AccurateRip responses found' % len(responses)
 
         if responses[0].cddbDiscId != table.getCDDBDiscId():
             print "AccurateRip response discid different: %s" % \

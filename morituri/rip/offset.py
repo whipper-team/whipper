@@ -118,7 +118,7 @@ CD in the AccurateRip database."""
                 raise
 
         if responses:
-            self.debug('%d AccurateRip reponses found.' % len(responses))
+            self.debug('%d AccurateRip responses found.' % len(responses))
 
             if responses[0].cddbDiscId != table.getCDDBDiscId():
                 self.warning("AccurateRip response discid different: %s",

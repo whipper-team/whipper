@@ -1,3 +1,15 @@
+2010-11-14  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	patch by: Loïc Minier <lool at debian dot org>
+
+	* examples/ARcalibrate.py:
+	* examples/ARcue.py:
+	* examples/readdisc.py:
+	* morituri/rip/cd.py:
+	* morituri/rip/offset.py:
+	  s/reponse/response.
+	  Fixes #51.
+
 2010-11-08  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/program/cdrdao.py:

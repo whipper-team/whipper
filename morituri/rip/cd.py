@@ -289,7 +289,7 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
             print 'Album not found in AccurateRip database'
 
         if responses:
-            print '%d AccurateRip reponses found' % len(responses)
+            print '%d AccurateRip responses found' % len(responses)
 
             if responses[0].cddbDiscId != itable.getCDDBDiscId():
                 print "AccurateRip response discid different: %s" % \
