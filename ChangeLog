@@ -1,3 +1,9 @@
+2011-01-01  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/rip/cd.py:
+	  Add -U/--unknown option to continue ripping even if the CD is
+	  unknown.  Default to False.
+
 2010-12-30  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/program.py:

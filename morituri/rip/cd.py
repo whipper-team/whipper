@@ -87,6 +87,11 @@ Discs are named according to the disc template:
             help="profile for encoding (default '%s', choices '%s')" % (
                 default, "', '".join(encode.PROFILES.keys())),
             default=default)
+        self.parser.add_option('-U', '--unknown',
+            action="store_true", dest="unknown",
+            help="whether to continue ripping if the CD is unknown (%default)",
+            default=False)
+        default = 'flac'
 
 
     def handleOptions(self, options):
@@ -131,6 +136,9 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
         print "MusicBrainz disc id", mbdiscid
 
         prog.metadata = prog.getMusicBrainz(ittoc, mbdiscid)
+
+        if not prog.metadata and not self.options.unknown:
+            return -1
 
         # now, read the complete index table, which is slower
         itable = prog.getTable(runner, ittoc.getCDDBDiscId(), device)
