@@ -173,6 +173,18 @@ class Program(log.Loggable):
             'result')
         return path
 
+    def loadDevice(self, device):
+        """
+        Load the given device.
+        """
+        os.system('eject -t %s' % device)
+
+    def ejectDevice(self, device):
+        """
+        Eject the given device.
+        """
+        os.system('eject %s' % device)
+
     def unmountDevice(self, device):
         """
         Unmount the given device if it is mounted, as happens with automounted

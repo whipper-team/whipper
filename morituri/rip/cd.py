@@ -88,6 +88,7 @@ Discs are named according to the disc template:
                 default, "', '".join(encode.PROFILES.keys())),
             default=default)
 
+
     def handleOptions(self, options):
         options.track_template = options.track_template.decode('utf-8')
         options.disc_template = options.disc_template.decode('utf-8')
@@ -103,6 +104,7 @@ Discs are named according to the disc template:
         device = self.parentCommand.options.device
         print 'Checking device', device
 
+        prog.loadDevice(device)
         prog.unmountDevice(device)
         
         # first, read the normal TOC, which is fast
@@ -289,7 +291,7 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
             print 'Album not found in AccurateRip database'
 
         if responses:
-            print '%d AccurateRip responses found' % len(responses)
+            print '%d AccurateRip reponses found' % len(responses)
 
             if responses[0].cddbDiscId != itable.getCDDBDiscId():
                 print "AccurateRip response discid different: %s" % \
@@ -303,6 +305,8 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
         # write log file
         logger = result.getLogger()
         prog.writeLog(discName, logger)
+
+        prog.ejectDevice(device)
 
 
 class CD(logcommand.LogCommand):
