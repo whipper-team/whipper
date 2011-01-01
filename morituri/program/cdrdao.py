@@ -384,7 +384,7 @@ class DiscInfoTask(CDRDAOTask):
         m = _ERROR_RE.search(line)
         if m:
             error = m.group('error')
-            self._task.errors.append(error)
+            self.errors.append(error)
 
     def done(self):
         pass
