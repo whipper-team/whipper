@@ -301,6 +301,22 @@ class Program(log.Loggable):
 
         return os.path.join(outdir, template % v)
 
+    def getCDDB(self, cddbdiscid):
+        """
+        @param cddbdiscid: list of id, tracks, offsets, seconds
+
+        @rtype: str
+        """
+        # FIXME: convert to nonblocking?
+        import CDDB
+        code, md = CDDB.query(cddbdiscid) 
+        self.debug('CDDB query result: %r, %r', code, md)
+        if code == 200:
+            return md['title']
+
+        return None
+
+
     def getMusicBrainz(self, ittoc, mbdiscid):
         # look up disc on musicbrainz
         ret = None

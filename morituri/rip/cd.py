@@ -137,10 +137,16 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
 
         prog.metadata = prog.getMusicBrainz(ittoc, mbdiscid)
 
-        # stop if the cd is unknown and we don't want to continue
-        if not prog.metadata and not self.options.unknown:
-            prog.ejectDevice(device)
-            return -1
+        if not prog.metadata:
+            # fall back to FreeDB for lookup
+            cddbid = ittoc.getCDDBValues()
+            cddbmd = prog.getCDDB(cddbid)
+            if cddbmd:
+                print 'FreeDB identifies disc as %s' % cddbmd
+
+            if not self.options.unknown:
+                prog.ejectDevice(device)
+                return -1
 
         # now, read the complete index table, which is slower
         itable = prog.getTable(runner, ittoc.getCDDBDiscId(), device)

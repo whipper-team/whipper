@@ -239,13 +239,70 @@ class Table(object, log.Loggable):
 
         return ret
 
-    def getCDDBDiscId(self):
+    def _getCDDBValues(self):
         """
-        Calculate the CDDB disc ID.
+        Get all CDDB values needed to calculate disc id and lookup URL.
 
-        @rtype:   str
-        @returns: the 8-character hexadecimal disc ID
+        This includes:
+         - CDDB disc id
+         - number of audio tracks
+         - offset of index 1 of each track
+         - length of disc in seconds
+
+        @rtype:   list of int
         """
+        result = []
+
+        # number of first track
+        result.append(1)
+
+        # number of last audio track
+        result.append(self.getAudioTracks())
+
+        leadout = self.leadout
+        # if the disc is multi-session, last track is the data track,
+        # and we should subtract 11250 + 150 from the last track's offset
+        # for the leadout
+        if self.hasDataTracks():
+            assert not self.tracks[-1].audio
+            leadout = self.tracks[-1].getIndex(1).absolute - 11250 - 150
+
+        # treat leadout offset as track 0 offset
+        result.append(150 + leadout)
+
+        # offsets of tracks
+        for i in range(1, 100):
+            try:
+                track = self.tracks[i - 1]
+                if not track.audio:
+                    continue
+                offset = track.getIndex(1).absolute + 150
+                result.append(offset)
+            except IndexError:
+                pass
+
+
+        self.debug('CDDB values: %r', result)
+        return result
+
+
+
+    def getCDDBValues(self):
+        """
+        Get all CDDB values needed to calculate disc id and lookup URL.
+
+        This includes:
+         - CDDB disc id
+         - number of audio tracks
+         - offset of index 1 of each track
+         - length of disc in seconds
+
+        @rtype:   list of int
+        """
+        result = []
+
+        result.append(self.getAudioTracks())
+
         # cddb disc id takes into account data tracks
         # last byte is the number of tracks on the CD
         n = 0
@@ -259,6 +316,7 @@ class Table(object, log.Loggable):
         debug = [str(len(self.tracks))]
         for track in self.tracks:
             offset = self.getTrackStart(track.number) + delta
+            result.append(offset)
             debug.append(str(offset))
             seconds = offset / common.FRAMES_PER_SECOND
             n += self._cddbSum(seconds)
@@ -272,14 +330,30 @@ class Table(object, log.Loggable):
         leadoutSeconds = leadout / common.FRAMES_PER_SECOND
         t = leadoutSeconds - startSeconds
         debug.append(str(leadoutSeconds + 2)) # 2 is the 150 frame cddb offset
+        result.append(leadoutSeconds)
 
         value = (n % 0xff) << 24 | t << 8 | len(self.tracks)
+        result.insert(0, value)
 
         # compare this debug line to cd-discid output
+        self.debug('cddb values: %r', result)
+
         self.debug('cddb disc id debug: %s',
             " ".join(["%08x" % value, ] + debug))
         
-        return "%08x" % value
+        return result
+
+
+    def getCDDBDiscId(self):
+        """
+        Calculate the CDDB disc ID.
+
+        @rtype:   str
+        @returns: the 8-character hexadecimal disc ID
+        """
+        values = self.getCDDBValues()
+        return "%08x" % values[0]
+
 
     def getMusicBrainzDiscId(self):
         """

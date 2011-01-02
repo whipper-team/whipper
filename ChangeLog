@@ -1,3 +1,11 @@
+2011-01-02  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/program.py:
+	* morituri/image/table.py:
+	* morituri/rip/cd.py:
+	  Get CDDB disc id.  Use it to print info when not found on
+	  MusicBrainz.
+
 2011-01-01  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/rip/cd.py:
