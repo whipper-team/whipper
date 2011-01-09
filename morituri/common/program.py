@@ -3,7 +3,7 @@
 
 # Morituri - for those about to RIP
 
-# Copyright (C) 2009 Thomas Vander Stichele
+# Copyright (C) 2009, 2010, 2011 Thomas Vander Stichele
 
 # This file is part of morituri.
 # 
