@@ -1,3 +1,12 @@
+2011-01-09  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	patch by: Ross Burton
+
+	* morituri/common/program.py:
+	  On compilation albums the album artist is different to the artist.
+	  If this is the case, morituri should write both tags.
+	  Fixes #43.
+
 2011-01-02  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/program.py:

@@ -354,19 +354,21 @@ class Program(log.Loggable):
 
         @rtype: L{gst.TagList}
         """
-        artist = u'Unknown Artist'
+        trackArtist = u'Unknown Artist'
+        albumArtist = u'Unknown Artist'
         disc = u'Unknown Disc'
         title = u'Unknown Track'
 
         if self.metadata:
-            artist = self.metadata.artist
+            trackArtist = self.metadata.artist
+            albumArtist = self.metadata.artist
             disc = self.metadata.title
             mbidAlbum = self.metadata.mbid
             mbidTrackAlbum = self.metadata.mbidArtist
 
             if number > 0:
                 try:
-                    artist = self.metadata.tracks[number - 1].artist
+                    trackArtist = self.metadata.tracks[number - 1].artist
                     title = self.metadata.tracks[number - 1].title
                     mbidTrack = self.metadata.tracks[number - 1].mbid
                     mbidTrackArtist = self.metadata.tracks[number - 1].mbidArtist
@@ -384,7 +386,9 @@ class Program(log.Loggable):
 
         # gst-python 0.10.15.1 does not handle unicode -> utf8 string conversion
         # see http://bugzilla.gnome.org/show_bug.cgi?id=584445
-        ret[gst.TAG_ARTIST] = artist.encode('utf-8')
+        if self.metadata.various:
+            ret["album-artist"] = albumArtist.encode('utf-8')
+        ret[gst.TAG_ARTIST] = trackArtist.encode('utf-8')
         ret[gst.TAG_TITLE] = title.encode('utf-8')
         ret[gst.TAG_ALBUM] = disc.encode('utf-8')
 
