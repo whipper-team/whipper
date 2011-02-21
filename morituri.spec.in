@@ -6,7 +6,7 @@ Version:        @PACKAGE_VERSION@
 Release:        @PACKAGE_VERSION_RELEASE@%{?dist}
 Summary:        CD ripper
 Source:         %{name}-%{version}.tar.bz2
-URL:            http://thomas.apestaart.org/thomas/trac/
+URL:            https://thomas.apestaart.org/morituri/trac/
 License:        GPLv3
 Group:          Applications/Archiving
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -53,6 +53,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/bash_completion.d/rip
 
 %changelog
+* Sun Jan 09 2011 Thomas Vander Stichele <thomas at apestaart dot org>
+- Fix URL
+
 * Sun May 23 2010 Thomas Vander Stichele <thomas at apestaart dot org>
 - Add python-setuptools requirement
 
