@@ -109,7 +109,12 @@ class Task(object, log.Loggable):
             self._notifyListeners('described', description)
             self.description = description
 
+    # FIXME: does not actually raise
     def setAndRaiseException(self, exception):
+        """
+        Call this to set a synthetically created exception (and not one
+        that was actually raised and caught)
+        """
         import traceback
 
         stack = traceback.extract_stack()[:-1]
