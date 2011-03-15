@@ -1,3 +1,14 @@
+2011-03-15  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/checksum.py:
+	  Create a GstException to wrap a Gst.GError.
+	  Create a base GstPipelineTask class.
+	  Use it in Checksum and TRM tasks.
+	  Raise and don't proceed to call .paused() when a GstError happens.
+	  Should help debug https://bugs.launchpad.net/bugs/735053
+	* morituri/test/test_common_checksum.py:
+	  Adapt test.
+
 2011-01-09  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	patch by: Ross Burton

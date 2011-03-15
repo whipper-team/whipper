@@ -27,7 +27,7 @@ class EmptyTestCase(common.TestCase):
         # FIXME: do we want a specific error for this ?
         e = self.assertRaises(task.TaskException, self.runner.run,
             checksumtask, verbose=False)
-        self.failUnless(isinstance(e.exception, gst.QueryError))
+        self.failUnless(isinstance(e.exception, checksum.GstException))
         os.unlink(path)
 
 class PathTestCase(common.TestCase):
@@ -37,7 +37,7 @@ class PathTestCase(common.TestCase):
         checksumtask = checksum.ChecksumTask(path) 
         e = self.assertRaises(task.TaskException, self.runner.run,
             checksumtask, verbose=False)
-        self.failUnless(isinstance(e.exception, gst.QueryError))
+        self.failUnless(isinstance(e.exception, checksum.GstException))
         os.unlink(path)
 
 class UnicodePathTestCase(PathTestCase, common.UnicodeTestMixin):
