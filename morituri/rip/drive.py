@@ -38,7 +38,7 @@ class List(logcommand.LogCommand):
         try:
             import cdio
         except ImportError:
-            print 'Install pycdio for vendora/model/release detection.'
+            print 'Install pycdio for vendor/model/release detection.'
             return
 
         for path in paths:

@@ -1,3 +1,8 @@
+2011-03-17  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/rip/drive.py:
+	  Fix typo.  Fixes #59.
+
 2011-03-15  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/checksum.py:
