@@ -34,9 +34,10 @@ class FileSizeError(Exception):
     """
     The given path does not have the expected size.
     """
-    def __init__(self, path):
-        self.args = (path, )
+    def __init__(self, path, message):
+        self.args = (path, message)
         self.path = path
+        self.message = message
 
 class ReturnCodeError(Exception):
     """
@@ -311,10 +312,14 @@ class ReadTrackTask(task.Task):
             self.warning('file size %d did not match expected size %d',
                 size, expected)
             if (size - expected) % common.BYTES_PER_FRAME == 0:
-                print 'ERROR: %d frames difference' % (
-                    (size - expected) / common.BYTES_PER_FRAME)
+                self.warning('%d frames difference' % (
+                    (size - expected) / common.BYTES_PER_FRAME))
+            else:
+                self.warning('non-integral amount of frames difference')
 
-            self.exception = FileSizeError(self.path)
+            self.setAndRaiseException(FileSizeError(self.path,
+                "File size %d did not match expected size %d" % (
+                    size, expected)))
 
         if not self.exception and self._popen.returncode != 0:
             if self._errors:
@@ -426,6 +431,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
                 self.info('Checksums match, %08x' % c1)
                 self.checksum = self.testchecksum
             else:
+                # FIXME: detect this before encoding
                 self.error('read and verify failed')
 
             if self.tasks[5].checksum != self.checksum:

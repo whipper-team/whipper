@@ -136,7 +136,12 @@ CD in the AccurateRip database."""
 
         for offset in self._offsets:
             print 'Trying read offset %d ...' % offset
-            archecksum = self._arcs(runner, table, 1, offset)
+            try:
+                archecksum = self._arcs(runner, table, 1, offset)
+            except task.TaskException, e:
+                if isinstance(e.exception, cdparanoia.FileSizeError):
+                    print 'WARNING: cannot rip with offset %d...' % offset
+                    continue
 
             self.debug('AR checksum calculated: %s' % archecksum)
 
@@ -148,7 +153,14 @@ CD in the AccurateRip database."""
 
                 # now try and rip all other tracks as well
                 for track in range(2, len(table.tracks) + 1):
-                    archecksum = self._arcs(runner, table, track, offset)
+                    try:
+                        archecksum = self._arcs(runner, table, track, offset)
+                    except task.TaskException, e:
+                        if isinstance(e.exception, cdparanoia.FileSizeError):
+                            print 'WARNING: cannot rip with offset %d...' % \
+                                offset
+                            continue
+
                     c, i = match(archecksum, track, responses)
                     if c:
                         self.debug('MATCHED track %d against response %d' % (
