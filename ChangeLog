@@ -1,5 +1,10 @@
 2011-03-20  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/encode.py:
+	  Debug failing to write tags better.  See #60.
+
+2011-03-20  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/program/cdparanoia.py:
 	  Extend FileSizeError with an extra message.
 	* morituri/rip/offset.py:

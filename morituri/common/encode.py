@@ -464,7 +464,8 @@ class SafeRetagTask(task.MultiSeparateTask):
             if taskk == self.tasks[0]:
                 taglist = taskk.taglist.copy()
                 if common.tagListEquals(taglist, self._taglist):
-                    self.debug('tags are already fine')
+                    self.debug('tags are already fine: %r',
+                        common.tagListToDict(taglist))
                 else:
                     # need to retag
                     self.debug('tags need to be rewritten')
@@ -497,6 +498,8 @@ class SafeRetagTask(task.MultiSeparateTask):
                         e = TypeError("Checksums failed")
                         self.setAndRaiseException(e)
                 else:
+                    self.debug('failed to update tags, only have %r',
+                        common.tagListToDict(self.tasks[4].taglist))
                     os.unlink(self._tmppath)
                     e = TypeError("Tags not written")
                     self.setAndRaiseException(e)
