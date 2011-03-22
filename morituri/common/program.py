@@ -189,7 +189,11 @@ class Program(log.Loggable):
         """
         Unmount the given device if it is mounted, as happens with automounted
         data tracks.
+
+        If the given device is a symlink, the target will be checked.
         """
+        device = os.path.realpath(device)
+        self.debug('possibly unmount real path %r' % device)
         proc = open('/proc/mounts').read()
         if device in proc:
             print 'Device %s is mounted, unmounting' % device

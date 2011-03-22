@@ -1,3 +1,10 @@
+2011-03-22  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/program.py:
+	* morituri/rip/offset.py:
+	  When finding the offset, also load and possibly unmount, resolving
+	  to the real path for the device.
+
 2011-03-20  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/encode.py:

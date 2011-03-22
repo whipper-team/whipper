@@ -26,7 +26,7 @@ import tempfile
 import gobject
 gobject.threads_init()
 
-from morituri.common import logcommand, task, accurip, drive
+from morituri.common import logcommand, task, accurip, drive, program
 from morituri.image import image
 from morituri.program import cdrdao, cdparanoia
 
@@ -86,10 +86,19 @@ CD in the AccurateRip database."""
 
 
     def do(self, args):
+        prog = program.Program()
         runner = task.SyncRunner()
 
+        device = self.options.device
+
+        # if necessary, load and unmount
+        print 'Checking device', device
+
+        prog.loadDevice(device)
+        prog.unmountDevice(device)
+
         # first get the Table Of Contents of the CD
-        t = cdrdao.ReadTOCTask(device=self.options.device)
+        t = cdrdao.ReadTOCTask(device=device)
 
         try:
             runner.run(t)
