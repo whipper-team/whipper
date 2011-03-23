@@ -8,12 +8,6 @@
 	* morituri/test/cdparanoia.progress.error (added):
 	  Add a test for this output.
 
-2011-03-23  Thomas Vander Stichele  <thomas at apestaart dot org>
-
-	* morituri/program/cdparanoia.py:
-	* morituri/test/test_program_cdparanoia.py:
-	  
-
 2011-03-22  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/program.py:
