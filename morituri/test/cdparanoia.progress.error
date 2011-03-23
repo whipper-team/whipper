@@ -1,0 +1,2501 @@
+Sending all callbacks to stderr for wrapper script
+cdparanoia III release 10.2 (September 11, 2008)
+
+Ripping from sector      -2 (track  1 [0:00.00])
+	  to sector   10797 (track  1 [2:23.74])
+
+outputting to cdda.wav
+
+scsi_read error: sector=-2 length=8 retry=0
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=4 retry=1
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=2 retry=2
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=3
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=4
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=5
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=6
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=7
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=8
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+##: 12 [transport error] @ -2352
+##: 0 [read] @ 5880
+##: 0 [read] @ 37632
+##: 0 [read] @ 69384
+##: 0 [read] @ 101136
+##: 0 [read] @ 132888
+##: 0 [read] @ 164640
+##: 0 [read] @ 196392
+##: 0 [read] @ 228144
+##: 0 [read] @ 259896
+##: 0 [read] @ 291648
+##: 0 [read] @ 323400
+##: 0 [read] @ 355152
+##: 0 [read] @ 386904
+##: 0 [read] @ 418656
+##: 0 [read] @ 450408
+##: 0 [read] @ 482160
+##: 0 [read] @ 513912
+##: 0 [read] @ 545664
+##: 0 [read] @ 577416
+##: 0 [read] @ 609168
+##: 0 [read] @ 640920
+##: 0 [read] @ 672672
+##: 0 [read] @ 704424
+##: 0 [read] @ 736176
+##: 0 [read] @ 767928
+##: 0 [read] @ 799680
+##: 0 [read] @ 831432
+##: 0 [read] @ 863184
+##: 0 [read] @ 894936
+##: 0 [read] @ 926688
+##: 0 [read] @ 958440
+##: 0 [read] @ 990192
+##: 0 [read] @ 1021944
+##: 0 [read] @ 1053696
+##: 0 [read] @ 1085448
+##: 0 [read] @ 1117200
+##: 0 [read] @ 1148952
+##: 0 [read] @ 1180704
+##: 0 [read] @ 1212456
+##: 0 [read] @ 1244208
+##: 0 [read] @ 1275960
+##: 0 [read] @ 1307712
+##: 0 [read] @ 1339464
+##: 0 [read] @ 1371216
+##: 0 [read] @ 1402968
+##: 0 [read] @ 1407672
+scsi_read error: sector=-2 length=22 retry=0
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=11 retry=1
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=5 retry=2
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=2 retry=3
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=4
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=5
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=6
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=7
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=8
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+##: 12 [transport error] @ -2352
+##: 0 [read] @ 22344
+##: 0 [read] @ 54096
+##: 0 [read] @ 85848
+##: 0 [read] @ 117600
+##: 0 [read] @ 149352
+##: 0 [read] @ 181104
+##: 0 [read] @ 212856
+##: 0 [read] @ 244608
+##: 0 [read] @ 276360
+##: 0 [read] @ 308112
+##: 0 [read] @ 339864
+##: 0 [read] @ 371616
+##: 0 [read] @ 403368
+##: 0 [read] @ 435120
+##: 0 [read] @ 466872
+##: 0 [read] @ 498624
+##: 0 [read] @ 530376
+##: 0 [read] @ 562128
+##: 0 [read] @ 593880
+##: 0 [read] @ 625632
+##: 0 [read] @ 657384
+##: 0 [read] @ 689136
+##: 0 [read] @ 720888
+##: 0 [read] @ 752640
+##: 0 [read] @ 784392
+##: 0 [read] @ 816144
+##: 0 [read] @ 847896
+##: 0 [read] @ 879648
+##: 0 [read] @ 911400
+##: 0 [read] @ 943152
+##: 0 [read] @ 974904
+##: 0 [read] @ 1006656
+##: 0 [read] @ 1038408
+##: 0 [read] @ 1070160
+##: 0 [read] @ 1101912
+##: 0 [read] @ 1133664
+##: 0 [read] @ 1165416
+##: 0 [read] @ 1197168
+##: 0 [read] @ 1228920
+##: 0 [read] @ 1260672
+##: 0 [read] @ 1292424
+##: 0 [read] @ 1324176
+##: 0 [read] @ 1355928
+##: 0 [read] @ 1387680
+##: 0 [read] @ 1407672
+##: 1 [verify] @ 23520
+##: 2 [jitter] @ 32928
+##: 2 [jitter] @ 1418256
+scsi_read error: sector=-2 length=21 retry=0
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=10 retry=1
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=5 retry=2
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=2 retry=3
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=4
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=5
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=6
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=7
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=8
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+##: 12 [transport error] @ -2352
+##: 0 [read] @ 21168
+##: 0 [read] @ 52920
+##: 0 [read] @ 84672
+##: 0 [read] @ 116424
+##: 0 [read] @ 148176
+##: 0 [read] @ 179928
+##: 0 [read] @ 211680
+##: 0 [read] @ 243432
+##: 0 [read] @ 275184
+##: 0 [read] @ 306936
+##: 0 [read] @ 338688
+##: 0 [read] @ 370440
+##: 0 [read] @ 402192
+##: 0 [read] @ 433944
+##: 0 [read] @ 465696
+##: 0 [read] @ 497448
+##: 0 [read] @ 529200
+##: 0 [read] @ 560952
+##: 0 [read] @ 592704
+##: 0 [read] @ 624456
+##: 0 [read] @ 656208
+##: 0 [read] @ 687960
+##: 0 [read] @ 719712
+##: 0 [read] @ 751464
+##: 0 [read] @ 783216
+##: 0 [read] @ 814968
+##: 0 [read] @ 846720
+##: 0 [read] @ 878472
+##: 0 [read] @ 910224
+##: 0 [read] @ 941976
+##: 0 [read] @ 973728
+##: 0 [read] @ 1005480
+##: 0 [read] @ 1037232
+##: 0 [read] @ 1068984
+##: 0 [read] @ 1100736
+##: 0 [read] @ 1132488
+##: 0 [read] @ 1164240
+##: 0 [read] @ 1195992
+##: 0 [read] @ 1227744
+##: 0 [read] @ 1259496
+##: 0 [read] @ 1291248
+##: 0 [read] @ 1323000
+##: 0 [read] @ 1354752
+##: 0 [read] @ 1386504
+##: 0 [read] @ 1407672
+##: 1 [verify] @ 22344
+##: 2 [jitter] @ 31752
+##: 2 [jitter] @ 1418256
+##: 1 [verify] @ 22344
+##: 2 [jitter] @ 49392
+##: 2 [jitter] @ 1434720
+scsi_read error: sector=-2 length=20 retry=0
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=10 retry=1
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=5 retry=2
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=2 retry=3
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=4
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=5
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=6
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=7
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=8
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+##: 12 [transport error] @ -2352
+##: 0 [read] @ 19992
+##: 0 [read] @ 51744
+##: 0 [read] @ 83496
+##: 0 [read] @ 115248
+##: 0 [read] @ 147000
+##: 0 [read] @ 178752
+##: 0 [read] @ 210504
+##: 0 [read] @ 242256
+##: 0 [read] @ 274008
+##: 0 [read] @ 305760
+##: 0 [read] @ 337512
+##: 0 [read] @ 369264
+##: 0 [read] @ 401016
+##: 0 [read] @ 432768
+##: 0 [read] @ 464520
+##: 0 [read] @ 496272
+##: 0 [read] @ 528024
+##: 0 [read] @ 559776
+##: 0 [read] @ 591528
+##: 0 [read] @ 623280
+##: 0 [read] @ 655032
+##: 0 [read] @ 686784
+##: 0 [read] @ 718536
+##: 0 [read] @ 750288
+##: 0 [read] @ 782040
+##: 0 [read] @ 813792
+##: 0 [read] @ 845544
+##: 0 [read] @ 877296
+##: 0 [read] @ 909048
+##: 0 [read] @ 940800
+##: 0 [read] @ 972552
+##: 0 [read] @ 1004304
+##: 0 [read] @ 1036056
+##: 0 [read] @ 1067808
+##: 0 [read] @ 1099560
+##: 0 [read] @ 1131312
+##: 0 [read] @ 1163064
+##: 0 [read] @ 1194816
+##: 0 [read] @ 1226568
+##: 0 [read] @ 1258320
+##: 0 [read] @ 1290072
+##: 0 [read] @ 1321824
+##: 0 [read] @ 1353576
+##: 0 [read] @ 1385328
+##: 0 [read] @ 1407672
+##: 1 [verify] @ 21168
+##: 2 [jitter] @ 30576
+##: 2 [jitter] @ 1418256
+##: 1 [verify] @ 21168
+##: 2 [jitter] @ 49392
+##: 2 [jitter] @ 1434720
+##: 1 [verify] @ 21168
+##: 2 [jitter] @ 47040
+##: 2 [jitter] @ 1433544
+scsi_read error: sector=-2 length=19 retry=0
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=9 retry=1
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=4 retry=2
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=2 retry=3
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=4
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=5
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=6
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=7
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=8
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+##: 12 [transport error] @ -2352
+##: 0 [read] @ 18816
+##: 0 [read] @ 50568
+##: 0 [read] @ 82320
+##: 0 [read] @ 114072
+##: 0 [read] @ 145824
+##: 0 [read] @ 177576
+##: 0 [read] @ 209328
+##: 0 [read] @ 241080
+##: 0 [read] @ 272832
+##: 0 [read] @ 304584
+##: 0 [read] @ 336336
+##: 0 [read] @ 368088
+##: 0 [read] @ 399840
+##: 0 [read] @ 431592
+##: 0 [read] @ 463344
+##: 0 [read] @ 495096
+##: 0 [read] @ 526848
+##: 0 [read] @ 558600
+##: 0 [read] @ 590352
+##: 0 [read] @ 622104
+##: 0 [read] @ 653856
+##: 0 [read] @ 685608
+##: 0 [read] @ 717360
+##: 0 [read] @ 749112
+##: 0 [read] @ 780864
+##: 0 [read] @ 812616
+##: 0 [read] @ 844368
+##: 0 [read] @ 876120
+##: 0 [read] @ 907872
+##: 0 [read] @ 939624
+##: 0 [read] @ 971376
+##: 0 [read] @ 1003128
+##: 0 [read] @ 1034880
+##: 0 [read] @ 1066632
+##: 0 [read] @ 1098384
+##: 0 [read] @ 1130136
+##: 0 [read] @ 1161888
+##: 0 [read] @ 1193640
+##: 0 [read] @ 1225392
+##: 0 [read] @ 1257144
+##: 0 [read] @ 1288896
+##: 0 [read] @ 1320648
+##: 0 [read] @ 1352400
+##: 0 [read] @ 1384152
+##: 0 [read] @ 1407672
+##: 1 [verify] @ 19992
+##: 2 [jitter] @ 29400
+##: 2 [jitter] @ 1418256
+##: 1 [verify] @ 19992
+##: 2 [jitter] @ 49392
+##: 2 [jitter] @ 1434720
+##: 1 [verify] @ 19992
+##: 2 [jitter] @ 47040
+##: 2 [jitter] @ 1433544
+##: 1 [verify] @ 19992
+##: 9 [overlap] @ 24696
+##: 2 [jitter] @ 44688
+##: 2 [jitter] @ 1432368
+##: 9 [overlap] @ 37044
+scsi_read error: sector=-2 length=18 retry=0
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=9 retry=1
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=4 retry=2
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=2 retry=3
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=4
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=5
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=6
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=7
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=8
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+##: 12 [transport error] @ -2352
+##: 0 [read] @ 17640
+##: 0 [read] @ 49392
+##: 0 [read] @ 81144
+##: 0 [read] @ 112896
+##: 0 [read] @ 144648
+##: 0 [read] @ 176400
+##: 0 [read] @ 208152
+##: 0 [read] @ 239904
+##: 0 [read] @ 271656
+##: 0 [read] @ 303408
+##: 0 [read] @ 335160
+##: 0 [read] @ 366912
+##: 0 [read] @ 398664
+##: 0 [read] @ 430416
+##: 0 [read] @ 462168
+##: 0 [read] @ 493920
+##: 0 [read] @ 525672
+##: 0 [read] @ 557424
+##: 0 [read] @ 589176
+##: 0 [read] @ 620928
+##: 0 [read] @ 652680
+##: 0 [read] @ 684432
+##: 0 [read] @ 716184
+##: 0 [read] @ 747936
+##: 0 [read] @ 779688
+##: 0 [read] @ 811440
+##: 0 [read] @ 843192
+##: 0 [read] @ 874944
+##: 0 [read] @ 906696
+##: 0 [read] @ 938448
+##: 0 [read] @ 970200
+##: 0 [read] @ 1001952
+##: 0 [read] @ 1033704
+##: 0 [read] @ 1065456
+##: 0 [read] @ 1097208
+##: 0 [read] @ 1128960
+##: 0 [read] @ 1160712
+##: 0 [read] @ 1192464
+##: 0 [read] @ 1224216
+##: 0 [read] @ 1255968
+##: 0 [read] @ 1287720
+##: 0 [read] @ 1319472
+##: 0 [read] @ 1351224
+##: 0 [read] @ 1382976
+##: 0 [read] @ 1407672
+##: 1 [verify] @ 18816
+##: 2 [jitter] @ 28224
+##: 2 [jitter] @ 1418256
+##: 1 [verify] @ 18816
+##: 2 [jitter] @ 49392
+##: 2 [jitter] @ 1434720
+##: 1 [verify] @ 18816
+##: 2 [jitter] @ 47040
+##: 2 [jitter] @ 1433544
+##: 1 [verify] @ 18816
+##: 2 [jitter] @ 44688
+##: 2 [jitter] @ 1432368
+##: 1 [verify] @ 18816
+##: 2 [jitter] @ 42336
+##: 2 [jitter] @ 1431192
+scsi_read error: sector=-2 length=17 retry=0
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=8 retry=1
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=4 retry=2
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=2 retry=3
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=4
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=5
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=6
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=7
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=8
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+##: 12 [transport error] @ -2352
+##: 0 [read] @ 16464
+##: 0 [read] @ 48216
+##: 0 [read] @ 79968
+##: 0 [read] @ 111720
+##: 0 [read] @ 143472
+##: 0 [read] @ 175224
+##: 0 [read] @ 206976
+##: 0 [read] @ 238728
+##: 0 [read] @ 270480
+##: 0 [read] @ 302232
+##: 0 [read] @ 333984
+##: 0 [read] @ 365736
+##: 0 [read] @ 397488
+##: 0 [read] @ 429240
+##: 0 [read] @ 460992
+##: 0 [read] @ 492744
+##: 0 [read] @ 524496
+##: 0 [read] @ 556248
+##: 0 [read] @ 588000
+##: 0 [read] @ 619752
+##: 0 [read] @ 651504
+##: 0 [read] @ 683256
+##: 0 [read] @ 715008
+##: 0 [read] @ 746760
+##: 0 [read] @ 778512
+##: 0 [read] @ 810264
+##: 0 [read] @ 842016
+##: 0 [read] @ 873768
+##: 0 [read] @ 905520
+##: 0 [read] @ 937272
+##: 0 [read] @ 969024
+##: 0 [read] @ 1000776
+##: 0 [read] @ 1032528
+##: 0 [read] @ 1064280
+##: 0 [read] @ 1096032
+##: 0 [read] @ 1127784
+##: 0 [read] @ 1159536
+##: 0 [read] @ 1191288
+##: 0 [read] @ 1223040
+##: 0 [read] @ 1254792
+##: 0 [read] @ 1286544
+##: 0 [read] @ 1318296
+##: 0 [read] @ 1350048
+##: 0 [read] @ 1381800
+##: 0 [read] @ 1407672
+##: 1 [verify] @ 17640
+##: 2 [jitter] @ 27048
+##: 2 [jitter] @ 1418256
+##: 1 [verify] @ 17640
+##: 2 [jitter] @ 49392
+##: 2 [jitter] @ 1434720
+##: 1 [verify] @ 17640
+##: 9 [overlap] @ 17640
+##: 2 [jitter] @ 47040
+##: 2 [jitter] @ 1433544
+##: 1 [verify] @ 17640
+##: 2 [jitter] @ 44688
+##: 2 [jitter] @ 1432368
+##: 1 [verify] @ 17640
+##: 2 [jitter] @ 42336
+##: 2 [jitter] @ 1431192
+##: 1 [verify] @ 17640
+##: 2 [jitter] @ 39984
+##: 2 [jitter] @ 1430016
+scsi_read error: sector=-2 length=6 retry=0
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=3 retry=1
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=2
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=3
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=4
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=5
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=6
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=7
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=8
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+##: 12 [transport error] @ -2352
+##: 0 [read] @ 3528
+##: 0 [read] @ 35280
+##: 0 [read] @ 67032
+##: 0 [read] @ 98784
+##: 0 [read] @ 130536
+##: 0 [read] @ 162288
+##: 0 [read] @ 194040
+##: 0 [read] @ 225792
+##: 0 [read] @ 257544
+##: 0 [read] @ 289296
+##: 0 [read] @ 321048
+##: 0 [read] @ 352800
+##: 0 [read] @ 384552
+##: 0 [read] @ 416304
+##: 0 [read] @ 448056
+##: 0 [read] @ 479808
+##: 0 [read] @ 511560
+##: 0 [read] @ 543312
+##: 0 [read] @ 575064
+##: 0 [read] @ 606816
+##: 0 [read] @ 638568
+##: 0 [read] @ 670320
+##: 0 [read] @ 702072
+##: 0 [read] @ 733824
+##: 0 [read] @ 765576
+##: 0 [read] @ 797328
+##: 0 [read] @ 829080
+##: 0 [read] @ 860832
+##: 0 [read] @ 892584
+##: 0 [read] @ 924336
+##: 0 [read] @ 956088
+##: 0 [read] @ 987840
+##: 0 [read] @ 1019592
+##: 0 [read] @ 1051344
+##: 0 [read] @ 1083096
+##: 0 [read] @ 1114848
+##: 0 [read] @ 1146600
+##: 0 [read] @ 1178352
+##: 0 [read] @ 1210104
+##: 0 [read] @ 1241856
+##: 0 [read] @ 1273608
+##: 0 [read] @ 1305360
+##: 0 [read] @ 1337112
+##: 0 [read] @ 1368864
+##: 0 [read] @ 1400616
+##: 0 [read] @ 1407672
+##: 1 [verify] @ 4704
+##: 2 [jitter] @ 16464
+##: 2 [jitter] @ 1418256
+##: 1 [verify] @ 4704
+##: 1 [verify] @ 4704
+##: 2 [jitter] @ 47040
+##: 2 [jitter] @ 1433544
+##: 1 [verify] @ 4704
+##: 2 [jitter] @ 44688
+##: 2 [jitter] @ 1432368
+##: 1 [verify] @ 4704
+##: 2 [jitter] @ 42336
+##: 2 [jitter] @ 1431192
+##: 1 [verify] @ 4704
+##: 9 [overlap] @ 26460
+##: 2 [jitter] @ 39984
+##: 2 [jitter] @ 1430016
+##: 1 [verify] @ 4704
+##: 2 [jitter] @ 37632
+##: 2 [jitter] @ 1428840
+scsi_read error: sector=-2 length=17 retry=0
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=8 retry=1
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=4 retry=2
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=2 retry=3
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=4
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=5
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=6
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=7
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=8
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+##: 12 [transport error] @ -2352
+##: 0 [read] @ 16464
+##: 0 [read] @ 48216
+##: 0 [read] @ 79968
+##: 0 [read] @ 111720
+##: 0 [read] @ 143472
+##: 0 [read] @ 175224
+##: 0 [read] @ 206976
+##: 0 [read] @ 238728
+##: 0 [read] @ 270480
+##: 0 [read] @ 302232
+##: 0 [read] @ 333984
+##: 0 [read] @ 365736
+##: 0 [read] @ 397488
+##: 0 [read] @ 429240
+##: 0 [read] @ 460992
+##: 0 [read] @ 492744
+##: 0 [read] @ 524496
+##: 0 [read] @ 556248
+##: 0 [read] @ 588000
+##: 0 [read] @ 619752
+##: 0 [read] @ 651504
+##: 0 [read] @ 683256
+##: 0 [read] @ 715008
+##: 0 [read] @ 746760
+##: 0 [read] @ 778512
+##: 0 [read] @ 810264
+##: 0 [read] @ 842016
+##: 0 [read] @ 873768
+##: 0 [read] @ 905520
+##: 0 [read] @ 937272
+##: 0 [read] @ 969024
+##: 0 [read] @ 1000776
+##: 0 [read] @ 1032528
+##: 0 [read] @ 1064280
+##: 0 [read] @ 1096032
+##: 0 [read] @ 1127784
+##: 0 [read] @ 1159536
+##: 0 [read] @ 1191288
+##: 0 [read] @ 1223040
+##: 0 [read] @ 1254792
+##: 0 [read] @ 1286544
+##: 0 [read] @ 1318296
+##: 0 [read] @ 1350048
+##: 0 [read] @ 1381800
+##: 0 [read] @ 1407672
+##: 1 [verify] @ 17640
+##: 2 [jitter] @ 27048
+##: 2 [jitter] @ 1418256
+##: 1 [verify] @ 17640
+##: 2 [jitter] @ 49392
+##: 2 [jitter] @ 1434720
+##: 1 [verify] @ 17640
+##: 2 [jitter] @ 47040
+##: 2 [jitter] @ 1433544
+##: 1 [verify] @ 17640
+##: 2 [jitter] @ 44688
+##: 2 [jitter] @ 1432368
+##: 1 [verify] @ 17640
+##: 2 [jitter] @ 42336
+##: 2 [jitter] @ 1431192
+##: 1 [verify] @ 17640
+##: 2 [jitter] @ 39984
+##: 2 [jitter] @ 1430016
+##: 1 [verify] @ 17640
+##: 9 [overlap] @ 19404
+##: 1 [verify] @ 17640
+scsi_read error: sector=-2 length=4 retry=0
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=2 retry=1
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=2
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=3
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=4
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=5
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=6
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=7
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=8
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+##: 12 [transport error] @ -2352
+##: 0 [read] @ 1176
+##: 0 [read] @ 32928
+##: 0 [read] @ 64680
+##: 0 [read] @ 96432
+##: 0 [read] @ 128184
+##: 0 [read] @ 159936
+##: 0 [read] @ 191688
+##: 0 [read] @ 223440
+##: 0 [read] @ 255192
+##: 0 [read] @ 286944
+##: 0 [read] @ 318696
+##: 0 [read] @ 350448
+##: 0 [read] @ 382200
+##: 0 [read] @ 413952
+##: 0 [read] @ 445704
+##: 0 [read] @ 477456
+##: 0 [read] @ 509208
+##: 0 [read] @ 540960
+##: 0 [read] @ 572712
+##: 0 [read] @ 604464
+##: 0 [read] @ 636216
+##: 0 [read] @ 667968
+##: 0 [read] @ 699720
+##: 0 [read] @ 731472
+##: 0 [read] @ 763224
+##: 0 [read] @ 794976
+##: 0 [read] @ 826728
+##: 0 [read] @ 858480
+##: 0 [read] @ 890232
+##: 0 [read] @ 921984
+##: 0 [read] @ 953736
+##: 0 [read] @ 985488
+##: 0 [read] @ 1017240
+##: 0 [read] @ 1048992
+##: 0 [read] @ 1080744
+##: 0 [read] @ 1112496
+##: 0 [read] @ 1144248
+##: 0 [read] @ 1176000
+##: 0 [read] @ 1207752
+##: 0 [read] @ 1239504
+##: 0 [read] @ 1271256
+##: 0 [read] @ 1303008
+##: 0 [read] @ 1334760
+##: 0 [read] @ 1366512
+##: 0 [read] @ 1398264
+##: 0 [read] @ 1407672
+##: 1 [verify] @ 2352
+##: 2 [jitter] @ 16464
+##: 2 [jitter] @ 1418256
+##: 1 [verify] @ 2352
+##: 1 [verify] @ 2352
+##: 1 [verify] @ 2352
+##: 2 [jitter] @ 44688
+##: 2 [jitter] @ 1432368
+##: 1 [verify] @ 2352
+##: 2 [jitter] @ 42336
+##: 2 [jitter] @ 1431192
+##: 1 [verify] @ 2352
+##: 2 [jitter] @ 39984
+##: 2 [jitter] @ 1430016
+##: 1 [verify] @ 2352
+##: 2 [jitter] @ 37632
+##: 2 [jitter] @ 1428840
+##: 1 [verify] @ 2352
+##: 2 [jitter] @ 11760
+##: 2 [jitter] @ 1415904
+##: 1 [verify] @ 2352
+##: 9 [overlap] @ 29106
+##: 2 [jitter] @ 37632
+##: 2 [jitter] @ 1428840
+##: 9 [overlap] @ 37632
+scsi_read error: sector=-2 length=13 retry=0
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=6 retry=1
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=3 retry=2
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=3
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=4
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=5
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=6
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=7
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=8
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+##: 12 [transport error] @ -2352
+##: 0 [read] @ 11760
+##: 0 [read] @ 43512
+##: 0 [read] @ 75264
+##: 0 [read] @ 107016
+##: 0 [read] @ 138768
+##: 0 [read] @ 170520
+##: 0 [read] @ 202272
+##: 0 [read] @ 234024
+##: 0 [read] @ 265776
+##: 0 [read] @ 297528
+##: 0 [read] @ 329280
+##: 0 [read] @ 361032
+##: 0 [read] @ 392784
+##: 0 [read] @ 424536
+##: 0 [read] @ 456288
+##: 0 [read] @ 488040
+##: 0 [read] @ 519792
+##: 0 [read] @ 551544
+##: 0 [read] @ 583296
+##: 0 [read] @ 615048
+##: 0 [read] @ 646800
+##: 0 [read] @ 678552
+##: 0 [read] @ 710304
+##: 0 [read] @ 742056
+##: 0 [read] @ 773808
+##: 0 [read] @ 805560
+##: 0 [read] @ 837312
+##: 0 [read] @ 869064
+##: 0 [read] @ 900816
+##: 0 [read] @ 932568
+##: 0 [read] @ 964320
+##: 0 [read] @ 996072
+##: 0 [read] @ 1027824
+##: 0 [read] @ 1059576
+##: 0 [read] @ 1091328
+##: 0 [read] @ 1123080
+##: 0 [read] @ 1154832
+##: 0 [read] @ 1186584
+##: 0 [read] @ 1218336
+##: 0 [read] @ 1250088
+##: 0 [read] @ 1281840
+##: 0 [read] @ 1313592
+##: 0 [read] @ 1345344
+##: 0 [read] @ 1377096
+##: 0 [read] @ 1407672
+##: 1 [verify] @ 12936
+##: 2 [jitter] @ 22344
+##: 2 [jitter] @ 1418256
+##: 1 [verify] @ 12936
+##: 2 [jitter] @ 49392
+##: 2 [jitter] @ 1434720
+##: 1 [verify] @ 12936
+##: 2 [jitter] @ 47040
+##: 2 [jitter] @ 1433544
+##: 1 [verify] @ 12936
+##: 2 [jitter] @ 44688
+##: 2 [jitter] @ 1432368
+##: 1 [verify] @ 12936
+##: 2 [jitter] @ 42336
+##: 2 [jitter] @ 1431192
+##: 1 [verify] @ 12936
+##: 2 [jitter] @ 39984
+##: 2 [jitter] @ 1430016
+##: 1 [verify] @ 12936
+##: 2 [jitter] @ 37632
+##: 2 [jitter] @ 1428840
+##: 1 [verify] @ 12936
+##: 1 [verify] @ 12936
+##: 9 [overlap] @ 20667
+##: 2 [jitter] @ 37632
+##: 2 [jitter] @ 1428840
+##: 1 [verify] @ 12936
+scsi_read error: sector=-2 length=1 retry=0
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=1
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=2
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=3
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=4
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=5
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=6
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=7
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=8
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+##: 12 [transport error] @ -2352
+##: 0 [read] @ -2352
+scsi_read error: sector=-1 length=27 retry=0
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-1 length=13 retry=1
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-1 length=6 retry=2
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-1 length=3 retry=3
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-1 length=1 retry=4
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-1 length=1 retry=5
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-1 length=1 retry=6
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-1 length=1 retry=7
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-1 length=1 retry=8
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+##: 12 [transport error] @ -1176
+##: 0 [read] @ 29400
+##: 0 [read] @ 61152
+##: 0 [read] @ 92904
+##: 0 [read] @ 124656
+##: 0 [read] @ 156408
+##: 0 [read] @ 188160
+##: 0 [read] @ 219912
+##: 0 [read] @ 251664
+##: 0 [read] @ 283416
+##: 0 [read] @ 315168
+##: 0 [read] @ 346920
+##: 0 [read] @ 378672
+##: 0 [read] @ 410424
+##: 0 [read] @ 442176
+##: 0 [read] @ 473928
+##: 0 [read] @ 505680
+##: 0 [read] @ 537432
+##: 0 [read] @ 569184
+##: 0 [read] @ 600936
+##: 0 [read] @ 632688
+##: 0 [read] @ 664440
+##: 0 [read] @ 696192
+##: 0 [read] @ 727944
+##: 0 [read] @ 759696
+##: 0 [read] @ 791448
+##: 0 [read] @ 823200
+##: 0 [read] @ 854952
+##: 0 [read] @ 886704
+##: 0 [read] @ 918456
+##: 0 [read] @ 950208
+##: 0 [read] @ 981960
+##: 0 [read] @ 1013712
+##: 0 [read] @ 1045464
+##: 0 [read] @ 1077216
+##: 0 [read] @ 1108968
+##: 0 [read] @ 1140720
+##: 0 [read] @ 1172472
+##: 0 [read] @ 1204224
+##: 0 [read] @ 1235976
+##: 0 [read] @ 1267728
+##: 0 [read] @ 1299480
+##: 0 [read] @ 1331232
+##: 0 [read] @ 1362984
+##: 0 [read] @ 1394736
+##: 0 [read] @ 1407672
+##: 1 [verify] @ 30576
+##: 1 [verify] @ 30576
+##: 2 [jitter] @ 56448
+##: 2 [jitter] @ 1434720
+##: 1 [verify] @ 30576
+##: 2 [jitter] @ 55272
+##: 2 [jitter] @ 1433544
+##: 1 [verify] @ 30576
+##: 2 [jitter] @ 54096
+##: 2 [jitter] @ 1432368
+##: 1 [verify] @ 30576
+##: 2 [jitter] @ 52920
+##: 2 [jitter] @ 1431192
+##: 1 [verify] @ 30576
+##: 2 [jitter] @ 51744
+##: 2 [jitter] @ 1430016
+##: 1 [verify] @ 30576
+##: 2 [jitter] @ 50568
+##: 2 [jitter] @ 1428840
+##: 1 [verify] @ 30576
+##: 1 [verify] @ 30576
+##: 2 [jitter] @ 50568
+##: 2 [jitter] @ 1428840
+##: 1 [verify] @ 30576
+##: 1 [verify] @ 30576
+##: 2 [jitter] @ 45864
+##: 2 [jitter] @ 1424136
+scsi_read error: sector=-2 length=27 retry=0
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=13 retry=1
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=6 retry=2
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=3 retry=3
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=4
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=5
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=6
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=7
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=8
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+##: 12 [transport error] @ -2352
+##: 0 [read] @ 28224
+##: 0 [read] @ 59976
+##: 0 [read] @ 91728
+##: 0 [read] @ 123480
+##: 0 [read] @ 155232
+##: 0 [read] @ 186984
+##: 0 [read] @ 218736
+##: 0 [read] @ 250488
+##: 0 [read] @ 282240
+##: 0 [read] @ 313992
+##: 0 [read] @ 345744
+##: 0 [read] @ 377496
+##: 0 [read] @ 409248
+##: 0 [read] @ 441000
+##: 0 [read] @ 472752
+##: 0 [read] @ 504504
+##: 0 [read] @ 536256
+##: 0 [read] @ 568008
+##: 0 [read] @ 599760
+##: 0 [read] @ 631512
+##: 0 [read] @ 663264
+##: 0 [read] @ 695016
+##: 0 [read] @ 726768
+##: 0 [read] @ 758520
+##: 0 [read] @ 790272
+##: 0 [read] @ 822024
+##: 0 [read] @ 853776
+##: 0 [read] @ 885528
+##: 0 [read] @ 917280
+##: 0 [read] @ 949032
+##: 0 [read] @ 980784
+##: 0 [read] @ 1012536
+##: 0 [read] @ 1044288
+##: 0 [read] @ 1076040
+##: 0 [read] @ 1107792
+##: 0 [read] @ 1139544
+##: 0 [read] @ 1171296
+##: 0 [read] @ 1203048
+##: 0 [read] @ 1234800
+##: 0 [read] @ 1266552
+##: 0 [read] @ 1298304
+##: 0 [read] @ 1330056
+##: 0 [read] @ 1361808
+##: 0 [read] @ 1393560
+##: 0 [read] @ 1407672
+##: 1 [verify] @ 29400
+##: 1 [verify] @ 29400
+##: 9 [overlap] @ 26460
+##: 2 [jitter] @ 55272
+##: 2 [jitter] @ 1434720
+##: 1 [verify] @ 29400
+##: 2 [jitter] @ 54096
+##: 2 [jitter] @ 1433544
+##: 1 [verify] @ 29400
+##: 2 [jitter] @ 52920
+##: 2 [jitter] @ 1432368
+##: 1 [verify] @ 29400
+##: 2 [jitter] @ 51744
+##: 2 [jitter] @ 1431192
+##: 1 [verify] @ 29400
+##: 2 [jitter] @ 50568
+##: 2 [jitter] @ 1430016
+##: 1 [verify] @ 29400
+##: 2 [jitter] @ 49392
+##: 2 [jitter] @ 1428840
+##: 1 [verify] @ 29400
+##: 2 [jitter] @ 36456
+##: 2 [jitter] @ 1415904
+##: 1 [verify] @ 29400
+##: 2 [jitter] @ 49392
+##: 2 [jitter] @ 1428840
+##: 1 [verify] @ 29400
+##: 1 [verify] @ 29400
+##: 2 [jitter] @ 44688
+##: 2 [jitter] @ 1424136
+##: 1 [verify] @ 29400
+##: 2 [jitter] @ 63504
+##: 2 [jitter] @ 1441776
+scsi_read error: sector=-2 length=27 retry=0
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=13 retry=1
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=6 retry=2
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=3 retry=3
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=4
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=5
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=6
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=7
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=8
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+##: 12 [transport error] @ -2352
+##: 0 [read] @ 28224
+##: 0 [read] @ 59976
+##: 0 [read] @ 91728
+##: 0 [read] @ 123480
+##: 0 [read] @ 155232
+##: 0 [read] @ 186984
+##: 0 [read] @ 218736
+##: 0 [read] @ 250488
+##: 0 [read] @ 282240
+##: 0 [read] @ 313992
+##: 0 [read] @ 345744
+##: 0 [read] @ 377496
+##: 0 [read] @ 409248
+##: 0 [read] @ 441000
+##: 0 [read] @ 472752
+##: 0 [read] @ 504504
+##: 0 [read] @ 536256
+##: 0 [read] @ 568008
+##: 0 [read] @ 599760
+##: 0 [read] @ 631512
+##: 0 [read] @ 663264
+##: 0 [read] @ 695016
+##: 0 [read] @ 726768
+##: 0 [read] @ 758520
+##: 0 [read] @ 790272
+##: 0 [read] @ 822024
+##: 0 [read] @ 853776
+##: 0 [read] @ 885528
+##: 0 [read] @ 917280
+##: 0 [read] @ 949032
+##: 0 [read] @ 980784
+##: 0 [read] @ 1012536
+##: 0 [read] @ 1044288
+##: 0 [read] @ 1076040
+##: 0 [read] @ 1107792
+##: 0 [read] @ 1139544
+##: 0 [read] @ 1171296
+##: 0 [read] @ 1203048
+##: 0 [read] @ 1234800
+##: 0 [read] @ 1266552
+##: 0 [read] @ 1298304
+##: 0 [read] @ 1330056
+##: 0 [read] @ 1361808
+##: 0 [read] @ 1393560
+##: 0 [read] @ 1407672
+##: 1 [verify] @ 29400
+##: 9 [overlap] @ 37044
+##: 2 [jitter] @ 38808
+##: 2 [jitter] @ 1418256
+##: 1 [verify] @ 29400
+##: 2 [jitter] @ 55272
+##: 2 [jitter] @ 1434720
+##: 1 [verify] @ 29400
+##: 2 [jitter] @ 54096
+##: 2 [jitter] @ 1433544
+##: 1 [verify] @ 29400
+##: 2 [jitter] @ 52920
+##: 2 [jitter] @ 1432368
+##: 1 [verify] @ 29400
+##: 2 [jitter] @ 51744
+##: 2 [jitter] @ 1431192
+##: 1 [verify] @ 29400
+##: 2 [jitter] @ 50568
+##: 2 [jitter] @ 1430016
+##: 1 [verify] @ 29400
+##: 2 [jitter] @ 49392
+##: 2 [jitter] @ 1428840
+##: 1 [verify] @ 29400
+##: 2 [jitter] @ 36456
+##: 2 [jitter] @ 1415904
+##: 1 [verify] @ 29400
+##: 2 [jitter] @ 49392
+##: 2 [jitter] @ 1428840
+##: 1 [verify] @ 29400
+##: 2 [jitter] @ 34104
+##: 2 [jitter] @ 1413552
+##: 1 [verify] @ 29400
+##: 9 [overlap] @ 37632
+##: 2 [jitter] @ 44688
+##: 2 [jitter] @ 1424136
+##: 1 [verify] @ 29400
+##: 2 [jitter] @ 63504
+##: 2 [jitter] @ 1441776
+##: 1 [verify] @ 29400
+scsi_read error: sector=-2 length=9 retry=0
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=4 retry=1
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=2 retry=2
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=3
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=4
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=5
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=6
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=7
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=8
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+##: 12 [transport error] @ -2352
+##: 0 [read] @ 7056
+##: 0 [read] @ 38808
+##: 0 [read] @ 70560
+##: 0 [read] @ 102312
+##: 0 [read] @ 134064
+##: 0 [read] @ 165816
+##: 0 [read] @ 197568
+##: 0 [read] @ 229320
+##: 0 [read] @ 261072
+##: 0 [read] @ 292824
+##: 0 [read] @ 324576
+##: 0 [read] @ 356328
+##: 0 [read] @ 388080
+##: 0 [read] @ 419832
+##: 0 [read] @ 451584
+##: 0 [read] @ 483336
+##: 0 [read] @ 515088
+##: 0 [read] @ 546840
+##: 0 [read] @ 578592
+##: 0 [read] @ 610344
+##: 0 [read] @ 642096
+##: 0 [read] @ 673848
+##: 0 [read] @ 705600
+##: 0 [read] @ 737352
+##: 0 [read] @ 769104
+##: 0 [read] @ 800856
+##: 0 [read] @ 832608
+##: 0 [read] @ 864360
+##: 0 [read] @ 896112
+##: 0 [read] @ 927864
+##: 0 [read] @ 959616
+##: 0 [read] @ 991368
+##: 0 [read] @ 1023120
+##: 0 [read] @ 1054872
+##: 0 [read] @ 1086624
+##: 0 [read] @ 1118376
+##: 0 [read] @ 1150128
+##: 0 [read] @ 1181880
+##: 0 [read] @ 1213632
+##: 0 [read] @ 1245384
+##: 0 [read] @ 1277136
+##: 0 [read] @ 1308888
+##: 0 [read] @ 1340640
+##: 0 [read] @ 1372392
+##: 0 [read] @ 1404144
+##: 0 [read] @ 1407672
+##: 1 [verify] @ 8232
+##: 2 [jitter] @ 17640
+##: 2 [jitter] @ 1418256
+##: 1 [verify] @ 8232
+##: 2 [jitter] @ 49392
+##: 2 [jitter] @ 1434720
+##: 1 [verify] @ 8232
+##: 2 [jitter] @ 47040
+##: 2 [jitter] @ 1433544
+##: 1 [verify] @ 8232
+##: 2 [jitter] @ 44688
+##: 2 [jitter] @ 1432368
+##: 1 [verify] @ 8232
+##: 2 [jitter] @ 42336
+##: 2 [jitter] @ 1431192
+##: 1 [verify] @ 8232
+##: 9 [overlap] @ 24996
+##: 2 [jitter] @ 39984
+##: 2 [jitter] @ 1430016
+##: 1 [verify] @ 8232
+##: 2 [jitter] @ 37632
+##: 2 [jitter] @ 1428840
+##: 1 [verify] @ 8232
+##: 1 [verify] @ 8232
+##: 2 [jitter] @ 37632
+##: 2 [jitter] @ 1428840
+##: 1 [verify] @ 8232
+##: 1 [verify] @ 8232
+##: 2 [jitter] @ 28224
+##: 2 [jitter] @ 1424136
+##: 1 [verify] @ 8232
+##: 2 [jitter] @ 63504
+##: 2 [jitter] @ 1441776
+##: 1 [verify] @ 8232
+##: 2 [jitter] @ 61152
+##: 2 [jitter] @ 1440600
+##: 1 [verify] @ 8232
+##: 2 [jitter] @ 61152
+##: 2 [jitter] @ 1440600
+##: 9 [overlap] @ 37494
+scsi_read error: sector=-2 length=8 retry=0
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=4 retry=1
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=2 retry=2
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=3
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=4
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=5
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=6
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=7
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=8
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+##: 12 [transport error] @ -2352
+##: 0 [read] @ 5880
+##: 0 [read] @ 37632
+##: 0 [read] @ 69384
+##: 0 [read] @ 101136
+##: 0 [read] @ 132888
+##: 0 [read] @ 164640
+##: 0 [read] @ 196392
+##: 0 [read] @ 228144
+##: 0 [read] @ 259896
+##: 0 [read] @ 291648
+##: 0 [read] @ 323400
+##: 0 [read] @ 355152
+##: 0 [read] @ 386904
+##: 0 [read] @ 418656
+##: 0 [read] @ 450408
+##: 0 [read] @ 482160
+##: 0 [read] @ 513912
+##: 0 [read] @ 545664
+##: 0 [read] @ 577416
+##: 0 [read] @ 609168
+##: 0 [read] @ 640920
+##: 0 [read] @ 672672
+##: 0 [read] @ 704424
+##: 0 [read] @ 736176
+##: 0 [read] @ 767928
+##: 0 [read] @ 799680
+##: 0 [read] @ 831432
+##: 0 [read] @ 863184
+##: 0 [read] @ 894936
+##: 0 [read] @ 926688
+##: 0 [read] @ 958440
+##: 0 [read] @ 990192
+##: 0 [read] @ 1021944
+##: 0 [read] @ 1053696
+##: 0 [read] @ 1085448
+##: 0 [read] @ 1117200
+##: 0 [read] @ 1148952
+##: 0 [read] @ 1180704
+##: 0 [read] @ 1212456
+##: 0 [read] @ 1244208
+##: 0 [read] @ 1275960
+##: 0 [read] @ 1307712
+##: 0 [read] @ 1339464
+##: 0 [read] @ 1371216
+##: 0 [read] @ 1402968
+##: 0 [read] @ 1407672
+##: 1 [verify] @ 7056
+##: 9 [overlap] @ 37632
+##: 2 [jitter] @ 49392
+##: 2 [jitter] @ 1434720
+##: 1 [verify] @ 7056
+##: 2 [jitter] @ 47040
+##: 2 [jitter] @ 1433544
+##: 1 [verify] @ 7056
+##: 2 [jitter] @ 44688
+##: 2 [jitter] @ 1432368
+##: 1 [verify] @ 7056
+##: 2 [jitter] @ 42336
+##: 2 [jitter] @ 1431192
+##: 1 [verify] @ 7056
+##: 2 [jitter] @ 39984
+##: 2 [jitter] @ 1430016
+##: 1 [verify] @ 7056
+##: 2 [jitter] @ 37632
+##: 2 [jitter] @ 1428840
+##: 1 [verify] @ 7056
+##: 1 [verify] @ 7056
+##: 2 [jitter] @ 37632
+##: 2 [jitter] @ 1428840
+##: 1 [verify] @ 7056
+##: 1 [verify] @ 7056
+##: 2 [jitter] @ 28224
+##: 2 [jitter] @ 1424136
+##: 1 [verify] @ 7056
+##: 9 [overlap] @ 35280
+##: 2 [jitter] @ 63504
+##: 2 [jitter] @ 1441776
+##: 1 [verify] @ 7056
+##: 2 [jitter] @ 61152
+##: 2 [jitter] @ 1440600
+##: 1 [verify] @ 7056
+##: 2 [jitter] @ 61152
+##: 2 [jitter] @ 1440600
+##: 1 [verify] @ 7056
+##: 2 [jitter] @ 18816
+##: 2 [jitter] @ 1419432
+scsi_read error: sector=-2 length=23 retry=0
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=11 retry=1
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=5 retry=2
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=2 retry=3
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=4
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=5
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=6
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=7
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=8
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+##: 12 [transport error] @ -2352
+##: 0 [read] @ 23520
+##: 0 [read] @ 55272
+##: 0 [read] @ 87024
+##: 0 [read] @ 118776
+##: 0 [read] @ 150528
+##: 0 [read] @ 182280
+##: 0 [read] @ 214032
+##: 0 [read] @ 245784
+##: 0 [read] @ 277536
+##: 0 [read] @ 309288
+##: 0 [read] @ 341040
+##: 0 [read] @ 372792
+##: 0 [read] @ 404544
+##: 0 [read] @ 436296
+##: 0 [read] @ 468048
+##: 0 [read] @ 499800
+##: 0 [read] @ 531552
+##: 0 [read] @ 563304
+##: 0 [read] @ 595056
+##: 0 [read] @ 626808
+##: 0 [read] @ 658560
+##: 0 [read] @ 690312
+##: 0 [read] @ 722064
+##: 0 [read] @ 753816
+##: 0 [read] @ 785568
+##: 0 [read] @ 817320
+##: 0 [read] @ 849072
+##: 0 [read] @ 880824
+##: 0 [read] @ 912576
+##: 0 [read] @ 944328
+##: 0 [read] @ 976080
+##: 0 [read] @ 1007832
+##: 0 [read] @ 1039584
+##: 0 [read] @ 1071336
+##: 0 [read] @ 1103088
+##: 0 [read] @ 1134840
+##: 0 [read] @ 1166592
+##: 0 [read] @ 1198344
+##: 0 [read] @ 1230096
+##: 0 [read] @ 1261848
+##: 0 [read] @ 1293600
+##: 0 [read] @ 1325352
+##: 0 [read] @ 1357104
+##: 0 [read] @ 1388856
+##: 0 [read] @ 1407672
+##: 1 [verify] @ 24696
+##: 2 [jitter] @ 49392
+##: 2 [jitter] @ 1433544
+##: 1 [verify] @ 24696
+##: 1 [verify] @ 24696
+##: 1 [verify] @ 24696
+##: 1 [verify] @ 24696
+##: 2 [jitter] @ 44688
+##: 2 [jitter] @ 1428840
+##: 1 [verify] @ 24696
+##: 9 [overlap] @ 33516
+##: 2 [jitter] @ 31752
+##: 2 [jitter] @ 1415904
+##: 1 [verify] @ 24696
+##: 2 [jitter] @ 44688
+##: 2 [jitter] @ 1428840
+##: 1 [verify] @ 24696
+##: 2 [jitter] @ 29400
+##: 2 [jitter] @ 1413552
+##: 1 [verify] @ 24696
+##: 2 [jitter] @ 39984
+##: 2 [jitter] @ 1424136
+##: 1 [verify] @ 24696
+##: 2 [jitter] @ 63504
+##: 2 [jitter] @ 1441776
+##: 1 [verify] @ 24696
+##: 2 [jitter] @ 61152
+##: 2 [jitter] @ 1440600
+##: 1 [verify] @ 24696
+##: 2 [jitter] @ 61152
+##: 2 [jitter] @ 1440600
+##: 1 [verify] @ 24696
+##: 2 [jitter] @ 35280
+##: 2 [jitter] @ 1419432
+##: 1 [verify] @ 24696
+##: 2 [jitter] @ 34104
+##: 2 [jitter] @ 1418256
+scsi_read error: sector=-2 length=23 retry=0
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=11 retry=1
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=5 retry=2
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=2 retry=3
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=4
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=5
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=6
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=7
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=8
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+##: 12 [transport error] @ -2352
+##: 0 [read] @ 23520
+##: 0 [read] @ 55272
+##: 0 [read] @ 87024
+##: 0 [read] @ 118776
+##: 0 [read] @ 150528
+##: 0 [read] @ 182280
+##: 0 [read] @ 214032
+##: 0 [read] @ 245784
+##: 0 [read] @ 277536
+##: 0 [read] @ 309288
+##: 0 [read] @ 341040
+##: 0 [read] @ 372792
+##: 0 [read] @ 404544
+##: 0 [read] @ 436296
+##: 0 [read] @ 468048
+##: 0 [read] @ 499800
+##: 0 [read] @ 531552
+##: 0 [read] @ 563304
+##: 0 [read] @ 595056
+##: 0 [read] @ 626808
+##: 0 [read] @ 658560
+##: 0 [read] @ 690312
+##: 0 [read] @ 722064
+##: 0 [read] @ 753816
+##: 0 [read] @ 785568
+##: 0 [read] @ 817320
+##: 0 [read] @ 849072
+##: 0 [read] @ 880824
+##: 0 [read] @ 912576
+##: 0 [read] @ 944328
+##: 0 [read] @ 976080
+##: 0 [read] @ 1007832
+##: 0 [read] @ 1039584
+##: 0 [read] @ 1071336
+##: 0 [read] @ 1103088
+##: 0 [read] @ 1134840
+##: 0 [read] @ 1166592
+##: 0 [read] @ 1198344
+##: 0 [read] @ 1230096
+##: 0 [read] @ 1261848
+##: 0 [read] @ 1293600
+##: 0 [read] @ 1325352
+##: 0 [read] @ 1357104
+##: 0 [read] @ 1388856
+##: 0 [read] @ 1407672
+##: 1 [verify] @ 24696
+##: 9 [overlap] @ 33516
+##: 2 [jitter] @ 48216
+##: 2 [jitter] @ 1432368
+##: 1 [verify] @ 24696
+##: 1 [verify] @ 24696
+##: 1 [verify] @ 24696
+##: 2 [jitter] @ 44688
+##: 2 [jitter] @ 1428840
+##: 1 [verify] @ 24696
+##: 2 [jitter] @ 31752
+##: 2 [jitter] @ 1415904
+##: 1 [verify] @ 24696
+##: 2 [jitter] @ 44688
+##: 2 [jitter] @ 1428840
+##: 1 [verify] @ 24696
+##: 2 [jitter] @ 29400
+##: 2 [jitter] @ 1413552
+##: 1 [verify] @ 24696
+##: 2 [jitter] @ 39984
+##: 2 [jitter] @ 1424136
+##: 1 [verify] @ 24696
+##: 2 [jitter] @ 63504
+##: 2 [jitter] @ 1441776
+##: 1 [verify] @ 24696
+##: 2 [jitter] @ 61152
+##: 2 [jitter] @ 1440600
+##: 1 [verify] @ 24696
+##: 9 [overlap] @ 33516
+##: 2 [jitter] @ 61152
+##: 2 [jitter] @ 1440600
+##: 1 [verify] @ 24696
+##: 2 [jitter] @ 35280
+##: 2 [jitter] @ 1419432
+##: 1 [verify] @ 24696
+##: 2 [jitter] @ 34104
+##: 2 [jitter] @ 1418256
+##: 1 [verify] @ 24696
+scsi_read error: sector=-2 length=22 retry=0
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=11 retry=1
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=5 retry=2
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=2 retry=3
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=4
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=5
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=6
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=7
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=8
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+##: 12 [transport error] @ -2352
+##: 0 [read] @ 22344
+##: 0 [read] @ 54096
+##: 0 [read] @ 85848
+##: 0 [read] @ 117600
+##: 0 [read] @ 149352
+##: 0 [read] @ 181104
+##: 0 [read] @ 212856
+##: 0 [read] @ 244608
+##: 0 [read] @ 276360
+##: 0 [read] @ 308112
+##: 0 [read] @ 339864
+##: 0 [read] @ 371616
+##: 0 [read] @ 403368
+##: 0 [read] @ 435120
+##: 0 [read] @ 466872
+##: 0 [read] @ 498624
+##: 0 [read] @ 530376
+##: 0 [read] @ 562128
+##: 0 [read] @ 593880
+##: 0 [read] @ 625632
+##: 0 [read] @ 657384
+##: 0 [read] @ 689136
+##: 0 [read] @ 720888
+##: 0 [read] @ 752640
+##: 0 [read] @ 784392
+##: 0 [read] @ 816144
+##: 0 [read] @ 847896
+##: 0 [read] @ 879648
+##: 0 [read] @ 911400
+##: 0 [read] @ 943152
+##: 0 [read] @ 974904
+##: 0 [read] @ 1006656
+##: 0 [read] @ 1038408
+##: 0 [read] @ 1070160
+##: 0 [read] @ 1101912
+##: 0 [read] @ 1133664
+##: 0 [read] @ 1165416
+##: 0 [read] @ 1197168
+##: 0 [read] @ 1228920
+##: 0 [read] @ 1260672
+##: 0 [read] @ 1292424
+##: 0 [read] @ 1324176
+##: 0 [read] @ 1355928
+##: 0 [read] @ 1387680
+##: 0 [read] @ 1407672
+##: 1 [verify] @ 23520
+##: 2 [jitter] @ 45864
+##: 2 [jitter] @ 1431192
+##: 1 [verify] @ 23520
+##: 1 [verify] @ 23520
+##: 1 [verify] @ 23520
+##: 2 [jitter] @ 30576
+##: 2 [jitter] @ 1415904
+##: 1 [verify] @ 23520
+##: 9 [overlap] @ 28224
+##: 1 [verify] @ 23520
+##: 2 [jitter] @ 28224
+##: 2 [jitter] @ 1413552
+##: 1 [verify] @ 23520
+##: 2 [jitter] @ 38808
+##: 2 [jitter] @ 1424136
+##: 1 [verify] @ 23520
+##: 2 [jitter] @ 63504
+##: 2 [jitter] @ 1441776
+##: 1 [verify] @ 23520
+##: 2 [jitter] @ 61152
+##: 2 [jitter] @ 1440600
+##: 1 [verify] @ 23520
+##: 2 [jitter] @ 61152
+##: 2 [jitter] @ 1440600
+##: 1 [verify] @ 23520
+##: 2 [jitter] @ 34104
+##: 2 [jitter] @ 1419432
+##: 1 [verify] @ 23520
+##: 2 [jitter] @ 32928
+##: 2 [jitter] @ 1418256
+##: 1 [verify] @ 23520
+##: 2 [jitter] @ 51744
+##: 2 [jitter] @ 1435896
+##: 1 [verify] @ 23520
+##: 2 [jitter] @ 51744
+##: 2 [jitter] @ 1435896
+scsi_read error: sector=-2 length=20 retry=0
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=10 retry=1
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=5 retry=2
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=2 retry=3
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=4
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=5
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=6
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=7
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=8
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+##: 12 [transport error] @ -2352
+##: 0 [read] @ 19992
+##: 0 [read] @ 51744
+##: 0 [read] @ 83496
+##: 0 [read] @ 115248
+##: 0 [read] @ 147000
+##: 0 [read] @ 178752
+##: 0 [read] @ 210504
+##: 0 [read] @ 242256
+##: 0 [read] @ 274008
+##: 0 [read] @ 305760
+##: 0 [read] @ 337512
+##: 0 [read] @ 369264
+##: 0 [read] @ 401016
+##: 0 [read] @ 432768
+##: 0 [read] @ 464520
+##: 0 [read] @ 496272
+##: 0 [read] @ 528024
+##: 0 [read] @ 559776
+##: 0 [read] @ 591528
+##: 0 [read] @ 623280
+##: 0 [read] @ 655032
+##: 0 [read] @ 686784
+##: 0 [read] @ 718536
+##: 0 [read] @ 750288
+##: 0 [read] @ 782040
+##: 0 [read] @ 813792
+##: 0 [read] @ 845544
+##: 0 [read] @ 877296
+##: 0 [read] @ 909048
+##: 0 [read] @ 940800
+##: 0 [read] @ 972552
+##: 0 [read] @ 1004304
+##: 0 [read] @ 1036056
+##: 0 [read] @ 1067808
+##: 0 [read] @ 1099560
+##: 0 [read] @ 1131312
+##: 0 [read] @ 1163064
+##: 0 [read] @ 1194816
+##: 0 [read] @ 1226568
+##: 0 [read] @ 1258320
+##: 0 [read] @ 1290072
+##: 0 [read] @ 1321824
+##: 0 [read] @ 1353576
+##: 0 [read] @ 1385328
+##: 0 [read] @ 1407672
+##: 1 [verify] @ 21168
+##: 9 [overlap] @ 31752
+##: 2 [jitter] @ 42336
+##: 2 [jitter] @ 1430016
+##: 1 [verify] @ 21168
+##: 1 [verify] @ 21168
+##: 2 [jitter] @ 28224
+##: 2 [jitter] @ 1415904
+##: 1 [verify] @ 21168
+##: 1 [verify] @ 21168
+##: 2 [jitter] @ 25872
+##: 2 [jitter] @ 1413552
+##: 1 [verify] @ 21168
+##: 1 [verify] @ 21168
+##: 2 [jitter] @ 63504
+##: 2 [jitter] @ 1441776
+##: 1 [verify] @ 21168
+##: 2 [jitter] @ 61152
+##: 2 [jitter] @ 1440600
+##: 1 [verify] @ 21168
+##: 2 [jitter] @ 61152
+##: 2 [jitter] @ 1440600
+##: 1 [verify] @ 21168
+##: 9 [overlap] @ 28224
+##: 2 [jitter] @ 31752
+##: 2 [jitter] @ 1419432
+##: 1 [verify] @ 21168
+##: 2 [jitter] @ 30576
+##: 2 [jitter] @ 1418256
+##: 1 [verify] @ 21168
+##: 2 [jitter] @ 51744
+##: 2 [jitter] @ 1435896
+##: 1 [verify] @ 21168
+##: 2 [jitter] @ 51744
+##: 2 [jitter] @ 1435896
+##: 1 [verify] @ 21168
+##: 2 [jitter] @ 49392
+##: 2 [jitter] @ 1434720
+##: 6 [skip] @ 0
+scsi_read error: sector=-2 length=19 retry=0
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=9 retry=1
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=4 retry=2
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=2 retry=3
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=4
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=5
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=6
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=7
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=8
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+##: 12 [transport error] @ -2352
+##: 0 [read] @ 18816
+##: 0 [read] @ 50568
+##: 0 [read] @ 82320
+##: 0 [read] @ 114072
+##: 0 [read] @ 145824
+##: 0 [read] @ 177576
+##: 0 [read] @ 209328
+##: 0 [read] @ 241080
+##: 0 [read] @ 272832
+##: 0 [read] @ 304584
+##: 0 [read] @ 336336
+##: 0 [read] @ 368088
+##: 0 [read] @ 399840
+##: 0 [read] @ 431592
+##: 0 [read] @ 463344
+##: 0 [read] @ 495096
+##: 0 [read] @ 526848
+##: 0 [read] @ 558600
+##: 0 [read] @ 590352
+##: 0 [read] @ 622104
+##: 0 [read] @ 653856
+##: 0 [read] @ 685608
+##: 0 [read] @ 717360
+##: 0 [read] @ 749112
+##: 0 [read] @ 780864
+##: 0 [read] @ 812616
+##: 0 [read] @ 844368
+##: 0 [read] @ 876120
+##: 0 [read] @ 907872
+##: 0 [read] @ 939624
+##: 0 [read] @ 971376
+##: 0 [read] @ 1003128
+##: 0 [read] @ 1034880
+##: 0 [read] @ 1066632
+##: 0 [read] @ 1098384
+##: 0 [read] @ 1130136
+##: 0 [read] @ 1161888
+##: 0 [read] @ 1193640
+##: 0 [read] @ 1225392
+##: 0 [read] @ 1257144
+##: 0 [read] @ 1288896
+##: 0 [read] @ 1320648
+##: 0 [read] @ 1352400
+##: 0 [read] @ 1384152
+##: 0 [read] @ 1407672
+##: 1 [verify] @ 19992
+##: 2 [jitter] @ 39984
+##: 2 [jitter] @ 1428840
+##: 1 [verify] @ 19992
+##: 2 [jitter] @ 27048
+##: 2 [jitter] @ 1415904
+##: 1 [verify] @ 19992
+##: 1 [verify] @ 19992
+##: 2 [jitter] @ 24696
+##: 2 [jitter] @ 1413552
+##: 1 [verify] @ 19992
+##: 9 [overlap] @ 26460
+##: 1 [verify] @ 19992
+##: 2 [jitter] @ 63504
+##: 2 [jitter] @ 1441776
+##: 1 [verify] @ 19992
+##: 2 [jitter] @ 61152
+##: 2 [jitter] @ 1440600
+##: 1 [verify] @ 19992
+##: 2 [jitter] @ 61152
+##: 2 [jitter] @ 1440600
+##: 1 [verify] @ 19992
+##: 2 [jitter] @ 30576
+##: 2 [jitter] @ 1419432
+##: 1 [verify] @ 19992
+##: 2 [jitter] @ 29400
+##: 2 [jitter] @ 1418256
+##: 1 [verify] @ 19992
+##: 2 [jitter] @ 51744
+##: 2 [jitter] @ 1435896
+##: 1 [verify] @ 19992
+##: 2 [jitter] @ 51744
+##: 2 [jitter] @ 1435896
+##: 1 [verify] @ 19992
+##: 2 [jitter] @ 49392
+##: 2 [jitter] @ 1434720
+##: 1 [verify] @ 19992
+##: 2 [jitter] @ 44688
+##: 2 [jitter] @ 1432368
+scsi_read error: sector=-2 length=19 retry=0
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=9 retry=1
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=4 retry=2
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=2 retry=3
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=4
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=5
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=6
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=7
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=8
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+##: 12 [transport error] @ -2352
+##: 0 [read] @ 18816
+##: 0 [read] @ 50568
+##: 0 [read] @ 82320
+##: 0 [read] @ 114072
+##: 0 [read] @ 145824
+##: 0 [read] @ 177576
+##: 0 [read] @ 209328
+##: 0 [read] @ 241080
+##: 0 [read] @ 272832
+##: 0 [read] @ 304584
+##: 0 [read] @ 336336
+##: 0 [read] @ 368088
+##: 0 [read] @ 399840
+##: 0 [read] @ 431592
+##: 0 [read] @ 463344
+##: 0 [read] @ 495096
+##: 0 [read] @ 526848
+##: 0 [read] @ 558600
+##: 0 [read] @ 590352
+##: 0 [read] @ 622104
+##: 0 [read] @ 653856
+##: 0 [read] @ 685608
+##: 0 [read] @ 717360
+##: 0 [read] @ 749112
+##: 0 [read] @ 780864
+##: 0 [read] @ 812616
+##: 0 [read] @ 844368
+##: 0 [read] @ 876120
+##: 0 [read] @ 907872
+##: 0 [read] @ 939624
+##: 0 [read] @ 971376
+##: 0 [read] @ 1003128
+##: 0 [read] @ 1034880
+##: 0 [read] @ 1066632
+##: 0 [read] @ 1098384
+##: 0 [read] @ 1130136
+##: 0 [read] @ 1161888
+##: 0 [read] @ 1193640
+##: 0 [read] @ 1225392
+##: 0 [read] @ 1257144
+##: 0 [read] @ 1288896
+##: 0 [read] @ 1320648
+##: 0 [read] @ 1352400
+##: 0 [read] @ 1384152
+##: 0 [read] @ 1407672
+##: 1 [verify] @ 19992
+##: 9 [overlap] @ 25320
+##: 2 [jitter] @ 27048
+##: 2 [jitter] @ 1415904
+##: 1 [verify] @ 19992
+##: 1 [verify] @ 19992
+##: 2 [jitter] @ 24696
+##: 2 [jitter] @ 1413552
+##: 1 [verify] @ 19992
+##: 1 [verify] @ 19992
+##: 2 [jitter] @ 63504
+##: 2 [jitter] @ 1441776
+##: 1 [verify] @ 19992
+##: 2 [jitter] @ 61152
+##: 2 [jitter] @ 1440600
+##: 1 [verify] @ 19992
+##: 2 [jitter] @ 61152
+##: 2 [jitter] @ 1440600
+##: 1 [verify] @ 19992
+##: 2 [jitter] @ 30576
+##: 2 [jitter] @ 1419432
+##: 1 [verify] @ 19992
+##: 2 [jitter] @ 29400
+##: 2 [jitter] @ 1418256
+##: 1 [verify] @ 19992
+##: 2 [jitter] @ 51744
+##: 2 [jitter] @ 1435896
+##: 1 [verify] @ 19992
+##: 9 [overlap] @ 26460
+##: 2 [jitter] @ 51744
+##: 2 [jitter] @ 1435896
+##: 1 [verify] @ 19992
+##: 2 [jitter] @ 49392
+##: 2 [jitter] @ 1434720
+##: 1 [verify] @ 19992
+##: 2 [jitter] @ 44688
+##: 2 [jitter] @ 1432368
+##: 1 [verify] @ 19992
+scsi_read error: sector=-2 length=18 retry=0
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=9 retry=1
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=4 retry=2
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=2 retry=3
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=4
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=5
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=6
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=7
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+scsi_read error: sector=-2 length=1 retry=8
+                 Sense key: 5 ASC: 21 ASCQ: 0
+                 Transport error: Illegal SCSI request (rejected by target)
+                 System error: Invalid argument
+##: 12 [transport error] @ -2352
+##: 0 [read] @ 17640
+##: 0 [read] @ 49392
+##: 0 [read] @ 81144
+##: 0 [read] @ 112896
+##: 0 [read] @ 144648
+##: 0 [read] @ 176400
+##: 0 [read] @ 208152
+##: 0 [read] @ 239904
+##: 0 [read] @ 271656
+##: 0 [read] @ 303408
+##: 0 [read] @ 335160
+##: 0 [read] @ 366912
+##: 0 [read] @ 398664
+##: 0 [read] @ 430416
+##: 0 [read] @ 462168
+##: 0 [read] @ 493920
+##: 0 [read] @ 525672
+##: 0 [read] @ 557424
+##: 0 [read] @ 589176
+##: 0 [read] @ 620928
+##: 0 [read] @ 652680
+##: 0 [read] @ 684432
+##: 0 [read] @ 716184
+##: 0 [read] @ 747936
+##: 0 [read] @ 779688
+##: 0 [read] @ 811440
+##: 0 [read] @ 843192
+##: 0 [read] @ 874944
+##: 0 [read] @ 906696
+##: 0 [read] @ 938448
+##: 0 [read] @ 970200
+##: 0 [read] @ 1001952
+##: 0 [read] @ 1033704
+##: 0 [read] @ 1065456
+##: 0 [read] @ 1097208
+##: 0 [read] @ 1128960
+##: 0 [read] @ 1160712
+##: 0 [read] @ 1192464
+##: 0 [read] @ 1224216
+##: 0 [read] @ 1255968
+##: 0 [read] @ 1287720
+##: 0 [read] @ 1319472
+##: 0 [read] @ 1351224

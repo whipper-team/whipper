@@ -1,3 +1,19 @@
+2011-03-23  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/program/cdparanoia.py:
+	  cdparanoia can hang indefinitely on scsi read errors.
+	  For example, on some drives, when trying negative offsets.
+	  Notice them, count them, and fail after 100.
+	* morituri/test/test_program_cdparanoia.py:
+	* morituri/test/cdparanoia.progress.error (added):
+	  Add a test for this output.
+
+2011-03-23  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/program/cdparanoia.py:
+	* morituri/test/test_program_cdparanoia.py:
+	  
+
 2011-03-22  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/program.py:

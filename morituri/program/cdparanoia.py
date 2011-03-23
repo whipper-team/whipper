@@ -31,6 +31,9 @@ from morituri.common import task, log, common
 from morituri.extern import asyncsub
 
 class FileSizeError(Exception):
+
+    message = None
+
     """
     The given path does not have the expected size.
     """
@@ -53,12 +56,15 @@ _PROGRESS_RE = re.compile(r"""
     (?P<offset>\d+)        # offset
 """, re.VERBOSE)
 
+_ERROR_RE = re.compile("^scsi_read error:")
+
 # from reading cdparanoia source code, it looks like offset is reported in
 # number of single-channel samples, ie. 2 bytes per unit, and absolute
 
 class ProgressParser(object):
     read = 0 # last [read] frame
     wrote = 0 # last [wrote] frame
+    errors = 0 # count of number of scsi errors
     _nframes = None # number of frames read on each [read]
     _firstFrames = None # number of frames read on first [read]
     reads = 0 # total number of reads
@@ -92,6 +98,10 @@ class ProgressParser(object):
                 self._parse_read(wordOffset)
             elif function == 'wrote':
                 self._parse_wrote(wordOffset)
+
+        m = _ERROR_RE.search(line)
+        if m:
+            self.errors += 1
 
     def _parse_read(self, wordOffset):
         if wordOffset % common.WORDS_PER_FRAME != 0:
@@ -179,6 +189,8 @@ class ReadTrackTask(task.Task):
 
     description = "Reading Track"
     quality = None # set at end of reading
+
+    _MAXERROR = 100 # number of errors detected by parser
 
     def __init__(self, path, table, start, stop, offset=0, device=None):
         """
@@ -281,6 +293,11 @@ class ReadTrackTask(task.Task):
 
             for line in lines:
                 self._parser.parse(line)
+
+            # fail if too many errors
+            if self._parser.errors > self._MAXERROR:
+                self.debug('%d errors, terminating', self._parser.errors)
+                self._popen.terminate()
 
             num = float(self._parser.wrote) - self._start
             den = float(self._stop) - self._start
