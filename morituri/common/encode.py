@@ -72,10 +72,11 @@ class AlacProfile(Profile):
     pipeline = 'ffenc_alac name=tagger'
     lossless = True
 
+# FIXME: wavenc does not have merge_tags
 class WavProfile(Profile):
     name = 'wav'
     extension = 'wav'
-    pipeline = 'wavenc name=tagger'
+    pipeline = 'wavenc'
     lossless = True
 
 class WavpackProfile(Profile):
@@ -175,8 +176,14 @@ class EncodeTask(task.Task):
         tagger = self._pipeline.get_by_name('tagger')
 
         # set tags
-        if self._taglist:
-            tagger.merge_tags(self._taglist, gst.TAG_MERGE_APPEND)
+        if tagger and self._taglist:
+            # FIXME: under which conditions do we not have merge_tags ?
+            # See for example comment saying wavenc did not have it.
+            try:
+                tagger.merge_tags(self._taglist, gst.TAG_MERGE_APPEND)
+            except AttributeError, e:
+                self.warning('Could not merge tags: %r',
+                    log.getExceptionMessage(e))
 
         self.debug('pausing pipeline')
         self._pipeline.set_state(gst.STATE_PAUSED)

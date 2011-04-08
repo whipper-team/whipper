@@ -1,3 +1,11 @@
+2011-04-08  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/encode.py:
+	  wavenc does not have merge_tags, it seems.
+	  So don't call an element a tagger, don't merge tags if there is
+	  no tagger, and complain if there is no merge_tags when we think
+	  there should be.
+
 2011-03-23  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/program/cdparanoia.py:
