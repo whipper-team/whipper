@@ -22,6 +22,8 @@ import os
 # where am I on the disk ?
 __thisdir = os.path.dirname(os.path.abspath(__file__))
 
+revision = "$Revision$"
+
 if os.path.exists(os.path.join(__thisdir, 'uninstalled.py')):
     from morituri.configure import uninstalled
     config_dict = uninstalled.get()
