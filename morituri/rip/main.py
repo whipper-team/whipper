@@ -44,7 +44,8 @@ You can get help on subcommands by using the -h option to the subcommand.
         # FIXME: is this the right place ?
         log.init()
         from morituri.configure import configure
-        log.debug("morituri", "This is morituri version %s" % configure.version)
+        log.debug("morituri", "This is morituri version %s (%s)",
+            configure.version, configure.revision)
 
         self.parser.add_option('-v', '--version',
                           action="store_true", dest="version",
@@ -55,3 +56,7 @@ You can get help on subcommands by using the -h option to the subcommand.
             from morituri.configure import configure
             print "rip %s" % configure.version
             sys.exit(0)
+
+    def parse(self, argv):
+        log.debug("morituri", "rip %s" % " ".join(argv))
+        logcommand.LogCommand.parse(self, argv)

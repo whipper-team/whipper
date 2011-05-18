@@ -1,5 +1,10 @@
 2011-05-19  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/rip/main.py:
+	  More debug info: args, version, revision.
+
+2011-05-19  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/configure/configure.py (svn:keywords):
 	  Expand revision.
 	* morituri/configure/configure.py:
