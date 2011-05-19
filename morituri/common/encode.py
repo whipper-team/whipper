@@ -66,10 +66,11 @@ class FlacProfile(Profile):
 
         return True
 
+# FIXME: ffenc_alac does not have merge_tags
 class AlacProfile(Profile):
     name = 'alac'
     extension = 'alac'
-    pipeline = 'ffenc_alac name=tagger'
+    pipeline = 'ffenc_alac'
     lossless = True
 
 # FIXME: wavenc does not have merge_tags
