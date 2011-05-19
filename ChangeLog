@@ -1,5 +1,10 @@
 2011-05-19  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/task.py:
+	  Add more debug.
+
+2011-05-19  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/rip/main.py:
 	  More debug info: args, version, revision.
 

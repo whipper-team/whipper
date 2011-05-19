@@ -74,6 +74,7 @@ class Task(object, log.Loggable):
 
         Subclasses should chain up to me at the beginning.
         """
+        self.debug('starting')
         self.setProgress(self.progress)
         self.running = True
         self.runner = runner
@@ -147,6 +148,7 @@ class Task(object, log.Loggable):
 
         Listeners should implement started, stopped, and progressed.
         """
+        self.debug('Adding listener %r', listener)
         if not self._listeners:
             self._listeners = []
         self._listeners.append(listener)
@@ -255,7 +257,8 @@ class BaseMultiTask(Task, ITaskListener):
             # start next task
             task = self.tasks[self._task]
             self._task += 1
-            self.debug('BaseMultiTask.next(): starting task %r', task)
+            self.debug('BaseMultiTask.next(): starting task %d of %d: %r',
+                self._task, len(self.tasks), task)
             self.setDescription("%s (%d of %d) ..." % (
                 task.description, self._task, len(self.tasks)))
             task.addListener(self)
