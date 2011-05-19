@@ -144,7 +144,13 @@ class Persister(object):
 
         handle = open(self._path)
         import pickle
-        self.object = pickle.load(handle)
+
+        try:
+            self.object = pickle.load(handle)
+        except:
+            # can fail for various reasons; in that case, pretend we didn't
+            # load it
+            pass
 
     def delete(self):
         self.object = None
