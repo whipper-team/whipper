@@ -187,12 +187,13 @@ class ReadTrackTask(task.Task):
     @ivar reads: how many reads were done to rip the track
     """
 
-    description = "Reading Track"
+    description = "Reading track"
     quality = None # set at end of reading
 
     _MAXERROR = 100 # number of errors detected by parser
 
-    def __init__(self, path, table, start, stop, offset=0, device=None):
+    def __init__(self, path, table, start, stop, offset=0, device=None,
+        action="Reading", what="track"):
         """
         Read the given track.
 
@@ -208,6 +209,10 @@ class ReadTrackTask(task.Task):
         @type  offset: int
         @param device: the device to rip from
         @type  device: str
+        @param action: a string representing the action; e.g. Read/Verify
+        @type  action: str
+        @param what:   a string representing what's being read; e.g. Track
+        @type  what:   str
         """
         assert type(path) is unicode, "%r is not unicode" % path
 
@@ -221,6 +226,7 @@ class ReadTrackTask(task.Task):
 
         self._buffer = "" # accumulate characters
         self._errors = []
+        self.description = "%s %s" % (action, what)
 
     def start(self, runner):
         task.Task.start(self, runner)
@@ -371,7 +377,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
     _tmppath = None
 
     def __init__(self, path, table, start, stop, offset=0, device=None,
-                 profile=None, taglist=None):
+                 profile=None, taglist=None, what="track"):
         """
         @param path:    where to store the ripped track
         @type  path:    str
@@ -392,6 +398,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         """
         task.MultiSeparateTask.__init__(self)
 
+        self.debug('Creating read and verify task on %r', path)
         self.path = path
 
         if taglist:
@@ -408,11 +415,10 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         self.tasks = []
         self.tasks.append(
             ReadTrackTask(tmppath, table, start, stop,
-                offset=offset, device=device))
+                offset=offset, device=device, what=what))
         self.tasks.append(checksum.CRC32Task(tmppath))
         t = ReadTrackTask(tmppath, table, start, stop,
-            offset=offset, device=device)
-        t.description = 'Verifying track...'
+            offset=offset, device=device, action="Verifying", what=what)
         self.tasks.append(t)
         self.tasks.append(checksum.CRC32Task(tmppath))
 
@@ -426,7 +432,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         from morituri.common import encode
 
         self.tasks.append(encode.EncodeTask(tmppath, tmpoutpath, profile,
-            taglist=taglist))
+            taglist=taglist, what=what))
         # make sure our encoding is accurate
         self.tasks.append(checksum.CRC32Task(tmpoutpath))
 

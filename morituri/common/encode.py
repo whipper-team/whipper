@@ -137,7 +137,7 @@ class EncodeTask(task.Task):
     description = 'Encoding'
     peak = None
 
-    def __init__(self, inpath, outpath, profile, taglist=None):
+    def __init__(self, inpath, outpath, profile, taglist=None, what="track"):
         """
         @param profile: encoding profile
         @type  profile: L{Profile}
@@ -154,6 +154,7 @@ class EncodeTask(task.Task):
         self._peakdB = None
         self._profile = profile
 
+        self.description = "Encoding %s" % what
         self._profile.test()
 
     def start(self, runner):
@@ -162,7 +163,7 @@ class EncodeTask(task.Task):
         # here to avoid import gst eating our options
         import gst
 
-        self._pipeline = gst.parse_launch('''
+        desc = '''
             filesrc location="%s" !
             decodebin name=decoder !
             audio/x-raw-int,width=16,depth=16,channels=2 !
@@ -171,7 +172,10 @@ class EncodeTask(task.Task):
             filesink location="%s" name=sink''' % (
                 common.quoteParse(self._inpath).encode('utf-8'),
                 self._profile.pipeline,
-                common.quoteParse(self._outpath).encode('utf-8')))
+                common.quoteParse(self._outpath).encode('utf-8'))
+
+        self.debug('creating pipeline: %r', desc)
+        self._pipeline = gst.parse_launch(desc)
 
         tagger = self._pipeline.get_by_name('tagger')
 
@@ -272,6 +276,8 @@ class EncodeTask(task.Task):
         self.debug('setting state to NULL')
         self._pipeline.set_state(gst.STATE_NULL)
         self.debug('set state to NULL')
+        # FIXME: maybe this should move lower ? If used by BaseMultiTask,
+        # this starts the next task without showing us the peakdB
         task.Task.stop(self)
 
         if self._peakdB is not None:

@@ -461,7 +461,8 @@ class Program(log.Loggable):
 
         return trackResult.testcrc == t.checksum
 
-    def ripTrack(self, runner, trackResult, offset, device, profile, taglist):
+    def ripTrack(self, runner, trackResult, offset, device, profile, taglist,
+        what=None):
         """
         @param trackResult: the object to store information in.
         @type  trackResult: L{result.TrackResult}
@@ -478,13 +479,16 @@ class Program(log.Loggable):
         if not os.path.exists(dirname):
             os.makedirs(dirname)
 
+        if not what:
+            what='track %d' % (trackResult.number, )
+
         t = cdparanoia.ReadVerifyTrackTask(trackResult.filename,
             self.result.table, start, stop,
             offset=offset,
             device=device,
             profile=profile,
-            taglist=taglist)
-        t.description = 'Reading Track %d' % trackResult.number 
+            taglist=taglist,
+            what=what)
 
         runner.run(t)
 

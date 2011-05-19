@@ -215,7 +215,8 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
                     offset=int(self.options.offset),
                     device=self.parentCommand.options.device,
                     profile=profile,
-                    taglist=prog.getTagList(number))
+                    taglist=prog.getTagList(number),
+                    what='track %d of %d' % (number, len(itable.tracks)))
 
                 if trackResult.testcrc == trackResult.copycrc:
                     print 'Checksums match for track %d' % (number)

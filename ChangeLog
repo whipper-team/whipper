@@ -1,5 +1,13 @@
 2011-05-19  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/program/cdparanoia.py:
+	* morituri/common/encode.py:
+	* morituri/common/program.py:
+	* morituri/rip/cd.py:
+	  Add action and what args to describe task better.
+
+2011-05-19  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/task.py:
 	  Add more debug.
 
