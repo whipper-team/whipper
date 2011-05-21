@@ -148,10 +148,11 @@ class Table(object, log.Loggable):
     """
     I represent a table of indexes on a CD.
 
-    @ivar tracks: tracks on this CD
-    @type tracks: list of L{Track}
+    @ivar tracks:  tracks on this CD
+    @type tracks:  list of L{Track}
     @ivar catalog: catalog number
     @type catalog: str
+    @type cdtext:  dict of str -> str
     """
 
     tracks = None # list of Track
