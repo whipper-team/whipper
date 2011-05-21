@@ -1,5 +1,11 @@
 2011-05-21  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* misc/morituri-uninstalled:
+	  The binary name is rip, so add an option to override.
+	  Fixes #46.
+
+2011-05-21  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/rip/image.py:
 	  Document image subcommand.  Fixes #61.
 

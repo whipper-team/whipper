@@ -25,6 +25,9 @@ BASEDIR=`cd $MISCDIR/.. && pwd`
 # if this script is called "...-head" then version will be "head"
 PROJECT=`basename $self | sed s/-.*//g`
 VERSION=`basename $self | sed s/.*-//g`
+COMMAND=$PROJECT
+# override if the command line name to be completed is different
+COMMAND=rip
 
 options=
 
@@ -45,7 +48,7 @@ then
     then
       cat $HOME/.bashrc > $tmp
     fi
-    cat $BASEDIR/etc/bash_completion.d/$PROJECT >> $tmp
+    cat $BASEDIR/etc/bash_completion.d/$COMMAND >> $tmp
     SHELL_OPTIONS="--init-file $tmp"
     options="(with bash completion)"
   fi
