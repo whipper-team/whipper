@@ -1,5 +1,11 @@
 2011-05-21  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/test/test_program_cdparanoia.py:
+	  Update expected quality percentage.
+	  Was broken since its commit in [432].
+
+2011-05-21  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/checksum.py:
 	* morituri/common/encode.py:
 	* morituri/image/table.py:

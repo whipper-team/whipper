@@ -38,5 +38,5 @@ class ErrorTestCase(unittest.TestCase):
             self._parser.parse(line)
 
         q = '%.01f %%' % (self._parser.getTrackQuality() * 100.0, )
-        self.assertEquals(q, '99.7 %')
+        self.assertEquals(q, '79.6 %')
 
