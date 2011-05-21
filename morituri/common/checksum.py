@@ -74,6 +74,8 @@ class GstPipelineTask(task.Task):
 
         if not self.exception:
             self.paused()
+        else:
+            raise self.exception
 
     def getPipelineDesc(self):
         raise NotImplementedError

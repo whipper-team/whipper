@@ -11,14 +11,15 @@ import gst
 
 from morituri.test import common
 
-from morituri.common import task, checksum, log
+from morituri.common import task, checksum, log, common
+from morituri.image import image
 
-from morituri.test import common
+from morituri.test import common as tcommon
 
 def h(i):
     return "0x%08x" % i
 
-class EmptyTestCase(common.TestCase):
+class EmptyTestCase(tcommon.TestCase):
     def testEmpty(self):
         # this test makes sure that checksumming empty files doesn't hang
         self.runner = task.SyncRunner(verbose=False)
@@ -30,7 +31,7 @@ class EmptyTestCase(common.TestCase):
         self.failUnless(isinstance(e.exception, checksum.GstException))
         os.unlink(path)
 
-class PathTestCase(common.TestCase):
+class PathTestCase(tcommon.TestCase):
     def _testSuffix(self, suffix):
         self.runner = task.SyncRunner(verbose=False)
         fd, path = tempfile.mkstemp(suffix=suffix)
@@ -40,7 +41,7 @@ class PathTestCase(common.TestCase):
         self.failUnless(isinstance(e.exception, checksum.GstException))
         os.unlink(path)
 
-class UnicodePathTestCase(PathTestCase, common.UnicodeTestMixin):
+class UnicodePathTestCase(PathTestCase, tcommon.UnicodeTestMixin):
     def testUnicodePath(self):
         # this test makes sure we can checksum a unicode path
         self._testSuffix(u'morituri.test.B\xeate Noire.empty')

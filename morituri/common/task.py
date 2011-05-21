@@ -73,6 +73,13 @@ class Task(object, log.Loggable):
         Start the task.
 
         Subclasses should chain up to me at the beginning.
+
+        Subclass implementations should raise exceptions immediately in
+        case of failure (using set(AndRaise)Exception) first, or do it later
+        using those methods.
+
+        If start doesn't raise an exception, the task should run until
+        complete, or setException and stop().
         """
         self.debug('starting')
         self.setProgress(self.progress)
