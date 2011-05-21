@@ -7,7 +7,7 @@ import tempfile
 import gobject
 gobject.threads_init()
 
-from morituri.common import task, checksum, log
+from morituri.common import task, checksum, log, gstreamer
 
 from morituri.test import common as tcommon
 
@@ -23,7 +23,7 @@ class EmptyTestCase(tcommon.TestCase):
         # FIXME: do we want a specific error for this ?
         e = self.assertRaises(task.TaskException, self.runner.run,
             checksumtask, verbose=False)
-        self.failUnless(isinstance(e.exception, checksum.GstException))
+        self.failUnless(isinstance(e.exception, gstreamer.GstException))
         os.unlink(path)
 
 class PathTestCase(tcommon.TestCase):
@@ -33,7 +33,7 @@ class PathTestCase(tcommon.TestCase):
         checksumtask = checksum.ChecksumTask(path) 
         e = self.assertRaises(task.TaskException, self.runner.run,
             checksumtask, verbose=False)
-        self.failUnless(isinstance(e.exception, checksum.GstException))
+        self.failUnless(isinstance(e.exception, gstreamer.GstException))
         os.unlink(path)
 
 class UnicodePathTestCase(PathTestCase, tcommon.UnicodeTestMixin):

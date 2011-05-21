@@ -1,5 +1,13 @@
 2011-05-21  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/checksum.py:
+	* morituri/image/image.py:
+	* morituri/test/test_common_checksum.py:
+	* morituri/common/gstreamer.py (added):
+	  Factor out GstException and GstPipelineTask.
+
+2011-05-21  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* misc/morituri-uninstalled:
 	  The binary name is rip, so add an option to override.
 	  Fixes #46.

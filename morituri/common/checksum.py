@@ -26,86 +26,12 @@ import zlib
 
 import gst
 
-from morituri.common import common, task
+from morituri.common import common, task, gstreamer
 
 # checksums are not CRC's. a CRC is a specific type of checksum.
 
-# FIXME: probably this should move higher up the module hierarchy and
-# be used wider
-class GstException(Exception):
-    def __init__(self, gerror, debug):
-        self.args = (gerror, debug, )
-        self.gerror = gerror
-        self.debug = debug
 
-# FIXME: this should move up too; other tasks might have use for it.
-class GstPipelineTask(task.Task):
-    """
-    I am a base class for tasks that use a GStreamer pipeline.
-
-    I handle errors and raise them appropriately.
-    """
-    def start(self, runner):
-        task.Task.start(self, runner)
-        desc = self.getPipelineDesc()
-
-        self.debug('creating pipeline %r', desc)
-        self.pipeline = gst.parse_launch(desc)
-
-        self._bus = self.pipeline.get_bus()
-        gst.debug('got bus %r' % self._bus)
-
-        # a signal watch calls callbacks from an idle loop
-        # self._bus.add_signal_watch()
-
-        # sync emission triggers sync-message signals which calls callbacks
-        # from the thread that signals, but happens immediately
-        self._bus.enable_sync_message_emission()
-        self._bus.connect('sync-message::eos', self.bus_eos_cb)
-        self._bus.connect('sync-message::tag', self.bus_tag_cb)
-        self._bus.connect('sync-message::error', self.bus_error_cb)
-
-        self.parsed()
-
-        self.debug('pausing pipeline')
-        self.pipeline.set_state(gst.STATE_PAUSED)
-        self.pipeline.get_state()
-        self.debug('paused pipeline')
-
-        if not self.exception:
-            self.paused()
-        else:
-            raise self.exception
-
-    def getPipelineDesc(self):
-        raise NotImplementedError
-
-    def parsed(self):
-        """
-        Called after parsing the pipeline but before setting it to paused.
-        """
-        pass
-
-    def paused(self):
-        """
-        Called after pipeline is paused
-        """
-        pass
-
-    def bus_eos_cb(self, bus, message):
-        pass
-
-    def bus_tag_cb(self, bus, message):
-        pass
-
-    def bus_error_cb(self, bus, message):
-        exc = GstException(*message.parse_error())
-        self.setAndRaiseException(exc)
-        gst.debug('error, scheduling stop')
-        #self.runner.schedule(0, self.stop)
-
-
-class ChecksumTask(GstPipelineTask):
+class ChecksumTask(gstreamer.GstPipelineTask):
     """
     I am a task that calculates a checksum of the decoded audio data.
 
@@ -341,7 +267,7 @@ class AccurateRipChecksumTask(ChecksumTask):
 
         return checksum
 
-class TRMTask(GstPipelineTask):
+class TRMTask(gstreamer.GstPipelineTask):
     """
     I calculate a MusicBrainz TRM fingerprint.
 
