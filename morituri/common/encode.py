@@ -25,7 +25,7 @@ import os
 import shutil
 import tempfile
 
-from morituri.common import common, task
+from morituri.common import common, task, log
 
 class Profile(object):
     name = None
@@ -169,7 +169,7 @@ class EncodeTask(task.Task):
             decodebin name=decoder !
             audio/x-raw-int,width=16,depth=16,channels=2 !
             level name=level !
-            %s !
+            %s ! identity name=identity !
             filesink location="%s" name=sink''' % (
                 common.quoteParse(self._inpath).encode('utf-8'),
                 self._profile.pipeline,
@@ -196,9 +196,10 @@ class EncodeTask(task.Task):
         self.debug('paused pipeline')
 
         # get length
+        identity = self._pipeline.get_by_name('identity')
         self.debug('query duration')
         try:
-            length, qformat = tagger.query_duration(gst.FORMAT_DEFAULT)
+            length, qformat = identity.query_duration(gst.FORMAT_DEFAULT)
         except gst.QueryError, e:
             self.setException(e)
             self.stop()

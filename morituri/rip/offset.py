@@ -27,7 +27,6 @@ import gobject
 gobject.threads_init()
 
 from morituri.common import logcommand, task, accurip, drive, program
-from morituri.image import image
 from morituri.program import cdrdao, cdparanoia
 
 # see http://www.accuraterip.com/driveoffsets.htm

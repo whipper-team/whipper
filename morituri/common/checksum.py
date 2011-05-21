@@ -373,7 +373,6 @@ class TRMTask(GstPipelineTask):
 
     def paused(self):
         gst.debug('query duration')
-        sink = self.pipeline.get_by_name('sink')
 
         self._length, qformat = self.pipeline.query_duration(gst.FORMAT_TIME)
         gst.debug('total length: %r' % self._length)

@@ -5,8 +5,6 @@ import os
 import tempfile
 import unittest
 
-from morituri.test import common
-
 from morituri.image import table, cue
 
 class KingsSingleTestCase(unittest.TestCase):

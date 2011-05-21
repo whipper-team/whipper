@@ -3,14 +3,12 @@
 
 from morituri.image import table
 
-import unittest
-
-from morituri.test import common
+from morituri.test import common as tcommon
 
 def h(i):
     return "0x%08x" % i
 
-class LadyhawkeTestCase(unittest.TestCase):
+class LadyhawkeTestCase(tcommon.TestCase):
     # Ladyhawke - Ladyhawke - 0602517818866
     # contains 12 audio tracks and one data track
     # CDDB has been verified against freedb:
@@ -54,7 +52,7 @@ class LadyhawkeTestCase(unittest.TestCase):
         self.assertEquals(self.table.getAccurateRipURL(),
         "http://www.accuraterip.com/accuraterip/a/5/d/dBAR-012-0013bd5a-00b8d489-c60af50d.bin")
 
-class MusicBrainzTestCase(unittest.TestCase):
+class MusicBrainzTestCase(tcommon.TestCase):
     # example taken from http://musicbrainz.org/doc/DiscIDCalculation
     # disc is Ettella Diamant
 

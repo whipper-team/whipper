@@ -23,9 +23,8 @@
 import os
 
 from morituri.common import logcommand, task, accurip, program, encode
-from morituri.image import image, cue
+from morituri.image import image
 from morituri.result import result
-from morituri.program import cdrdao, cdparanoia
 
 
 class Encode(logcommand.LogCommand):

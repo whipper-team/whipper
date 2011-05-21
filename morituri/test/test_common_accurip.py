@@ -2,11 +2,12 @@
 # vi:si:et:sw=4:sts=4:ts=4
 
 import os
-import unittest
 
-from morituri.common import accurip, common
+from morituri.common import accurip
 
-class AccurateRipResponseTestCase(unittest.TestCase):
+from morituri.test import common as tcommon
+
+class AccurateRipResponseTestCase(tcommon.TestCase):
     def testResponse(self):
         path = os.path.join(os.path.dirname(__file__),
             'dBAR-011-0010e284-009228a3-9809ff0b.bin')

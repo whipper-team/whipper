@@ -29,8 +29,7 @@ gobject.threads_init()
 from morituri.common import logcommand, task, common, accurip, log
 from morituri.common import drive, program
 from morituri.result import result
-from morituri.image import image, cue, table
-from morituri.program import cdrdao, cdparanoia
+from morituri.program import cdrdao
 
 
 class Rip(logcommand.LogCommand):

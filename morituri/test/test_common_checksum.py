@@ -7,12 +7,7 @@ import tempfile
 import gobject
 gobject.threads_init()
 
-import gst
-
-from morituri.test import common
-
-from morituri.common import task, checksum, log, common
-from morituri.image import image
+from morituri.common import task, checksum, log
 
 from morituri.test import common as tcommon
 

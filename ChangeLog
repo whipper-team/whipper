@@ -1,6 +1,20 @@
 2011-05-21  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/checksum.py:
+	* morituri/common/encode.py:
+	* morituri/image/table.py:
+	* morituri/rip/cd.py:
+	* morituri/rip/image.py:
+	* morituri/rip/offset.py:
+	* morituri/test/test_common_accurip.py:
+	* morituri/test/test_common_checksum.py:
+	* morituri/test/test_image_cue.py:
+	* morituri/test/test_image_table.py:
+	  Pychecker fixes.
+
+2011-05-21  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/checksum.py:
 	  Actually raise the exception.
 	* morituri/common/task.py:
 	  Document interface more clearly.

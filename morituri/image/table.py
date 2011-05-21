@@ -28,7 +28,7 @@ import copy
 import urllib
 import urlparse
 
-from morituri.common import task, common, log
+from morituri.common import common, log
 
 # FIXME: taken from libcdio, but no reference found for these
 
