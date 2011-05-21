@@ -35,3 +35,9 @@ unicode
   (even when writing them to other files), or assume utf-8 on in and out.
 - also direct output to a file; redirection sets codec to ASCII and brings out
   unicode bugs
+
+CDROMS
+------
+
+PLEXTOR CD-R   PX-W8432T Read offset of device is: 355.
+
