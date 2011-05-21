@@ -1,5 +1,10 @@
 2011-05-21  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/test/Makefile.am:
+	  Package error progress output.  Fixes distcheck on slaves.
+
+2011-05-21  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/test/test_program_cdparanoia.py:
 	  Update expected quality percentage.
 	  Was broken since its commit in [432].

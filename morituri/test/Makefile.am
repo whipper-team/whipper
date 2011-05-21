@@ -32,6 +32,7 @@ EXTRA_DIST = \
 	track-separate.cue \
 	track-single.cue \
 	cdparanoia.progress \
+	cdparanoia.progress.error \
 	cdrdao.readtoc.progress \
 	silentalarm.result.pickle \
 	track.flac
