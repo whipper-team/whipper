@@ -164,4 +164,10 @@ class Verify(logcommand.LogCommand):
 class Image(logcommand.LogCommand):
     summary = "handle images"
 
+    description = """
+Handle disc images.  Disc images are described by a .cue file.
+Disc images can be encoded to another format (for example, to make a
+compressed encoding), retagged and verified.
+"""
+
     subCommandClasses = [Encode, Retag, Verify, ]
