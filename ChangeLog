@@ -1,5 +1,11 @@
 2011-05-22  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/rip/main.py:
+	  Give a nice error message if cdrdao cannot read the disc.
+	  Fixes #29.
+
+2011-05-22  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/program/cdparanoia.py:
 	  Since stop can be same as start, add + 1 to progress calculation.
 	  Fixes #37.

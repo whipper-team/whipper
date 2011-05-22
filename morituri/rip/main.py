@@ -23,6 +23,14 @@ def main(argv):
             sys.stderr.write('rip: error: missing dependency "%s"\n' %
                 e.exception.dependency)
             return 255
+        # FIXME: move this exception
+        from morituri.program import cdrdao
+        if isinstance(e.exception, cdrdao.DeviceOpenException):
+            sys.stderr.write("""rip: error: cannot read CD from drive.
+cdrdao says:
+%s
+""" % e.exception.msg)
+            return 255
         raise
 
     if ret is None:
