@@ -4,6 +4,7 @@ morituridir = $(PYTHONLIBDIR)/morituri/rip
 
 morituri_PYTHON = \
 	__init__.py \
+	accurip.py \
 	cd.py \
 	drive.py \
 	image.py \

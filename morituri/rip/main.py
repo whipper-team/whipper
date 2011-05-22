@@ -4,7 +4,7 @@
 import sys
 
 from morituri.common import log, logcommand, common, task
-from morituri.rip import cd, offset, drive, image
+from morituri.rip import cd, offset, drive, image, accurip
 
 def main(argv):
     c = Rip()
@@ -46,7 +46,8 @@ Rip gives you a tree of subcommands to work with.
 You can get help on subcommands by using the -h option to the subcommand.
 """
 
-    subCommandClasses = [cd.CD, drive.Drive, offset.Offset, image.Image, ]
+    subCommandClasses = [accurip.AccuRip,
+        cd.CD, drive.Drive, offset.Offset, image.Image, ]
 
     def addOptions(self):
         # FIXME: is this the right place ?
