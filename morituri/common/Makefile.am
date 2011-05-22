@@ -9,6 +9,7 @@ morituri_PYTHON = \
 	common.py \
 	drive.py \
 	encode.py \
+	gstreamer.py \
 	log.py \
 	logcommand.py \
 	program.py \
