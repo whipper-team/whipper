@@ -528,6 +528,10 @@ class Table(object, log.Loggable):
         """
         lines = []
 
+        def writeFile(path):
+            lines.append('FILE "%s" WAVE' % os.path.basename(path))
+
+
         # header
         main = ['PERFORMER', 'TITLE']
 
@@ -549,7 +553,7 @@ class Table(object, log.Loggable):
         # add the first FILE line
         path = self.tracks[0].getFirstIndex().path
         counter = self.tracks[0].getFirstIndex().counter
-        lines.append('FILE "%s" WAVE' % os.path.basename(path))
+        writeFile(path)
 
         for i, track in enumerate(self.tracks):
             # FIXME: skip data tracks for now
@@ -561,7 +565,7 @@ class Table(object, log.Loggable):
             if not track.indexes.has_key(0):
                 index = track.indexes[1]
                 if index.counter != counter:
-                    lines.append('FILE "%s" WAVE' % os.path.basename(index.path))
+                    writeFile(index.path)
                     counter = index.counter
             lines.append("  TRACK %02d %s" % (i + 1, 'AUDIO'))
             for key in CDTEXT_FIELDS:
@@ -577,7 +581,7 @@ class Table(object, log.Loggable):
             for number in indexes:
                 index = track.indexes[number]
                 if index.counter != counter:
-                    lines.append('FILE "%s" WAVE' % os.path.basename(index.path))
+                    writeFile(index.path)
                     counter = index.counter
                 lines.append("    INDEX %02d %s" % (number,
                     common.framesToMSF(index.relative)))

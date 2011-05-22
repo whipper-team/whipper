@@ -1,5 +1,10 @@
 2011-05-22  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/image/table.py:
+	  Extract one function to write a FILE line.
+
+2011-05-22  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	patch by: Ross Burton <ross@burtonini.com>
 
 	* morituri/image/table.py:
