@@ -60,6 +60,7 @@ class GstPipelineTask(task.Task):
 
         self.debug('pausing pipeline')
         self.pipeline.set_state(gst.STATE_PAUSED)
+        # FIXME: this can block
         self.pipeline.get_state()
         self.debug('paused pipeline')
 
