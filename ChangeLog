@@ -2,7 +2,7 @@
 
 	* morituri/rip/main.py:
 	  Give a nice error message if cdrdao cannot read the disc.
-	  Fixes #29.
+	  Fixes #62.
 
 2011-05-22  Thomas Vander Stichele  <thomas at apestaart dot org>
 
