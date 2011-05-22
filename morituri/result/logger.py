@@ -39,7 +39,12 @@ class MorituriLogger(object):
         ### global
 
         lines.append("Logfile created by: morituri %s" % configure.version)
+        # FIXME: when we localize this, see #49 to handle unicode properly.
+        import locale
+        old = locale.getlocale(locale.LC_TIME)
+        locale.setlocale(locale.LC_TIME, 'C')
         date = time.strftime("%b %d %H:%M:%S", time.localtime(epoch))
+        locale.setlocale(locale.LC_TIME, old)
         lines.append("Logfile created on: %s" % date)
         lines.append("")
 
