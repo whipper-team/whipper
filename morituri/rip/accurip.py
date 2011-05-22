@@ -49,7 +49,6 @@ class Show(logcommand.LogCommand):
 
 
         # checksum and confidence by track
-        tracks = []
         for track in range(count):
             self.stdout.write("Track %d:\n" % (track + 1))
             checksums = {}
