@@ -532,31 +532,26 @@ class Program(log.Loggable):
             self.warning('No AccurateRip responses, cannot verify.')
             return
 
-        response = None # track which response matches, for all tracks
-
         # now loop to match responses
         for i, csum in enumerate(checksums):
             trackResult = self.result.getTrackResult(i + 1)
 
             confidence = None
+            response = None
 
             # match against each response's checksum for this track
             for j, r in enumerate(responses):
                 if "%08x" % csum == r.checksums[i]:
-                    if not response:
-                        response = r
-                    else:
-                        assert r == response, \
-                            "checksum %08x for track %d matches wrong response %d, "\
-                            "checksum %s" % (
-                                csum, i + 1, j + 1, response.checksums[i])
-                    self.debug("Track: %02d matched in AccurateRip database",
-                        i + 1)
+                    response = r
+                    self.debug(
+                        "Track %02d matched response %d of %d in "
+                        "AccurateRip database",
+                        i + 1, j + 1, len(responses))
                     trackResult.accurip = True
                     # FIXME: maybe checksums should be ints
-                    trackResult.ARDBCRC = int(response.checksums[i], 16)
+                    trackResult.ARDBCRC = int(r.checksums[i], 16)
                     # arsum = csum
-                    confidence = response.confidences[i]
+                    confidence = r.confidences[i]
                     trackResult.ARDBConfidence = confidence
 
             if not trackResult.accurip:
