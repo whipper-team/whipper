@@ -1,5 +1,14 @@
 2011-05-22  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	patch by: Ross Burton <ross@burtonini.com>
+
+	* morituri/image/table.py:
+	  When writing the .cue file, only write the basename, since
+	  the .cue file gets stored in the album directory.
+	  Fixes #10.
+
+2011-05-22  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/rip/main.py:
 	  Give a nice error message if cdrdao cannot read the disc.
 	  Fixes #62.
