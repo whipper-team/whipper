@@ -274,13 +274,17 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
         m3uPath = u'%s.m3u' % discName
         handle = open(m3uPath, 'w')
         handle.write(u'#EXTM3U\n')
+
+        def writeFile(handle, path, length):
+            u = u'#EXTINF:%d,%s\n' % (length, os.path.basename(path))
+            handle.write(u.encode('utf-8'))
+            u = '%s\n' % os.path.basename(path)
+            handle.write(u.encode('utf-8'))
+
+
         if htoapath:
-            u = u'#EXTINF:%d,%s\n' % (
-                itable.getTrackStart(1) / common.FRAMES_PER_SECOND,
-                    os.path.basename(htoapath))
-            handle.write(u.encode('utf-8'))
-            u = '%s\n' % os.path.basename(htoapath)
-            handle.write(u.encode('utf-8'))
+            writeFile(handle, htoapath,
+                itable.getTrackStart(1) / common.FRAMES_PER_SECOND)
 
         for i, track in enumerate(itable.tracks):
             if not track.audio:
@@ -288,12 +292,9 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
 
             path = prog.getPath(prog.outdir, self.options.track_template, 
                 mbdiscid, i + 1) + '.' + profile.extension
-            u = u'#EXTINF:%d,%s\n' % (
-                itable.getTrackLength(i + 1) / common.FRAMES_PER_SECOND,
-                os.path.basename(path))
-            handle.write(u.encode('utf-8'))
-            u = '%s\n' % os.path.basename(path)
-            handle.write(u.encode('utf-8'))
+            writeFile(handle, path,
+                itable.getTrackLength(i + 1) / common.FRAMES_PER_SECOND)
+
         handle.close()
 
         # verify using accuraterip

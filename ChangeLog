@@ -1,5 +1,10 @@
 2011-05-22  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/rip/cd.py:
+	  Factor out function to write .m3u lines.
+
+2011-05-22  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	patch by: Loïc Minier <lool@dooz.org>
 
 	* morituri/rip/cd.py:
