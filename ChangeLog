@@ -1,5 +1,13 @@
 2011-05-22  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	patch by: Loïc Minier <lool@dooz.org>
+
+	* morituri/rip/cd.py:
+	  Don't strip extension of HTOA track.
+	  Fixes #50.
+
+2011-05-22  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/result/logger.py:
 	  Always write strftime in C locale.  Fixes second bug
 	  mentioned in #49.

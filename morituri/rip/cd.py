@@ -277,7 +277,7 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
         if htoapath:
             u = u'#EXTINF:%d,%s\n' % (
                 itable.getTrackStart(1) / common.FRAMES_PER_SECOND,
-                    os.path.basename(htoapath[:-4]))
+                    os.path.basename(htoapath))
             handle.write(u.encode('utf-8'))
             u = '%s\n' % os.path.basename(htoapath)
             handle.write(u.encode('utf-8'))
