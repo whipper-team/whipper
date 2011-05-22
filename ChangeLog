@@ -2,7 +2,7 @@
 
 	* morituri/program/cdparanoia.py:
 	  Since stop can be same as start, add + 1 to progress calculation.
-	  Fiexes #37.
+	  Fixes #37.
 
 2011-05-22  Thomas Vander Stichele  <thomas at apestaart dot org>
 
