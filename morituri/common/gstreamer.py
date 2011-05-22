@@ -20,10 +20,6 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-import struct
-import zlib
-
 import gst
 
 from morituri.common import common, task
