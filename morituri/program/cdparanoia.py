@@ -203,7 +203,7 @@ class ReadTrackTask(task.Task):
         @type  table:  L{table.Table}
         @param start:  first frame to rip
         @type  start:  int
-        @param stop:   last frame to rip (inclusive)
+        @param stop:   last frame to rip (inclusive); >= start
         @type  stop:   int
         @param offset: read offset, in samples
         @type  offset: int
@@ -305,9 +305,11 @@ class ReadTrackTask(task.Task):
                 self.debug('%d errors, terminating', self._parser.errors)
                 self._popen.terminate()
 
-            num = float(self._parser.wrote) - self._start
-            den = float(self._stop) - self._start
-            progress = num / den
+            num = self._parser.wrote - self._start + 1
+            den = self._stop - self._start + 1
+            assert den != 0, "stop %d should be >= start %d" % (
+                self._stop, self._start)
+            progress = float(num) / float(den)
             if progress < 1.0:
                 self.setProgress(progress)
 
