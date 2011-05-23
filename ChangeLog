@@ -1,5 +1,17 @@
 2011-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/test/test_common_encode.py:
+	  Generate an actual file by spawning gst-launch; otherwise
+	  with proper error handling we get an error from wavparse that
+	  there is not enough data to typefind.
+	* morituri/common/gstreamer.py:
+	  Move the gst import to start() and set it as a class attribute.
+	  Document methods.
+	* morituri/common/encode.py:
+	  Convert EncodeTask to a GstPipelineTask.
+
+2011-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/encode.py:
 	  Add some debug.
 

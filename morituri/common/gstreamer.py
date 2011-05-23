@@ -20,8 +20,6 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
-import gst
-
 from morituri.common import common, task
 
 class GstException(Exception):
@@ -35,16 +33,25 @@ class GstPipelineTask(task.Task):
     I am a base class for tasks that use a GStreamer pipeline.
 
     I handle errors and raise them appropriately.
+
+    @cvar gst: the GStreamer module, so code does not have to import gst
+               as a module in code everywhere to avoid option stealing.
     """
+
+    gst = None
+
     def start(self, runner):
+        import gst
+        self.gst = gst
+
         task.Task.start(self, runner)
         desc = self.getPipelineDesc()
 
         self.debug('creating pipeline %r', desc)
-        self.pipeline = gst.parse_launch(desc)
+        self.pipeline = self.gst.parse_launch(desc)
 
         self._bus = self.pipeline.get_bus()
-        gst.debug('got bus %r' % self._bus)
+        self.gst.debug('got bus %r' % self._bus)
 
         # a signal watch calls callbacks from an idle loop
         # self._bus.add_signal_watch()
@@ -59,7 +66,7 @@ class GstPipelineTask(task.Task):
         self.parsed()
 
         self.debug('pausing pipeline')
-        self.pipeline.set_state(gst.STATE_PAUSED)
+        self.pipeline.set_state(self.gst.STATE_PAUSED)
         # FIXME: this can block
         self.pipeline.get_state()
         self.debug('paused pipeline')
@@ -85,13 +92,27 @@ class GstPipelineTask(task.Task):
         pass
 
     def bus_eos_cb(self, bus, message):
+        """
+        Called synchronously (ie from messaging thread) on eos message.
+
+        Override me to handle eos
+        """
         pass
 
     def bus_tag_cb(self, bus, message):
+        """
+        Called synchronously (ie from messaging thread) on tag message.
+
+        Override me to handle tags.
+        """
         pass
 
     def bus_error_cb(self, bus, message):
+        """
+        Called synchronously (ie from messaging thread) on error message.
+        """
         exc = GstException(*message.parse_error())
         self.setAndRaiseException(exc)
-        gst.debug('error, scheduling stop')
+        # FIXME: why is this commented ?
+        # self.gst.debug('error, scheduling stop')
         #self.runner.schedule(0, self.stop)

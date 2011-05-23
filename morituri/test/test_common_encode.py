@@ -9,26 +9,30 @@ gobject.threads_init()
 
 import gst
 
-from morituri.test import common
+from morituri.test import common as tcommon
 
-from morituri.common import task, encode, log
+from morituri.common import task, encode, log, common
 
-class PathTestCase(common.TestCase):
+class PathTestCase(tcommon.TestCase):
     def _testSuffix(self, suffix):
         self.runner = task.SyncRunner(verbose=False)
-        fd, path = tempfile.mkstemp(
-            suffix=suffix)
+        fd, path = tempfile.mkstemp(suffix=suffix)
+        cmd = "gst-launch " \
+            "audiotestsrc num-buffers=100 samplesperbuffer=1024 ! " \
+            "audioconvert ! audio/x-raw-int,width=16,depth=16,channels =2 ! " \
+            "wavenc ! " \
+            "filesink location=\"%s\" > /dev/null 2>&1" % (
+            common.quoteParse(path).encode('utf-8'), )
+        os.system(cmd)
+        self.failUnless(os.path.exists(path))
         encodetask = encode.EncodeTask(path, path + '.out',
             encode.WavProfile())
-        e = self.assertRaises(task.TaskException, self.runner.run,
-            encodetask, verbose=False)
-        self.failUnless(isinstance(e.exception, gst.QueryError),
-            "%r is not a gst.QueryError" % e.exception)
+        self.runner.run(encodetask, verbose=False)
         os.close(fd)
         os.unlink(path)
         os.unlink(path + '.out')
 
-class UnicodePathTestCase(PathTestCase, common.UnicodeTestMixin):
+class UnicodePathTestCase(PathTestCase, tcommon.UnicodeTestMixin):
     def testUnicodePath(self):
         # this test makes sure we can checksum a unicode path
         self._testSuffix(u'.morituri.test_encode.B\xeate Noire')
@@ -40,7 +44,7 @@ class NormalPathTestCase(PathTestCase):
     def testDoubleQuote(self):
         self._testSuffix(u'.morituri.test_encode.12" edit')
 
-class TagReadTestCase(common.TestCase):
+class TagReadTestCase(tcommon.TestCase):
     def testRead(self):
         path = os.path.join(os.path.dirname(__file__), u'track.flac')
         self.runner = task.SyncRunner(verbose=False)
@@ -50,7 +54,7 @@ class TagReadTestCase(common.TestCase):
         self.assertEquals(t.taglist['audio-codec'], 'FLAC')
         self.assertEquals(t.taglist['description'], 'audiotest wave')
 
-class TagWriteTestCase(common.TestCase):
+class TagWriteTestCase(tcommon.TestCase):
     def testWrite(self):
         fd, inpath = tempfile.mkstemp(suffix=u'.morituri.tagwrite.flac')
         
@@ -81,7 +85,7 @@ class TagWriteTestCase(common.TestCase):
         os.unlink(inpath)
         os.unlink(outpath)
         
-class SafeRetagTestCase(common.TestCase):
+class SafeRetagTestCase(tcommon.TestCase):
     def setUp(self):
         self._fd, self._path = tempfile.mkstemp(suffix=u'.morituri.retag.flac')
         
