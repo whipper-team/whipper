@@ -28,6 +28,10 @@ class GstException(Exception):
         self.gerror = gerror
         self.debug = debug
 
+    def __repr__(self):
+        return '<GstException: GError %r, debug %r>' % (
+            self.gerror.message, self.debug)
+
 class GstPipelineTask(task.Task):
     """
     I am a base class for tasks that use a GStreamer pipeline.
