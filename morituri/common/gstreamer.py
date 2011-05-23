@@ -66,16 +66,35 @@ class GstPipelineTask(task.Task):
 
         self.parsed()
 
-        self.debug('pausing pipeline')
-        self.pipeline.set_state(self.gst.STATE_PAUSED)
+        self.debug('setting pipeline to PAUSED')
+        self.pipeline.set_state(gst.STATE_PAUSED)
+        self.debug('set pipeline to PAUSED')
         # FIXME: this can block
-        self.pipeline.get_state()
-        self.debug('paused pipeline')
+        ret = self.pipeline.get_state()
+        self.debug('got pipeline to PAUSED: %r', ret)
 
         if not self.exception:
             self.paused()
         else:
             raise self.exception
+
+        self.play()
+
+    def play(self):
+        # since set_state returns non-False, adding it as timeout_add
+        # will repeatedly call it, and block the main loop; so
+        #   gobject.timeout_add(0L, self._pipeline.set_state,
+        #       gst.STATE_PLAYING)
+        # would not work.
+        def playLater():
+            self.debug('setting pipeline to PLAYING')
+            self.pipeline.set_state(self.gst.STATE_PLAYING)
+            self.debug('set pipeline to PLAYING')
+            return False
+
+        self.debug('scheduling setting pipeline to PLAYING')
+        self.runner.schedule(0, playLater)
+
 
     def stop(self):
         self.debug('stopping')

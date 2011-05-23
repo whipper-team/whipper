@@ -1,5 +1,12 @@
 2011-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/checksum.py:
+	* morituri/common/encode.py:
+	* morituri/common/gstreamer.py:
+	  Move play to base class of GstPipelineTask.
+
+2011-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/gstreamer.py:
 	  Add a stop method and a stopped overridable handler.
 	* morituri/common/checksum.py:

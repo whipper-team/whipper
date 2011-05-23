@@ -73,6 +73,8 @@ class ChecksumTask(gstreamer.GstPipelineTask):
 
         self.checksum = None # result
 
+    ### gstreamer.GstPipelineTask implementations
+
     def getPipelineDesc(self):
         return '''
             filesrc location="%s" !
@@ -136,6 +138,34 @@ class ChecksumTask(gstreamer.GstPipelineTask):
         #self.pipeline.set_state(gst.STATE_PLAYING)
         self.debug('scheduled setting to play')
 
+    def stopped(self):
+        if not self._last:
+            # see http://bugzilla.gnome.org/show_bug.cgi?id=578612
+            print 'ERROR: checksum: not a single buffer gotten'
+            # FIXME: instead of print, do something useful
+        else:
+            self._checksum = self._checksum % 2 ** 32
+            self.debug("last offset %r", self._last.offset)
+            last = self._last.offset + len(self._last) / 4 - 1
+            self.debug("last sample: %r", last)
+            self.debug("frame end: %r", self._frameEnd)
+            self.debug("frame length: %r", self._frameLength)
+            self.debug("checksum: %08X", self._checksum)
+            self.debug("bytes: %d", self._bytes)
+            if self._frameEnd != last:
+                print 'ERROR: did not get all frames, %d missing' % (
+                    self._frameEnd - last)
+
+        self.checksum = self._checksum
+
+    ### subclass methods
+    def do_checksum_buffer(self, buf, checksum):
+        """
+        Subclasses should implement this.
+        """
+        raise NotImplementedError
+
+    ### private methods
     def _new_buffer_cb(self, sink):
         buf = sink.emit('pull-buffer')
         gst.log('received new buffer at offset %r with length %r' % (
@@ -165,37 +195,11 @@ class ChecksumTask(gstreamer.GstPipelineTask):
             # marshall to the main thread
             self.runner.schedule(0, self.setProgress, progress)
 
-    def do_checksum_buffer(self, buf, checksum):
-        """
-        Subclasses should implement this.
-        """
-        raise NotImplementedError
-
     def _eos_cb(self, sink):
         # get the last one; FIXME: why does this not get to us before ?
         #self._new_buffer_cb(sink)
         self.debug('eos, scheduling stop')
         self.runner.schedule(0, self.stop)
-
-    def stopped(self):
-        if not self._last:
-            # see http://bugzilla.gnome.org/show_bug.cgi?id=578612
-            print 'ERROR: checksum: not a single buffer gotten'
-            # FIXME: instead of print, do something useful
-        else:
-            self._checksum = self._checksum % 2 ** 32
-            self.debug("last offset %r", self._last.offset)
-            last = self._last.offset + len(self._last) / 4 - 1
-            self.debug("last sample: %r", last)
-            self.debug("frame end: %r", self._frameEnd)
-            self.debug("frame length: %r", self._frameLength)
-            self.debug("checksum: %08X", self._checksum)
-            self.debug("bytes: %d", self._bytes)
-            if self._frameEnd != last:
-                print 'ERROR: did not get all frames, %d missing' % (
-                    self._frameEnd - last)
-
-        self.checksum = self._checksum
 
 class CRC32Task(ChecksumTask):
     """
@@ -302,13 +306,6 @@ class TRMTask(gstreamer.GstPipelineTask):
         #   gobject.timeout_add(0L, self.pipeline.set_state, gst.STATE_PLAYING)
         # would not work.
 
-        def play():
-            self.pipeline.set_state(gst.STATE_PLAYING)
-            return False
-        self.runner.schedule(0, play)
-
-        #self.pipeline.set_state(gst.STATE_PLAYING)
-        gst.debug('scheduled setting to play')
 
     # FIXME: can't move this to base class because it triggers too soon
     # in the case of checksum

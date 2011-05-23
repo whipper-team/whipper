@@ -213,21 +213,6 @@ class EncodeTask(gstreamer.GstPipelineTask):
         srcpad = self._level.get_static_pad('src')
         srcpad.add_buffer_probe(self._probe_handler)
 
-        # FIXME: move to base class ?
-        self.debug('scheduling setting to play')
-        # since set_state returns non-False, adding it as timeout_add
-        # will repeatedly call it, and block the main loop; so
-        #   gobject.timeout_add(0L, self.pipeline.set_state, self.gst.STATE_PLAYING)
-        # would not work.
-
-        def play():
-            self.pipeline.set_state(self.gst.STATE_PLAYING)
-            return False
-        self.runner.schedule(0, play)
-
-        #self.pipeline.set_state(gst.STATE_PLAYING)
-        self.debug('scheduled setting to play')
-
     def _probe_handler(self, pad, buffer):
         # update progress based on buffer offset (expected to be in samples)
         # versus length in samples
@@ -312,20 +297,10 @@ class TagReadTask(task.Task):
         # set up tag callbacks
         bus.connect('message::tag', self._message_tag_cb)
 
-        self.debug('scheduling setting to play')
-        # since set_state returns non-False, adding it as timeout_add
-        # will repeatedly call it, and block the main loop; so
-        #   gobject.timeout_add(0L, self._pipeline.set_state, gst.STATE_PLAYING)
-        # would not work.
-
         def play():
-            self.debug('setting pipeline to play')
             self._pipeline.set_state(gst.STATE_PLAYING)
             return False
         self.runner.schedule(0, play)
-
-        #self._pipeline.set_state(gst.STATE_PLAYING)
-        self.debug('scheduled setting to play')
 
     def _message_eos_cb(self, bus, message):
         self.debug('eos, scheduling stop')
@@ -395,7 +370,8 @@ class TagWriteTask(task.Task):
         self.debug('scheduling setting to play')
         # since set_state returns non-False, adding it as timeout_add
         # will repeatedly call it, and block the main loop; so
-        #   gobject.timeout_add(0L, self._pipeline.set_state, gst.STATE_PLAYING)
+        #   gobject.timeout_add(0L, self._pipeline.set_state,
+        #       gst.STATE_PLAYING)
         # would not work.
 
         def play():
