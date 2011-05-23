@@ -1,5 +1,12 @@
 2011-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/gstreamer.py:
+	  Stop task when we get an exception.
+	  Don't make pipeline go to PLAYING if we got an exception
+	  before doing so.
+
+2011-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/encode.py:
 	  Convert TagReadTask to gstreamer.GstPipelineTask and
 	  remove lots of duplicate code.

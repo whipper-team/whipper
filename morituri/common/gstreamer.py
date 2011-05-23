@@ -87,6 +87,10 @@ class GstPipelineTask(task.Task):
         #       gst.STATE_PLAYING)
         # would not work.
         def playLater():
+            if self.exception:
+                self.debug('playLater: exception was raised, not playing')
+                return False
+
             self.debug('setting pipeline to PLAYING')
             self.pipeline.set_state(self.gst.STATE_PLAYING)
             self.debug('set pipeline to PLAYING')
@@ -94,7 +98,6 @@ class GstPipelineTask(task.Task):
 
         self.debug('scheduling setting pipeline to PLAYING')
         self.runner.schedule(0, playLater)
-
 
     def stop(self):
         self.debug('stopping')
@@ -156,6 +159,5 @@ class GstPipelineTask(task.Task):
         """
         exc = GstException(*message.parse_error())
         self.setAndRaiseException(exc)
-        # FIXME: why is this commented ?
-        # self.gst.debug('error, scheduling stop')
-        #self.runner.schedule(0, self.stop)
+        self.debug('error, scheduling stop')
+        self.runner.schedule(0, self.stop)
