@@ -147,7 +147,8 @@ class Task(object, log.Loggable):
         self.exception = exception
         self.exceptionMessage = log.getExceptionMessage(exception)
         self.exceptionTraceback = traceback.format_exc()
-        self.debug('set exception, %r' % self.exceptionMessage)
+        self.debug('set exception, %r, %r' % (
+            exception, self.exceptionMessage))
 
     def addListener(self, listener):
         """
