@@ -177,11 +177,7 @@ class ChecksumTask(gstreamer.GstPipelineTask):
         self.debug('eos, scheduling stop')
         self.runner.schedule(0, self.stop)
 
-    def stop(self):
-        self.debug('stopping')
-        self.debug('setting state to NULL')
-        self.pipeline.set_state(gst.STATE_NULL)
-
+    def stopped(self):
         if not self._last:
             # see http://bugzilla.gnome.org/show_bug.cgi?id=578612
             print 'ERROR: checksum: not a single buffer gotten'
@@ -199,9 +195,7 @@ class ChecksumTask(gstreamer.GstPipelineTask):
                 print 'ERROR: did not get all frames, %d missing' % (
                     self._frameEnd - last)
 
-        # publicize and stop
         self.checksum = self._checksum
-        task.Task.stop(self)
 
 class CRC32Task(ChecksumTask):
     """
@@ -336,11 +330,5 @@ class TRMTask(gstreamer.GstPipelineTask):
             position += buf.duration
         self.setProgress(float(position) / self._length)
 
-    def stop(self):
-        gst.debug('stopping')
-        gst.debug('setting state to NULL')
-        self.pipeline.set_state(gst.STATE_NULL)
-
-        # publicize and stop
+    def stopped(self):
         self.trm = self._trm
-        task.Task.stop(self)

@@ -259,16 +259,7 @@ class EncodeTask(gstreamer.GstPipelineTask):
                 self.log('higher peakdB found, now %r', self._peakdB)
                 self._peakdB = p
 
-    # FIXME: move to base class, have stopped handler ?
-    def stop(self):
-        self.debug('stopping')
-        self.debug('setting state to NULL')
-        self.pipeline.set_state(self.gst.STATE_NULL)
-        self.debug('set state to NULL')
-        # FIXME: maybe this should move lower ? If used by BaseMultiTask,
-        # this starts the next task without showing us the peakdB
-        task.Task.stop(self)
-
+    def stopped(self):
         if self._peakdB is not None:
             self.debug('peakdB %r', self._peakdB)
             self.peak = math.sqrt(math.pow(10, self._peakdB / 10.0))

@@ -40,6 +40,7 @@ class GstPipelineTask(task.Task):
 
     gst = None
 
+    ### task.Task implementations
     def start(self, runner):
         import gst
         self.gst = gst
@@ -76,9 +77,25 @@ class GstPipelineTask(task.Task):
         else:
             raise self.exception
 
+    def stop(self):
+        self.debug('stopping')
+        self.debug('setting state to NULL')
+        self.pipeline.set_state(self.gst.STATE_NULL)
+        self.debug('set state to NULL')
+        self.stopped()
+        task.Task.stop(self)
+
+
+    ### subclass required implementations
     def getPipelineDesc(self):
+        """
+        subclasses should implement this to provide a pipeline description.
+
+        @rtype: str
+        """
         raise NotImplementedError
 
+    ### subclass optional implementations
     def parsed(self):
         """
         Called after parsing the pipeline but before setting it to paused.
@@ -88,6 +105,13 @@ class GstPipelineTask(task.Task):
     def paused(self):
         """
         Called after pipeline is paused
+        """
+        pass
+
+    def stopped(self):
+        """
+        Called after pipeline is set back to NULL but before chaining up to
+        stop()
         """
         pass
 

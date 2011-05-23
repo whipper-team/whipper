@@ -1,5 +1,13 @@
 2011-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/gstreamer.py:
+	  Add a stop method and a stopped overridable handler.
+	* morituri/common/checksum.py:
+	* morituri/common/encode.py:
+	  Adapt to using stopped.
+
+2011-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/test/test_common_encode.py:
 	  Generate an actual file by spawning gst-launch; otherwise
 	  with proper error handling we get an error from wavparse that
