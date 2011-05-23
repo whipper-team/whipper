@@ -323,8 +323,8 @@ class TagReadTask(task.Task):
 
         self.debug('pausing pipeline')
         self._pipeline.set_state(gst.STATE_PAUSED)
-        self._pipeline.get_state()
-        self.debug('paused pipeline')
+        ret = self._pipeline.get_state()
+        self.debug('paused pipeline, get_state returned %r', ret)
 
         # add eos handling
         bus = self._pipeline.get_bus()
@@ -341,6 +341,7 @@ class TagReadTask(task.Task):
         # would not work.
 
         def play():
+            self.debug('setting pipeline to play')
             self._pipeline.set_state(gst.STATE_PLAYING)
             return False
         self.runner.schedule(0, play)

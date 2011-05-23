@@ -1,5 +1,10 @@
 2011-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/encode.py:
+	  Add some debug.
+
+2011-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/program.py:
 	  AccurateRip responses should be treated per track; one response set
 	  isn't necessarily from the same pressing.
