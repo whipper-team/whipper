@@ -1,5 +1,11 @@
 2011-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/encode.py:
+	  Convert TagReadTask to gstreamer.GstPipelineTask and
+	  remove lots of duplicate code.
+
+2011-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/checksum.py:
 	* morituri/common/encode.py:
 	* morituri/common/gstreamer.py:

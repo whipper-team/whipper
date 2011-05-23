@@ -251,7 +251,7 @@ class EncodeTask(gstreamer.GstPipelineTask):
         else:
             self.warning('No peak found, something went wrong!')
 
-class TagReadTask(task.Task):
+class TagReadTask(gstreamer.GstPipelineTask):
     """
     I am a task that reads tags.
 
@@ -272,53 +272,20 @@ class TagReadTask(task.Task):
         
         self._path = path
 
-    def start(self, runner):
-        task.Task.start(self, runner)
-
-        # here to avoid import gst eating our options
-        import gst
-
-        self._pipeline = gst.parse_launch('''
+    def getPipelineDesc(self):
+        return '''
             filesrc location="%s" !
             decodebin name=decoder !
             fakesink''' % (
-                common.quoteParse(self._path).encode('utf-8')))
+                common.quoteParse(self._path).encode('utf-8'))
 
-        self.debug('pausing pipeline')
-        self._pipeline.set_state(gst.STATE_PAUSED)
-        ret = self._pipeline.get_state()
-        self.debug('paused pipeline, get_state returned %r', ret)
-
-        # add eos handling
-        bus = self._pipeline.get_bus()
-        bus.add_signal_watch()
-        bus.connect('message::eos', self._message_eos_cb)
-
-        # set up tag callbacks
-        bus.connect('message::tag', self._message_tag_cb)
-
-        def play():
-            self._pipeline.set_state(gst.STATE_PLAYING)
-            return False
-        self.runner.schedule(0, play)
-
-    def _message_eos_cb(self, bus, message):
+    def bus_eos_cb(self, bus, message):
         self.debug('eos, scheduling stop')
         self.runner.schedule(0, self.stop)
 
-    def _message_tag_cb(self, bus, message):
+    def bus_tag_cb(self, bus, message):
         taglist = message.parse_tag()
         self.taglist = taglist
-
-    def stop(self):
-        # here to avoid import gst eating our options
-        import gst
-
-        self.debug('stopping')
-        self.debug('setting state to NULL')
-        self._pipeline.set_state(gst.STATE_NULL)
-        self.debug('set state to NULL')
-        task.Task.stop(self)
 
 class TagWriteTask(task.Task):
     """
