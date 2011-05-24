@@ -117,6 +117,7 @@ class Task(object, log.Loggable):
             self._notifyListeners('described', description)
             self.description = description
 
+    # FIXME: unify?
     def setExceptionAndTraceback(self, exception):
         """
         Call this to set a synthetically created exception (and not one
