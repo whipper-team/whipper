@@ -173,7 +173,11 @@ class Task(object, log.Loggable):
     def _notifyListeners(self, methodName, *args, **kwargs):
         if self._listeners:
             for l in self._listeners:
-                getattr(l, methodName)(self, *args, **kwargs)
+                method = getattr(l, methodName)
+                try:
+                    method(self, *args, **kwargs)
+                except Exception, e:
+                    self.setException(e)
 
 # FIXME: should this become a real interface, like in zope ?
 class ITaskListener(object):
@@ -298,7 +302,8 @@ class BaseMultiTask(Task, ITaskListener):
         Subclasses should chain up to me at the end of their implementation.
         They should fall through to chaining up if there is an exception.
         """
-        self.log('BaseMultiTask.stopped: task %r', task)
+        self.log('BaseMultiTask.stopped: task %r (%d of %d)',
+            task, self.tasks.index(task) + 1, len(self.tasks))
         if task.exception:
             self.log('BaseMultiTask.stopped: exception %r',
                 task.exceptionMessage)
@@ -446,6 +451,7 @@ class SyncRunner(TaskRunner, ITaskListener):
                 self.debug('exception when calling scheduled callable %r',
                     callable)
                 task.setException(e)
+                self.stopped(task)
                 raise
         gobject.timeout_add(int(delta * 1000L), c)
 
