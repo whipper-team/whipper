@@ -1,5 +1,10 @@
 2011-05-24  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/gstreamer.py:
+	  Remove parsers for current git trunk of good too.
+
+2011-05-24  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/encode.py:
 	  Query for duration and use it in level callback to set progress.
 	  Works around F-15 bug where encode progress is not being updated.

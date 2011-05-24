@@ -177,5 +177,5 @@ def removeAudioParsers():
     import gst
     registry = gst.registry_get_default()
     plugin = registry.find_plugin("audioparsers")
-    if plugin and plugin.get_version() <= '0.10.29':
+    if plugin and plugin.get_version() <= '0.10.29.1':
         registry.remove_plugin(plugin)
