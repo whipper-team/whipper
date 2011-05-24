@@ -94,7 +94,8 @@ class SafeRetagTestCase(tcommon.TestCase):
         self._fd, self._path = tempfile.mkstemp(suffix=u'.morituri.retag.flac')
         
         os.system('gst-launch '
-            'audiotestsrc num-buffers=10 samplesperbuffer=588 ! '
+            'audiotestsrc '
+                'num-buffers=40 samplesperbuffer=588 wave=pink-noise ! '
             'audioconvert ! '
             'audio/x-raw-int,channels=2,width=16,height=16,rate=44100 ! '
             'flacenc ! filesink location=%s > /dev/null 2>&1' % self._path)

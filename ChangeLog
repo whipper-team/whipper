@@ -1,5 +1,11 @@
 2011-05-24  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/test/test_common_encode.py:
+	  Use pink-noise as a wave form to make sure it's long enough.
+	  Fixes last tests for F-15.
+
+2011-05-24  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/checksum.py:
 	* morituri/common/gstreamer.py:
 	  Remove audioparsers plugin if it has the known bug.
