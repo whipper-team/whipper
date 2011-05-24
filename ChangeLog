@@ -1,5 +1,14 @@
 2011-05-24  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/rip/Makefile.am:
+	* morituri/rip/main.py:
+	* morituri/rip/debug.py (added):
+	  Add helper command to debug tasks.
+	* morituri/common/encode.py:
+	  Add debug.
+
+2011-05-24  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/test/test_common_encode.py:
 	  Use pink-noise as a wave form to make sure it's long enough.
 	  Fixes last tests for F-15.

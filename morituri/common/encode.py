@@ -211,7 +211,9 @@ class EncodeTask(gstreamer.GstPipelineTask):
         # add a probe so we can track progress
         # we connect to level because this gives us offset in samples
         srcpad = self._level.get_static_pad('src')
-        srcpad.add_buffer_probe(self._probe_handler)
+        self.gst.debug('adding srcpad buffer probe to %r' % srcpad)
+        ret = srcpad.add_buffer_probe(self._probe_handler)
+        self.gst.debug('added srcpad buffer probe to %r: %r' % (srcpad, ret))
 
     def _probe_handler(self, pad, buffer):
         # update progress based on buffer offset (expected to be in samples)
