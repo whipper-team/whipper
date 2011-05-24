@@ -1,5 +1,11 @@
 2011-05-24  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/test/test_common_encode.py:
+	  Write a non-sine wave so we have an actual flac file that will
+	  typefind.
+
+2011-05-24  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/image/image.py:
 	  Actually set exception so MultiTask tells us what went wrong.
 

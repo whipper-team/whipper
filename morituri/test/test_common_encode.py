@@ -58,8 +58,12 @@ class TagWriteTestCase(tcommon.TestCase):
     def testWrite(self):
         fd, inpath = tempfile.mkstemp(suffix=u'.morituri.tagwrite.flac')
         
+        # wave is pink-noise because a pure sine is encoded too efficiently
+        # by flacenc and triggers not enough frames in parsing
+        # FIXME: file a bug for this in GStreamer
         os.system('gst-launch '
-            'audiotestsrc num-buffers=10 samplesperbuffer=588 ! '
+            'audiotestsrc '
+                'wave=pink-noise num-buffers=10 samplesperbuffer=588 ! '
             'audioconvert ! '
             'audio/x-raw-int,channels=2,width=16,height=16,rate=44100 ! '
             'flacenc ! filesink location=%s > /dev/null 2>&1' % inpath)
