@@ -31,6 +31,12 @@ cdrdao says:
 %s
 """ % e.exception.msg)
             return 255
+
+        if isinstance(e.exception, common.EmptyError):
+            sys.stderr.write(
+                'rip: error: Could not create encoded file.\n') 
+            return 255
+
         raise
 
     if ret is None:

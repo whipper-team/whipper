@@ -212,9 +212,14 @@ def tagListEquals(tl1, tl2):
 
     return d1 == d2
 
+
 class MissingDependencyException(Exception):
     dependency = None
 
     def __init__(self, *args):
         self.args = args
         self.dependency = args[0]
+
+
+class EmptyError(Exception):
+    pass

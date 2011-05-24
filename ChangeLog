@@ -1,5 +1,14 @@
 2011-05-24  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/common.py:
+	  Add an EmptyError.
+	* morituri/common/checksum.py:
+	  Set it when we don't get any frames.
+	* morituri/rip/main.py:
+	  Catch it and stop ripping if this happens.
+
+2011-05-24  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/task.py:
 	  More exception handling and debug.
 
