@@ -1,5 +1,10 @@
 2011-05-24  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/task.py:
+	  Document and change name of a method.
+
+2011-05-24  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/gstreamer.py:
 	  Add a cvar to stop going to playing.
 	* morituri/image/image.py:
