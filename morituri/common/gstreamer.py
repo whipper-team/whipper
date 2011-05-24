@@ -106,7 +106,7 @@ class GstPipelineTask(task.Task):
 
         if self.playing:
             self.debug('scheduling setting pipeline to PLAYING')
-            self.runner.schedule(0, playLater)
+            self.schedule(0, playLater)
 
     def stop(self):
         self.debug('stopping')
@@ -169,4 +169,4 @@ class GstPipelineTask(task.Task):
         exc = GstException(*message.parse_error())
         self.setAndRaiseException(exc)
         self.debug('error, scheduling stop')
-        self.runner.schedule(0, self.stop)
+        self.schedule(0, self.stop)

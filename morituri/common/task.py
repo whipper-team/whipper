@@ -155,6 +155,10 @@ class Task(object, log.Loggable):
         self.debug('set exception, %r, %r' % (
             exception, self.exceptionMessage))
 
+    def schedule(self, delta, callable, *args, **kwargs):
+        self.runner.schedule(self, delta, callable, *args, **kwargs)
+
+
     def addListener(self, listener):
         """
         Add a listener for task status changes.
@@ -210,7 +214,7 @@ class ITaskListener(object):
 class DummyTask(Task):
     def start(self, runner):
         Task.start(self, runner)
-        self.runner.schedule(1.0, self._wind)
+        self.schedule(1.0, self._wind)
 
     def _wind(self):
         self.setProgress(min(self.progress + 0.1, 1.0))
@@ -219,7 +223,7 @@ class DummyTask(Task):
             self.stop()
             return
 
-        self.runner.schedule(1.0, self._wind)
+        self.schedule(1.0, self._wind)
 
 class BaseMultiTask(Task, ITaskListener):
     """
@@ -433,10 +437,16 @@ class SyncRunner(TaskRunner, ITaskListener):
             self.stopped(task)
 
 
-    def schedule(self, delta, callable, *args, **kwargs):
+    def schedule(self, task, delta, callable, *args, **kwargs):
         def c():
-            callable(*args, **kwargs)
-            return False
+            try:
+                callable(*args, **kwargs)
+                return False
+            except Exception, e:
+                self.debug('exception when calling scheduled callable %r',
+                    callable)
+                task.setException(e)
+                raise
         gobject.timeout_add(int(delta * 1000L), c)
 
     ### ITaskListener methods

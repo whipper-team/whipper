@@ -217,7 +217,7 @@ class EncodeTask(gstreamer.GstPipelineTask):
         # update progress based on buffer offset (expected to be in samples)
         # versus length in samples
         # marshal to main thread
-        self.runner.schedule(0, self.setProgress,
+        self.schedule(0, self.setProgress,
             float(buffer.offset) / self._length)
 
         # don't drop the buffer
@@ -225,7 +225,7 @@ class EncodeTask(gstreamer.GstPipelineTask):
 
     def bus_eos_cb(self, bus, message):
         self.debug('eos, scheduling stop')
-        self.runner.schedule(0, self.stop)
+        self.schedule(0, self.stop)
 
     def _message_element_cb(self, bus, message):
         if message.src != self._level:
@@ -281,7 +281,7 @@ class TagReadTask(gstreamer.GstPipelineTask):
 
     def bus_eos_cb(self, bus, message):
         self.debug('eos, scheduling stop')
-        self.runner.schedule(0, self.stop)
+        self.schedule(0, self.stop)
 
     def bus_tag_cb(self, bus, message):
         taglist = message.parse_tag()
@@ -344,14 +344,14 @@ class TagWriteTask(task.Task):
         def play():
             self._pipeline.set_state(gst.STATE_PLAYING)
             return False
-        self.runner.schedule(0, play)
+        self.schedule(0, play)
 
         #self._pipeline.set_state(gst.STATE_PLAYING)
         self.debug('scheduled setting to play')
 
     def _message_eos_cb(self, bus, message):
         self.debug('eos, scheduling stop')
-        self.runner.schedule(0, self.stop)
+        self.schedule(0, self.stop)
 
     def stop(self):
         # here to avoid import gst eating our options

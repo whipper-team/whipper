@@ -274,7 +274,7 @@ class ReadTrackTask(task.Task):
 
             raise
 
-        self.runner.schedule(1.0, self._read, runner)
+        self.schedule(1.0, self._read, runner)
 
     def _read(self, runner):
         ret = self._popen.recv_err()
@@ -282,7 +282,7 @@ class ReadTrackTask(task.Task):
             if self._popen.poll() is not None:
                 self._done()
                 return
-            self.runner.schedule(0.01, self._read, runner)
+            self.schedule(0.01, self._read, runner)
             return
 
         self._buffer += ret
@@ -315,11 +315,11 @@ class ReadTrackTask(task.Task):
 
         # 0 does not give us output before we complete, 1.0 gives us output
         # too late
-        self.runner.schedule(0.01, self._read, runner)
+        self.schedule(0.01, self._read, runner)
 
     def _poll(self, runner):
         if self._popen.poll() is None:
-            self.runner.schedule(1.0, self._poll, runner)
+            self.schedule(1.0, self._poll, runner)
             return
 
         self._done()

@@ -270,7 +270,7 @@ class CDRDAOTask(task.Task):
             self._popen.pid, self.options)
         self.debug('command: cdrdao %s', ' '.join(self.options))
 
-        self.runner.schedule(1.0, self._read, runner)
+        self.schedule(1.0, self._read, runner)
 
     def _read(self, runner):
         try:
@@ -288,7 +288,7 @@ class CDRDAOTask(task.Task):
 
             if self._popen.poll() is None and self.runner:
                 # not finished yet
-                self.runner.schedule(1.0, self._read, runner)
+                self.schedule(1.0, self._read, runner)
                 return
 
             self._done()

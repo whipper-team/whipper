@@ -133,7 +133,7 @@ class ChecksumTask(gstreamer.GstPipelineTask):
         def play():
             self.pipeline.set_state(gst.STATE_PLAYING)
             return False
-        self.runner.schedule(0, play)
+        self.schedule(0, play)
 
         #self.pipeline.set_state(gst.STATE_PLAYING)
         self.debug('scheduled setting to play')
@@ -193,13 +193,13 @@ class ChecksumTask(gstreamer.GstPipelineTask):
             framesDone = frame - self._frameStart
             progress = float(framesDone) / float((self._frameLength))
             # marshall to the main thread
-            self.runner.schedule(0, self.setProgress, progress)
+            self.schedule(0, self.setProgress, progress)
 
     def _eos_cb(self, sink):
         # get the last one; FIXME: why does this not get to us before ?
         #self._new_buffer_cb(sink)
         self.debug('eos, scheduling stop')
-        self.runner.schedule(0, self.stop)
+        self.schedule(0, self.stop)
 
 class CRC32Task(ChecksumTask):
     """
@@ -311,7 +311,7 @@ class TRMTask(gstreamer.GstPipelineTask):
     # in the case of checksum
     def bus_eos_cb(self, bus, message):
         gst.debug('eos, scheduling stop')
-        self.runner.schedule(0, self.stop)
+        self.schedule(0, self.stop)
 
 
     def bus_tag_cb(self, bus, message):

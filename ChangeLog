@@ -1,5 +1,17 @@
 2011-05-24  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/task.py:
+	  add task argument to TaskRunner.schedule so we can get exceptions.
+	  Add .schedule method to Task to pass self.
+	* morituri/common/checksum.py:
+	* morituri/common/encode.py:
+	* morituri/common/gstreamer.py:
+	* morituri/program/cdparanoia.py:
+	* morituri/program/cdrdao.py:
+	  Adapt.
+
+2011-05-24  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/test/test_common_encode.py:
 	  Write a non-sine wave so we have an actual flac file that will
 	  typefind.
