@@ -1,5 +1,12 @@
 2011-05-24  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/task.py:
+	  Show us when we stop twice.
+	* morituri/common/gstreamer.py:
+	  Stop on Exceptions.
+
+2011-05-24  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/common.py:
 	  Add an EmptyError.
 	* morituri/common/checksum.py:

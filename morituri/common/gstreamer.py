@@ -97,6 +97,7 @@ class GstPipelineTask(task.Task):
         def playLater():
             if self.exception:
                 self.debug('playLater: exception was raised, not playing')
+                self.stop()
                 return False
 
             self.debug('setting pipeline to PLAYING')

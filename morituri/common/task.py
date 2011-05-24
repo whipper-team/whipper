@@ -98,6 +98,9 @@ class Task(object, log.Loggable):
         """
         self.debug('stopping')
         self.running = False
+        if not self.runner:
+            print 'ERROR: stopping task which is already stopped'
+            import traceback; traceback.print_stack()
         self.runner = None
         self._notifyListeners('stopped')
 
