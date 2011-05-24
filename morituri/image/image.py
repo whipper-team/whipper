@@ -168,8 +168,9 @@ class AudioLengthTask(gstreamer.GstPipelineTask):
 
         try:
             length, qformat = sink.query_duration(self.gst.FORMAT_DEFAULT)
-        except self.gst.QueryError:
+        except self.gst.QueryError, e:
             self.info('failed to query duration of %r' % self._path)
+            self.setException(e)
             raise
 
         # wavparse 0.10.14 returns in bytes
