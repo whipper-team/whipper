@@ -194,12 +194,20 @@ class EncodeTask(gstreamer.GstPipelineTask):
             self.stop()
             return
 
+
         # wavparse 0.10.14 returns in bytes
         if qformat == self.gst.FORMAT_BYTES:
             self.debug('query returned in BYTES format')
             length /= 4
         self.debug('total length: %r', length)
         self._length = length
+
+        duration = None
+        try:
+            duration, qformat = identity.query_duration(self.gst.FORMAT_TIME)
+        except self.gst.QueryError, e:
+            self.debug('Could not query duration')
+        self._duration = duration
 
         # set up level callbacks
         # FIXME: publicize bus and reuse it instead of regetting and adding ?
@@ -245,6 +253,12 @@ class EncodeTask(gstreamer.GstPipelineTask):
             if self._peakdB < p:
                 self.log('higher peakdB found, now %r', self._peakdB)
                 self._peakdB = p
+
+        # FIXME: works around a bug on F-15 where buffer probes don't seem
+        # to get triggered to update progress
+        if self._duration is not None:
+            self.schedule(0, self.setProgress,
+                float(s['stream-time'] + s['duration']) / self._duration)
 
     def stopped(self):
         if self._peakdB is not None:
