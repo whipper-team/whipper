@@ -171,3 +171,11 @@ class GstPipelineTask(task.Task):
         self.setAndRaiseException(exc)
         self.debug('error, scheduling stop')
         self.schedule(0, self.stop)
+
+# workaround for issue #64
+def removeAudioParsers():
+    import gst
+    registry = gst.registry_get_default()
+    plugin = registry.find_plugin("audioparsers")
+    if plugin and plugin.get_version() <= '0.10.29':
+        registry.remove_plugin(plugin)

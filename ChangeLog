@@ -1,5 +1,12 @@
 2011-05-24  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/checksum.py:
+	* morituri/common/gstreamer.py:
+	  Remove audioparsers plugin if it has the known bug.
+	  Fixes #64.
+
+2011-05-24  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/task.py:
 	  Show us when we stop twice.
 	* morituri/common/gstreamer.py:

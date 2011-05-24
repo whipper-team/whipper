@@ -72,12 +72,14 @@ class ChecksumTask(gstreamer.GstPipelineTask):
 
         self.checksum = None # result
 
+        gstreamer.removeAudioParsers()
+
     ### gstreamer.GstPipelineTask implementations
 
     def getPipelineDesc(self):
         return '''
             filesrc location="%s" !
-            decodebin ! audio/x-raw-int !
+            decodebin name=decode ! audio/x-raw-int !
             appsink name=sink sync=False emit-signals=True
             ''' % common.quoteParse(self._path).encode('utf-8')
 
