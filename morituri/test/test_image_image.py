@@ -10,7 +10,7 @@ gobject.threads_init()
 import gst
 
 from morituri.image import image
-from morituri.common import task, common, log
+from morituri.common import task, common, log, gstreamer
 from morituri.test import common as tcommon
 
 log.init()
@@ -93,11 +93,12 @@ class AudioLengthPathTestCase(tcommon.TestCase):
         t = image.AudioLengthTask(path)
         e = self.assertRaises(task.TaskException, self.runner.run,
             t, verbose=False)
-        self.failUnless(isinstance(e.exception, gst.GError),
-            "%r is not a gst.GError" % e.exceptionMessage)
-        self.assertEquals(e.exception.domain, gst.STREAM_ERROR)
+        self.failUnless(isinstance(e.exception, gstreamer.GstException),
+            "%r is not a gstreamer.GstException" % e.exceptionMessage)
+        self.assertEquals(e.exception.gerror.domain, gst.STREAM_ERROR)
         # our empty file triggers TYPE_NOT_FOUND
-        self.assertEquals(e.exception.code, gst.STREAM_ERROR_TYPE_NOT_FOUND)
+        self.assertEquals(e.exception.gerror.code,
+            gst.STREAM_ERROR_TYPE_NOT_FOUND)
         os.unlink(path)
 
 class NormalAudioLengthPathTestCase(AudioLengthPathTestCase):

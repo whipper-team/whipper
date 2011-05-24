@@ -40,9 +40,13 @@ class GstPipelineTask(task.Task):
 
     @cvar gst: the GStreamer module, so code does not have to import gst
                as a module in code everywhere to avoid option stealing.
+    @var playing: whether the pipeline should be set to playing after
+                  paused.  Some pipelines don't need to play for a task
+                  to be done (for example, querying length)
     """
 
     gst = None
+    playing = True
 
     ### task.Task implementations
     def start(self, runner):
@@ -100,8 +104,9 @@ class GstPipelineTask(task.Task):
             self.debug('set pipeline to PLAYING')
             return False
 
-        self.debug('scheduling setting pipeline to PLAYING')
-        self.runner.schedule(0, playLater)
+        if self.playing:
+            self.debug('scheduling setting pipeline to PLAYING')
+            self.runner.schedule(0, playLater)
 
     def stop(self):
         self.debug('stopping')

@@ -1,3 +1,12 @@
+2011-05-24  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/gstreamer.py:
+	  Add a cvar to stop going to playing.
+	* morituri/image/image.py:
+	  Convert AudioLengthTask to GstPipelineTask.
+	* morituri/test/test_image_image.py:
+	  Adapt to new typefind error we run in.
+
 2011-05-23  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/gstreamer.py:

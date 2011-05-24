@@ -26,7 +26,7 @@ Wrap on-disk CD images based on the .cue file.
 
 import os
 
-from morituri.common import task, log, common
+from morituri.common import task, log, common, gstreamer
 from morituri.image import cue, table
 
 class Image(object, log.Loggable):
@@ -133,16 +133,18 @@ class AccurateRipChecksumTask(task.MultiSeparateTask):
         self.checksums = [t.checksum for t in self.tasks]
         task.MultiSeparateTask.stop(self)
 
-class AudioLengthTask(task.Task):
+class AudioLengthTask(gstreamer.GstPipelineTask):
     """
     I calculate the length of a track in audio frames.
 
     @ivar  length: length of the decoded audio file, in audio frames.
     """
     logCategory = 'AudioLengthTask'
-
     description = 'Getting length of audio track'
     length = None
+
+    playing = False
+
 
     def __init__(self, path):
         """
@@ -152,55 +154,32 @@ class AudioLengthTask(task.Task):
 
         self._path = path
 
-    def start(self, runner):
-        # here to avoid import gst eating our options
-        import gst
-
-        task.Task.start(self, runner)
-        self._pipeline = gst.parse_launch('''
+    def getPipelineDesc(self):
+        return '''
             filesrc location="%s" !
             decodebin ! audio/x-raw-int !
-            fakesink name=sink''' %
-                common.quoteParse(self._path).encode('utf-8'))
-        self._bus = self._pipeline.get_bus()
-        self._bus.add_signal_watch()
-        self._bus.connect('message::error', self._error_cb)
+            fakesink name=sink''' % \
+                common.quoteParse(self._path).encode('utf-8')
 
-        self.debug('pausing')
-        self._pipeline.set_state(gst.STATE_PAUSED)
-        self.debug('waiting for ASYNC_DONE or ERROR')
-        message = self._bus.timed_pop_filtered(gst.CLOCK_TIME_NONE,
-            gst.MESSAGE_ASYNC_DONE | gst.MESSAGE_ERROR)
-        if message.type == gst.MESSAGE_ERROR:
-            self._error_cb(self._bus, message)
-            self._pipeline.set_state(gst.STATE_NULL)
-            return
-
+    def paused(self):
         self.debug('query duration')
-        sink = self._pipeline.get_by_name('sink')
+        sink = self.pipeline.get_by_name('sink')
         assert sink, 'Error constructing pipeline'
 
         try:
-            length, qformat = sink.query_duration(gst.FORMAT_DEFAULT)
-        except gst.QueryError:
+            length, qformat = sink.query_duration(self.gst.FORMAT_DEFAULT)
+        except self.gst.QueryError:
             self.info('failed to query duration of %r' % self._path)
             raise
 
         # wavparse 0.10.14 returns in bytes
-        if qformat == gst.FORMAT_BYTES:
+        if qformat == self.gst.FORMAT_BYTES:
             self.debug('query returned in BYTES format')
             length /= 4
         self.debug('total length of %r in samples: %d', self._path, length)
         self.length = length
-        self._pipeline.set_state(gst.STATE_NULL)
-        
-        self.stop()
 
-    def _error_cb(self, bus, msg):
-        error, debug = msg.parse_error()
-        self.debug('Got GStreamer error: %r, debug: %r' % (
-            error.message, debug))
-        self.setAndRaiseException(error)
+        self.pipeline.set_state(self.gst.STATE_NULL)
         self.stop()
 
 class ImageVerifyTask(task.MultiSeparateTask):
