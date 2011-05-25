@@ -20,7 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
-from morituri.common import common, task
+from morituri.common import common, task, log
 
 class GstException(Exception):
     def __init__(self, gerror, debug):
@@ -180,9 +180,13 @@ def removeAudioParsers():
     if not plugin:
         return
 
+    log.debug('gstreamer', 'Found audioparsers plugin from %s %s',
+        plugin.get_source(), plugin.get_version())
+
     if plugin.get_source() == 'gst-plugins-good' \
         and plugin.get_version() > '0.10.29.1':
         return
 
     # always remove from bad
+    log.debug('gstreamer', 'removing audioparsers plugin from registry')
     registry.remove_plugin(plugin)
