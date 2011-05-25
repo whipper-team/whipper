@@ -1,3 +1,8 @@
+2011-05-25  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/gstreamer.py:
+	  Also remove audioparsers if it's in bad.
+
 2011-05-24  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* configure.ac:
