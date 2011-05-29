@@ -193,3 +193,5 @@ def removeAudioParsers():
         if plugin.get_source() == 'gst-plugins-good' \
             and plugin.get_version() > '0.10.29.1':
             return
+
+        registry.remove_plugin(plugin)
