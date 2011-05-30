@@ -31,6 +31,8 @@ from morituri.common import drive, program
 from morituri.result import result
 from morituri.program import cdrdao
 
+from morituri.extern.command import command
+
 DEFAULT_TRACK_TEMPLATE = u'%A - %d/%t. %a - %n'
 DEFAULT_DISC_TEMPLATE = u'%A - %d/%A - %d'
 
@@ -40,13 +42,15 @@ class Rip(logcommand.LogCommand):
     description = """
 Rips a CD.
 
-Tracks are named according to the track template:
+Tracks are named according to the track template, filling in the variables
+and expanding the file extension.  Variables are:
  - %t: track number
  - %a: track artist
  - %n: track title
  - %s: track sort name
 
-Discs are named according to the disc template:
+Disc files (.cue, .log, .m3u) are named according to the disc template,
+filling in the variables and expanding the file extension. Variables are:
  - %A: album artist
  - %S: album sort name
  - %d: disc title
@@ -98,6 +102,13 @@ Discs are named according to the disc template:
     def handleOptions(self, options):
         options.track_template = options.track_template.decode('utf-8')
         options.disc_template = options.disc_template.decode('utf-8')
+
+        slashCountT = len(options.track_template.split(os.path.sep))
+        slashCountD = len(options.disc_template.split(os.path.sep))
+        if slashCountT != slashCountD:
+            raise command.CommandError(
+                "The number of path separators in the templates " \
+                "should be the same.")
 
     def do(self, args):
         prog = program.Program()

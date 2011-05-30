@@ -6,6 +6,8 @@ import sys
 from morituri.common import log, logcommand, common, task
 from morituri.rip import cd, offset, drive, image, accurip, debug
 
+from morituri.extern.command import command
+
 def main(argv):
     c = Rip()
     try:
@@ -38,6 +40,9 @@ cdrdao says:
             return 255
 
         raise
+    except command.CommandError, e:
+        sys.stderr.write('rip: error: %s\n' % e.output)
+        return e.status
 
     if ret is None:
         return 0

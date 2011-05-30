@@ -1,6 +1,16 @@
 2011-05-30  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/rip/cd.py:
+	  Templates should have same number of slashes.
+	  This avoids #66.
+	  (Possibly, it should also be the same directory, or more code
+	   should be written to handle that case).
+	* morituri/rip/main.py:
+	  Catch CommandError.
+
+2011-05-30  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/rip/cd.py:
 	  Create variables for default templates.
 
 2011-05-30  Thomas Vander Stichele  <thomas at apestaart dot org>
