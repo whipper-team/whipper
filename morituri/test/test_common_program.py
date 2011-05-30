@@ -98,4 +98,15 @@ class PathTestCase(unittest.TestCase):
         path = prog.getPath(u'/tmp', cd.DEFAULT_DISC_TEMPLATE, 'mbdiscid', 0)
         self.assertEquals(path,
             u'/tmp/Jeff Buckley - Grace/Jeff Buckley - Grace')
+
+    def testIssue66TemplateFilled(self):
+        prog = program.Program()
+        md = program.DiscMetadata()
+        md.artist = md.sortName = 'Jeff Buckley'
+        md.title = 'Grace'
+        prog.metadata = md
+
+        path = prog.getPath(u'/tmp', u'%A/%d', 'mbdiscid', 0)
+        self.assertEquals(path,
+            u'/tmp/Jeff Buckley/Grace')
   

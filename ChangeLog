@@ -1,5 +1,10 @@
 2011-05-30  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/test/test_common_program.py:
+	  Add a test for the template in #66.
+
+2011-05-30  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/rip/cd.py:
 	  Templates should have same number of slashes.
 	  This avoids #66.
