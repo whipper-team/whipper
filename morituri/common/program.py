@@ -615,10 +615,9 @@ class Program(log.Loggable):
         return res
 
     def writeCue(self, discName):
-        self.debug('write .cue file')
         assert self.result.table.canCue()
-
         cuePath = '%s.cue' % discName
+        self.debug('write .cue file to %s', cuePath)
         handle = open(cuePath, 'w')
         # FIXME: do we always want utf-8 ?
         handle.write(self.result.table.cue().encode('utf-8'))

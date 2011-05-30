@@ -271,6 +271,7 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
         prog.writeCue(discName)
 
         # write .m3u file
+        self.debug('writing m3u file for %r', discName)
         m3uPath = u'%s.m3u' % discName
         handle = open(m3uPath, 'w')
         handle.write(u'#EXTM3U\n')
