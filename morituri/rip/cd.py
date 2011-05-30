@@ -31,6 +31,8 @@ from morituri.common import drive, program
 from morituri.result import result
 from morituri.program import cdrdao
 
+DEFAULT_TRACK_TEMPLATE = u'%A - %d/%t. %a - %n'
+DEFAULT_DISC_TEMPLATE = u'%A - %d/%A - %d'
 
 class Rip(logcommand.LogCommand):
     summary = "rip CD"
@@ -66,16 +68,16 @@ Discs are named according to the disc template:
             help="pickle to use for reading and writing the TOC",
             default=default)
         # FIXME: get from config
-        default = '%A - %d/%t. %a - %n'
         self.parser.add_option('', '--track-template',
             action="store", dest="track_template",
-            help="template for track file naming (default %s)" % default,
-            default=default)
-        default = '%A - %d/%A - %d'
+            help="template for track file naming (default %s)" %
+                DEFAULT_TRACK_TEMPLATE,
+            default=DEFAULT_DISC_TEMPLATE)
         self.parser.add_option('', '--disc-template',
             action="store", dest="disc_template",
-            help="template for disc file naming (default %s)" % default,
-            default=default)
+            help="template for disc file naming (default %s)" %
+                DEFAULT_DISC_TEMPLATE,
+            default=DEFAULT_DISC_TEMPLATE)
         default = 'flac'
 
         # here to avoid import gst eating our options

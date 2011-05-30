@@ -1,5 +1,10 @@
 2011-05-30  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/rip/cd.py:
+	  Create variables for default templates.
+
+2011-05-30  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/test/test_common_program.py:
 	  Add tests for naming of disc output location.
 
