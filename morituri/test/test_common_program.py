@@ -8,6 +8,7 @@ import unittest
 
 from morituri.result import result
 from morituri.common import program, accurip
+from morituri.rip import cd
 
 class TrackImageVerifyTestCase(unittest.TestCase):
     # example taken from a rip of Luke Haines Is Dead, disc 1
@@ -79,3 +80,22 @@ class HTOATestCase(unittest.TestCase):
         prog.getAccurateRipResults()
 
 
+class PathTestCase(unittest.TestCase):
+    def testStandardTemplateEmpty(self):
+        prog = program.Program()
+
+        path = prog.getPath(u'/tmp', cd.DEFAULT_DISC_TEMPLATE, 'mbdiscid', 0)
+        self.assertEquals(path,
+            u'/tmp/Unknown Artist - mbdiscid/Unknown Artist - mbdiscid')
+        
+    def testStandardTemplateFilled(self):
+        prog = program.Program()
+        md = program.DiscMetadata()
+        md.artist = md.sortName = 'Jeff Buckley'
+        md.title = 'Grace'
+        prog.metadata = md
+
+        path = prog.getPath(u'/tmp', cd.DEFAULT_DISC_TEMPLATE, 'mbdiscid', 0)
+        self.assertEquals(path,
+            u'/tmp/Jeff Buckley - Grace/Jeff Buckley - Grace')
+  
