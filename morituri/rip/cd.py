@@ -76,7 +76,7 @@ filling in the variables and expanding the file extension. Variables are:
             action="store", dest="track_template",
             help="template for track file naming (default %s)" %
                 DEFAULT_TRACK_TEMPLATE,
-            default=DEFAULT_DISC_TEMPLATE)
+            default=DEFAULT_TRACK_TEMPLATE)
         self.parser.add_option('', '--disc-template',
             action="store", dest="disc_template",
             help="template for disc file naming (default %s)" %
