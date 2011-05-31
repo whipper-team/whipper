@@ -1,6 +1,11 @@
 2011-05-31  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/rip/cd.py:
+	  Use %default in options description.
+
+2011-05-31  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/rip/cd.py:
 	  Ouch, was using the DISC TEMPLATE for the tracks.
 
 2011-05-30  Thomas Vander Stichele  <thomas at apestaart dot org>
