@@ -26,6 +26,7 @@ PYCHECKER_WHITELIST = \
 	morituri/*/*.py
 
 PYCHECKER_BLACKLIST = \
+	morituri/common/taskgtk.py \
 	morituri/extern/asyncsub.py \
 	morituri/extern/log/log.py
 
