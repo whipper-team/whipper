@@ -1,3 +1,14 @@
+=== release 0.1.2 ===
+
+2011-06-05  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* NEWS:
+	* README:
+	* RELEASE:
+	* configure.ac:
+	* morituri.doap:
+	  Releasing 0.1.2, "VCR"
+
 2011-05-31  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/rip/cd.py:

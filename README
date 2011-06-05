@@ -112,6 +112,9 @@ GOALS
 rip command tree
 ----------------
 rip
+  accurip
+    show
+      show accuraterip data
   offset
     find
       find drive's read offset using AccurateRip
@@ -120,6 +123,9 @@ rip
   cd
     rip
       rip the cd
+  debug
+    encode
+      encode a file
   htoa
     find
     rip

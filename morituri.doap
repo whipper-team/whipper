@@ -42,6 +42,27 @@ Morituri is a CD ripper aiming for maximum quality.
 
  <release>
   <Version>
+   <revision>0.1.2</revision>
+   <branch>trunk</branch>
+   <name>VCR</name>
+   <created>2011-06-05</created>
+   <file-release rdf:resource="http://thomas.apestaart.org/download/morituri/morituri-0.1.2.tar.bz2" />
+   <file-release rdf:resource="http://thomas.apestaart.org/download/morituri/morituri-0.1.2-1.noarch.rpm" />
+   <dc:description>
+- UTF-8/unicode handling fixes
+- improved error handling
+- ignore tags for alac and wav
+- work around GStreamer flacparse bugs
+- change how paths get referenced in .cue files
+- properly interpret AccurateRip results; no more assertions on unexpected
+  ordering of results
+- add debug command
+    </dc:description>
+  </Version>
+ </release>
+
+ <release>
+  <Version>
    <revision>0.1.1</revision>
    <branch>trunk</branch>
    <name>Dead</name>

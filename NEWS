@@ -1,4 +1,38 @@
-This is morituri 0.1.1, "Dead"
+This is morituri 0.1.2, "VCR"
+
+Coverage in 0.1.2: 61 %   (1683 / 2755), 65 python tests
+
+Features added in 0.1.2:
+
+- UTF-8/unicode handling fixes
+- improved error handling
+- ignore tags for alac and wav
+- work around GStreamer flacparse bugs
+- change how paths get referenced in .cue files
+- properly interpret AccurateRip results; no more assertions on unexpected
+  ordering of results
+- add debug command
+
+Bugs fixed in 0.1.2:
+
+-   5: AccurateRip Error on Arctic Monkeys disc
+-  10: pathnames in log and cue
+-  15: AttributeError: '__main__.GstWavEnc' object has no attribute 'merge_tags'
+-  24: nasty exception when cdrdao is missing
+-  25: UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position 21: ordinal not in range(128)
+-  32: Add python-setuptools as Requires in specfile
+-  37: rip fails on a hidden track of single sector (or 0?) length
+-  38: morituri dies trying to construct the cue file for a number of CDs
+-  43: Set the album artist tag
+-  46: running uninstalled: morituri-trunk - no bash completion file
+-  49: Doesn't encode UTF-8 HTOA track name properly
+-  50: Bogus extension stripping of HTOA track in .m3u
+-  64: always failing after ripping first track
+-  35: UnboundLocalError: local variable 'results' referenced before assignment
+-  61: 'rip image --help' should specify that it's intended to work with .cue files
+-  62: Crash if no disc in drive
+-  51: Typos - s/reponses/responses
+-  59: Typo in 'rip drive list' output
 
 Coverage in 0.1.1: 64 %   (1575 / 2440), 61 python tests
 
