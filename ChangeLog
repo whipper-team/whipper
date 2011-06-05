@@ -126,14 +126,6 @@
 
 2011-05-24  Thomas Vander Stichele  <thomas at apestaart dot org>
 
-	reviewed by: <delete if not using a buddy>
-	patch by: <delete if not someone else's patch>
-
-	* morituri/common/gstreamer.py:
-	* morituri/image/image.py:
-
-2011-05-24  Thomas Vander Stichele  <thomas at apestaart dot org>
-
 	* morituri/test/test_common_encode.py:
 	  Write a non-sine wave so we have an actual flac file that will
 	  typefind.
