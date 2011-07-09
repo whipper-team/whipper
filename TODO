@@ -32,3 +32,6 @@ TODO:
 - check if cdda2wav or icedax analyze pregaps correctly
 - Zita Swoon anthology cd 1 shows track 8 rip NOT accurate, but checksums match
 - burn ripped images
+- use a temp dir, until the whole rip is good don't move it, so we easily find
+  half done rips
+- primal scream, track 5, it rips/checks/rips/checks/encodes/checks and then complains read and verify failed.  why did it encode ?
