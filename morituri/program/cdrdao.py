@@ -110,9 +110,9 @@ class OutputParser(object, log.Loggable):
         self._lines = []      # accumulate lines
         self._state = 'START'
         self._frames = None   # number of frames
-        self._track = None    # which track are we analyzing?
+        self.track = 0        # which track are we analyzing?
         self._task = taskk
-        self._tracks = 0      # count of tracks, relative to session
+        self.tracks = 0      # count of tracks, relative to session
         self._session = session
 
 
@@ -142,8 +142,8 @@ class OutputParser(object, log.Loggable):
 
             # we need both a position reported and an Analyzing line
             # to have been parsed to report progress
-            if m and self._track is not None:
-                track = self.table.tracks[self._track - 1]
+            if m and self.track is not None:
+                track = self.table.tracks[self.track - 1]
                 frame = (track.getIndex(1).absolute or 0) \
                     + int(m.group('hh')) * 60 * common.FRAMES_PER_SECOND \
                     + int(m.group('mm')) * common.FRAMES_PER_SECOND \
@@ -209,12 +209,12 @@ class OutputParser(object, log.Loggable):
         m = _TRACK_RE.search(line)
         if m:
             t = int(m.group('track'))
-            self._tracks += 1
-            track = table.Track(self._tracks, session=self._session)
+            self.tracks += 1
+            track = table.Track(self.tracks, session=self._session)
             track.index(1, absolute=int(m.group('start')))
             self.table.tracks.append(track)
             self.debug('Found absolute track %d, session-relative %d', t,
-                self._tracks)
+                self.tracks)
 
         m = _LEADOUT_RE.search(line)
         if m:
@@ -222,7 +222,7 @@ class OutputParser(object, log.Loggable):
             self._state = 'LEADOUT'
             self._frames = int(m.group('start'))
             self.debug('Found absolute leadout at offset %r', self._frames)
-            self.info('%d tracks found for this session', self._tracks)
+            self.info('%d tracks found for this session', self.tracks)
             return
 
     def _parse_LEADOUT(self, line):
@@ -231,9 +231,7 @@ class OutputParser(object, log.Loggable):
             self.debug('Found analyzing line')
             track = int(m.group('track'))
             self.description = 'Analyzing track %d...' % track
-            self._track = track
-            #self.setProgress(float(track - 1) / self._tracks)
-            #print 'analyzing', track
+            self.track = track
 
 
 # FIXME: handle errors
@@ -433,6 +431,8 @@ class ReadSessionTask(CDRDAOTask):
     def readbyteserr(self, bytes):
         self.parser.read(bytes)
 
+        self.setProgress(float(self.parser.track - 1) / self.parser.tracks)
+
     def done(self):
         # by merging the TOC info.
         self._tocfile = toc.TocFile(self._tocfilepath)
@@ -477,7 +477,7 @@ class ReadTOCSessionTask(ReadSessionTask):
     @type table: L{table.Table}
     """
 
-    logCategory = 'ReadTOCSessionTask'
+    logCategory = 'ReadTOCSessTask'
     description = "Reading TOC"
     extraOptions = ['--fast-toc', ]
 
