@@ -64,8 +64,18 @@ def filterForPath(text):
 
 def getMetadata(release):
     """
-    @rtype: L{DiscMetadata}
+    @type  release: L{musicbrainz2.model.Release}
+
+    @rtype: L{DiscMetadata} or None
     """
+    log.debug('program', 'getMetadata for release id %r',
+        release.getId())
+    if not release.getId():
+        log.warning('program', 'No id for release %r', release) 
+        return None
+
+    assert release.id, 'Release does not have an id'
+
     metadata = DiscMetadata()
 
     isSingleArtist = release.isSingleArtistRelease()
@@ -75,6 +85,7 @@ def getMetadata(release):
     metadata.artist = release.artist.name
     metadata.sortName = release.artist.sortName
     metadata.release = release.getEarliestReleaseDate()
+
     metadata.mbid = urlparse.urlparse(release.id)[2].split("/")[-1]
     metadata.mbidArtist = urlparse.urlparse(release.artist.id)[2].split("/")[-1]
 
@@ -102,6 +113,7 @@ def musicbrainz(discid):
     """
     @rtype: list of L{DiscMetadata}
     """
+    log.debug('musicbrainz', 'looking up results for discid %r', discid)
     #import musicbrainz2.disc as mbdisc
     import musicbrainz2.webservice as mbws
 
@@ -124,13 +136,16 @@ def musicbrainz(discid):
     if len(results) == 0:
         return None
 
+    log.debug('musicbrainz', 'found %d results for discid %r', len(results),
+        discid)
+
     # Display the returned results to the user.
     ret = []
 
     for result in results:
         release = result.release
-        log.debug('program', 'result: artist %r, title %r' % (
-            release.artist.getName(), release.title))
+        log.debug('program', 'result %r: artist %r, title %r' % (
+            release, release.artist.getName(), release.title))
         # The returned release object only contains title and artist, but no
         # tracks.  Query the web service once again to get all data we need.
         try:
@@ -142,7 +157,9 @@ def musicbrainz(discid):
         except mbws.WebServiceError, e:
             raise MusicBrainzException(e)
 
-        ret.append(getMetadata(release))
+        md = getMetadata(release)
+        if md:
+            ret.append(md)
 
     return ret
 
@@ -323,6 +340,8 @@ class Program(log.Loggable):
 
     def getMusicBrainz(self, ittoc, mbdiscid):
         # look up disc on musicbrainz
+        self.debug('MusicBrainz submit url: %r', 
+            ittoc.getMusicBrainzSubmitURL())
         ret = None
 
         metadatas = None
@@ -335,6 +354,7 @@ class Program(log.Loggable):
         if metadatas:
             print 'Matching releases:'
             for metadata in metadatas:
+
                 print 'Artist  : %s' % metadata.artist.encode('utf-8')
                 print 'Title   : %s' % metadata.title.encode('utf-8')
 

@@ -1,5 +1,14 @@
 2011-07-09  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/task.py:
+	  Log which task we are notifying progress on.
+	* morituri/common/program.py:
+	  Solve a problem where a release does not have an .id,
+	  which means it's only half in musicbrainz (artist
+	  and title, but no URL to the disc)
+
+2011-07-09  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/program/cdrdao.py:
 	  Fix log output.
 	  Do progress output while scanning TOC.
