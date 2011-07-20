@@ -1,3 +1,8 @@
+2011-07-20  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/program/cdrdao.py:
+	  Avoid floating point error.
+
 2011-07-09  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/task.py:

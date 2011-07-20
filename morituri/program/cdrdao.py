@@ -431,7 +431,8 @@ class ReadSessionTask(CDRDAOTask):
     def readbyteserr(self, bytes):
         self.parser.read(bytes)
 
-        self.setProgress(float(self.parser.track - 1) / self.parser.tracks)
+        if self.parser.tracks > 0:
+            self.setProgress(float(self.parser.track - 1) / self.parser.tracks)
 
     def done(self):
         # by merging the TOC info.
