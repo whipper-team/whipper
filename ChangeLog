@@ -1,5 +1,16 @@
 2011-08-05  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/Makefile.am:
+	* morituri/common/checksum.py:
+	* morituri/common/gstreamer.py:
+	* morituri/extern/Makefile.am:
+	* morituri/extern/task/gstreamer.py:
+	* morituri/common/gstreamer.py (added):
+	  Extract function to remove audio parsers.
+	  Fix up dist.
+
+2011-08-05  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/extern/task (added):
 	* morituri/extern/task/taskgtk.py (added):
 	* morituri/extern/task/gstreamer.py (added):

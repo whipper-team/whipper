@@ -13,6 +13,4 @@ morituri_PYTHON = \
 	log.py \
 	logcommand.py \
 	program.py \
-	renamer.py \
-	task.py \
-	taskgtk.py
+	renamer.py

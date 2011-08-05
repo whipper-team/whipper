@@ -27,6 +27,7 @@ import zlib
 import gst
 
 from morituri.common import common
+from morituri.common import gstreamer as cgstreamer
 
 from morituri.extern.task import task, gstreamer
 
@@ -74,7 +75,7 @@ class ChecksumTask(gstreamer.GstPipelineTask):
 
         self.checksum = None # result
 
-        gstreamer.removeAudioParsers()
+        cgstreamer.removeAudioParsers()
 
     ### gstreamer.GstPipelineTask implementations
 

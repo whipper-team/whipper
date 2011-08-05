@@ -20,8 +20,6 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
-from morituri.common import log
-
 import task
 
 class GstException(Exception):
@@ -173,27 +171,3 @@ class GstPipelineTask(task.Task):
         self.setAndRaiseException(exc)
         self.debug('error, scheduling stop')
         self.schedule(0, self.stop)
-
-# workaround for issue #64
-def removeAudioParsers():
-    log.debug('gstreamer', 'Removing buggy audioparsers plugin if needed')
-
-    import gst
-    registry = gst.registry_get_default()
-
-    plugin = registry.find_plugin("audioparsersbad")
-    if plugin:
-        # always remove from bad
-        log.debug('gstreamer', 'removing audioparsersbad plugin from registry')
-        registry.remove_plugin(plugin)
-
-    plugin = registry.find_plugin("audioparsers")
-    if plugin:
-        log.debug('gstreamer', 'Found audioparsers plugin from %s %s',
-            plugin.get_source(), plugin.get_version())
-
-        if plugin.get_source() == 'gst-plugins-good' \
-            and plugin.get_version() > '0.10.29.1':
-            return
-
-        registry.remove_plugin(plugin)
