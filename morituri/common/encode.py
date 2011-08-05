@@ -168,9 +168,9 @@ class EncodeTask(gstreamer.GstPipelineTask):
             level name=level !
             %s ! identity name=identity !
             filesink location="%s" name=sink''' % (
-                common.quoteParse(self._inpath).encode('utf-8'),
+                gstreamer.quoteParse(self._inpath).encode('utf-8'),
                 self._profile.pipeline,
-                common.quoteParse(self._outpath).encode('utf-8'))
+                gstreamer.quoteParse(self._outpath).encode('utf-8'))
 
     def parsed(self):
         tagger = self.pipeline.get_by_name('tagger')
@@ -295,7 +295,7 @@ class TagReadTask(gstreamer.GstPipelineTask):
             filesrc location="%s" !
             decodebin name=decoder !
             fakesink''' % (
-                common.quoteParse(self._path).encode('utf-8'))
+                gstreamer.quoteParse(self._path).encode('utf-8'))
 
     def bus_eos_cb(self, bus, message):
         self.debug('eos, scheduling stop')
@@ -334,8 +334,8 @@ class TagWriteTask(task.Task):
             filesrc location="%s" !
             flactag name=tagger !
             filesink location="%s"''' % (
-                common.quoteParse(self._inpath).encode('utf-8'),
-                common.quoteParse(self._outpath).encode('utf-8')))
+                gstreamer.quoteParse(self._inpath).encode('utf-8'),
+                gstreamer.quoteParse(self._outpath).encode('utf-8')))
 
         # set tags
         tagger = self._pipeline.get_by_name('tagger')

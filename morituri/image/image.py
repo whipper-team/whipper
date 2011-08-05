@@ -161,7 +161,7 @@ class AudioLengthTask(gstreamer.GstPipelineTask):
             filesrc location="%s" !
             decodebin ! audio/x-raw-int !
             fakesink name=sink''' % \
-                common.quoteParse(self._path).encode('utf-8')
+                gstreamer.quoteParse(self._path).encode('utf-8')
 
     def paused(self):
         self.debug('query duration')

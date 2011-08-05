@@ -67,15 +67,6 @@ def framesToHMSF(frames):
 
     return "%02d:%02d:%02d.%02d" % (h, m, s, f)
 
-def quoteParse(path):
-    """
-    Quote a path for use in gst.parse_launch.
-    """
-    # Make sure double quotes are escaped.  See
-    # morituri.test.test_common_checksum
-
-    return path.replace('"', '\\"')
-
 class Persister(object):
     """
     I wrap an optional pickle to persist an object to disk.

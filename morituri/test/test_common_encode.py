@@ -9,14 +9,14 @@ gobject.threads_init()
 
 import gst
 
-from morituri.common import encode, log, common
+from morituri.common import encode, log
 
-from morituri.extern.task import task
+from morituri.extern.task import task, gstreamer
 
-from morituri.test import common as tcommon
+from morituri.test import common
 
 
-class PathTestCase(tcommon.TestCase):
+class PathTestCase(common.TestCase):
     def _testSuffix(self, suffix):
         self.runner = task.SyncRunner(verbose=False)
         fd, path = tempfile.mkstemp(suffix=suffix)
@@ -25,7 +25,7 @@ class PathTestCase(tcommon.TestCase):
             "audioconvert ! audio/x-raw-int,width=16,depth=16,channels =2 ! " \
             "wavenc ! " \
             "filesink location=\"%s\" > /dev/null 2>&1" % (
-            common.quoteParse(path).encode('utf-8'), )
+            gstreamer.quoteParse(path).encode('utf-8'), )
         os.system(cmd)
         self.failUnless(os.path.exists(path))
         encodetask = encode.EncodeTask(path, path + '.out',
@@ -35,7 +35,7 @@ class PathTestCase(tcommon.TestCase):
         os.unlink(path)
         os.unlink(path + '.out')
 
-class UnicodePathTestCase(PathTestCase, tcommon.UnicodeTestMixin):
+class UnicodePathTestCase(PathTestCase, common.UnicodeTestMixin):
     def testUnicodePath(self):
         # this test makes sure we can checksum a unicode path
         self._testSuffix(u'.morituri.test_encode.B\xeate Noire')
@@ -47,7 +47,7 @@ class NormalPathTestCase(PathTestCase):
     def testDoubleQuote(self):
         self._testSuffix(u'.morituri.test_encode.12" edit')
 
-class TagReadTestCase(tcommon.TestCase):
+class TagReadTestCase(common.TestCase):
     def testRead(self):
         path = os.path.join(os.path.dirname(__file__), u'track.flac')
         self.runner = task.SyncRunner(verbose=False)
@@ -57,7 +57,7 @@ class TagReadTestCase(tcommon.TestCase):
         self.assertEquals(t.taglist['audio-codec'], 'FLAC')
         self.assertEquals(t.taglist['description'], 'audiotest wave')
 
-class TagWriteTestCase(tcommon.TestCase):
+class TagWriteTestCase(common.TestCase):
     def testWrite(self):
         fd, inpath = tempfile.mkstemp(suffix=u'.morituri.tagwrite.flac')
         
@@ -92,7 +92,7 @@ class TagWriteTestCase(tcommon.TestCase):
         os.unlink(inpath)
         os.unlink(outpath)
         
-class SafeRetagTestCase(tcommon.TestCase):
+class SafeRetagTestCase(common.TestCase):
     def setUp(self):
         self._fd, self._path = tempfile.mkstemp(suffix=u'.morituri.retag.flac')
         

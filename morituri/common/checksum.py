@@ -84,7 +84,7 @@ class ChecksumTask(gstreamer.GstPipelineTask):
             filesrc location="%s" !
             decodebin name=decode ! audio/x-raw-int !
             appsink name=sink sync=False emit-signals=True
-            ''' % common.quoteParse(self._path).encode('utf-8')
+            ''' % gstreamer.quoteParse(self._path).encode('utf-8')
 
     def paused(self):
         sink = self.pipeline.get_by_name('sink')

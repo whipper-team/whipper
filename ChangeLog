@@ -1,5 +1,14 @@
 2011-08-05  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/checksum.py:
+	* morituri/common/common.py:
+	* morituri/common/encode.py:
+	* morituri/image/image.py:
+	* morituri/test/test_common_encode.py:
+	  Moved quoteParse.
+
+2011-08-05  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/Makefile.am:
 	* morituri/common/checksum.py:
 	* morituri/common/gstreamer.py:
