@@ -26,12 +26,13 @@ import math
 import gobject
 gobject.threads_init()
 
-from morituri.common import logcommand, task, common, accurip, log
+from morituri.common import logcommand, common, accurip, log
 from morituri.common import drive, program
 from morituri.result import result
 from morituri.program import cdrdao
 
 from morituri.extern.command import command
+from morituri.extern.task import task
 
 DEFAULT_TRACK_TEMPLATE = u'%A - %d/%t. %a - %n'
 DEFAULT_DISC_TEMPLATE = u'%A - %d/%A - %d'

@@ -22,9 +22,11 @@
 
 import os
 
-from morituri.common import logcommand, task, accurip, program, encode
+from morituri.common import logcommand, accurip, program, encode
 from morituri.image import image
 from morituri.result import result
+
+from morituri.extern.task import task
 
 
 class Encode(logcommand.LogCommand):

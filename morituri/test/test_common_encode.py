@@ -9,9 +9,12 @@ gobject.threads_init()
 
 import gst
 
+from morituri.common import encode, log, common
+
+from morituri.extern.task import task
+
 from morituri.test import common as tcommon
 
-from morituri.common import task, encode, log, common
 
 class PathTestCase(tcommon.TestCase):
     def _testSuffix(self, suffix):

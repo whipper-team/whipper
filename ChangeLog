@@ -1,3 +1,29 @@
+2011-08-05  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/extern/task (added):
+	* morituri/extern/task/taskgtk.py (added):
+	* morituri/extern/task/gstreamer.py (added):
+	* morituri/extern/task/task.py (added):
+	* morituri/common/taskgtk.py (deleted):
+	* morituri/common/gstreamer.py (deleted):
+	* morituri/common/task.py (deleted):
+	  Move task-related modules into an extern directory so other
+	  projects can use them.
+	* morituri/common/checksum.py:
+	* morituri/common/encode.py:
+	* morituri/image/image.py:
+	* morituri/program/cdparanoia.py:
+	* morituri/program/cdrdao.py:
+	* morituri/rip/cd.py:
+	* morituri/rip/debug.py:
+	* morituri/rip/image.py:
+	* morituri/rip/main.py:
+	* morituri/rip/offset.py:
+	* morituri/test/test_common_checksum.py:
+	* morituri/test/test_common_encode.py:
+	* morituri/test/test_image_image.py:
+	  Adapt.  Tests work.
+
 2011-07-20  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/program/cdrdao.py:

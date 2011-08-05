@@ -26,8 +26,10 @@ import tempfile
 import gobject
 gobject.threads_init()
 
-from morituri.common import logcommand, task, accurip, drive, program
+from morituri.common import logcommand, accurip, drive, program
 from morituri.program import cdrdao, cdparanoia
+
+from morituri.extern.task import task
 
 # see http://www.accuraterip.com/driveoffsets.htm
 # and misc/offsets.py

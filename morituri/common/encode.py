@@ -25,7 +25,9 @@ import os
 import shutil
 import tempfile
 
-from morituri.common import common, task, log, gstreamer
+from morituri.common import common, log
+
+from morituri.extern.task import task, gstreamer
 
 class Profile(object):
     name = None

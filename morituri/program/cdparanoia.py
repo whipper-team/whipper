@@ -27,8 +27,10 @@ import shutil
 import subprocess
 import tempfile
 
-from morituri.common import task, log, common
+from morituri.common import log, common
+
 from morituri.extern import asyncsub
+from morituri.extern.task import task
 
 class FileSizeError(Exception):
 

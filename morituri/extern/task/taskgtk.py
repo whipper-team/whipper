@@ -23,7 +23,7 @@
 import gobject
 import gtk
 
-from morituri.common import task
+import task
 
 class GtkProgressRunner(gtk.VBox, task.TaskRunner):
     """

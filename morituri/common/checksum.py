@@ -26,7 +26,9 @@ import zlib
 
 import gst
 
-from morituri.common import common, task, gstreamer
+from morituri.common import common
+
+from morituri.extern.task import task, gstreamer
 
 # checksums are not CRC's. a CRC is a specific type of checksum.
 

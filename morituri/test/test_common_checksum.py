@@ -7,7 +7,9 @@ import tempfile
 import gobject
 gobject.threads_init()
 
-from morituri.common import task, checksum, log, gstreamer
+from morituri.common import checksum, log
+
+from morituri.extern.task import task, gstreamer
 
 from morituri.test import common as tcommon
 

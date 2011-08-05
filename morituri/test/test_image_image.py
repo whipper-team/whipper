@@ -10,7 +10,10 @@ gobject.threads_init()
 import gst
 
 from morituri.image import image
-from morituri.common import task, common, log, gstreamer
+from morituri.common import common, log
+
+from morituri.extern.task import task, gstreamer
+
 from morituri.test import common as tcommon
 
 log.init()

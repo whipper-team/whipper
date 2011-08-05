@@ -20,7 +20,9 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
-from morituri.common import task, logcommand
+from morituri.common import logcommand
+
+from morituri.extern.task import task, gstreamer
 
 class Encode(logcommand.LogCommand):
 

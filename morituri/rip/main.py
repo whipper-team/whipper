@@ -3,10 +3,12 @@
 
 import sys
 
-from morituri.common import log, logcommand, common, task
+from morituri.common import log, logcommand, common
+
 from morituri.rip import cd, offset, drive, image, accurip, debug
 
 from morituri.extern.command import command
+from morituri.extern.task import task
 
 def main(argv):
     c = Rip()

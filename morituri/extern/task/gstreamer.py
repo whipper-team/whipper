@@ -20,7 +20,9 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
-from morituri.common import common, task, log
+from morituri.common import log
+
+import task
 
 class GstException(Exception):
     def __init__(self, gerror, debug):

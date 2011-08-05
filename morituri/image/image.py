@@ -26,8 +26,10 @@ Wrap on-disk CD images based on the .cue file.
 
 import os
 
-from morituri.common import task, log, common, gstreamer
+from morituri.common import log, common
 from morituri.image import cue, table
+
+from morituri.extern.task import task, gstreamer
 
 class Image(object, log.Loggable):
     """
