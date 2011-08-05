@@ -1,4 +1,4 @@
-# -*- Mode: Python; test-case-name: morituri.test.test_common_gstreamer -*-
+# -*- Mode: Python; test-case-name: test_gstreamer -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
 # Morituri - for those about to RIP
