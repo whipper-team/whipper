@@ -48,15 +48,20 @@ class GstPipelineTask(task.Task):
 
     I handle errors and raise them appropriately.
 
-    @cvar gst: the GStreamer module, so code does not have to import gst
-               as a module in code everywhere to avoid option stealing.
-    @var playing: whether the pipeline should be set to playing after
-                  paused.  Some pipelines don't need to play for a task
-                  to be done (for example, querying length)
+    @cvar gst:      the GStreamer module, so code does not have to import gst
+                    as a module in code everywhere to avoid option stealing.
+    @var  playing:  whether the pipeline should be set to playing after
+                    paused.  Some pipelines don't need to play for a task
+                    to be done (for example, querying length)
+    @type playing:  bool
+    @type pipeline: L{gst.Pipeline}
+    @type bus:      L{gst.Bus}
     """
 
     gst = None
     playing = True
+    pipeline = None
+    bus = None
 
     ### task.Task implementations
     def start(self, runner):
@@ -67,18 +72,20 @@ class GstPipelineTask(task.Task):
 
         self.getPipeline()
 
-        self._bus = self.pipeline.get_bus()
-        self.gst.debug('got bus %r' % self._bus)
+        self.bus = self.pipeline.get_bus()
+        # FIXME: remove this
+        self._bus = self.bus
+        self.gst.debug('got bus %r' % self.bus)
 
         # a signal watch calls callbacks from an idle loop
-        # self._bus.add_signal_watch()
+        # self.bus.add_signal_watch()
 
         # sync emission triggers sync-message signals which calls callbacks
         # from the thread that signals, but happens immediately
-        self._bus.enable_sync_message_emission()
-        self._bus.connect('sync-message::eos', self.bus_eos_cb)
-        self._bus.connect('sync-message::tag', self.bus_tag_cb)
-        self._bus.connect('sync-message::error', self.bus_error_cb)
+        self.bus.enable_sync_message_emission()
+        self.bus.connect('sync-message::eos', self.bus_eos_cb)
+        self.bus.connect('sync-message::tag', self.bus_tag_cb)
+        self.bus.connect('sync-message::error', self.bus_error_cb)
 
         self.parsed()
 
