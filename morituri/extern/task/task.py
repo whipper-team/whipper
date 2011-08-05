@@ -38,7 +38,7 @@ class TaskException(Exception):
         self.exceptionMessage = message
         self.args = (exception, message, )
 
-class Task(object, log.Loggable):
+class Task(object):
     """
     I wrap a task in an asynchronous interface.
     I can be listened to for starting, stopping, description changes
@@ -67,6 +67,19 @@ class Task(object, log.Loggable):
     _listeners = None
 
 
+    ### log stubs
+    def warning(self, message, *args):
+        pass
+
+    def info(self, message, *args):
+        pass
+
+    def debug(self, message, *args):
+        pass
+
+    def log(self, message, *args):
+        pass
+
     ### subclass methods
     def start(self, runner):
         """
@@ -90,6 +103,7 @@ class Task(object, log.Loggable):
     def stop(self):
         """
         Stop the task.
+        Also resets the runner on the task.
 
         Subclasses should chain up to me at the end.
 

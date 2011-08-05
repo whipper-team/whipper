@@ -126,6 +126,17 @@ class GstPipelineTask(task.Task):
 
     def stop(self):
         self.debug('stopping')
+
+        # FIXME: in theory this should help clean up properly,
+        # but in practice we can still get
+        # python: /builddir/build/BUILD/Python-2.7/Python/pystate.c:595: PyGILState_Ensure: Assertion `autoInterpreterState' failed.
+
+        self.pipeline.set_state(self.gst.STATE_READY)
+        self.debug('set pipeline to READY')
+        # FIXME: this can block
+        ret = self.pipeline.get_state()
+        self.debug('got pipeline to READY: %r', ret)
+
         self.debug('setting state to NULL')
         self.pipeline.set_state(self.gst.STATE_NULL)
         self.debug('set state to NULL')

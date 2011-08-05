@@ -1,6 +1,14 @@
 2011-08-05  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* gstreamer.py:
+	* task.py:
+	  Don't rely on the log module; users that want to log
+	  should first subclass from a log class that implements
+	  warning/info/debug/log
+
+2011-08-05  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gstreamer.py:
 	  Document bus and pipeline.  Make bus public.
 
 2011-08-05  Thomas Vander Stichele  <thomas at apestaart dot org>
