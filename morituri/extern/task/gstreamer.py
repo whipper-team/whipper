@@ -54,10 +54,8 @@ class GstPipelineTask(task.Task):
         self.gst = gst
 
         task.Task.start(self, runner)
-        desc = self.getPipelineDesc()
 
-        self.debug('creating pipeline %r', desc)
-        self.pipeline = self.gst.parse_launch(desc)
+        self.getPipeline()
 
         self._bus = self.pipeline.get_bus()
         self.gst.debug('got bus %r' % self._bus)
@@ -117,8 +115,13 @@ class GstPipelineTask(task.Task):
         self.stopped()
         task.Task.stop(self)
 
+    ### subclass optional implementations
+    def getPipeline(self):
+        desc = self.getPipelineDesc()
 
-    ### subclass required implementations
+        self.debug('creating pipeline %r', desc)
+        self.pipeline = self.gst.parse_launch(desc)
+
     def getPipelineDesc(self):
         """
         subclasses should implement this to provide a pipeline description.
@@ -127,10 +130,10 @@ class GstPipelineTask(task.Task):
         """
         raise NotImplementedError
 
-    ### subclass optional implementations
     def parsed(self):
         """
-        Called after parsing the pipeline but before setting it to paused.
+        Called after parsing/getting the pipeline but before setting it to
+        paused.
         """
         pass
 

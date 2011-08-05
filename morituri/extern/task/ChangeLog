@@ -1,0 +1,6 @@
+2011-08-05  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gstreamer.py:
+	  Add getPipeline() method.
+	  Base class implementation uses getPipelineDesc().
+
