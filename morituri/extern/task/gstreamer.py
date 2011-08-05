@@ -22,6 +22,16 @@
 
 import task
 
+def quoteParse(path):
+    """
+    Quote a path for use in gst.parse_launch.
+    """
+    # Make sure double quotes are escaped.  See
+    # morituri.test.test_common_checksum
+
+    return path.replace('"', '\\"')
+
+
 class GstException(Exception):
     def __init__(self, gerror, debug):
         self.args = (gerror, debug, )
