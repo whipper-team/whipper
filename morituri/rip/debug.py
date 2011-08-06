@@ -24,6 +24,32 @@ from morituri.common import logcommand
 
 from morituri.extern.task import task, gstreamer
 
+class Checksum(logcommand.LogCommand):
+
+    summary = "run a checksum task"
+
+    def addOptions(self):
+        # here to avoid import gst eating our options
+        from morituri.common import checksum
+
+    def do(self, args):
+        try:
+            fromPath = unicode(args[0])
+        except IndexError:
+            self.stdout.write('Please specify an input file.\n')
+            return 3
+
+        runner = task.SyncRunner()
+
+        from morituri.common import checksum
+        checksumtask = checksum.CRC32Task(fromPath)
+
+        runner.run(checksumtask)
+
+        self.stdout.write('Checksum: %08x\n' % checksumtask.checksum)
+
+
+
 class Encode(logcommand.LogCommand):
 
     summary = "run an encode task"
@@ -59,10 +85,9 @@ class Encode(logcommand.LogCommand):
 
         runner.run(encodetask)
 
-
 class Debug(logcommand.LogCommand):
     summary = "debug internals"
 
-    subCommandClasses = [Encode, ]
+    subCommandClasses = [Checksum, Encode, ]
 
 
