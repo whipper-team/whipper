@@ -385,12 +385,29 @@ class MultiCombinedTask(BaseMultiTask):
         self.setProgress(float(self._stopped) / len(self.tasks))
         BaseMultiTask.stopped(self, task)
 
-class TaskRunner(object, log.Loggable):
+class TaskRunner(object):
     """
     I am a base class for task runners.
     Task runners should be reusable.
     """
     logCategory = 'TaskRunner'
+
+    ### log stubs
+    def warning(self, message, *args):
+        pass
+
+    def info(self, message, *args):
+        pass
+
+    def debug(self, message, *args):
+        pass
+
+    def log(self, message, *args):
+        pass
+
+    def error(self, message, *args):
+        pass
+
 
     def run(self, task):
         """

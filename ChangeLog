@@ -1,6 +1,11 @@
 2011-08-07  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/extern/task/task.py:
+	  Also stub out log calls on Runner.
+
+2011-08-07  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/extern/task/task.py:
 	  Also handle error() log calls.
 
 2011-08-07  Thomas Vander Stichele  <thomas at apestaart dot org>
