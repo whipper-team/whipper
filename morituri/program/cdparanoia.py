@@ -447,33 +447,38 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         self.file_mode = 0666 - umask
 
     def stop(self):
-        if not self.exception:
-            self.quality = max(self.tasks[0].quality, self.tasks[2].quality)
-            self.peak = self.tasks[4].peak
-            self.debug('peak: %r', self.peak)
+        # FIXME: maybe this kind of try-wrapping to make sure
+        # we chain up should be handled by a parent class function ?
+        try:
+            if not self.exception:
+                self.quality = max(self.tasks[0].quality, self.tasks[2].quality)
+                self.peak = self.tasks[4].peak
+                self.debug('peak: %r', self.peak)
 
-            self.testchecksum = c1 = self.tasks[1].checksum
-            self.copychecksum = c2 = self.tasks[3].checksum
-            if c1 == c2:
-                self.info('Checksums match, %08x' % c1)
-                self.checksum = self.testchecksum
+                self.testchecksum = c1 = self.tasks[1].checksum
+                self.copychecksum = c2 = self.tasks[3].checksum
+                if c1 == c2:
+                    self.info('Checksums match, %08x' % c1)
+                    self.checksum = self.testchecksum
+                else:
+                    # FIXME: detect this before encoding
+                    self.error('read and verify failed')
+
+                if self.tasks[5].checksum != self.checksum:
+                    self.error('Encoding failed, checksum does not match')
+
+                # delete the unencoded file
+                os.unlink(self._tmpwavpath)
+
+                os.chmod(self._tmppath, self.file_mode)
+
+                try:
+                    shutil.move(self._tmppath, self.path)
+                except Exception, e:
+                    self._exception = e
             else:
-                # FIXME: detect this before encoding
-                self.error('read and verify failed')
-
-            if self.tasks[5].checksum != self.checksum:
-                self.error('Encoding failed, checksum does not match')
-
-            # delete the unencoded file
-            os.unlink(self._tmpwavpath)
-
-            os.chmod(self._tmppath, self.file_mode)
-
-            try:
-                shutil.move(self._tmppath, self.path)
-            except Exception, e:
-                self._exception = e
-        else:
-            self.debug('stop: exception %r', self.exception)
+                self.debug('stop: exception %r', self.exception)
+        except Exception, e:
+            print 'WARNING: unhandled exception %r' % (e, )
 
         task.MultiSeparateTask.stop(self)
