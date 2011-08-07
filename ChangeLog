@@ -1,5 +1,10 @@
 2011-08-07  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/extern/task/task.py:
+	  Also handle error() log calls.
+
+2011-08-07  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/program/cdparanoia.py:
 	  Make sure exceptions don't prevent the task from chaining up
 	  to the parent stop() implementation, giving the runner a chance

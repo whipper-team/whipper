@@ -24,8 +24,6 @@ import sys
 
 import gobject
 
-from morituri.common import log
-
 class TaskException(Exception):
     """
     I wrap an exception that happened during task execution.
@@ -80,6 +78,9 @@ class Task(object):
     def log(self, message, *args):
         pass
 
+    def error(self, message, *args):
+        pass
+
     ### subclass methods
     def start(self, runner):
         """
@@ -106,6 +107,8 @@ class Task(object):
         Also resets the runner on the task.
 
         Subclasses should chain up to me at the end.
+        It is important that they do so in all cases, even when
+        they ran into an exception of their own.
 
         Listeners will get notified that the task is stopped,
         whether successfully or with an exception.
