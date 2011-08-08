@@ -54,7 +54,6 @@ def _getExceptionMessage(exception, frame=-1, filename=None):
     else:
         (filename, line, func, text) = ('no stack', 0, 'none', '')
 
-    filename = scrubFilename(filename)
     exc = exception.__class__.__name__
     msg = ""
     # a shortcut to extract a useful message out of most exceptions
