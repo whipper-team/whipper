@@ -36,6 +36,36 @@ class TaskException(Exception):
         self.exceptionMessage = message
         self.args = (exception, message, )
 
+# lifted from flumotion log module
+def _getExceptionMessage(exception, frame=-1, filename=None):
+    """
+    Return a short message based on an exception, useful for debugging.
+    Tries to find where the exception was triggered.
+    """
+    import traceback
+
+    stack = traceback.extract_tb(sys.exc_info()[2])
+    if filename:
+        stack = [f for f in stack if f[0].find(filename) > -1]
+
+    # badly raised exceptions can come without a stack
+    if stack:
+        (filename, line, func, text) = stack[frame]
+    else:
+        (filename, line, func, text) = ('no stack', 0, 'none', '')
+
+    filename = scrubFilename(filename)
+    exc = exception.__class__.__name__
+    msg = ""
+    # a shortcut to extract a useful message out of most exceptions
+    # for now
+    if str(exception):
+        msg = ": %s" % str(exception)
+    return "exception %(exc)s at %(filename)s:%(line)s: %(func)s()%(msg)s" \
+        % locals()
+
+
+
 class Task(object):
     """
     I wrap a task in an asynchronous interface.
@@ -170,7 +200,7 @@ class Task(object):
         import traceback
 
         self.exception = exception
-        self.exceptionMessage = log.getExceptionMessage(exception)
+        self.exceptionMessage = _getExceptionMessage(exception)
         self.exceptionTraceback = traceback.format_exc()
         self.debug('set exception, %r, %r' % (
             exception, self.exceptionMessage))
