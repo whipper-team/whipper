@@ -62,7 +62,7 @@ release
     moap doap -v $VERSION mail -f thomas${AT}apestaart.org thomas${AT}apestaart.org
   - wait for it and read it
   - then for real:
-    moap doap -v $VERSION mail -f thomas${AT}apestaart.org cdrdao-devel${AT}@lists.sourceforge.net teuf@gnome.org morituri${AT}packages.debian.org
+    moap doap -v $VERSION mail -f thomas${AT}apestaart.org cdrdao-devel${AT}lists.sourceforge.net teuf${AT}gnome.org morituri${AT}packages.debian.org
 - announce on hydrogenaudio:
   http://www.hydrogenaudio.org/forums/index.php?showforum=22
 - tweet it
