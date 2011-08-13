@@ -1,5 +1,10 @@
 2011-08-13  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/rip/cd.py:
+	  Make sure we definitely fail on failed checksum.
+
+2011-08-13  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* doc/release:
 	  Add note on actually running.
 	* morituri/common/program.py:
