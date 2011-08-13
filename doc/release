@@ -10,6 +10,9 @@ pre-release checklist
   rip -h
 - Verify that all buildbots are green:
   http://build.fluendo.com:8120/grid
+- Verify the program runs:
+  - normal run
+  - --unknown run
 - add new milestone to trac and make it the default
 - verify with ticket query that all fixed tickets for this milestone are
   correct:

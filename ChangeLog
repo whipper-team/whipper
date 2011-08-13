@@ -1,3 +1,10 @@
+2011-08-13  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* doc/release:
+	  Add note on actually running.
+	* morituri/common/program.py:
+	  Fix when running rip cd rip --unknown
+
 2011-08-07  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/extern/task/task.py:

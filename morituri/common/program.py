@@ -410,7 +410,7 @@ class Program(log.Loggable):
 
         # gst-python 0.10.15.1 does not handle unicode -> utf8 string conversion
         # see http://bugzilla.gnome.org/show_bug.cgi?id=584445
-        if self.metadata.various:
+        if self.metadata and self.metadata.various:
             ret["album-artist"] = albumArtist.encode('utf-8')
         ret[gst.TAG_ARTIST] = trackArtist.encode('utf-8')
         ret[gst.TAG_TITLE] = title.encode('utf-8')
