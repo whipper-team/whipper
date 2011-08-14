@@ -26,6 +26,7 @@ Common functionality and class for all programs using morituri.
 
 import os
 import urlparse
+import time
 
 from morituri.common import common, log
 from morituri.result import result
@@ -40,6 +41,7 @@ class MusicBrainzException(Exception):
 class TrackMetadata(object):
     artist = None
     title = None
+    duration = None # in ms
 
 class DiscMetadata(object):
     """
@@ -90,8 +92,12 @@ def getMetadata(release):
     metadata.mbidArtist = urlparse.urlparse(release.artist.id)[2].split("/")[-1]
 
 
+    duration = 0
+
     for t in release.tracks:
         track = TrackMetadata()
+        track.duration = t.duration
+        duration += t.duration
         if isSingleArtist or t.artist == None:
             track.artist = metadata.artist
             track.sortName = metadata.sortName
@@ -105,6 +111,8 @@ def getMetadata(release):
         track.title = t.title
         track.mbid = urlparse.urlparse(t.id)[2].split("/")[-1]
         metadata.tracks.append(track)
+
+    metadata.duration = duration
 
     return metadata
 
@@ -159,7 +167,9 @@ def musicbrainz(discid):
 
         md = getMetadata(release)
         if md:
+            log.debug('program', 'duration %r', md.duration)
             ret.append(md)
+
 
     return ret
 
@@ -345,18 +355,54 @@ class Program(log.Loggable):
         ret = None
 
         metadatas = None
-        try:
-            metadatas = musicbrainz(mbdiscid)
-        except MusicBrainzException, e:
+        for i in range(0, 4):
+            try:
+                metadatas = musicbrainz(mbdiscid)
+            except MusicBrainzException, e:
+                print "Warning:", e
+                time.sleep(5)
+                continue
+
+        if not metadatas:
             print "Error:", e
             print 'Continuing without metadata'
 
         if metadatas:
+            print 'Disc duration: %s' % common.formatTime(
+                ittoc.duration() / 1000.0)
+            print
             print 'Matching releases:'
+            deltas = {}
             for metadata in metadatas:
 
                 print 'Artist  : %s' % metadata.artist.encode('utf-8')
                 print 'Title   : %s' % metadata.title.encode('utf-8')
+                print 'Duration: %s' % common.formatTime(
+                    metadata.duration / 1000.0)
+
+                delta = abs(metadata.duration - ittoc.duration())
+                if not delta in deltas:
+                    deltas[delta] = []
+                deltas[delta].append(metadata)
+
+            # Select the release that most closely matches the duration.
+            lowest = min(deltas.keys())
+
+            # If we have multiple, make sure they match
+            metadatas = deltas[lowest]
+            if len(metadatas) > 1:
+                artist = metadatas[0].artist
+                title = metadatas[0].title
+                for metadata in metadatas:
+                    assert artist == metadata.artist
+                    assert title == metadata.title
+
+                if (len(deltas.keys()) > 1):
+                    print
+                    print 'Picked closest match in duration.'
+                    print 'Others may be wrong in musicbrainz, please correct.'
+                    print 'Artist : %s' % artist
+                    print 'Title :  %s' % title
 
             # Select one of the returned releases. We just pick the first one.
             ret = metadatas[0]

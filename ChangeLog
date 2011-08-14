@@ -1,3 +1,22 @@
+2011-08-14  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/test/release.c7d919f4-3ea0-4c4b-a230-b3605f069440.xml:
+	  Add release data for Bettie Serveert, Lamprey
+	* morituri/test/test_common_program.py:
+	  Add a test for parsing and getting the whole duration.
+	* morituri/common/common.py:
+	  Add a method to format time.
+	* morituri/common/program.py:
+	  Add duration to tracks and release metadatas.
+	  When there are multiple matches, look up the closest in duration.
+	  Make sure that multiple matches closest in duration contain same
+	  artist and title.
+	  Complain about the other ones.
+	* morituri/image/table.py:
+	  Add a method to calculate a duration from the table.
+	* morituri/test/test_image_table.py:
+	  Add a test for it.
+
 2011-08-13  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/rip/cd.py:

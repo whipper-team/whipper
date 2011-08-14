@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- gotten from get "http://www.musicbrainz.org/ws/1/release/c7d919f4-3ea0-4c4b-a230-b3605f069440?type=xml&inc=tracks+release-events+artist"
+     -->
+<metadata xmlns="http://musicbrainz.org/ns/mmd-1.0#" >
+    <release type="Album Official" id="c7d919f4-3ea0-4c4b-a230-b3605f069440">
+        <title>Lamprey</title><text-representation script="Latn" language="ENG" />
+        <asin>B00000581T</asin>
+        <artist id="89e4aade-fc77-4a18-8d0c-3554cc9b8c54">
+            <name>Bettie Serveert</name><sort-name>Bettie Serveert</sort-name>
+        </artist>
+        <track-list>
+            <track id="a89c2320-1eae-4f2d-8b0e-6dfac4ae1451">
+                <title>Keepsake</title><duration>378693</duration>
+            </track>
+            <track id="730df656-f504-4866-b5d0-c59ee01524a3">
+                <title>Ray Ray Rain</title><duration>262106</duration>
+            </track>
+            <track id="62ff731e-3cec-4f7c-a614-72adb062fd6c">
+                <title>D. Feathers</title><duration>332626</duration>
+            </track>
+            <track id="e2702c6e-1dae-4a5d-ab16-aed1be105f94">
+                <title>Re-Feel-It</title><duration>238240</duration>
+            </track>
+            <track id="8bc5865e-6286-4cf2-83c8-94061cf4e25f">
+                <title>21 Days</title><duration>203826</duration>
+            </track>
+            <track id="484f7bc6-51bd-44dd-bac6-b8218602d3f0">
+                <title>Cybor*D</title><duration>241800</duration>
+            </track>
+            <track id="e0f2ce29-392e-499d-8ff9-f573e01fb3dc">
+                <title>Tell Me, Sad</title><duration>318333</duration>
+            </track>
+            <track id="a6d4d047-fef8-41f8-88c0-ed077de875a8">
+                <title>Crutches</title><duration>292373</duration>
+            </track>
+            <track id="8a05d376-b09f-4f92-b0d4-10cf177df0f3">
+                <title>Something So Wild</title><duration>171466</duration>
+            </track>
+            <track id="8b3402bd-aa83-4c01-961b-8fd01cf47228">
+                <title>Totally Freaked Out</title><duration>250893</duration>
+            </track>
+            <track id="b5628295-f5be-438e-ae89-6213666fd552">
+                <title>Silent Spring</title><duration>272533</duration>
+            </track>
+        </track-list>
+        <release-event-list>
+            <event country="US" format="CD" date="1995-04-16" barcode="075679250421" catalog-number="OLE-121-2" />
+        </release-event-list>
+    </release>
+</metadata>

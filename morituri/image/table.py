@@ -427,6 +427,14 @@ class Table(object, log.Loggable):
         return urlparse.urlunparse((
             'http', host, '/bare/cdlookup.html', '', query, ''))
 
+    def duration(self):
+        """
+        Get an estimate of the duration in ms.
+        """
+        values = self._getMusicBrainzValues()
+        leadout = values[2]
+        first = values[3]
+        return ((leadout - first) * 1000) / common.FRAMES_PER_SECOND
 
     def _getMusicBrainzValues(self):
         """

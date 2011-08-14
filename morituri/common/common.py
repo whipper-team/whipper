@@ -67,6 +67,46 @@ def framesToHMSF(frames):
 
     return "%02d:%02d:%02d.%02d" % (h, m, s, f)
 
+def formatTime(seconds, fractional=3):
+    """
+    Nicely format time in a human-readable format, like
+    HH:MM:SS.mmm
+
+    If fractional is zero, no seconds will be shown.
+    If it is greater than 0, we will show seconds and fractions of seconds.
+    As a side consequence, there is no way to show seconds without fractions.
+
+    @param seconds:    the time in seconds to format.
+    @type  seconds:    int or float
+    @param fractional: how many digits to show for the fractional part of
+                       seconds.
+    @type  fractional: int
+
+    @rtype: string
+    @returns: a nicely formatted time string.
+    """
+    chunks = []
+
+    if seconds < 0:
+        chunks.append(('-'))
+        seconds = -seconds
+
+    hour = 60 * 60
+    hours = seconds / hour
+    seconds %= hour
+
+    minute = 60
+    minutes = seconds / minute
+    seconds %= minute
+
+    chunk = '%02d:%02d' % (hours, minutes)
+    if fractional > 0:
+        chunk += ':%0*.*f' % (fractional + 3, fractional, seconds)
+
+    chunks.append(chunk)
+
+    return " ".join(chunks)
+
 class Persister(object):
     """
     I wrap an optional pickle to persist an object to disk.

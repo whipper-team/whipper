@@ -52,6 +52,9 @@ class LadyhawkeTestCase(tcommon.TestCase):
         self.assertEquals(self.table.getAccurateRipURL(),
         "http://www.accuraterip.com/accuraterip/a/5/d/dBAR-012-0013bd5a-00b8d489-c60af50d.bin")
 
+    def testDuration(self):
+        self.assertEquals(self.table.duration(), 2609413)
+
 class MusicBrainzTestCase(tcommon.TestCase):
     # example taken from http://musicbrainz.org/doc/DiscIDCalculation
     # disc is Ettella Diamant

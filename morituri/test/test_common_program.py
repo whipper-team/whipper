@@ -110,3 +110,17 @@ class PathTestCase(unittest.TestCase):
         self.assertEquals(path,
             u'/tmp/Jeff Buckley/Grace')
   
+class MetadataLengthTestCase(unittest.TestCase):
+    def testLamprey(self):
+        from musicbrainz2 import wsxml
+
+        path = os.path.join(os.path.dirname(__file__),
+            'release.c7d919f4-3ea0-4c4b-a230-b3605f069440.xml')
+        handle = open(path, "rb")
+
+        reader = wsxml.MbXmlParser()
+        wsMetadata = reader.parse(handle)
+        release = wsMetadata.getRelease()
+        metadata = progam.getMetadata(release)
+
+        self.assertEquals(metadata.duration, 2962889)
