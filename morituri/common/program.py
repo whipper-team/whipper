@@ -355,6 +355,8 @@ class Program(log.Loggable):
         ret = None
 
         metadatas = None
+        e = None
+
         for _ in range(0, 4):
             try:
                 metadatas = musicbrainz(mbdiscid)
@@ -364,7 +366,8 @@ class Program(log.Loggable):
                 continue
 
         if not metadatas:
-            print "Error:", e
+            if e:
+                print "Error:", e
             print 'Continuing without metadata'
 
         if metadatas:

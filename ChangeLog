@@ -1,6 +1,11 @@
 2011-08-14  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/program.py:
+	  Don't fail if there is no metadata.
+
+2011-08-14  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/program.py:
 	* morituri/rip/debug.py:
 	  Pychecker fixes.
 
