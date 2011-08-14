@@ -1,5 +1,11 @@
 2011-08-14  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/program.py:
+	* morituri/rip/debug.py:
+	  Pychecker fixes.
+
+2011-08-14  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* TODO:
 	  Add a note about das capital disc.
 	* morituri/test/release.08397059-86c1-463b-8ed0-cd596dbd174f.xml:

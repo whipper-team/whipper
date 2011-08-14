@@ -28,10 +28,6 @@ class Checksum(logcommand.LogCommand):
 
     summary = "run a checksum task"
 
-    def addOptions(self):
-        # here to avoid import gst eating our options
-        from morituri.common import checksum
-
     def do(self, args):
         try:
             fromPath = unicode(args[0])
@@ -41,6 +37,7 @@ class Checksum(logcommand.LogCommand):
 
         runner = task.SyncRunner()
 
+        # here to avoid import gst eating our options
         from morituri.common import checksum
         checksumtask = checksum.CRC32Task(fromPath)
 

@@ -355,7 +355,7 @@ class Program(log.Loggable):
         ret = None
 
         metadatas = None
-        for i in range(0, 4):
+        for _ in range(0, 4):
             try:
                 metadatas = musicbrainz(mbdiscid)
             except MusicBrainzException, e:
