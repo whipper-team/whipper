@@ -146,6 +146,8 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
         mbdiscid = ittoc.getMusicBrainzDiscId()
         print "MusicBrainz disc id", mbdiscid
 
+        print "MusicBrainz lookup URL", ittoc.getMusicBrainzSubmitURL()
+
         prog.metadata = prog.getMusicBrainz(ittoc, mbdiscid)
 
         if not prog.metadata:

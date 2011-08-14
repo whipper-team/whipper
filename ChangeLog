@@ -1,5 +1,11 @@
 2011-08-14  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/program.py:
+	* morituri/rip/cd.py:
+	  Always print MusicBrainz URL.
+
+2011-08-14  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/test/release.c7d919f4-3ea0-4c4b-a230-b3605f069440.xml:
 	  Add release data for Bettie Serveert, Lamprey
 	* morituri/test/test_common_program.py:

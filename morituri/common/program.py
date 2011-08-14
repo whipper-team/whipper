@@ -407,8 +407,7 @@ class Program(log.Loggable):
             # Select one of the returned releases. We just pick the first one.
             ret = metadatas[0]
         else:
-            print 'Submit this disc to MusicBrainz at:'
-            print ittoc.getMusicBrainzSubmitURL()
+            print 'Submit this disc to MusicBrainz at the above URL.'
             ret = None
 
         print
