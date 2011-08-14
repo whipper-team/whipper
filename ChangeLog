@@ -1,5 +1,22 @@
 2011-08-14  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* TODO:
+	  Add a note about das capital disc.
+	* morituri/test/release.08397059-86c1-463b-8ed0-cd596dbd174f.xml:
+	* morituri/test/release.93a6268c-ddf1-4898-bf93-fb862b1c5c5e.xml:
+	  Add musicbrainz ws1 results for Das Capital and Ladyhawke.
+	* morituri/test/test_common_program.py:
+	  Fix typos.
+	  Add tests for Ladyhawke and Das Capital duration and parsing.
+	* morituri/test/test_image_table.py:
+	  Fix according to new algorithm.
+	* morituri/test/test_image_toc.py:
+	  Get frame length for both cd's.
+	* morituri/image/table.py:
+	  Add getFrameLength method.  Fix up duration.
+
+2011-08-14  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/program.py:
 	* morituri/rip/cd.py:
 	  Always print MusicBrainz URL.

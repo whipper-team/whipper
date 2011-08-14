@@ -180,6 +180,15 @@ class LadyhawkeTestCase(common.TestCase):
         # c60af50d 13 150 15687 31841 51016 66616 81352 99559 116070 133243
         # 149997 161710 177832 207256 2807
 
+    def testMusicBrainz(self):
+        # URL to submit: http://mm.musicbrainz.org/bare/cdlookup.html?toc=1+11+197850+24320+44855+64090+77885+88095+104020+118245+129255+141765+164487+181780&tracks=11&id=MAj3xXf6QMy7G.BIFOyHyq4MySE-
+        self.assertEquals(self.toc.table.getMusicBrainzDiscId(),
+            "KnpGsLhvH.lPrNc1PBL21lb9Bg4-")
+
+    # FIXME: I don't trust this toc, but I can't find the CD anymore
+    def testDuration(self):
+        self.assertEquals(self.toc.table.duration(), 2761413)
+
 class CapitalMergeTestCase(common.TestCase):
     def setUp(self):
         self.toc1 = toc.TocFile(os.path.join(os.path.dirname(__file__),
@@ -208,6 +217,13 @@ class CapitalMergeTestCase(common.TestCase):
         # URL to submit: http://mm.musicbrainz.org/bare/cdlookup.html?toc=1+11+197850+24320+44855+64090+77885+88095+104020+118245+129255+141765+164487+181780&tracks=11&id=MAj3xXf6QMy7G.BIFOyHyq4MySE-
         self.assertEquals(self.table.getMusicBrainzDiscId(),
             "MAj3xXf6QMy7G.BIFOyHyq4MySE-")
+
+    def testDuration(self):
+        # this matches track 11 end sector - track 1 start sector on musicbrainz
+        # compare to 3rd and 4th value in URL above
+        self.assertEquals(self.table.getFrameLength(), 173530)
+        self.assertEquals(self.table.duration(), 2313733)
+
 
 class UnicodeTestCase(common.TestCase, common.UnicodeTestMixin):
     def setUp(self):

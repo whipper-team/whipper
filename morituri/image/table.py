@@ -297,7 +297,7 @@ class Table(object, log.Loggable):
          - CDDB disc id
          - number of audio tracks
          - offset of index 1 of each track
-         - length of disc in seconds
+         - length of disc in seconds (including data track)
 
         @rtype:   list of int
         """
@@ -323,14 +323,22 @@ class Table(object, log.Loggable):
             seconds = offset / common.FRAMES_PER_SECOND
             n += self._cddbSum(seconds)
 
-        last = self.tracks[-1]
         # the 'real' leadout, not offset by 150 frames
         # print 'THOMAS: disc leadout', self.leadout
+        last = self.tracks[-1]
         leadout = self.getTrackEnd(last.number) + 1
         self.debug('leadout LBA: %d', leadout)
+
+        # FIXME: we can't replace these calculations with the getFrameLength
+        # call because the start and leadout in the algorithm get rounded
+        # before making the difference
         startSeconds = self.getTrackStart(1) / common.FRAMES_PER_SECOND
         leadoutSeconds = leadout / common.FRAMES_PER_SECOND
         t = leadoutSeconds - startSeconds
+        # durationFrames = self.getFrameLength(data=True)
+        # duration = durationFrames / common.FRAMES_PER_SECOND
+        # assert t == duration, "%r != %r" % (t, duration)
+
         debug.append(str(leadoutSeconds + 2)) # 2 is the 150 frame cddb offset
         result.append(leadoutSeconds)
 
@@ -427,14 +435,29 @@ class Table(object, log.Loggable):
         return urlparse.urlunparse((
             'http', host, '/bare/cdlookup.html', '', query, ''))
 
+    def getFrameLength(self, data=False):
+        """
+        Get the length in frames (excluding HTOA)
+
+        @param data: whether to include the data tracks in the length
+        """
+        # the 'real' leadout, not offset by 150 frames
+        if data:
+            last = self.tracks[-1]
+        else:
+            last = self.tracks[self.getAudioTracks() - 1]
+
+        leadout = self.getTrackEnd(last.number) + 1
+        self.debug('leadout LBA: %d', leadout)
+        durationFrames = leadout - self.getTrackStart(1)
+
+        return durationFrames
+
     def duration(self):
         """
-        Get an estimate of the duration in ms.
+        Get the duration in ms for all audio tracks (excluding HTOA).
         """
-        values = self._getMusicBrainzValues()
-        leadout = values[2]
-        first = values[3]
-        return ((leadout - first) * 1000) / common.FRAMES_PER_SECOND
+        return int(self.getFrameLength() * 1000.0 / common.FRAMES_PER_SECOND)
 
     def _getMusicBrainzValues(self):
         """

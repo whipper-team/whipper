@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xmlns="http://musicbrainz.org/ns/mmd-1.0#" >
+    <release type="Album Official" id="93a6268c-ddf1-4898-bf93-fb862b1c5c5e">
+        <title>Ladyhawke</title><text-representation script="Latn" language="ENG" />
+        <artist id="2e547c75-36c1-49d0-984e-b14498c936f0">
+            <name>Ladyhawke</name><sort-name>Ladyhawke</sort-name>
+        </artist>
+        <track-list>
+            <track id="ad89d86b-f5c7-47f2-a97a-f2e91a05129a">
+                <title>Magic</title><duration>207000</duration>
+            </track>
+            <track id="05b6718a-eab1-424a-a403-54ff1ef2300f">
+                <title>Manipulating Woman</title><duration>215000</duration>
+            </track>
+            <track id="fc7c9e1e-c68f-41c7-a545-9bcd6b798e1e">
+                <title>My Delirium</title><duration>255000</duration>
+            </track>
+            <track id="2c64b152-63ad-4c91-af62-14a1633ae346">
+                <title>Better Than Sunday</title><duration>208000</duration>
+            </track>
+            <track id="2d85d4e3-8dc4-40e7-b8c7-b44c92d71c47">
+                <title>Another Runaway</title><duration>196000</duration>
+            </track>
+            <track id="a0f8fba5-7c49-43c8-8e52-1834aaa09604">
+                <title>Love Don't Live Here</title><duration>242000</duration>
+            </track>
+            <track id="7cf5b2b6-b39d-4357-8fba-210189f656c2">
+                <title>Back of the Van</title><duration>220000</duration>
+            </track>
+            <track id="0830bd0d-5ffe-40e4-93b3-c125eeff36a0">
+                <title>Paris Is Burning</title><duration>229000</duration>
+            </track>
+            <track id="b7b99255-f4ed-4602-96d0-0de712f37cc7">
+                <title>Professional Suicide</title><duration>223000</duration>
+            </track>
+            <track id="3b5d71ca-bd52-4204-bd82-7ae098f96e58">
+                <title>Dusk Till Dawn</title><duration>156000</duration>
+            </track>
+            <track id="1a2ab650-7084-4b2b-85bd-6d6a91593084">
+                <title>Crazy World</title><duration>215000</duration>
+            </track>
+            <track id="070a3ce4-5cdb-4a99-8b1c-675c02eaf236">
+                <title>Morning Dreams</title><duration>240000</duration>
+            </track>
+        </track-list>
+        <release-event-list>
+            <event country="AU" format="CD" date="2008-09-20" barcode="00602517801974" catalog-number="MODCD093" />
+        </release-event-list>
+    </release>
+</metadata>

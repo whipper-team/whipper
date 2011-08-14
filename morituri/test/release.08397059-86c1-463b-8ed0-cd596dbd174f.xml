@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- gotten from http://www.musicbrainz.org/ws/1/release/08397059-86c1-463b-8ed0-cd596dbd174f?type=xml&inc=tracks+release-events+artist -->
+<metadata xmlns="http://musicbrainz.org/ns/mmd-1.0#" >
+    <release type="Album Official" id="08397059-86c1-463b-8ed0-cd596dbd174f">
+        <title>Das Capital: The Songwriting Genius of Luke Haines and The Auteurs</title><text-representation script="Latn" language="ENG" />
+        <asin>B00009XG2O</asin>
+        <artist id="08bca401-88d5-4de7-b9c3-560a2e4c1abc">
+            <name>Luke Haines</name><sort-name>Haines, Luke</sort-name>
+        </artist>
+        <track-list>
+            <track id="38afa7d3-ddc4-4c19-a54b-1de33657417e">
+                <title>How Could I Be Wrong</title><duration>273800</duration>
+            </track>
+            <track id="811fb30e-5d6d-4a03-b2c7-989032039317">
+                <title>Showgirl</title><duration>256466</duration>
+            </track>
+            <track id="40a5b530-c65b-4ca0-9cfa-79f4f9075d38">
+                <title>Baader Meinhof</title><duration>183933</duration>
+            </track>
+            <track id="939ca81e-d633-47ad-a662-08705a4c8ff9">
+                <title>Lenny Valentino</title><duration>136133</duration>
+            </track>
+            <track id="fe713beb-362c-4fac-91a8-f212fd5e59a7">
+                <title>Starstruck</title><duration>212333</duration>
+            </track>
+            <track id="52f15292-2a52-41a7-a46d-fa84321c26a2">
+                <title>Satan Wants Me</title><duration>189666</duration>
+            </track>
+            <track id="9fd3460a-34c3-488c-82b4-9c95c6b8278d">
+                <title>Unsolved Child Murder</title><duration>146800</duration>
+            </track>
+            <track id="ab3aa8d7-309d-45b4-8533-2f779e3952c1">
+                <title>Junk Shop Clothes</title><duration>166800</duration>
+            </track>
+            <track id="12fed492-5e10-4959-af15-ddf5379e5850">
+                <title>The Mitford Sisters</title><duration>302960</duration>
+            </track>
+            <track id="8c773366-373d-432b-b287-8357d77958d5">
+                <title>Bugger Bognor</title><duration>230573</duration>
+            </track>
+            <track id="48c92b0a-3b99-4662-99b9-21649c33f3ef">
+                <title>Future Generation</title><duration>216266</duration>
+            </track>
+        </track-list>
+        <release-event-list>
+            <event country="GB" format="CD" date="2003-07-21" barcode="724359051727" catalog-number="CDHUT 81" />
+        </release-event-list>
+    </release>
+</metadata>

@@ -35,3 +35,11 @@ TODO:
 - use a temp dir, until the whole rip is good don't move it, so we easily find
   half done rips
 - primal scream, track 5, it rips/checks/rips/checks/encodes/checks and then complains read and verify failed.  why did it encode ?
+- Musicbrainz disc id error:
+  Compare http://www.musicbrainz.org/cdtoc/MAj3xXf6QMy7G.BIFOyHyq4MySE-
+  with http://www.musicbrainz.org/cdtoc/USC1utCZbTLZy80aHvQzJw4FASk-
+  Almost same, but second is 2 seconds longer on last track, suggesting it
+  was calculated wrong (150 frame offset done wrong ?) Can't find it in
+  edit history though
+  Write an example document with this cd as an example explaining offsets
+  and id calculations

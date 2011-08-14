@@ -53,7 +53,7 @@ class LadyhawkeTestCase(tcommon.TestCase):
         "http://www.accuraterip.com/accuraterip/a/5/d/dBAR-012-0013bd5a-00b8d489-c60af50d.bin")
 
     def testDuration(self):
-        self.assertEquals(self.table.duration(), 2609413)
+        self.assertEquals(self.table.duration(), 2761413)
 
 class MusicBrainzTestCase(tcommon.TestCase):
     # example taken from http://musicbrainz.org/doc/DiscIDCalculation
