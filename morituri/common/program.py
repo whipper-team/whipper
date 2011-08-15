@@ -90,6 +90,7 @@ def getMetadata(release):
 
     metadata.mbid = urlparse.urlparse(release.id)[2].split("/")[-1]
     metadata.mbidArtist = urlparse.urlparse(release.artist.id)[2].split("/")[-1]
+    metadata.url = release.getId()
 
 
     duration = 0
@@ -350,6 +351,8 @@ class Program(log.Loggable):
 
     def getMusicBrainz(self, ittoc, mbdiscid):
         # look up disc on musicbrainz
+        print 'Disc duration: %s' % common.formatTime(
+            ittoc.duration() / 1000.0)
         self.debug('MusicBrainz submit url: %r', 
             ittoc.getMusicBrainzSubmitURL())
         ret = None
@@ -371,8 +374,6 @@ class Program(log.Loggable):
             print 'Continuing without metadata'
 
         if metadatas:
-            print 'Disc duration: %s' % common.formatTime(
-                ittoc.duration() / 1000.0)
             print
             print 'Matching releases:'
             deltas = {}
@@ -382,6 +383,7 @@ class Program(log.Loggable):
                 print 'Title   : %s' % metadata.title.encode('utf-8')
                 print 'Duration: %s' % common.formatTime(
                     metadata.duration / 1000.0)
+                print 'URL     : %s' % metadata.url
 
                 delta = abs(metadata.duration - ittoc.duration())
                 if not delta in deltas:
