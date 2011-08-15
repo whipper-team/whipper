@@ -236,7 +236,7 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
                 else:
                     print 'ERROR: checksums did not match for track %d' % (
                         number)
-                    return
+                    raise
 
                 print 'Peak level: %.2f %%' % (math.sqrt(trackResult.peak) * 100.0, )
                 print 'Rip quality: %.2f %%' % (trackResult.quality * 100.0, )
