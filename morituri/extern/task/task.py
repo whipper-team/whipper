@@ -148,6 +148,7 @@ class Task(object):
             print 'ERROR: stopping task which is already stopped'
             import traceback; traceback.print_stack()
         self.runner = None
+        self.debug('reset runner to None')
         self._notifyListeners('stopped')
 
     ### base class methods
@@ -205,6 +206,10 @@ class Task(object):
             exception, self.exceptionMessage))
 
     def schedule(self, delta, callable, *args, **kwargs):
+        if not self.runner:
+            print "ERROR: scheduling on a task that's altready stopped"
+            import traceback; traceback.print_stack()
+            return
         self.runner.schedule(self, delta, callable, *args, **kwargs)
 
 
@@ -511,6 +516,8 @@ class SyncRunner(TaskRunner, ITaskListener):
     def schedule(self, task, delta, callable, *args, **kwargs):
         def c():
             try:
+                self.log('schedule: calling %r(*args=%r, **kwargs=%r)',
+                    callable, args, kwargs)
                 callable(*args, **kwargs)
                 return False
             except Exception, e:
@@ -519,6 +526,9 @@ class SyncRunner(TaskRunner, ITaskListener):
                 task.setException(e)
                 self.stopped(task)
                 raise
+        self.log('schedule: scheduling %r(*args=%r, **kwargs=%r)',
+            callable, args, kwargs)
+
         gobject.timeout_add(int(delta * 1000L), c)
 
     ### ITaskListener methods

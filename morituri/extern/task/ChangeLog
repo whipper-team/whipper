@@ -1,3 +1,11 @@
+2011-08-15  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* task.py:
+	  Better logging when scheduling.
+	* gstreamer.py:
+	  If paused() returns True, don't go to playing.
+	  add a method for querying duration in the common case.
+
 2011-08-08  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* task.py:

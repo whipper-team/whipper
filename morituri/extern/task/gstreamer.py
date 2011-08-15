@@ -96,12 +96,18 @@ class GstPipelineTask(task.Task):
         ret = self.pipeline.get_state()
         self.debug('got pipeline to PAUSED: %r', ret)
 
+        # GStreamer tasks could already be done in paused, and not
+        # need playing.
         if not self.exception:
-            self.paused()
+            done = self.paused()
         else:
             raise self.exception
 
-        self.play()
+        if done:
+            self.debug('paused() is done')
+        else:
+            self.debug('paused() wants more')
+            self.play()
 
     def play(self):
         # since set_state returns non-False, adding it as timeout_add
@@ -121,11 +127,12 @@ class GstPipelineTask(task.Task):
             return False
 
         if self.playing:
-            self.debug('scheduling setting pipeline to PLAYING')
+            self.debug('schedule playLater()')
             self.schedule(0, playLater)
 
     def stop(self):
         self.debug('stopping')
+
 
         # FIXME: in theory this should help clean up properly,
         # but in practice we can still get
@@ -167,7 +174,10 @@ class GstPipelineTask(task.Task):
 
     def paused(self):
         """
-        Called after pipeline is paused
+        Called after pipeline is paused.
+
+        If this returns True, the task is done and
+        should not continue going to PLAYING.
         """
         pass
 
@@ -202,3 +212,29 @@ class GstPipelineTask(task.Task):
         self.setAndRaiseException(exc)
         self.debug('error, scheduling stop')
         self.schedule(0, self.stop)
+
+    def query_length(self, element):
+        """
+        Query the length of the pipeline in samples, for progress updates.
+        To be called from paused()
+        """
+        # get duration
+        self.debug('query duration')
+        try:
+            duration, qformat = element.query_duration(self.gst.FORMAT_DEFAULT)
+        except self.gst.QueryError, e:
+            self.setException(e)
+            # schedule it, otherwise runner can get set to None before
+            # we're done starting
+            self.schedule(0, self.stop)
+            return
+
+        # wavparse 0.10.14 returns in bytes
+        if qformat == self.gst.FORMAT_BYTES:
+            self.debug('query returned in BYTES format')
+            duration /= 4
+        self.debug('total duration: %r', duration)
+
+        return duration
+
+
