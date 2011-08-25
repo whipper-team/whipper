@@ -50,7 +50,7 @@ class GstPipelineTask(task.Task):
 
     @cvar gst:      the GStreamer module, so code does not have to import gst
                     as a module in code everywhere to avoid option stealing.
-    @var  playing:  whether the pipeline should be set to playing after
+    @cvar playing:  whether the pipeline should be set to playing after
                     paused.  Some pipelines don't need to play for a task
                     to be done (for example, querying length)
     @type playing:  bool
