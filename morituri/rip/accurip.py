@@ -85,7 +85,7 @@ class Show(logcommand.LogCommand):
 
 
 class AccuRip(logcommand.LogCommand):
-    summary = "handle AccurateRip information"
+    description = "Handle AccurateRip information."
 
     subCommandClasses = [Show, ]
 
