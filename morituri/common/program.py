@@ -92,13 +92,12 @@ def getMetadata(release):
     metadata.mbidArtist = urlparse.urlparse(release.artist.id)[2].split("/")[-1]
     metadata.url = release.getId()
 
-
+    tainted = False
     duration = 0
 
     for t in release.tracks:
         track = TrackMetadata()
-        track.duration = t.duration
-        duration += t.duration
+
         if isSingleArtist or t.artist == None:
             track.artist = metadata.artist
             track.sortName = metadata.sortName
@@ -111,9 +110,22 @@ def getMetadata(release):
 
         track.title = t.title
         track.mbid = urlparse.urlparse(t.id)[2].split("/")[-1]
+
+        track.duration = t.duration
+        if not track.duration:
+            log.warning('getMetadata',
+                'track %r (%r) does not have duration' % (
+                    track.title, track.mbid))
+            tainted = True
+        else:
+            duration += t.duration
+
         metadata.tracks.append(track)
 
-    metadata.duration = duration
+    if not tainted:
+        metadata.duration = duration
+    else:
+        metadata.duration = 0
 
     return metadata
 
