@@ -40,8 +40,9 @@ def removeAudioParsers():
         log.debug('gstreamer', 'Found audioparsers plugin from %s %s',
             plugin.get_source(), plugin.get_version())
 
+        # was fixed after 0.10.30 and before 0.10.31
         if plugin.get_source() == 'gst-plugins-good' \
-            and plugin.get_version() > '0.10.29.1':
+            and plugin.get_version() > '0.10.30.1':
             return
 
         registry.remove_plugin(plugin)
