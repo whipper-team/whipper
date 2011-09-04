@@ -136,6 +136,7 @@ class MetadataLengthTestCase(unittest.TestCase):
         wsMetadata = reader.parse(handle)
         release = wsMetadata.getRelease()
         metadata = program.getMetadata(release)
+        self.failUnless(metadata)
 
         # self.assertEquals(metadata.duration, 2609413)
 
