@@ -42,6 +42,9 @@ class TrackMetadata(object):
     artist = None
     title = None
     duration = None # in ms
+    mbid = None
+    sortName = None
+    mbidArtist = None
 
 class DiscMetadata(object):
     """
