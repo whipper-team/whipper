@@ -26,7 +26,7 @@ import math
 import gobject
 gobject.threads_init()
 
-from morituri.common import logcommand, common, accurip, log
+from morituri.common import logcommand, common, accurip
 from morituri.common import drive, program
 from morituri.result import result
 from morituri.program import cdrdao
