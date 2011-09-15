@@ -1,5 +1,10 @@
 2011-09-15  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/extern/task/gstreamer.py:
+	  Query using time if DEFAULT fails.
+
+2011-09-15  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/program.py:
 	  Add Musicbrainz command.
 

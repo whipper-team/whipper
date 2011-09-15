@@ -223,16 +223,43 @@ class GstPipelineTask(task.Task):
         try:
             duration, qformat = element.query_duration(self.gst.FORMAT_DEFAULT)
         except self.gst.QueryError, e:
-            self.setException(e)
-            # schedule it, otherwise runner can get set to None before
-            # we're done starting
-            self.schedule(0, self.stop)
-            return
+            # Fall back to time; for example, oggdemux/vorbisdec only supports
+            # TIME
+            try:
+                duration, qformat = element.query_duration(self.gst.FORMAT_TIME)
+            except self.gst.QueryError, e:
+                self.setException(e)
+                # schedule it, otherwise runner can get set to None before
+                # we're done starting
+                self.schedule(0, self.stop)
+                return
 
         # wavparse 0.10.14 returns in bytes
         if qformat == self.gst.FORMAT_BYTES:
             self.debug('query returned in BYTES format')
             duration /= 4
+
+        if qformat == self.gst.FORMAT_TIME:
+            rate = None
+            self.debug('query returned in TIME format')
+            # we need sample rate
+            pads = list(element.pads())
+            sink = element.get_by_name('sink')
+            pads += list(sink.pads())
+
+            for pad in pads:
+                caps = pad.get_negotiated_caps()
+                print caps[0].keys()
+                if 'rate' in caps[0].keys():
+                    rate = caps[0]['rate']
+                    self.debug('Sample rate: %d Hz', rate)
+
+            if not rate:
+                raise KeyError(
+                    'Cannot find sample rate, cannot convert to samples')
+
+            duration = int(float(rate) * (float(duration) / self.gst.SECOND))
+
         self.debug('total duration: %r', duration)
 
         return duration
