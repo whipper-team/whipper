@@ -133,6 +133,7 @@ def getMetadata(release):
     return metadata
 
 
+# see http://bugs.musicbrainz.org/browser/python-musicbrainz2/trunk/examples/ripper.py
 def musicbrainz(discid):
     """
     @rtype: list of L{DiscMetadata}
@@ -174,7 +175,7 @@ def musicbrainz(discid):
         # tracks.  Query the web service once again to get all data we need.
         try:
             inc = mbws.ReleaseIncludes(artist=True, tracks=True,
-                releaseEvents=True)
+                releaseEvents=True, discs=True)
             # Arid - Under the Cold Street Lights has getId() None
             if release.getId():
                 release = query.getReleaseById(release.getId(), inc)
@@ -300,7 +301,7 @@ class Program(log.Loggable):
         @type  outdir:   unicode
         @param template: the template for writing the file
         @type  template: unicode
-        @param i:        track number (0 for HTOA)
+        @param i:        track number (0 for HTOA, or for disc)
         @type  i:        int
 
         @rtype: unicode
