@@ -182,7 +182,7 @@ class ProgressParser(object):
 
 
 # FIXME: handle errors
-class ReadTrackTask(task.Task):
+class ReadTrackTask(log.Loggable, task.Task):
     """
     I am a task that reads a track using cdparanoia.
 
@@ -360,9 +360,12 @@ class ReadTrackTask(task.Task):
         self.stop()
         return
 
-class ReadVerifyTrackTask(task.MultiSeparateTask):
+class ReadVerifyTrackTask(log.Loggable, task.MultiSeparateTask):
     """
     I am a task that reads and verifies a track using cdparanoia.
+
+    The path where the file is stored can be changed if necessary, for
+    example if the file name is too long.
 
     @ivar path:         the path where the file is to be stored.
     @ivar checksum:     the checksum of the track; set if they match.
@@ -473,9 +476,12 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
                 os.chmod(self._tmppath, self.file_mode)
 
                 try:
+                    self.debug('Moving to final path %r', self.path)
                     shutil.move(self._tmppath, self.path)
                 except Exception, e:
-                    self._exception = e
+                    self.debug('Exception while moving to final path %r: %r',
+                        self.path, log.getExceptionMessage(e))
+                    self.exception = e
             else:
                 self.debug('stop: exception %r', self.exception)
         except Exception, e:
