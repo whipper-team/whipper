@@ -21,6 +21,7 @@
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import math
 import tempfile
 import shutil
 
@@ -254,3 +255,34 @@ class MissingDependencyException(Exception):
 
 class EmptyError(Exception):
     pass
+
+def shrinkPath(path):
+    """
+    Shrink a full path to a shorter version.
+    Used to handle ENAMETOOLONG
+    """
+    parts = list(os.path.split(path))
+    length = len(parts[-1])
+    target = 127
+    if length <= target:
+        target = pow(2, int(math.log(length, 2))) - 1
+
+    name, ext = os.path.splitext(parts[-1])
+    target -= len(ext) + 1
+
+    # split on space, then reassemble
+    words = name.split(' ')
+    length = 0
+    pieces = []
+    for word in words:
+        if length + 1 + len(word) <= target:
+            pieces.append(word)
+            length += 1 + len(word)
+        else:
+            break
+
+    name = " ".join(pieces)
+    # ext includes period
+    parts[-1] = u'%s%s' % (name, ext)
+    path = os.path.join(*parts)
+    return path

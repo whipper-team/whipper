@@ -21,6 +21,7 @@
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import errno
 import re
 import stat
 import shutil
@@ -478,6 +479,10 @@ class ReadVerifyTrackTask(log.Loggable, task.MultiSeparateTask):
                 try:
                     self.debug('Moving to final path %r', self.path)
                     shutil.move(self._tmppath, self.path)
+                except IOError, e:
+                    if e.errno == errno.ENAMETOOLONG:
+                        self.path = common.shrinkPath(self.path)
+                        shutil.move(self._tmppath, self.path)
                 except Exception, e:
                     self.debug('Exception while moving to final path %r: %r',
                         self.path, log.getExceptionMessage(e))

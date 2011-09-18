@@ -550,6 +550,9 @@ class Program(log.Loggable):
     def ripTrack(self, runner, trackResult, offset, device, profile, taglist,
         what=None):
         """
+        Ripping the track may change the track's filename as stored in
+        trackResult.
+
         @param trackResult: the object to store information in.
         @type  trackResult: L{result.TrackResult}
         @param number:      track number (1-based)
@@ -582,6 +585,10 @@ class Program(log.Loggable):
         trackResult.copycrc = t.copychecksum
         trackResult.peak = t.peak
         trackResult.quality = t.quality
+
+        if trackResult.filename != t.path:
+            trackResult.filename = t.path
+            self.info('Filename changed to %r', trackResult.filename)
 
     def retagImage(self, runner, taglists):
         cueImage = image.Image(self.cuePath)

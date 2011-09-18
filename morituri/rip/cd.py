@@ -244,11 +244,11 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
             # overlay this rip onto the Table
             if number == 0:
                 # HTOA goes on index 0 of track 1
-                itable.setFile(1, 0, path, ittoc.getTrackStart(1),
-                    number)
+                itable.setFile(1, 0, trackResult.filename,
+                    ittoc.getTrackStart(1), number)
             else:
-                itable.setFile(number, 1, path, ittoc.getTrackLength(number),
-                    number)
+                itable.setFile(number, 1, trackResult.filename,
+                    ittoc.getTrackLength(number), number)
 
             prog.saveRipResult()
 

@@ -1,5 +1,18 @@
 2011-09-18  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/common.py:
+	  Add shrinkPath to write shorter path names.
+	* morituri/test/test_common_common.py (added):
+	  Add test.
+	* morituri/program/cdparanoia.py:
+	  Catch ENAMETOOLONG and shrink path.
+	* morituri/common/program.py:
+	  Update track result's filename if it was shrunk.
+	* morituri/rip/cd.py:
+	  set the possibly shrunk path on the result.
+
+2011-09-18  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/program/cdparanoia.py:
 	  Log properly again.
 	  Properly set exception when we can't rename the file.
