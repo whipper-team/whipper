@@ -100,7 +100,7 @@ class Image(object, log.Loggable):
         self.debug('setup image done')
 
 
-class AccurateRipChecksumTask(task.MultiSeparateTask):
+class AccurateRipChecksumTask(log.Loggable, task.MultiSeparateTask):
     """
     I calculate the AccurateRip checksums of all tracks.
     """
@@ -135,7 +135,7 @@ class AccurateRipChecksumTask(task.MultiSeparateTask):
         self.checksums = [t.checksum for t in self.tasks]
         task.MultiSeparateTask.stop(self)
 
-class AudioLengthTask(gstreamer.GstPipelineTask):
+class AudioLengthTask(log.Loggable, gstreamer.GstPipelineTask):
     """
     I calculate the length of a track in audio frames.
 
@@ -155,6 +155,7 @@ class AudioLengthTask(gstreamer.GstPipelineTask):
         assert type(path) is unicode, "%r is not unicode" % path
 
         self._path = path
+        self.logName = os.path.basename(path)
 
     def getPipelineDesc(self):
         return '''
@@ -185,7 +186,7 @@ class AudioLengthTask(gstreamer.GstPipelineTask):
         self.pipeline.set_state(self.gst.STATE_NULL)
         self.stop()
 
-class ImageVerifyTask(task.MultiSeparateTask):
+class ImageVerifyTask(log.Loggable, task.MultiSeparateTask):
     """
     I verify a disk image and get the necessary track lengths.
     """
@@ -234,7 +235,7 @@ class ImageVerifyTask(task.MultiSeparateTask):
 
         task.MultiSeparateTask.stop(self)
 
-class ImageEncodeTask(task.MultiSeparateTask):
+class ImageEncodeTask(log.Loggable, task.MultiSeparateTask):
     """
     I encode a disk image to a different format.
     """
