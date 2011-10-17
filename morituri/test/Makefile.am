@@ -25,6 +25,9 @@ EXTRA_DIST = \
 	jose.toc \
 	dBAR-011-0010e284-009228a3-9809ff0b.bin \
 	dBAR-020-002e5023-029d8e49-040eaa14.bin \
+	release.08397059-86c1-463b-8ed0-cd596dbd174f.xml \
+	release.93a6268c-ddf1-4898-bf93-fb862b1c5c5e.xml \
+	release.c7d919f4-3ea0-4c4b-a230-b3605f069440.xml \
 	kanye.cue \
 	kings-separate.cue \
 	kings-single.cue \
