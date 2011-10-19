@@ -25,177 +25,23 @@ Common functionality and class for all programs using morituri.
 """
 
 import os
-import urlparse
 import time
 
-from morituri.common import common, log
+from morituri.common import common, log, musicbrainz
 from morituri.result import result
 from morituri.program import cdrdao, cdparanoia
 from morituri.image import image
 
-class MusicBrainzException(Exception):
-    def __init__(self, exc):
-        self.args = (exc, )
-        self.exception = exc
-
-class TrackMetadata(object):
-    artist = None
-    title = None
-    duration = None # in ms
-    mbid = None
-    sortName = None
-    mbidArtist = None
-
-class DiscMetadata(object):
-    """
-    @param release: earliest release date, in YYYY-MM-DD
-    @type  release: unicode
-    """
-    artist = None
-    sortName = None
-    title = None
-    various = False
-    tracks = None
-    release = None
-
-    mbid = None
-    mbidArtist = None
-
-    def __init__(self):
-        self.tracks = []
-
 def filterForPath(text):
     return "-".join(text.split("/"))
 
-def getMetadata(release):
-    """
-    @type  release: L{musicbrainz2.model.Release}
-
-    @rtype: L{DiscMetadata} or None
-    """
-    log.debug('program', 'getMetadata for release id %r',
-        release.getId())
-    if not release.getId():
-        log.warning('program', 'No id for release %r', release) 
-        return None
-
-    assert release.id, 'Release does not have an id'
-
-    metadata = DiscMetadata()
-
-    isSingleArtist = release.isSingleArtistRelease()
-    metadata.various = not isSingleArtist
-    metadata.title = release.title
-    # getUniqueName gets disambiguating names like Muse (UK rock band)
-    metadata.artist = release.artist.name
-    metadata.sortName = release.artist.sortName
-    metadata.release = release.getEarliestReleaseDate()
-
-    metadata.mbid = urlparse.urlparse(release.id)[2].split("/")[-1]
-    metadata.mbidArtist = urlparse.urlparse(release.artist.id)[2].split("/")[-1]
-    metadata.url = release.getId()
-
-    tainted = False
-    duration = 0
-
-    for t in release.tracks:
-        track = TrackMetadata()
-
-        if isSingleArtist or t.artist == None:
-            track.artist = metadata.artist
-            track.sortName = metadata.sortName
-            track.mbidArtist = metadata.mbidArtist
-        else:
-            # various artists discs can have tracks with no artist
-            track.artist = t.artist and t.artist.name or release.artist.name
-            track.sortName = t.artist.sortName
-            track.mbidArtist = urlparse.urlparse(t.artist.id)[2].split("/")[-1] 
-
-        track.title = t.title
-        track.mbid = urlparse.urlparse(t.id)[2].split("/")[-1]
-
-        track.duration = t.duration
-        if not track.duration:
-            log.warning('getMetadata',
-                'track %r (%r) does not have duration' % (
-                    track.title, track.mbid))
-            tainted = True
-        else:
-            duration += t.duration
-
-        metadata.tracks.append(track)
-
-    if not tainted:
-        metadata.duration = duration
-    else:
-        metadata.duration = 0
-
-    return metadata
-
-
-# see http://bugs.musicbrainz.org/browser/python-musicbrainz2/trunk/examples/ripper.py
-def musicbrainz(discid):
-    """
-    @rtype: list of L{DiscMetadata}
-    """
-    log.debug('musicbrainz', 'looking up results for discid %r', discid)
-    #import musicbrainz2.disc as mbdisc
-    import musicbrainz2.webservice as mbws
-
-    results = []
-
-    # Setup a Query object.
-    service = mbws.WebService()
-    query = mbws.Query(service)
-
-
-    # Query for all discs matching the given DiscID.
-    # FIXME: let mbws.WebServiceError go through for now
-    try:
-        rfilter = mbws.ReleaseFilter(discId=discid)
-        results = query.getReleases(rfilter)
-    except mbws.WebServiceError, e:
-        raise MusicBrainzException(e)
-
-    # No disc matching this DiscID has been found.
-    if len(results) == 0:
-        return None
-
-    log.debug('musicbrainz', 'found %d results for discid %r', len(results),
-        discid)
-
-    # Display the returned results to the user.
-    ret = []
-
-    for result in results:
-        release = result.release
-        log.debug('program', 'result %r: artist %r, title %r' % (
-            release, release.artist.getName(), release.title))
-        # The returned release object only contains title and artist, but no
-        # tracks.  Query the web service once again to get all data we need.
-        try:
-            inc = mbws.ReleaseIncludes(artist=True, tracks=True,
-                releaseEvents=True, discs=True)
-            # Arid - Under the Cold Street Lights has getId() None
-            if release.getId():
-                release = query.getReleaseById(release.getId(), inc)
-        except mbws.WebServiceError, e:
-            raise MusicBrainzException(e)
-
-        md = getMetadata(release)
-        if md:
-            log.debug('program', 'duration %r', md.duration)
-            ret.append(md)
-
-
-    return ret
 
 class Program(log.Loggable):
     """
     I maintain program state and functionality.
 
     @ivar metadata:
-    @type metadata: L{DiscMetadata}
+    @type metadata: L{musicbrainz.DiscMetadata}
     @ivar result:   the rip's result
     @type result:   L{result.RipResult}
     @type outdir:   unicode
@@ -378,8 +224,8 @@ class Program(log.Loggable):
 
         for _ in range(0, 4):
             try:
-                metadatas = musicbrainz(mbdiscid)
-            except MusicBrainzException, e:
+                metadatas = musicbrainz.musicbrainz(mbdiscid)
+            except musicbrainz.MusicBrainzException, e:
                 print "Warning:", e
                 time.sleep(5)
                 continue

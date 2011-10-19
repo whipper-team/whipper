@@ -12,5 +12,6 @@ morituri_PYTHON = \
 	gstreamer.py \
 	log.py \
 	logcommand.py \
+	musicbrainz.py \
 	program.py \
 	renamer.py

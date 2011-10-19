@@ -1,5 +1,15 @@
 2011-10-19  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/Makefile.am:
+	* morituri/common/musicbrainz.py:
+	* morituri/common/program.py:
+	* morituri/test/Makefile.am:
+	* morituri/test/test_common_musicbrainz.py (added):
+	* morituri/common/musicbrainz.py (added):
+	  Split off musicbrainz-specific code.
+
+2011-10-19  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* TODO:
 	* morituri/extern/task/task.py:
 	  Instead of chaining next in multi tasks, making the call
