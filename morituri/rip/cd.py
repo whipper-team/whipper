@@ -6,17 +6,17 @@
 # Copyright (C) 2009 Thomas Vander Stichele
 
 # This file is part of morituri.
-# 
+#
 # morituri is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # morituri is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -122,7 +122,7 @@ filling in the variables and expanding the file extension. Variables are:
 
         prog.loadDevice(device)
         prog.unmountDevice(device)
-        
+
         # first, read the normal TOC, which is fast
         ptoc = common.Persister(self.options.toc_pickle or None)
         if not ptoc.object:
@@ -202,10 +202,10 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
                 trackResult = result.TrackResult()
                 prog.result.tracks.append(trackResult)
 
-            path = prog.getPath(prog.outdir, self.options.track_template, 
+            path = prog.getPath(prog.outdir, self.options.track_template,
                 mbdiscid, number) + '.' + profile.extension
             trackResult.number = number
-            
+
             assert type(path) is unicode, "%r is not unicode" % path
             trackResult.filename = path
             if number > 0:
@@ -224,7 +224,7 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
                 print 'Ripping track %d of %d: %s' % (
                     number, len(itable.tracks),
                     os.path.basename(path).encode('utf-8'))
-                prog.ripTrack(runner, trackResult, 
+                prog.ripTrack(runner, trackResult,
                     offset=int(self.options.offset),
                     device=self.parentCommand.options.device,
                     profile=profile,
@@ -260,7 +260,7 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
             start, stop = htoa
             print 'Found Hidden Track One Audio from frame %d to %d' % (
                 start, stop)
-                
+
             # rip it
             ripIfNotRipped(0)
             htoapath = prog.result.tracks[0].filename
@@ -277,7 +277,7 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
             ripIfNotRipped(i + 1)
 
         ### write disc files
-        discName = prog.getPath(prog.outdir, self.options.disc_template, 
+        discName = prog.getPath(prog.outdir, self.options.disc_template,
             mbdiscid, 0)
         dirname = os.path.dirname(discName)
         if not os.path.exists(dirname):
@@ -307,7 +307,7 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
             if not track.audio:
                 continue
 
-            path = prog.getPath(prog.outdir, self.options.track_template, 
+            path = prog.getPath(prog.outdir, self.options.track_template,
                 mbdiscid, i + 1) + '.' + profile.extension
             writeFile(handle, path,
                 itable.getTrackLength(i + 1) / common.FRAMES_PER_SECOND)
@@ -331,7 +331,7 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
                 print "AccurateRip response discid different: %s" % \
                     responses[0].cddbDiscId
 
-           
+
         prog.verifyImage(runner, responses)
 
         print "\n".join(prog.getAccurateRipResults()) + "\n"
@@ -352,14 +352,14 @@ class CD(logcommand.LogCommand):
         self.parser.add_option('-d', '--device',
             action="store", dest="device",
             help="CD-DA device")
- 
+
     def handleOptions(self, options):
         if not options.device:
             drives = drive.getAllDevicePaths()
             if not drives:
                 self.error('No CD-DA drives found!')
                 return 3
-        
+
             # pick the first
             self.options.device = drives[0]
 
