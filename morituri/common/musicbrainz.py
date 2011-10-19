@@ -132,6 +132,13 @@ def _getMetadata(release):
 # see http://bugs.musicbrainz.org/browser/python-musicbrainz2/trunk/examples/ripper.py
 def musicbrainz(discid):
     """
+    Based on a MusicBrainz disc id, get a list of DiscMetadata objects
+    for the given disc id.
+
+    Example disc id: Mj48G109whzEmAbPBoGvd4KyCS4-
+
+    @type  discid: str
+
     @rtype: list of L{DiscMetadata}
     """
     log.debug('musicbrainz', 'looking up results for discid %r', discid)

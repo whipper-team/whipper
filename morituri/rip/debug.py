@@ -106,7 +106,7 @@ class MusicBrainz(logcommand.LogCommand):
             self.stdout.write('    Tracks: %r\n' % len(md.tracks))
             for j, track in enumerate(md.tracks):
                 self.stdout.write('      Track %2d: %r - %r\n' % (
-                    j, track.artist, track.title))
+                    j + 1, track.artist, track.title))
 
 class Debug(logcommand.LogCommand):
     summary = "debug internals"

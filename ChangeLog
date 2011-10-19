@@ -1,5 +1,11 @@
 2011-10-19  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/musicbrainz.py:
+	* morituri/rip/debug.py:
+	  Doc/output fixes.
+
+2011-10-19  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/rip/debug.py:
 	  Adapt to splitup.
 
