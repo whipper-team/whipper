@@ -27,3 +27,8 @@ task_PYTHON = \
 	task/gstreamer.py
 
 EXTRA_DIST = log/test_log.py command/test_command.py command/help2man.py
+
+python-musicbrainz-ngs:
+	git clone https://github.com/thomasvs/python-musicbrainz-ngs.git
+
+all: python-musicbrainz-ngs

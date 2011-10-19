@@ -1,5 +1,16 @@
 2011-10-19  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/extern/Makefile.am:
+	* morituri/extern/musicbrainzngs/musicbrainz.py (svn:special):
+	* morituri/extern/musicbrainzngs/mbxml.py (svn:special):
+	* morituri/extern/musicbrainzngs (added):
+	* morituri/extern/musicbrainzngs/mbxml.py (added):
+	* morituri/extern/musicbrainzngs/__init__.py (added):
+	* morituri/extern/musicbrainzngs/musicbrainz.py (added):
+	  Pull in my fork of python-musicbrainz-ngs
+
+2011-10-19  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/musicbrainz.py:
 	* morituri/rip/debug.py:
 	  Doc/output fixes.
