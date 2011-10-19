@@ -94,8 +94,8 @@ class MusicBrainz(logcommand.LogCommand):
             self.stdout.write('Please specify a MusicBrainz disc id.\n')
             return 3
 
-        from morituri.common import program
-        metadatas = program.musicbrainz(discId)
+        from morituri.common import musicbrainz
+        metadatas = musicbrainz.musicbrainz(discId)
 
         self.stdout.write('%d releases\n' % len(metadatas))
         for i, md in enumerate(metadatas):
