@@ -1,3 +1,11 @@
+2011-10-19  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* TODO:
+	* morituri/extern/task/task.py:
+	  Instead of chaining next in multi tasks, making the call
+	  chain larger (and exceed maximum depth on track 75), schedule
+	  it immediately.
+
 2011-10-17  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/test/Makefile.am:

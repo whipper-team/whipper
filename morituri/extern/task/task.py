@@ -373,7 +373,7 @@ class BaseMultiTask(Task, ITaskListener):
 
         # pick another
         self.log('BaseMultiTask.stopped: pick next task')
-        self.next()
+        self.schedule(0, self.next)
 
 
 class MultiSeparateTask(BaseMultiTask):

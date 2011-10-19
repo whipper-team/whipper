@@ -43,8 +43,6 @@ TODO:
   edit history though
   Write an example document with this cd as an example explaining offsets
   and id calculations
-- figure out hang on ripping (?) and re-encoding madder rose, panic on,
-  track 75
 - possibly figure out how to name albums with credited artist; look at gorky and spiritualized electric mainline
 - when shortening file name then reripping, it rerips since it doesn't know
-  the shortened name
+  the shortened name; see sufjan stevens
