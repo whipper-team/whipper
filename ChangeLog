@@ -3,6 +3,7 @@
 	* morituri/common/Makefile.am:
 	* morituri/common/musicbrainz.py:
 	* morituri/common/program.py:
+	* morituri/test/test_common_program.py:
 	* morituri/test/Makefile.am:
 	* morituri/test/test_common_musicbrainz.py (added):
 	* morituri/common/musicbrainz.py (added):
