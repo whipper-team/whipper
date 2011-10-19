@@ -1,3 +1,11 @@
+2011-10-20  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/rip/debug.py:
+	* morituri/common/musicbrainzngs.py (added):
+	  Rewrite using python-musicbrainz-ngs.
+	  Add rip debug musicbrainzngs command for testing,
+	  seems to work on Weezer - Blue Album - disc 2
+
 2011-10-19  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/extern/Makefile.am:
