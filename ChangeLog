@@ -1,5 +1,11 @@
 2011-10-19  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/rip/debug.py:
+	  Add rip debug musicbrainz command to look up information on
+	  disc id's.
+
+2011-10-19  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/Makefile.am:
 	* morituri/common/musicbrainz.py:
 	* morituri/common/program.py:

@@ -82,9 +82,33 @@ class Encode(logcommand.LogCommand):
 
         runner.run(encodetask)
 
+class MusicBrainz(logcommand.LogCommand):
+
+    summary = "examine MusicBrainz info"
+
+
+    def do(self, args):
+        try:
+            discId = unicode(args[0])
+        except IndexError:
+            self.stdout.write('Please specify a MusicBrainz disc id.\n')
+            return 3
+
+        from morituri.common import program
+        metadatas = program.musicbrainz(discId)
+
+        self.stdout.write('%d releases\n' % len(metadatas))
+        for i, md in enumerate(metadatas):
+            self.stdout.write('- Release %d:\n' % (i + 1, ))
+            self.stdout.write('    Artist: %r\n' % md.artist)
+            self.stdout.write('    Title:  %r\n' % md.title)
+            self.stdout.write('    URL: %r\n' % md.url)
+            self.stdout.write('    Tracks: %r\n' % len(md.tracks))
+            for j, track in enumerate(md.tracks):
+                self.stdout.write('      Track %2d: %r - %r\n' % (
+                    j, track.artist, track.title))
+
 class Debug(logcommand.LogCommand):
     summary = "debug internals"
 
-    subCommandClasses = [Checksum, Encode, ]
-
-
+    subCommandClasses = [Checksum, Encode, MusicBrainz, ]
