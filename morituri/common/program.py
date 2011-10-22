@@ -27,7 +27,7 @@ Common functionality and class for all programs using morituri.
 import os
 import time
 
-from morituri.common import common, log, musicbrainz
+from morituri.common import common, log, musicbrainzngs
 from morituri.result import result
 from morituri.program import cdrdao, cdparanoia
 from morituri.image import image
@@ -224,8 +224,10 @@ class Program(log.Loggable):
 
         for _ in range(0, 4):
             try:
-                metadatas = musicbrainz.musicbrainz(mbdiscid)
-            except musicbrainz.MusicBrainzException, e:
+                metadatas = musicbrainzngs.musicbrainz(mbdiscid)
+            except musicbrainzngs.NotFoundException, e:
+                break
+            except musicbrainzngs.MusicBrainzException, e:
                 print "Warning:", e
                 time.sleep(5)
                 continue
@@ -259,17 +261,23 @@ class Program(log.Loggable):
             metadatas = deltas[lowest]
             if len(metadatas) > 1:
                 artist = metadatas[0].artist
-                title = metadatas[0].title
-                for metadata in metadatas:
-                    assert artist == metadata.artist
-                    assert title == metadata.title
+                releaseTitle = metadatas[0].releaseTitle
+                for i, metadata in enumerate(metadatas):
+                    if not artist == metadata.artist:
+                        self.warning("artist 0: %r and artist %d: %r "
+                            "are not the same" % (
+                                artist, i, metadata.artist))
+                    if not releaseTitle == metadata.releaseTitle:
+                        self.warning("title 0: %r and title %d: %r "
+                            "are not the same" % (
+                                releaseTitle, i, metadata.releaseTitle))
 
                 if (len(deltas.keys()) > 1):
                     print
                     print 'Picked closest match in duration.'
                     print 'Others may be wrong in musicbrainz, please correct.'
                     print 'Artist : %s' % artist
-                    print 'Title :  %s' % title
+                    print 'Title :  %s' % metadatas[0].title
 
             # Select one of the returned releases. We just pick the first one.
             ret = metadatas[0]

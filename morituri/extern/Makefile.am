@@ -26,9 +26,19 @@ task_PYTHON = \
 	task/taskgtk.py \
 	task/gstreamer.py
 
+musicbrainzngsdir = $(PYTHONLIBDIR)/morituri/extern/musicbrainzngs
+
+musicbrainzngs_PYTHON = \
+	musicbrainzngs/__init__.py \
+	musicbrainzngs/musicbrainz.py \
+	musicbrainzngs/mbxml.py
+
+
 EXTRA_DIST = log/test_log.py command/test_command.py command/help2man.py
 
 python-musicbrainz-ngs:
 	git clone https://github.com/thomasvs/python-musicbrainz-ngs.git
 
-all: python-musicbrainz-ngs
+$(top_srcdir)/musicbrainzngs/musicbrainz.py: python-musicbrainz-ngs
+
+all: musicbrainzngs/musicbrainz.py

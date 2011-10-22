@@ -25,6 +25,7 @@ Handles communication with the musicbrainz server using NGS.
 """
 
 import urlparse
+import urllib2
 
 from morituri.common import log
 
@@ -35,6 +36,10 @@ class MusicBrainzException(Exception):
     def __init__(self, exc):
         self.args = (exc, )
         self.exception = exc
+
+class NotFoundException(MusicBrainzException):
+    def __str__(self):
+        return "Disc not found in MusicBrainz"
 
 
 class TrackMetadata(object):
@@ -48,8 +53,10 @@ class TrackMetadata(object):
 
 class DiscMetadata(object):
     """
-    @param release: earliest release date, in YYYY-MM-DD
-    @type  release: unicode
+    @param release:      earliest release date, in YYYY-MM-DD
+    @type  release:      unicode
+    @param title:        title of the disc (with disambiguation)
+    @param releaseTitle: title of the release (without disambiguation)
     """
     artist = None
     sortName = None
@@ -57,6 +64,8 @@ class DiscMetadata(object):
     various = False
     tracks = None
     release = None
+
+    releaseTitle = None
 
     mbid = None
     mbidArtist = None
@@ -111,14 +120,15 @@ def _getMetadata(release, discid):
         for disc in medium['disc-list']:
             if disc['id'] == discid:
                 title = release['title']
+                metadata.releaseTitle = title
                 if release.has_key('disambiguation'):
                     title += " (%s)" % release['disambiguation']
                 count = len(release['medium-list'])
                 if count > 1:
-                    title += ' - Disc %d of %d' % (
+                    title += ' (Disc %d of %d)' % (
                         int(medium['position']), count)
                 if medium.has_key('title'):
-                    title += " - %s" % medium['title']
+                    title += ": %s" % medium['title']
                 metadata.title = title
                 for t in medium['track-list']:
                     track = TrackMetadata()
@@ -177,8 +187,15 @@ def musicbrainz(discid):
 
     results = []
 
-    result = musicbrainz.get_releases_by_discid(discid,
-        includes=["artists", "recordings", "release-groups"])
+    try:
+        result = musicbrainz.get_releases_by_discid(discid,
+            includes=["artists", "recordings", "release-groups"])
+    except musicbrainz.ResponseError, e:
+        if isinstance(e.cause, urllib2.HTTPError):
+            if e.cause.code == 404:
+                raise NotFoundException(e)
+
+        raise MusicBrainzException(e)
 
     # No disc matching this DiscID has been found.
     if len(result) == 0:
