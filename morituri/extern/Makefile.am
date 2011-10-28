@@ -43,4 +43,4 @@ python-musicbrainz-ngs:
 	git clone https://github.com/thomasvs/python-musicbrainz-ngs.git
 
 all:
-	if test ! -e $(top_srcdir)/morituri/extern/musicbrainzngs/musicbrainz.py; then cloning python-musicbrainz-ngs; make python-musicbrainz-ngs; fi
+	if test ! -e $(top_srcdir)/morituri/extern/musicbrainzngs/musicbrainz.py; then echo cloning python-musicbrainz-ngs; make python-musicbrainz-ngs; fi
