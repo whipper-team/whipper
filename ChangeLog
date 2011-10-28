@@ -1,5 +1,10 @@
 2011-10-28  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* configure.ac:
+	  Doing a pre-release.
+
+2011-10-28  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/test/test_common_program.py:
 	  Remove use of musicbrainz module.
 
