@@ -24,7 +24,6 @@
 Handles communication with the musicbrainz server using NGS.
 """
 
-import urlparse
 import urllib2
 
 from morituri.common import log
@@ -106,7 +105,10 @@ def _getMetadata(release, discid):
     metadata.artist = artist['name']
     metadata.sortName = artist['sort-name']
     # FIXME: is format str ?
-    metadata.release = release['date']
+    if not release.has_key('date'):
+        log.warning('musicbrainzngs', 'Release %r does not have date', release)
+    else:
+        metadata.release = release['date']
 
     metadata.mbid = release['id']
     metadata.mbidArtist = artist['id']
@@ -151,7 +153,7 @@ def _getMetadata(release, discid):
                     track.mbid = t['recording']['id']
 
                     # FIXME: unit of duration ?
-                    track.duration = int(t['recording']['length'])
+                    track.duration = int(t['recording'].get('length', 0))
                     if not track.duration:
                         log.warning('getMetadata',
                             'track %r (%r) does not have duration' % (
