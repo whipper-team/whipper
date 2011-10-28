@@ -69,6 +69,9 @@ You can get help on subcommands by using the -h option to the subcommand.
         log.debug("morituri", "This is morituri version %s (%s)",
             configure.version, configure.revision)
 
+        self.parser.add_option('-R', '--record',
+                          action="store_true", dest="record",
+                          help="record API requests for playback")
         self.parser.add_option('-v', '--version',
                           action="store_true", dest="version",
                           help="show version information")
@@ -78,6 +81,8 @@ You can get help on subcommands by using the -h option to the subcommand.
             from morituri.configure import configure
             print "rip %s" % configure.version
             sys.exit(0)
+
+        self.record = options.record
 
     def parse(self, argv):
         log.debug("morituri", "rip %s" % " ".join(argv))

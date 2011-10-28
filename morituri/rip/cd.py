@@ -110,7 +110,7 @@ filling in the variables and expanding the file extension. Variables are:
                 "should be the same.")
 
     def do(self, args):
-        prog = program.Program()
+        prog = program.Program(record=self.getRootCommand().record)
         runner = task.SyncRunner()
 
         def function(r, t):

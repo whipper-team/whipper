@@ -72,6 +72,16 @@ class DiscMetadata(object):
     def __init__(self):
         self.tracks = []
 
+def _record(record, which, name, what):
+    # optionally record to disc as a JSON serialization
+    if record:
+        import json
+        filename = 'morituri.%s.%s.json' % (which, name)
+        handle = open(filename, 'w')
+        handle.write(json.dumps(what))
+        handle.close()
+        log.info('musicbrainzngs', 'Wrote %s %s to %s', which, name, filename)
+
 
 def _getMetadata(release, discid):
     """
@@ -175,7 +185,7 @@ def _getMetadata(release, discid):
 
 
 # see http://bugs.musicbrainz.org/browser/python-musicbrainz2/trunk/examples/ripper.py
-def musicbrainz(discid):
+def musicbrainz(discid, record=False):
     """
     Based on a MusicBrainz disc id, get a list of DiscMetadata objects
     for the given disc id.
@@ -189,7 +199,7 @@ def musicbrainz(discid):
     log.debug('musicbrainz', 'looking up results for discid %r', discid)
     from morituri.extern.musicbrainzngs import musicbrainz
 
-    results = []
+    ret = []
 
     try:
         result = musicbrainz.get_releases_by_discid(discid,
@@ -205,12 +215,12 @@ def musicbrainz(discid):
     if len(result) == 0:
         return None
 
-    log.debug('musicbrainz', 'found %d releases for discid %r',
+    log.debug('musicbrainzngs', 'found %d releases for discid %r',
         len(result['disc']['release-list']),
         discid)
+    _record(record, 'releases', discid, result)
 
     # Display the returned results to the user.
-    ret = []
 
     for release in result['disc']['release-list']:
         log.debug('program', 'result %r: artist %r, title %r' % (
@@ -221,6 +231,7 @@ def musicbrainz(discid):
 
         res = musicbrainz.get_release_by_id(release['id'],
             includes=["artists", "artist-credits", "recordings", "discids"])
+        _record(record, 'release', release['id'], res)
         release = res['release']
 
         md = _getMetadata(release, discid)

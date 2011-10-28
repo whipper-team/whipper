@@ -1,5 +1,13 @@
 2011-10-28  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/rip/main.py:
+	* morituri/common/musicbrainzngs.py:
+	* morituri/common/program.py:
+	* morituri/rip/cd.py:
+	  Add -R option to rip to record API results for debugging.
+
+2011-10-28  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/musicbrainzngs.py:
 	  Fix case of metadata not having length.
 	  Fix case of release not having a date.
