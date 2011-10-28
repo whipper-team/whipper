@@ -36,9 +36,11 @@ musicbrainzngs_PYTHON = \
 
 EXTRA_DIST = log/test_log.py command/test_command.py command/help2man.py
 
+musicbrainzngs/musicbrainz.py: all
+
 python-musicbrainz-ngs:
+	pwd
 	git clone https://github.com/thomasvs/python-musicbrainz-ngs.git
 
-$(top_srcdir)/musicbrainzngs/musicbrainz.py: python-musicbrainz-ngs
-
-all: musicbrainzngs/musicbrainz.py
+all:
+	if test ! -e $(top_srcdir)/morituri/extern/musicbrainzngs/musicbrainz.py; then cloning python-musicbrainz-ngs; make python-musicbrainz-ngs; fi
