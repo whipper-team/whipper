@@ -7,7 +7,7 @@ import pickle
 import unittest
 
 from morituri.result import result
-from morituri.common import program, accurip, musicbrainz
+from morituri.common import program, accurip, musicbrainzngs
 from morituri.rip import cd
 
 class TrackImageVerifyTestCase(unittest.TestCase):
@@ -90,7 +90,7 @@ class PathTestCase(unittest.TestCase):
         
     def testStandardTemplateFilled(self):
         prog = program.Program()
-        md = musicbrainz.DiscMetadata()
+        md = musicbrainzngs.DiscMetadata()
         md.artist = md.sortName = 'Jeff Buckley'
         md.title = 'Grace'
         prog.metadata = md
@@ -101,7 +101,7 @@ class PathTestCase(unittest.TestCase):
 
     def testIssue66TemplateFilled(self):
         prog = program.Program()
-        md = musicbrainz.DiscMetadata()
+        md = musicbrainzngs.DiscMetadata()
         md.artist = md.sortName = 'Jeff Buckley'
         md.title = 'Grace'
         prog.metadata = md
