@@ -1,5 +1,12 @@
 2011-10-28  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/test/Makefile.am:
+	* morituri/test/morituri.release.3451f29c-9bb8-4cc5-bfcc-bd50104b94f8.json (added):
+	* morituri/test/test_common_musicbrainzngs.py (added):
+	  Add test for previous bug of a release not having a date.
+
+2011-10-28  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/rip/main.py:
 	* morituri/common/musicbrainzngs.py:
 	* morituri/common/program.py:

@@ -6,6 +6,7 @@ EXTRA_DIST = \
 	test_common_accurip.py \
 	test_common_checksum.py \
 	test_common_musicbrainz.py \
+	test_common_musicbrainzngs.py \
 	test_common_program.py \
 	test_common_renamer.py \
 	test_image_cue.py \
@@ -29,6 +30,7 @@ EXTRA_DIST = \
 	release.08397059-86c1-463b-8ed0-cd596dbd174f.xml \
 	release.93a6268c-ddf1-4898-bf93-fb862b1c5c5e.xml \
 	release.c7d919f4-3ea0-4c4b-a230-b3605f069440.xml \
+	morituri.release.3451f29c-9bb8-4cc5-bfcc-bd50104b94f8.json \
 	kanye.cue \
 	kings-separate.cue \
 	kings-single.cue \
