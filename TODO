@@ -46,3 +46,7 @@ TODO:
 - possibly figure out how to name albums with credited artist; look at gorky and spiritualized electric mainline
 - when shortening file name then reripping, it rerips since it doesn't know
   the shortened name; see sufjan stevens
+- if a disc output dir is already there, see if it was properly finished;
+  complain if it was, to not overwrite
+- if multiple releases with different artist match the disc id, stop and
+  let user continue by choosing one

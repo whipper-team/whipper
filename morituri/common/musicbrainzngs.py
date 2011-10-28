@@ -75,7 +75,9 @@ class DiscMetadata(object):
 
 def _getMetadata(release, discid):
     """
-    @type  release: L{musicbrainz2.model.Release}
+    @type  release: C{dict}
+    @param release: a release dict as returned in the value for key release
+                    from get_release_by_id
 
     @rtype: L{DiscMetadata} or None
     """
