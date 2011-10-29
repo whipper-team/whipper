@@ -22,7 +22,7 @@
 
 from morituri.common import logcommand
 
-from morituri.extern.task import task, gstreamer
+from morituri.extern.task import task
 
 class Checksum(logcommand.LogCommand):
 
@@ -82,32 +82,6 @@ class Encode(logcommand.LogCommand):
 
         runner.run(encodetask)
 
-class MusicBrainz(logcommand.LogCommand):
-
-    summary = "examine MusicBrainz info"
-
-
-    def do(self, args):
-        try:
-            discId = unicode(args[0])
-        except IndexError:
-            self.stdout.write('Please specify a MusicBrainz disc id.\n')
-            return 3
-
-        from morituri.common import musicbrainz
-        metadatas = musicbrainz.musicbrainz(discId)
-
-        self.stdout.write('%d releases\n' % len(metadatas))
-        for i, md in enumerate(metadatas):
-            self.stdout.write('- Release %d:\n' % (i + 1, ))
-            self.stdout.write('    Artist: %r\n' % md.artist)
-            self.stdout.write('    Title:  %r\n' % md.title)
-            self.stdout.write('    URL: %r\n' % md.url)
-            self.stdout.write('    Tracks: %r\n' % len(md.tracks))
-            for j, track in enumerate(md.tracks):
-                self.stdout.write('      Track %2d: %r - %r\n' % (
-                    j + 1, track.artist, track.title))
-
 class MusicBrainzNGS(logcommand.LogCommand):
 
     summary = "examine MusicBrainz NGS info"
@@ -137,4 +111,4 @@ class MusicBrainzNGS(logcommand.LogCommand):
 class Debug(logcommand.LogCommand):
     summary = "debug internals"
 
-    subCommandClasses = [Checksum, Encode, MusicBrainz, MusicBrainzNGS]
+    subCommandClasses = [Checksum, Encode, MusicBrainzNGS]
