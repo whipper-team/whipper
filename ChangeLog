@@ -1,5 +1,11 @@
 2012-01-21  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/checksum.py:
+	* morituri/common/program.py:
+	  Fix/add logging.
+
+2012-01-21  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri.spec.in:
 	  Spec fix.
 	* morituri/image/image.py:

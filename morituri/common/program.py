@@ -406,7 +406,10 @@ class Program(log.Loggable):
 
         runner.run(t)
 
-        return trackResult.testcrc == t.checksum
+        ret = trackResult.testcrc == t.checksum
+        log.debug('program',
+            'verifyTrack: track result crc %r, file crc %r, result %r',
+            trackResult.testcrc, t.checksum, ret)
 
     def ripTrack(self, runner, trackResult, offset, device, profile, taglist,
         what=None):

@@ -28,12 +28,13 @@ import gst
 
 from morituri.common import common
 from morituri.common import gstreamer as cgstreamer
+from morituri.common import log
 
-from morituri.extern.task import task, gstreamer
+from morituri.extern.task import gstreamer
 
 # checksums are not CRC's. a CRC is a specific type of checksum.
 
-class ChecksumTask(gstreamer.GstPipelineTask):
+class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
     """
     I am a task that calculates a checksum of the decoded audio data.
 
@@ -116,7 +117,7 @@ class ChecksumTask(gstreamer.GstPipelineTask):
             gst.SEEK_FLAG_FLUSH,
             gst.SEEK_TYPE_SET, self._frameStart,
             gst.SEEK_TYPE_SET, self._frameEnd + 1) # half-inclusive interval
-        gst.debug('CRCing %r from sector %d to sector %d' % (
+        self.debug('CRCing %r from sector %d to sector %d' % (
             self._path,
             self._frameStart / common.SAMPLES_PER_FRAME,
             (self._frameEnd + 1) / common.SAMPLES_PER_FRAME))
@@ -144,6 +145,7 @@ class ChecksumTask(gstreamer.GstPipelineTask):
     def stopped(self):
         if not self._last:
             # see http://bugzilla.gnome.org/show_bug.cgi?id=578612
+            self.debug('not a single buffer gotten, raising')
             self.setException(common.EmptyError('not a single buffer gotten'))
         else:
             self._checksum = self._checksum % 2 ** 32
