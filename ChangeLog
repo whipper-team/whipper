@@ -1,5 +1,10 @@
 2012-01-21  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/musicbrainzngs.py:
+	  Get the artist credit for a track/album; Fixes Gorky - Gorky.
+
+2012-01-21  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/checksum.py:
 	* morituri/common/program.py:
 	  Fix/add logging.

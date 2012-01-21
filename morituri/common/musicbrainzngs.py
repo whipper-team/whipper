@@ -105,7 +105,11 @@ def _getMetadata(release, discid):
         log.warning('musicbrainzngs', 'artist-credit more than 1: %r',
             release['artist-credit'])
 
-    artist = release['artist-credit'][0]['artist']
+    credit = release['artist-credit']
+
+    artist = credit[0]['artist']
+    albumArtistName = credit[0].get(
+        'name', credit[0]['artist'].get('name', None))
 
     # FIXME: is there a better way to check for VA
     metadata.various = False
@@ -114,7 +118,7 @@ def _getMetadata(release, discid):
     isSingleArtist = not metadata.various
 
     # getUniqueName gets disambiguating names like Muse (UK rock band)
-    metadata.artist = artist['name']
+    metadata.artist = albumArtistName
     metadata.sortName = artist['sort-name']
     # FIXME: is format str ?
     if not release.has_key('date'):
@@ -146,20 +150,25 @@ def _getMetadata(release, discid):
                 metadata.title = title
                 for t in medium['track-list']:
                     track = TrackMetadata()
+                    if len(t['recording']['artist-credit']) > 1:
+                        # FIXME: do something sensible for multiple artists
+                        log.warning('musicbrainzngs', 'artist-credit more than 1: %r',
+                            t['recording']['artist-credit'])
 
-                    if isSingleArtist or not t['recording'].has_key('artist-credit'):
+
+                    credit = t['recording']['artist-credit']
+                    trackArtistName = credit[0].get(
+                        'name', credit[0]['artist'].get('name', None))
+
+                    if not artist:
                         track.artist = metadata.artist
                         track.sortName = metadata.sortName
                         track.mbidArtist = metadata.mbidArtist
                     else:
                         # various artists discs can have tracks with no artist
-                        if len(t['recording']['artist-credit']) > 1:
-                            log.warning('musicbrainzngs', 'artist-credit more than 1: %r',
-                                t['recording']['artist-credit'])
-                        artist = t['recording']['artist-credit'][0]['artist']
-                        track.artist = artist and artist['name'] or metadata.artist.name
-                        track.sortName = artist and artist['sort-name'] or metadata.artist.sortName
-                        track.mbidArtist = artist and artist['id'] or metadata.artist.mbid
+                        track.artist = trackArtistName
+                        track.sortName = artist['sort-name']
+                        track.mbidArtist = artist['id']
 
                     track.title = t['recording']['title']
                     track.mbid = t['recording']['id']
