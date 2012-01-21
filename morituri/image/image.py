@@ -155,7 +155,7 @@ class AudioLengthTask(log.Loggable, gstreamer.GstPipelineTask):
         assert type(path) is unicode, "%r is not unicode" % path
 
         self._path = path
-        self.logName = os.path.basename(path)
+        self.logName = os.path.basename(path).encode('utf-8')
 
     def getPipelineDesc(self):
         return '''

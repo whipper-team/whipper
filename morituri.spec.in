@@ -50,7 +50,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/rip
 %{_mandir}/man1/rip.1*
 %{python_sitelib}/morituri
-%{_sysconfdir}/bash_completion.d/rip
+%{_sysconfdir}/bash_completion.d/
 
 %changelog
 * Sun Jan 09 2011 Thomas Vander Stichele <thomas at apestaart dot org>

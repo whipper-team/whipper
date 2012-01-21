@@ -1,3 +1,10 @@
+2012-01-21  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri.spec.in:
+	  Spec fix.
+	* morituri/image/image.py:
+	  Log fix.
+
 2011-10-29  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/rip/debug.py:
