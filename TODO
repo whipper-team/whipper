@@ -50,3 +50,5 @@ TODO:
   complain if it was, to not overwrite
 - if multiple releases with different artist match the disc id, stop and
   let user continue by choosing one
+- on multiple hits with different titles/disc numbers, ask user to choose by specifying first few letters of correct release/album id; redo radiohead - pablo honey
+- artist-credit-phrase fabricated by musicbrainzngs only looks at name, not at artist-credit->name (see e.g. Gorky)
