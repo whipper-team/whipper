@@ -1,5 +1,10 @@
 2012-01-22  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/rip/debug.py:
+	  Properly write utf-8 encoded strings to stdout.
+
+2012-01-22  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/program.py:
 	  Actually return the result from verifyTrack.
 	  Debug the cache loading some more.  Make a note for a TODO.

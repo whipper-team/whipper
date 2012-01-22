@@ -100,13 +100,14 @@ class MusicBrainzNGS(logcommand.LogCommand):
         self.stdout.write('%d releases\n' % len(metadatas))
         for i, md in enumerate(metadatas):
             self.stdout.write('- Release %d:\n' % (i + 1, ))
-            self.stdout.write('    Artist: %r\n' % md.artist)
-            self.stdout.write('    Title:  %r\n' % md.title)
-            self.stdout.write('    URL: %r\n' % md.url)
-            self.stdout.write('    Tracks: %r\n' % len(md.tracks))
+            self.stdout.write('    Artist: %s\n' % md.artist.encode('utf-8'))
+            self.stdout.write('    Title:  %s\n' % md.title.encode('utf-8'))
+            self.stdout.write('    URL: %s\n' % md.url)
+            self.stdout.write('    Tracks: %d\n' % len(md.tracks))
             for j, track in enumerate(md.tracks):
-                self.stdout.write('      Track %2d: %r - %r\n' % (
-                    j + 1, track.artist, track.title))
+                self.stdout.write('      Track %2d: %s - %s\n' % (
+                    j + 1, track.artist.encode('utf-8'),
+                    track.title.encode('utf-8')))
 
 class Debug(logcommand.LogCommand):
     summary = "debug internals"
