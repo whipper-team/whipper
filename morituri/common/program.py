@@ -117,6 +117,7 @@ class Program(log.Loggable):
 
         return itable
 
+    # FIXME: the cache should be model/offset specific
     def getRipResult(self, cddbdiscid):
         """
         Retrieve the persistable RipResult either from our cache (from a
@@ -132,8 +133,13 @@ class Program(log.Loggable):
         presult = pcache.get(cddbdiscid)
 
         if not presult.object:
+            self.debug('result for cddbdiscid %r not in cache, creating',
+                cddbdiscid)
             presult.object = result.RipResult()
             presult.persist(self.result)
+        else:
+            self.debug('result for cddbdiscid %r found in cache, reusing',
+                cddbdiscid)
 
         self.result = presult.object
         self._presult = presult
@@ -410,6 +416,7 @@ class Program(log.Loggable):
         log.debug('program',
             'verifyTrack: track result crc %r, file crc %r, result %r',
             trackResult.testcrc, t.checksum, ret)
+        return ret
 
     def ripTrack(self, runner, trackResult, offset, device, profile, taglist,
         what=None):

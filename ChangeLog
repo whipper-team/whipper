@@ -1,3 +1,9 @@
+2012-01-22  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/program.py:
+	  Actually return the result from verifyTrack.
+	  Debug the cache loading some more.  Make a note for a TODO.
+
 2012-01-21  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/musicbrainzngs.py:
