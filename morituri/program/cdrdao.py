@@ -249,6 +249,7 @@ class CDRDAOTask(task.Task):
 
     def __init__(self):
         self.errors = []
+        self.debug('creating CDRDAOTask')
 
     def start(self, runner):
         task.Task.start(self, runner)
@@ -511,6 +512,7 @@ class ReadAllSessionsTask(task.MultiSeparateTask):
 
         self._device = device
 
+        self.debug('Starting ReadAllSessionsTask')
         self.tasks = [DiscInfoTask(device=device), ]
 
     def stopped(self, taskk):
