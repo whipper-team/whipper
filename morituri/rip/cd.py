@@ -81,6 +81,10 @@ filling in the variables and expanding the file extension. Variables are:
             action="store", dest="disc_template",
             help="template for disc file naming (default %default)",
             default=DEFAULT_DISC_TEMPLATE)
+        self.parser.add_option('-R', '--release-id',
+            action="store", dest="release",
+            help="MusicBrainz release id to match to (if there are multiple)")
+
         default = 'flac'
 
         # here to avoid import gst eating our options
@@ -95,8 +99,6 @@ filling in the variables and expanding the file extension. Variables are:
             action="store_true", dest="unknown",
             help="whether to continue ripping if the CD is unknown (%default)",
             default=False)
-        default = 'flac'
-
 
     def handleOptions(self, options):
         options.track_template = options.track_template.decode('utf-8')
@@ -148,7 +150,8 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
 
         print "MusicBrainz lookup URL", ittoc.getMusicBrainzSubmitURL()
 
-        prog.metadata = prog.getMusicBrainz(ittoc, mbdiscid)
+        prog.metadata = prog.getMusicBrainz(ittoc, mbdiscid,
+            self.options.release)
 
         if not prog.metadata:
             # fall back to FreeDB for lookup

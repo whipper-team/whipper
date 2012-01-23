@@ -223,7 +223,7 @@ class Program(log.Loggable):
         return None
 
 
-    def getMusicBrainz(self, ittoc, mbdiscid):
+    def getMusicBrainz(self, ittoc, mbdiscid, release=None):
         # look up disc on musicbrainz
         print 'Disc duration: %s' % common.formatTime(
             ittoc.duration() / 1000.0)
@@ -272,6 +272,20 @@ class Program(log.Loggable):
 
             # If we have multiple, make sure they match
             metadatas = deltas[lowest]
+
+            if release:
+                metadatas = [m for m in metadatas if m.url.endswith(release)]
+                self.debug('Asked for release %r, only kept %r',
+                    release, metadatas)
+                if len(metadatas) == 1:
+                    print
+                    print 'Picked requested release id %s' % release
+                    print 'Artist : %s' % metadatas[0].artist.encode('utf-8')
+                    print 'Title :  %s' % metadatas[0].title.encode('utf-8')
+                elif not metadatas:
+                    print 'Requested release id %s but none match' % release
+                    return
+
             if len(metadatas) > 1:
                 artist = metadatas[0].artist
                 releaseTitle = metadatas[0].releaseTitle
@@ -289,8 +303,8 @@ class Program(log.Loggable):
                     print
                     print 'Picked closest match in duration.'
                     print 'Others may be wrong in musicbrainz, please correct.'
-                    print 'Artist : %s' % artist
-                    print 'Title :  %s' % metadatas[0].title
+                    print 'Artist : %s' % artist.encode('utf-8')
+                    print 'Title :  %s' % metadatas[0].title.encode('utf-8')
 
             # Select one of the returned releases. We just pick the first one.
             ret = metadatas[0]

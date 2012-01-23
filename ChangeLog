@@ -1,3 +1,12 @@
+2012-01-23  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* TODO:
+	* morituri/common/program.py:
+	* morituri/rip/cd.py:
+	  Add rip cd rip --release-id as an option to select the exact
+	  release this disc is a part of.
+	  Fixes Radiohead - Pablo Honey and U2 - Achtung Baby
+
 2012-01-22  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/rip/debug.py:
