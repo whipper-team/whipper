@@ -1,5 +1,10 @@
 2012-04-01  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/musicbrainzngs.py:
+	  Handle multiple artists correctly.
+
+2012-04-01  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	patch by: Christophe Fergeau <cfergeau@redhat.com)
 
 	* morituri/common/program.py:

@@ -101,15 +101,19 @@ def _getMetadata(release, discid):
 
     metadata = DiscMetadata()
 
-    if len(release['artist-credit']) > 1:
-        log.warning('musicbrainzngs', 'artist-credit more than 1: %r',
-            release['artist-credit'])
-
     credit = release['artist-credit']
 
     artist = credit[0]['artist']
-    albumArtistName = credit[0].get(
-        'name', credit[0]['artist'].get('name', None))
+
+    if len(credit) > 1:
+        log.debug('musicbrainzngs', 'artist-credit more than 1: %r', credit)
+
+    for i, c in enumerate(credit):
+        if isinstance(c, dict):
+            credit[i] = c.get(
+                'name', c['artist'].get('name', None))
+
+    albumArtistName = "".join(credit)
 
     # FIXME: is there a better way to check for VA
     metadata.various = False
@@ -150,15 +154,18 @@ def _getMetadata(release, discid):
                 metadata.title = title
                 for t in medium['track-list']:
                     track = TrackMetadata()
-                    if len(t['recording']['artist-credit']) > 1:
-                        # FIXME: do something sensible for multiple artists
-                        log.warning('musicbrainzngs', 'artist-credit more than 1: %r',
-                            t['recording']['artist-credit'])
-
-
                     credit = t['recording']['artist-credit']
-                    trackArtistName = credit[0].get(
-                        'name', credit[0]['artist'].get('name', None))
+                    if len(credit) > 1:
+                        log.debug('musicbrainzngs',
+                            'artist-credit more than 1: %r', credit)
+                        # credit is of the form [dict, str, dict, ... ]
+                    for i, c in enumerate(credit):
+                        if isinstance(c, dict):
+                            credit[i] = c.get(
+                                'name', c['artist'].get('name', None))
+
+
+                    trackArtistName = "".join(credit)
 
                     if not artist:
                         track.artist = metadata.artist
