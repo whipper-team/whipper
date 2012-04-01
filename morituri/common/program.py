@@ -267,12 +267,6 @@ class Program(log.Loggable):
                     deltas[delta] = []
                 deltas[delta].append(metadata)
 
-            # Select the release that most closely matches the duration.
-            lowest = min(deltas.keys())
-
-            # If we have multiple, make sure they match
-            metadatas = deltas[lowest]
-
             if release:
                 metadatas = [m for m in metadatas if m.url.endswith(release)]
                 self.debug('Asked for release %r, only kept %r',
@@ -285,6 +279,12 @@ class Program(log.Loggable):
                 elif not metadatas:
                     print 'Requested release id %s but none match' % release
                     return
+            else:
+                # Select the release that most closely matches the duration.
+                lowest = min(deltas.keys())
+
+                # If we have multiple, make sure they match
+                metadatas = deltas[lowest]
 
             if len(metadatas) > 1:
                 artist = metadatas[0].artist

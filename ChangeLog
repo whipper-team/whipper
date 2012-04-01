@@ -3,6 +3,26 @@
 	patch by: Christophe Fergeau <cfergeau@redhat.com)
 
 	* morituri/common/program.py:
+	  When morituri finds multiple matches for a given release, it only
+	  keeps the releases whose length are the closest to the CD being
+	  ripped.
+
+	  However, this currently interacts badly with the --release-id
+	  parameter because this duration filtering is done before trying to
+	  do the release-id matching. The release that the user has specified
+	  may have been removed from the potential matches by the time the
+	  release
+	  id match is tried.
+	  This commit removes the duration filtering when the user explicitly
+	  specified a release id. I've observed this bug with the first disc
+	  of The Wall (Experience Edition) by the Pink Floyd.
+	  Fixes #91.
+
+2012-04-01  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	patch by: Christophe Fergeau <cfergeau@redhat.com)
+
+	* morituri/common/program.py:
 	  When --release-id is used, we are not making guesses based on the
 	  CD lengths, so the message saying that we picked the closest match
 	  in duration, which can still trigger, is inappropriate.
