@@ -299,7 +299,7 @@ class Program(log.Loggable):
                             "are not the same" % (
                                 releaseTitle, i, metadata.releaseTitle))
 
-                if (len(deltas.keys()) > 1):
+                if (not release and len(deltas.keys()) > 1):
                     print
                     print 'Picked closest match in duration.'
                     print 'Others may be wrong in musicbrainz, please correct.'

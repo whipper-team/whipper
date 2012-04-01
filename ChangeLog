@@ -1,3 +1,12 @@
+2012-04-01  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	patch by: Christophe Fergeau <cfergeau@redhat.com)
+
+	* morituri/common/program.py:
+	  When --release-id is used, we are not making guesses based on the
+	  CD lengths, so the message saying that we picked the closest match
+	  in duration, which can still trigger, is inappropriate.
+
 2012-01-23  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* TODO:
