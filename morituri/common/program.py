@@ -339,10 +339,11 @@ class Program(log.Loggable):
 
             if number > 0:
                 try:
-                    trackArtist = self.metadata.tracks[number - 1].artist
-                    title = self.metadata.tracks[number - 1].title
-                    mbidTrack = self.metadata.tracks[number - 1].mbid
-                    mbidTrackArtist = self.metadata.tracks[number - 1].mbidArtist
+                    track = self.metadata.tracks[number - 1]
+                    trackArtist = track.artist
+                    title = track.title
+                    mbidTrack = track.mbid
+                    mbidTrackArtist = track.mbidArtist
                 except IndexError, e:
                     print 'ERROR: no track %d found, %r' % (number, e)
                     raise
