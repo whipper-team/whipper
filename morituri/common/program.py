@@ -584,7 +584,8 @@ class Program(log.Loggable):
             # htoa tracks (i == 0) do not have an ARCRC
             if trackResult.ARCRC is None:
                 assert trackResult.number == 0, \
-                    'no trackResult.ARCRC on non-HTOA track'
+                    'no trackResult.ARCRC on non-HTOA track %d' % \
+                        trackResult.number
                 res.append("Track  0: unknown          (not tracked)")
             else:
                 res.append("Track %2d: %s %s [%08x]%s" % (
