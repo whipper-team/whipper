@@ -117,15 +117,14 @@ class MorituriLogger(object):
             lines.append("  WARNING: no CRC check done")
         
         if trackResult.accurip:
-            if trackResult.ARCRC == trackResult.ARDBCRC:
-                lines.append('  Accurately ripped (confidence %d) [%08X]' % (
-                    trackResult.ARDBConfidence, trackResult.ARCRC))
-            else:
-                lines.append('  Cannot be verified as accurate  '
-                    '(confidence %d),  [%08X], AccurateRip returned [%08x]' % (
-                        trackResult.ARDBConfidence,
-                        trackResult.ARCRC, trackResult.ARDBCRC))
+            lines.append('  Accurately ripped (confidence %d) [%08X]' % (
+                trackResult.ARDBConfidence, trackResult.ARCRC))
         else:
-            lines.append('  Track not present in AccurateRip database')
+            if trackResult.ARDBCRC:
+                lines.append('  Cannot be verified as accurate '
+                    '[%08X], AccurateRip returned [%08X]' % (
+                        trackResult.ARCRC, trackResult.ARDBCRC))
+            else:
+                lines.append('  Track not present in AccurateRip database')
 
         return lines
