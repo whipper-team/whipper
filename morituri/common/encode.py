@@ -26,6 +26,7 @@ import shutil
 import tempfile
 
 from morituri.common import common, log
+from morituri.common import task as ctask
 
 from morituri.extern.task import task, gstreamer
 
@@ -124,7 +125,7 @@ LOSSY_PROFILES = {
 ALL_PROFILES = PROFILES.copy()
 ALL_PROFILES.update(LOSSY_PROFILES)
 
-class EncodeTask(gstreamer.GstPipelineTask):
+class EncodeTask(ctask.GstPipelineTask):
     """
     I am a task that encodes a .wav file.
     I set tags too.
@@ -218,6 +219,14 @@ class EncodeTask(gstreamer.GstPipelineTask):
 
         bus.connect('message::element', self._message_element_cb)
         self._level = self.pipeline.get_by_name('level')
+
+        # set an interval that is smaller than the duration
+        # FIXME: check level and make sure it emits level up to the last
+        # sample, even if input is small
+        interval = 1000000000L
+        if interval < duration:
+            interval = duration / 2
+        self._level.set_property('interval', interval)
         # add a probe so we can track progress
         # we connect to level because this gives us offset in samples
         srcpad = self._level.get_static_pad('src')
@@ -268,6 +277,8 @@ class EncodeTask(gstreamer.GstPipelineTask):
             self.peak = math.sqrt(math.pow(10, self._peakdB / 10.0))
         else:
             self.warning('No peak found, something went wrong!')
+            # workaround for when the file is too short to have volume ?
+            # self.peak = 0.0
 
 class TagReadTask(gstreamer.GstPipelineTask):
     """
