@@ -338,6 +338,8 @@ class BaseMultiTask(Task, ITaskListener):
                 task.description, self._task, len(self.tasks)))
             task.addListener(self)
             task.start(self.runner)
+            self.debug('BaseMultiTask.next(): started task %d of %d: %r',
+                self._task, len(self.tasks), task)
         except Exception, e:
             self.setException(e)
             self.debug('Got exception during next: %r', self.exceptionMessage)
