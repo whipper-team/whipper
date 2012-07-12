@@ -37,6 +37,8 @@ cdrdao says:
             return 255
 
         if isinstance(e.exception, common.EmptyError):
+            log.debug('main',
+                "EmptyError: %r", log.getExceptionMessage(e.exception))
             sys.stderr.write(
                 'rip: error: Could not create encoded file.\n') 
             return 255

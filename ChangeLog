@@ -1,5 +1,10 @@
 2012-07-12  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/rip/main.py:
+	  Handle EmptyError.
+
+2012-07-12  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/rip/debug.py:
 	  Add encode debug.
 
