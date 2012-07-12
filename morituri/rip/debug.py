@@ -22,7 +22,7 @@
 
 from morituri.common import logcommand
 
-from morituri.extern.task import task
+from morituri.common import task
 
 class Checksum(logcommand.LogCommand):
 
@@ -78,6 +78,9 @@ class Encode(logcommand.LogCommand):
 
         from morituri.common import encode
         profile = encode.PROFILES[self.options.profile]()
+        self.debug('Encoding %s to %s',
+            fromPath.encode('utf-8'),
+            toPath.encode('utf-8'))
         encodetask = encode.EncodeTask(fromPath, toPath, profile)
 
         runner.run(encodetask)
