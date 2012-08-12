@@ -24,20 +24,27 @@ import os
 
 from morituri.common import log
 
+def _listify(listOrString):
+    if type(listOrString) == str:
+        return [listOrString, ]
+
+    return listOrString
+
 def getAllDevicePaths():
     try:
         return _getAllDevicePathsPyCdio()
     except ImportError:
         log.info('drive', 'Cannot import pycdio')
         return _getAllDevicePathsStatic()
-        
+
 def _getAllDevicePathsPyCdio():
     import pycdio
     import cdio
 
     # using FS_AUDIO here only makes it list the drive when an audio cd
     # is inserted
-    return cdio.get_devices_with_cap(pycdio.FS_MATCH_ALL, False)
+    # ticket 102: this cdio call returns a list of str, or a single str
+    return _listify(cdio.get_devices_with_cap(pycdio.FS_MATCH_ALL, False))
 
 def _getAllDevicePathsStatic():
     ret = []
@@ -47,4 +54,3 @@ def _getAllDevicePathsStatic():
             ret.append(c)
 
     return ret
-
