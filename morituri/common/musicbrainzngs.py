@@ -119,7 +119,6 @@ def _getMetadata(release, discid):
     metadata.various = False
     if artist['id'] == VA_ID:
         metadata.various = True
-    isSingleArtist = not metadata.various
 
     # getUniqueName gets disambiguating names like Muse (UK rock band)
     metadata.artist = albumArtistName
