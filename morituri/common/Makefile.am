@@ -14,4 +14,5 @@ morituri_PYTHON = \
 	logcommand.py \
 	musicbrainzngs.py \
 	program.py \
-	renamer.py
+	renamer.py \
+	task.py

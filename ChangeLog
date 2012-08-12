@@ -1,5 +1,6 @@
 2012-08-12  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/Makefile.am:
 	* morituri/common/checksum.py:
 	* morituri/common/encode.py:
 	  Add a GstPipelineTask that lets us log.
