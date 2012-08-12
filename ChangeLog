@@ -1,5 +1,11 @@
 2012-08-12  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/extern/task/gstreamer.py:
+	* morituri/test/test_common_checksum.py:
+	  Protect backslashes in names.  Fixes #89.
+
+2012-08-12  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/drive.py:
 	  If cdio.get_devices_with_cap finds a single drive, it returns a
 	  str instead of a list.  Work around that bug.  Fixes #102.

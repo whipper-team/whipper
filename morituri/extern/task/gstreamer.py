@@ -26,10 +26,10 @@ def quoteParse(path):
     """
     Quote a path for use in gst.parse_launch.
     """
-    # Make sure double quotes are escaped.  See
-    # morituri.test.test_common_checksum
+    # Make sure double quotes and backslashes are escaped.  See
+    # morituri.test.test_common_checksum.NormalPathTestCase
 
-    return path.replace('"', '\\"')
+    return path.replace('"', '\\"').replace('\\', '\\\\')
 
 
 class GstException(Exception):

@@ -51,3 +51,8 @@ class NormalPathTestCase(PathTestCase):
         # This test makes sure we can checksum files with double quote in
         # their name
         self._testSuffix(u'morituri.test.12" edit')
+
+    def testBackSlash(self):
+        # This test makes sure we can checksum files with a backslash in
+        # their name
+        self._testSuffix(u'morituri.test.40 Years Back\\Come')
