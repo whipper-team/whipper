@@ -1,3 +1,9 @@
+2012-11-10  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* misc/pep8.py (added):
+	* Makefile.am:
+	  Add pep8 target.
+
 2012-08-12  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/extern/task/gstreamer.py:

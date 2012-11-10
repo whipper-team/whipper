@@ -7,6 +7,8 @@ SUBDIRS = bin etc morituri doc m4 misc
 
 EXTRA_DIST = morituri.spec morituri.doap RELEASE README HACKING
 
+SOURCES = $(top_srcdir)/morituri/*.py $(top_srcdir)/morituri/*/*.py
+
 check: pychecker check-python
 
 check-python:
@@ -17,6 +19,9 @@ _trial_temp/coverage: $(top_srcdir)/morituri/*.py $(top_srcdir)/morituri/*/*.py
 
 coverage: _trial_temp/coverage
 	python misc/show-coverage.py `ls _trial_temp/coverage/morituri* | grep -v morituri.test | grep -v morituri.extern`
+
+pep8:
+	python misc/pep8.py $(SOURCES)
 
 clean-local:
 	@rm -rf _trial_temp
