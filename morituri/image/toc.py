@@ -353,7 +353,7 @@ class TocFile(object, log.Loggable):
                 if os.path.exists(cpath):
                     return cpath
 
-        raise KeyError, "Cannot find file for %r" % path
+        raise KeyError("Cannot find file for %r" % path)
 
 class File:
     """
