@@ -5,8 +5,10 @@ from morituri.image import table
 
 from morituri.test import common as tcommon
 
+
 def h(i):
     return "0x%08x" % i
+
 
 class LadyhawkeTestCase(tcommon.TestCase):
     # Ladyhawke - Ladyhawke - 0602517818866
@@ -54,6 +56,7 @@ class LadyhawkeTestCase(tcommon.TestCase):
 
     def testDuration(self):
         self.assertEquals(self.table.duration(), 2761413)
+
 
 class MusicBrainzTestCase(tcommon.TestCase):
     # example taken from http://musicbrainz.org/doc/DiscIDCalculation

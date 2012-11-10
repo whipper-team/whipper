@@ -198,6 +198,7 @@ class LadyhawkeTestCase(common.TestCase):
             "KnpGsLhvH.lPrNc1PBL21lb9Bg4-")
 
     # FIXME: I don't trust this toc, but I can't find the CD anymore
+
     def testDuration(self):
         self.assertEquals(self.toc.table.duration(), 2761413)
 

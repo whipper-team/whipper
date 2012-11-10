@@ -35,7 +35,7 @@ class RenameInFileTestcase(unittest.TestCase):
         output = open(self._path).read()
         self.assertEquals(output, 'That was some test\nThat was somenother\n')
         os.unlink(self._path)
-        
+
 class RenameFileTestcase(unittest.TestCase):
     def setUp(self):
         (fd, self._source) = tempfile.mkstemp(suffix='.morituri.renamer.file')

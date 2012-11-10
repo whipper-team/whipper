@@ -18,10 +18,13 @@ from morituri.test import common as tcommon
 
 log.init()
 
+
 def h(i):
     return "0x%08x" % i
 
+
 class TrackSingleTestCase(tcommon.TestCase):
+
     def setUp(self):
         self.image = image.Image(os.path.join(os.path.dirname(__file__),
             u'track-single.cue'))
@@ -29,7 +32,7 @@ class TrackSingleTestCase(tcommon.TestCase):
         self.image.setup(self.runner)
 
     def testAccurateRipChecksum(self):
-        checksumtask = image.AccurateRipChecksumTask(self.image) 
+        checksumtask = image.AccurateRipChecksumTask(self.image)
         self.runner.run(checksumtask, verbose=False)
 
         self.assertEquals(len(checksumtask.checksums), 4)
@@ -51,7 +54,9 @@ class TrackSingleTestCase(tcommon.TestCase):
         self.assertEquals(self.image.table.getAccurateRipIds(), (
             "00000016", "0000005b"))
 
+
 class TrackSeparateTestCase(tcommon.TestCase):
+
     def setUp(self):
         self.image = image.Image(os.path.join(os.path.dirname(__file__),
             u'track-separate.cue'))
@@ -59,7 +64,7 @@ class TrackSeparateTestCase(tcommon.TestCase):
         self.image.setup(self.runner)
 
     def testAccurateRipChecksum(self):
-        checksumtask = image.AccurateRipChecksumTask(self.image) 
+        checksumtask = image.AccurateRipChecksumTask(self.image)
         self.runner.run(checksumtask, verbose=False)
 
         self.assertEquals(len(checksumtask.checksums), 4)
@@ -81,7 +86,9 @@ class TrackSeparateTestCase(tcommon.TestCase):
         self.assertEquals(self.image.table.getAccurateRipIds(), (
             "00000064", "00000191"))
 
+
 class AudioLengthTestCase(tcommon.TestCase):
+
     def testLength(self):
         path = os.path.join(os.path.dirname(__file__), u'track.flac')
         t = image.AudioLengthTask(path)
@@ -89,7 +96,9 @@ class AudioLengthTestCase(tcommon.TestCase):
         runner.run(t, verbose=False)
         self.assertEquals(t.length, 10 * common.SAMPLES_PER_FRAME)
 
+
 class AudioLengthPathTestCase(tcommon.TestCase):
+
     def _testSuffix(self, suffix):
         self.runner = task.SyncRunner(verbose=False)
         fd, path = tempfile.mkstemp(suffix=suffix)
@@ -104,7 +113,9 @@ class AudioLengthPathTestCase(tcommon.TestCase):
             gst.STREAM_ERROR_TYPE_NOT_FOUND)
         os.unlink(path)
 
+
 class NormalAudioLengthPathTestCase(AudioLengthPathTestCase):
+
     def testSingleQuote(self):
         self._testSuffix(u"morituri.test.Guns 'N Roses")
 
@@ -113,7 +124,10 @@ class NormalAudioLengthPathTestCase(AudioLengthPathTestCase):
         # their name
         self._testSuffix(u'morituri.test.12" edit')
 
-class UnicodeAudioLengthPathTestCase(AudioLengthPathTestCase, tcommon.UnicodeTestMixin):
+
+class UnicodeAudioLengthPathTestCase(AudioLengthPathTestCase,
+        tcommon.UnicodeTestMixin):
+
     def testUnicodePath(self):
         # this test makes sure we can checksum a unicode path
         self._testSuffix(u'morituri.test.B\xeate Noire.empty')

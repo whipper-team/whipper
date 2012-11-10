@@ -7,7 +7,9 @@ import unittest
 
 from morituri.image import table, cue
 
+
 class KingsSingleTestCase(unittest.TestCase):
+
     def setUp(self):
         self.cue = cue.CueFile(os.path.join(os.path.dirname(__file__),
             u'kings-single.cue'))
@@ -21,7 +23,9 @@ class KingsSingleTestCase(unittest.TestCase):
         t = self.cue.table.tracks[-1]
         self.assertEquals(self.cue.getTrackLength(t), -1)
 
+
 class KingsSeparateTestCase(unittest.TestCase):
+
     def setUp(self):
         self.cue = cue.CueFile(os.path.join(os.path.dirname(__file__),
             u'kings-separate.cue'))
@@ -35,7 +39,9 @@ class KingsSeparateTestCase(unittest.TestCase):
         t = self.cue.table.tracks[-1]
         self.assertEquals(self.cue.getTrackLength(t), -1)
 
+
 class KanyeMixedTestCase(unittest.TestCase):
+
     def setUp(self):
         self.cue = cue.CueFile(os.path.join(os.path.dirname(__file__),
             u'kanye.cue'))
@@ -48,6 +54,7 @@ class KanyeMixedTestCase(unittest.TestCase):
 
 
 class WriteCueFileTestCase(unittest.TestCase):
+
     def testWrite(self):
         fd, path = tempfile.mkstemp(suffix=u'.morituri.test.cue')
         os.close(fd)
