@@ -24,11 +24,13 @@ import os
 
 from morituri.common import log
 
+
 def _listify(listOrString):
     if type(listOrString) == str:
         return [listOrString, ]
 
     return listOrString
+
 
 def getAllDevicePaths():
     try:
@@ -36,6 +38,7 @@ def getAllDevicePaths():
     except ImportError:
         log.info('drive', 'Cannot import pycdio')
         return _getAllDevicePathsStatic()
+
 
 def _getAllDevicePathsPyCdio():
     import pycdio
@@ -45,6 +48,7 @@ def _getAllDevicePathsPyCdio():
     # is inserted
     # ticket 102: this cdio call returns a list of str, or a single str
     return _listify(cdio.get_devices_with_cap(pycdio.FS_MATCH_ALL, False))
+
 
 def _getAllDevicePathsStatic():
     ret = []
