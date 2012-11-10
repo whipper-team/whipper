@@ -117,4 +117,3 @@ class UnicodeAudioLengthPathTestCase(AudioLengthPathTestCase, tcommon.UnicodeTes
     def testUnicodePath(self):
         # this test makes sure we can checksum a unicode path
         self._testSuffix(u'morituri.test.B\xeate Noire.empty')
-        

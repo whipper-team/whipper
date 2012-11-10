@@ -57,6 +57,7 @@ class TestCase(unittest.TestCase):
 
     assertRaises = failUnlessRaises
 
+
 class UnicodeTestMixin:
     # A helper mixin to skip tests if we're not in a UTF-8 locale
     try:
@@ -65,4 +66,3 @@ class UnicodeTestMixin:
         skip = 'No UTF-8 locale'
     except OSError:
         pass
-

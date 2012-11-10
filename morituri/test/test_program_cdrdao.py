@@ -6,11 +6,15 @@ import unittest
 
 from morituri.program import cdrdao
 
+
 class FakeTask:
+
     def setProgress(self, value):
         pass
 
+
 class ParseTestCase(unittest.TestCase):
+
     def setUp(self):
         path = os.path.join(os.path.dirname(__file__),
             'cdrdao.readtoc.progress')

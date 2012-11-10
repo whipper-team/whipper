@@ -6,6 +6,7 @@ import unittest
 
 from morituri.program import cdparanoia
 
+
 class ParseTestCase(unittest.TestCase):
 
     def setUp(self):
@@ -23,6 +24,7 @@ class ParseTestCase(unittest.TestCase):
         q = '%.01f %%' % (self._parser.getTrackQuality() * 100.0, )
         self.assertEquals(q, '99.7 %')
 
+
 class ErrorTestCase(unittest.TestCase):
 
     def setUp(self):
@@ -39,4 +41,3 @@ class ErrorTestCase(unittest.TestCase):
 
         q = '%.01f %%' % (self._parser.getTrackQuality() * 100.0, )
         self.assertEquals(q, '79.6 %')
-

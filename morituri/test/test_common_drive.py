@@ -13,4 +13,3 @@ class ListifyTestCase(common.TestCase):
     def testList(self):
         lst = ['/dev/scd0', '/dev/sr0']
         self.assertEquals(drive._listify(lst), lst)
-

@@ -10,7 +10,9 @@ from morituri.image import toc
 
 from morituri.test import common
 
+
 class CureTestCase(common.TestCase):
+
     def setUp(self):
         self.toc = toc.TocFile(os.path.join(os.path.dirname(__file__),
             u'cure.toc'))
@@ -91,7 +93,10 @@ class CureTestCase(common.TestCase):
             '3/c/4/dBAR-013-0019d4c3-00fe8924-b90c650d.bin')
 
 # Bloc Party - Silent Alarm has a Hidden Track One Audio
+
+
 class BlocTestCase(common.TestCase):
+
     def setUp(self):
         self.toc = toc.TocFile(os.path.join(os.path.dirname(__file__),
             u'bloc.toc'))
@@ -114,6 +119,7 @@ class BlocTestCase(common.TestCase):
         self.assertEquals(t.getIndex(1).relative, 15220)
 
     # This disc has a pre-gap, so is a good test for .CUE writing
+
     def testConvertCue(self):
         #self.toc.table.absolutize()
         self.failUnless(self.toc.table.hasTOC())
@@ -138,7 +144,10 @@ class BlocTestCase(common.TestCase):
             'e/d/2/dBAR-013-001af2de-0105994e-ad0be00d.bin')
 
 # The Breeders - Mountain Battles has CDText
+
+
 class BreedersTestCase(common.TestCase):
+
     def setUp(self):
         self.toc = toc.TocFile(os.path.join(os.path.dirname(__file__),
             u'breeders.toc'))
@@ -164,7 +173,10 @@ class BreedersTestCase(common.TestCase):
         self.assertEquals(cue, ref)
 
 # Ladyhawke has a data track
+
+
 class LadyhawkeTestCase(common.TestCase):
+
     def setUp(self):
         self.toc = toc.TocFile(os.path.join(os.path.dirname(__file__),
             u'ladyhawke.toc'))
@@ -189,7 +201,9 @@ class LadyhawkeTestCase(common.TestCase):
     def testDuration(self):
         self.assertEquals(self.toc.table.duration(), 2761413)
 
+
 class CapitalMergeTestCase(common.TestCase):
+
     def setUp(self):
         self.toc1 = toc.TocFile(os.path.join(os.path.dirname(__file__),
             u'capital.1.toc'))
@@ -205,7 +219,6 @@ class CapitalMergeTestCase(common.TestCase):
 
         self.table = copy.deepcopy(self.toc1.table)
         self.table.merge(self.toc2.table)
-
 
     def testCDDBId(self):
         self.table.absolutize()
@@ -226,6 +239,7 @@ class CapitalMergeTestCase(common.TestCase):
 
 
 class UnicodeTestCase(common.TestCase, common.UnicodeTestMixin):
+
     def setUp(self):
         # we copy the normal non-utf8 filename to a utf-8 filename
         # in this test because builds with LANG=C fail if we include
