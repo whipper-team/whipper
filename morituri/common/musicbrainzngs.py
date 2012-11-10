@@ -31,12 +31,16 @@ from morituri.common import log
 
 VA_ID = "89ad4ac3-39f7-470e-963a-56509c546377" # Various Artists
 
+
 class MusicBrainzException(Exception):
+
     def __init__(self, exc):
         self.args = (exc, )
         self.exception = exc
 
+
 class NotFoundException(MusicBrainzException):
+
     def __str__(self):
         return "Disc not found in MusicBrainz"
 
@@ -71,6 +75,7 @@ class DiscMetadata(object):
 
     def __init__(self):
         self.tracks = []
+
 
 def _record(record, which, name, what):
     # optionally record to disc as a JSON serialization
@@ -124,7 +129,7 @@ def _getMetadata(release, discid):
     metadata.artist = albumArtistName
     metadata.sortName = artist['sort-name']
     # FIXME: is format str ?
-    if not release.has_key('date'):
+    if not 'date' in release:
         log.warning('musicbrainzngs', 'Release %r does not have date', release)
     else:
         metadata.release = release['date']
@@ -142,13 +147,13 @@ def _getMetadata(release, discid):
             if disc['id'] == discid:
                 title = release['title']
                 metadata.releaseTitle = title
-                if release.has_key('disambiguation'):
+                if 'disambiguation' in release:
                     title += " (%s)" % release['disambiguation']
                 count = len(release['medium-list'])
                 if count > 1:
                     title += ' (Disc %d of %d)' % (
                         int(medium['position']), count)
-                if medium.has_key('title'):
+                if 'title' in medium:
                     title += ": %s" % medium['title']
                 metadata.title = title
                 for t in medium['track-list']:
@@ -200,6 +205,8 @@ def _getMetadata(release, discid):
 
 
 # see http://bugs.musicbrainz.org/browser/python-musicbrainz2/trunk/examples/ripper.py
+
+
 def musicbrainz(discid, record=False):
     """
     Based on a MusicBrainz disc id, get a list of DiscMetadata objects
