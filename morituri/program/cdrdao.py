@@ -33,6 +33,7 @@ from morituri.image import toc, table
 from morituri.extern import asyncsub
 from morituri.extern.task import task
 
+
 class ProgramError(Exception):
     """
     The program had a fatal error.
@@ -73,6 +74,7 @@ _POSITION_RE = re.compile(r"""
 
 _ERROR_RE = re.compile(r"""^ERROR: (?P<error>.*)""")
 
+
 class LineParser(object, log.Loggable):
     """
     Parse incoming bytes into lines
@@ -106,7 +108,9 @@ class LineParser(object, log.Loggable):
 
             self._lines.extend(lines)
 
+
 class OutputParser(object, log.Loggable):
+
     def __init__(self, taskk, session=None):
         self._buffer = ""     # accumulate characters
         self._lines = []      # accumulate lines
@@ -238,6 +242,7 @@ class OutputParser(object, log.Loggable):
 
 # FIXME: handle errors
 
+
 class CDRDAOTask(task.Task):
     """
     I am a task base class that runs CDRDAO.
@@ -344,6 +349,7 @@ class CDRDAOTask(task.Task):
         """
         raise NotImplementedError
 
+
 class DiscInfoTask(CDRDAOTask):
     """
     I am a task that reads information about a disc.
@@ -392,6 +398,8 @@ class DiscInfoTask(CDRDAOTask):
 
 
 # Read stuff for one session
+
+
 class ReadSessionTask(CDRDAOTask):
     """
     I am a task that reads things for one session.
@@ -473,6 +481,7 @@ class ReadTableSessionTask(ReadSessionTask):
     logCategory = 'ReadTableSessionTask'
     description = "Scanning indexes"
 
+
 class ReadTOCSessionTask(ReadSessionTask):
     """
     I am a task that reads the TOC of a CD, without pregaps.
@@ -491,6 +500,8 @@ class ReadTOCSessionTask(ReadSessionTask):
         assert self.table.hasTOC(), "This Table Index should be a TOC"
 
 # read all sessions
+
+
 class ReadAllSessionsTask(task.MultiSeparateTask):
     """
     I am a base class for tasks that need to read all sessions.
@@ -546,6 +557,7 @@ class ReadTableTask(ReadAllSessionsTask):
     description = "Scanning indexes..."
     _readClass = ReadTableSessionTask
 
+
 class ReadTOCTask(ReadAllSessionsTask):
     """
     I am a task that reads the TOC of a CD, without pregaps.
@@ -558,13 +570,14 @@ class ReadTOCTask(ReadAllSessionsTask):
     description = "Reading TOC..."
     _readClass = ReadTOCSessionTask
 
+
 class DeviceOpenException(Exception):
     def __init__(self, msg):
         self.msg = msg
         self.args = (msg, )
 
+
 class ProgramFailedException(Exception):
     def __init__(self, code):
         self.code = code
         self.args = (code, )
-
