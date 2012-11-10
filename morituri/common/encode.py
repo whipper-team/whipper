@@ -6,17 +6,17 @@
 # Copyright (C) 2009 Thomas Vander Stichele
 
 # This file is part of morituri.
-# 
+#
 # morituri is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # morituri is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -29,6 +29,7 @@ from morituri.common import common, log
 from morituri.common import task as ctask
 
 from morituri.extern.task import task, gstreamer
+
 
 class Profile(object):
     name = None
@@ -43,6 +44,7 @@ class Profile(object):
         """
         pass
 
+
 class FlacProfile(Profile):
     name = 'flac'
     extension = 'flac'
@@ -50,6 +52,7 @@ class FlacProfile(Profile):
     lossless = True
 
     # FIXME: we should do something better than just printing ERRORS
+
     def test(self):
 
         # here to avoid import gst eating our options
@@ -70,6 +73,8 @@ class FlacProfile(Profile):
         return True
 
 # FIXME: ffenc_alac does not have merge_tags
+
+
 class AlacProfile(Profile):
     name = 'alac'
     extension = 'alac'
@@ -77,11 +82,14 @@ class AlacProfile(Profile):
     lossless = True
 
 # FIXME: wavenc does not have merge_tags
+
+
 class WavProfile(Profile):
     name = 'wav'
     extension = 'wav'
     pipeline = 'wavenc'
     lossless = True
+
 
 class WavpackProfile(Profile):
     name = 'wavpack'
@@ -89,16 +97,19 @@ class WavpackProfile(Profile):
     pipeline = 'wavpackenc bitrate=0 name=tagger'
     lossless = True
 
+
 class MP3Profile(Profile):
     name = 'mp3'
     extension = 'mp3'
     pipeline = 'lame name=tagger quality=0 ! id3v2mux'
     lossless = False
 
+
 class MP3VBRProfile(Profile):
     name = 'mp3vbr'
     extension = 'mp3'
-    pipeline = 'lame name=tagger quality=0 vbr=new vbr-mean-bitrate=192 ! id3v2mux'
+    pipeline = 'lame name=tagger quality=0 vbr=new vbr-mean-bitrate=192 ! ' \
+                'id3v2mux'
     lossless = False
 
 
@@ -110,20 +121,21 @@ class VorbisProfile(Profile):
 
 
 PROFILES = {
-    'wav':     WavProfile,
-    'flac':    FlacProfile,
-    'alac':    AlacProfile,
+    'wav': WavProfile,
+    'flac': FlacProfile,
+    'alac': AlacProfile,
     'wavpack': WavpackProfile,
 }
 
 LOSSY_PROFILES = {
-    'mp3':     MP3Profile,
-    'mp3vbr':  MP3VBRProfile,
-    'vorbis':  VorbisProfile,
+    'mp3': MP3Profile,
+    'mp3vbr': MP3VBRProfile,
+    'vorbis': VorbisProfile,
 }
 
 ALL_PROFILES = PROFILES.copy()
 ALL_PROFILES.update(LOSSY_PROFILES)
+
 
 class EncodeTask(ctask.GstPipelineTask):
     """
@@ -149,7 +161,7 @@ class EncodeTask(ctask.GstPipelineTask):
         assert type(inpath) is unicode, "inpath %r is not unicode" % inpath
         assert type(outpath) is unicode, \
             "outpath %r is not unicode" % outpath
-        
+
         self._inpath = inpath
         self._outpath = outpath
         self._taglist = taglist
@@ -280,6 +292,7 @@ class EncodeTask(ctask.GstPipelineTask):
             # workaround for when the file is too short to have volume ?
             # self.peak = 0.0
 
+
 class TagReadTask(gstreamer.GstPipelineTask):
     """
     I am a task that reads tags.
@@ -298,7 +311,7 @@ class TagReadTask(gstreamer.GstPipelineTask):
         """
         """
         assert type(path) is unicode, "path %r is not unicode" % path
-        
+
         self._path = path
 
     def getPipelineDesc(self):
@@ -316,6 +329,7 @@ class TagReadTask(gstreamer.GstPipelineTask):
         taglist = message.parse_tag()
         self.taglist = taglist
 
+
 class TagWriteTask(task.Task):
     """
     I am a task that retags an encoded file.
@@ -330,7 +344,7 @@ class TagWriteTask(task.Task):
         """
         assert type(inpath) is unicode, "inpath %r is not unicode" % inpath
         assert type(outpath) is unicode, "outpath %r is not unicode" % outpath
-        
+
         self._inpath = inpath
         self._outpath = outpath
         self._taglist = taglist
@@ -392,6 +406,7 @@ class TagWriteTask(task.Task):
         self.debug('set state to NULL')
         task.Task.stop(self)
 
+
 class SafeRetagTask(task.MultiSeparateTask):
     """
     I am a task that retags an encoded file safely in place.
@@ -416,7 +431,7 @@ class SafeRetagTask(task.MultiSeparateTask):
         assert type(path) is unicode, "path %r is not unicode" % path
 
         task.MultiSeparateTask.__init__(self)
-        
+
         self._path = path
         self._taglist = taglist.copy()
 
@@ -438,7 +453,8 @@ class SafeRetagTask(task.MultiSeparateTask):
                     self.debug('Current tags: %r, new tags: %r',
                         common.tagListToDict(taglist),
                         common.tagListToDict(self._taglist))
-                    assert common.tagListToDict(taglist) != common.tagListToDict(self._taglist)
+                    assert common.tagListToDict(taglist) \
+                        != common.tagListToDict(self._taglist)
                     self.tasks.append(checksum.CRC32Task(self._path))
                     self._fd, self._tmppath = tempfile.mkstemp(
                         dir=os.path.dirname(self._path), suffix=u'.morituri')
@@ -469,7 +485,5 @@ class SafeRetagTask(task.MultiSeparateTask):
                     os.unlink(self._tmppath)
                     e = TypeError("Tags not written")
                     self.setAndRaiseException(e)
-                   
-        task.MultiSeparateTask.stopped(self, taskk)
 
-      
+        task.MultiSeparateTask.stopped(self, taskk)
