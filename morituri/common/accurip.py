@@ -6,17 +6,17 @@
 # Copyright (C) 2009 Thomas Vander Stichele
 
 # This file is part of morituri.
-# 
+#
 # morituri is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # morituri is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -30,7 +30,9 @@ from morituri.common import log
 
 _CACHE_DIR = os.path.join(os.path.expanduser('~'), '.morituri', 'cache')
 
+
 class AccuCache(log.Loggable):
+
     def __init__(self):
         if not os.path.exists(_CACHE_DIR):
             self.debug('Creating cache directory %s', _CACHE_DIR)
@@ -87,7 +89,7 @@ class AccuCache(log.Loggable):
         handle = open(path, 'wb')
         handle.write(data)
         handle.close()
-           
+
     def _read(self, url):
         self.debug("Reading %s from cache", url)
         path = self._getPath(url)
@@ -95,6 +97,7 @@ class AccuCache(log.Loggable):
         data = handle.read()
         handle.close()
         return data
+
 
 def getAccurateRipResponses(data):
     ret = []
@@ -107,6 +110,7 @@ def getAccurateRipResponses(data):
         data = data[nbytes:]
 
     return ret
+
 
 class AccurateRipResponse(object):
     """
@@ -137,4 +141,4 @@ class AccurateRipResponse(object):
             checksum = "%08x" % struct.unpack("<L", data[pos + 1:pos + 5])[0]
             pos += 9
             self.confidences.append(confidence)
-            self.checksums.append(checksum) 
+            self.checksums.append(checksum)
