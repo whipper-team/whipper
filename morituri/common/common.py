@@ -6,17 +6,17 @@
 # Copyright (C) 2009 Thomas Vander Stichele
 
 # This file is part of morituri.
-# 
+#
 # morituri is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # morituri is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -29,6 +29,7 @@ SAMPLES_PER_FRAME = 588
 WORDS_PER_FRAME = SAMPLES_PER_FRAME * 2
 BYTES_PER_FRAME = SAMPLES_PER_FRAME * 4
 FRAMES_PER_SECOND = 75
+
 
 def msfToFrames(msf):
     """
@@ -45,7 +46,10 @@ def msfToFrames(msf):
 
     m, s, f = msf.split(':')
 
-    return 60 * FRAMES_PER_SECOND * int(m) + FRAMES_PER_SECOND * int(s) + int(f)
+    return 60 * FRAMES_PER_SECOND * int(m) \
+        + FRAMES_PER_SECOND * int(s) \
+        + int(f)
+
 
 def framesToMSF(frames, frameDelimiter=':'):
     f = frames % FRAMES_PER_SECOND
@@ -55,6 +59,7 @@ def framesToMSF(frames, frameDelimiter=':'):
     m = frames / FRAMES_PER_SECOND / 60
 
     return "%02d:%02d%s%02d" % (m, s, frameDelimiter, f)
+
 
 def framesToHMSF(frames):
     # cdparanoia style
@@ -67,6 +72,7 @@ def framesToHMSF(frames):
     h = frames / FRAMES_PER_SECOND / 60 / 60
 
     return "%02d:%02d:%02d.%02d" % (h, m, s, f)
+
 
 def formatTime(seconds, fractional=3):
     """
@@ -107,6 +113,7 @@ def formatTime(seconds, fractional=3):
     chunks.append(chunk)
 
     return " ".join(chunks)
+
 
 class Persister(object):
     """
@@ -204,7 +211,6 @@ class PersistedCache(object):
             if e.errno != 17: # FIXME
                 raise
 
-
     def _getPath(self, key):
         return os.path.join(self.path, '%s.pickle' % key)
 
@@ -220,6 +226,7 @@ class PersistedCache(object):
                     persister.delete()
 
         return persister
+
 
 def tagListToDict(tl):
     """
@@ -237,10 +244,11 @@ def tagListToDict(tl):
         else:
             d[key] = tl[key]
     return d
- 
+
+
 def tagListEquals(tl1, tl2):
-    d1 = tagListToDict(tl1)    
-    d2 = tagListToDict(tl2)    
+    d1 = tagListToDict(tl1)
+    d2 = tagListToDict(tl2)
 
     return d1 == d2
 
@@ -255,6 +263,7 @@ class MissingDependencyException(Exception):
 
 class EmptyError(Exception):
     pass
+
 
 def shrinkPath(path):
     """
