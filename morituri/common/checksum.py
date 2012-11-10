@@ -35,6 +35,7 @@ from morituri.extern.task import gstreamer
 
 # checksums are not CRC's. a CRC is a specific type of checksum.
 
+
 class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
     """
     I am a task that calculates a checksum of the decoded audio data.
@@ -63,7 +64,7 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
         self.debug('Creating checksum task on %r from %d to %d',
             path, frameStart, frameLength)
         if not os.path.exists(path):
-            raise IndexError, '%r does not exist' % path
+            raise IndexError('%r does not exist' % path)
 
         self._path = path
         self._frameStart = frameStart
@@ -166,6 +167,7 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
         self.checksum = self._checksum
 
     ### subclass methods
+
     def do_checksum_buffer(self, buf, checksum):
         """
         Subclasses should implement this.
@@ -173,6 +175,7 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
         raise NotImplementedError
 
     ### private methods
+
     def _new_buffer_cb(self, sink):
         buf = sink.emit('pull-buffer')
         gst.log('received new buffer at offset %r with length %r' % (
@@ -183,7 +186,7 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
         self._last = buf
 
         assert len(buf) % 4 == 0, "buffer is not a multiple of 4 bytes"
-        
+
         # FIXME: gst-python 0.10.14.1 doesn't have adapter_peek/_take wrapped
         # see http://bugzilla.gnome.org/show_bug.cgi?id=576505
         self._adapter.push(buf)
@@ -208,6 +211,7 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
         self.debug('eos, scheduling stop')
         self.schedule(0, self.stop)
 
+
 class CRC32Task(ChecksumTask):
     """
     I do a simple CRC32 check.
@@ -218,6 +222,7 @@ class CRC32Task(ChecksumTask):
     def do_checksum_buffer(self, buf, checksum):
         return zlib.crc32(buf, checksum)
 
+
 class AccurateRipChecksumTask(ChecksumTask):
     """
     I implement the AccurateRip checksum.
@@ -227,7 +232,8 @@ class AccurateRipChecksumTask(ChecksumTask):
 
     description = 'Calculating AccurateRip checksum'
 
-    def __init__(self, path, trackNumber, trackCount, frameStart=0, frameLength=-1):
+    def __init__(self, path, trackNumber, trackCount, frameStart=0,
+            frameLength=-1):
         ChecksumTask.__init__(self, path, frameStart, frameLength)
         self._trackNumber = trackNumber
         self._trackCount = trackCount
@@ -252,7 +258,7 @@ class AccurateRipChecksumTask(ChecksumTask):
                 checksum += common.SAMPLES_PER_FRAME * 5 * values[0]
                 checksum &= 0xFFFFFFFF
                 return checksum
- 
+
         # on last track, skip last 5 CD frames
         if self._trackNumber == self._trackCount:
             discFrameLength = self._frameLength / common.SAMPLES_PER_FRAME
@@ -267,10 +273,11 @@ class AccurateRipChecksumTask(ChecksumTask):
             checksum &= 0xFFFFFFFF
             # offset = self._bytes / 4 + i + 1
             # if offset % common.SAMPLES_PER_FRAME == 0:
-            #    print 'THOMAS: frame %d, ends before %d, last value %08x, CRC %08x' % (
-            #        offset / common.SAMPLES_PER_FRAME, offset, value, sum)
+            #   print 'frame %d, ends before %d, last value %08x, CRC %08x' % (
+            #     offset / common.SAMPLES_PER_FRAME, offset, value, sum)
 
         return checksum
+
 
 class TRMTask(task.GstPipelineTask):
     """
@@ -284,7 +291,7 @@ class TRMTask(task.GstPipelineTask):
 
     def __init__(self, path):
         if not os.path.exists(path):
-            raise IndexError, '%s does not exist' % path
+            raise IndexError('%s does not exist' % path)
 
         self.path = path
         self._trm = None
@@ -296,7 +303,6 @@ class TRMTask(task.GstPipelineTask):
             decodebin ! audioconvert ! audio/x-raw-int !
             trm name=trm !
             appsink name=sink sync=False emit-signals=True''' % self.path
-
 
     def parsed(self):
         sink = self.pipeline.get_by_name('sink')
@@ -316,10 +322,10 @@ class TRMTask(task.GstPipelineTask):
 
     # FIXME: can't move this to base class because it triggers too soon
     # in the case of checksum
+
     def bus_eos_cb(self, bus, message):
         gst.debug('eos, scheduling stop')
         self.schedule(0, self.stop)
-
 
     def bus_tag_cb(self, bus, message):
         taglist = message.parse_tag()
