@@ -380,7 +380,7 @@ class DiscInfoTask(CDRDAOTask):
     def parse(self, line):
         # called by parser
         if line.startswith('Sessions'):
-            self.sessions = int (line[line.find(':') + 1:])
+            self.sessions = int(line[line.find(':') + 1:])
             self.debug('Found %d sessions', self.sessions)
         m = _ERROR_RE.search(line)
         if m:
