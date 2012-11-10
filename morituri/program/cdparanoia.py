@@ -466,7 +466,9 @@ class ReadVerifyTrackTask(log.Loggable, task.MultiSeparateTask):
                     self.checksum = self.testchecksum
                 else:
                     # FIXME: detect this before encoding
-                    self.error('read and verify failed')
+                    self.info('Checksums do not match, %08x %08x' % (
+                        c1, c2))
+                    self.error('read and verify failed: test checksum')
 
                 if self.tasks[5].checksum != self.checksum:
                     self.error('Encoding failed, checksum does not match')
