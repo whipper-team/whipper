@@ -6,17 +6,17 @@
 # Copyright (C) 2009 Thomas Vander Stichele
 
 # This file is part of morituri.
-# 
+#
 # morituri is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # morituri is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -168,7 +168,7 @@ class ProgressParser(object):
         # cdparanoia outputs most [wrote] calls with one word less than a frame
         frameOffset = (wordOffset + 1) / common.WORDS_PER_FRAME
         self.wrote = frameOffset
-        
+
     def getTrackQuality(self):
         """
         Each frame gets read twice.
@@ -357,7 +357,7 @@ class ReadTrackTask(log.Loggable, task.Task):
                 self.exception = ReturnCodeError(self._popen.returncode)
 
         self.quality = self._parser.getTrackQuality()
-            
+
         self.stop()
         return
 
