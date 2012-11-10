@@ -429,7 +429,7 @@ class Table(object, log.Loggable):
         query = urllib.urlencode({
             'id': discid,
             'toc': ' '.join([str(v) for v in values]),
-            'tracks': self.getAudioTracks()
+            'tracks': self.getAudioTracks(),
         })
 
         return urlparse.urlunparse((
@@ -567,7 +567,7 @@ class Table(object, log.Loggable):
         main = ['PERFORMER', 'TITLE']
 
         for key in CDTEXT_FIELDS:
-                if key not in main and self.cdtext.has_key(key):
+                if key not in main and key in self.cdtext:
                     lines.append("    %s %s" % (key, self.cdtext[key]))
 
         assert self.hasTOC(), "Table does not represent a full CD TOC"
@@ -578,7 +578,7 @@ class Table(object, log.Loggable):
             lines.append("CATALOG %s" % self.catalog)
 
         for key in main:
-            if self.cdtext.has_key(key):
+            if key in self.cdtext:
                 lines.append('%s "%s"' % (key, self.cdtext[key]))
 
         # add the first FILE line
@@ -593,14 +593,14 @@ class Table(object, log.Loggable):
 
             # if there is no index 0, but there is a new file, advance
             # FILE line here
-            if not track.indexes.has_key(0):
+            if not 0 in track.indexes:
                 index = track.indexes[1]
                 if index.counter != counter:
                     writeFile(index.path)
                     counter = index.counter
             lines.append("  TRACK %02d %s" % (i + 1, 'AUDIO'))
             for key in CDTEXT_FIELDS:
-                if track.cdtext.has_key(key):
+                if key in track.cdtext:
                     lines.append('    %s "%s"' % (key, track.cdtext[key]))
 
             if track.isrc is not None:
@@ -699,7 +699,7 @@ class Table(object, log.Loggable):
             if index.counter is None:
                 self.debug('Track %d, index %d has no counter', t, i)
                 break
-            if  index.counter != counter:
+            if index.counter != counter:
                 self.debug('Track %d, index %d has a different counter', t, i)
                 break
             self.debug('Setting absolute offset %d on track %d, index %d',
@@ -782,8 +782,8 @@ class Table(object, log.Loggable):
 
         track += 1
         if track > len(self.tracks):
-            raise IndexError, "No index beyond track %d, index %d" % (
-                track - 1, index)
+            raise IndexError("No index beyond track %d, index %d" % (
+                track - 1, index))
 
         t = self.tracks[track - 1]
         indexes = t.indexes.keys()
