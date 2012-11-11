@@ -33,6 +33,7 @@ from morituri.common import log, common
 from morituri.extern import asyncsub
 from morituri.extern.task import task
 
+
 class FileSizeError(Exception):
 
     message = None
@@ -40,15 +41,18 @@ class FileSizeError(Exception):
     """
     The given path does not have the expected size.
     """
+
     def __init__(self, path, message):
         self.args = (path, message)
         self.path = path
         self.message = message
 
+
 class ReturnCodeError(Exception):
     """
     The program had a non-zero return code.
     """
+
     def __init__(self, returncode):
         self.args = (returncode, )
         self.returncode = returncode
@@ -68,6 +72,7 @@ _ERROR_RE = re.compile("^scsi_read error:")
 
 # from reading cdparanoia source code, it looks like offset is reported in
 # number of single-channel samples, ie. 2 bytes per unit, and absolute
+
 
 class ProgressParser(object):
     read = 0 # last [read] frame
@@ -91,7 +96,6 @@ class ProgressParser(object):
         self.read = start
 
         self._reads = {} # read count for each sector
-
 
     def parse(self, line):
         """
@@ -188,6 +192,8 @@ class ProgressParser(object):
 
 
 # FIXME: handle errors
+
+
 class ReadTrackTask(log.Loggable, task.Task):
     """
     I am a task that reads a track using cdparanoia.
@@ -366,6 +372,7 @@ class ReadTrackTask(log.Loggable, task.Task):
         self.stop()
         return
 
+
 class ReadVerifyTrackTask(log.Loggable, task.MultiSeparateTask):
     """
     I am a task that reads and verifies a track using cdparanoia.
@@ -460,7 +467,8 @@ class ReadVerifyTrackTask(log.Loggable, task.MultiSeparateTask):
         # we chain up should be handled by a parent class function ?
         try:
             if not self.exception:
-                self.quality = max(self.tasks[0].quality, self.tasks[2].quality)
+                self.quality = max(self.tasks[0].quality,
+                    self.tasks[2].quality)
                 self.peak = self.tasks[4].peak
                 self.debug('peak: %r', self.peak)
 

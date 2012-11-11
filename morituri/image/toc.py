@@ -86,7 +86,9 @@ _INDEX_RE = re.compile(r"""
     \s(?P<offset>.+)$ # start offset
 """, re.VERBOSE)
 
+
 class TocFile(object, log.Loggable):
+
     def __init__(self, path):
         """
         @type  path: unicode
@@ -355,10 +357,12 @@ class TocFile(object, log.Loggable):
 
         raise KeyError("Cannot find file for %r" % path)
 
+
 class File:
     """
     I represent a FILE line in a .toc file.
     """
+
     def __init__(self, path, start, length):
         """
         @type  path: unicode

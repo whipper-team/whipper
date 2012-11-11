@@ -117,6 +117,7 @@ class Track:
 
         return self.indexes[1].absolute - self.indexes[0].absolute
 
+
 class Index:
     """
     @ivar counter: counter for the index source; distinguishes between
@@ -142,8 +143,9 @@ class Index:
         self.counter = counter
 
     def __repr__(self):
-        return '<Index %02d, absolute %r, path %r, relative %r, counter %r>' % (
+        return '<Index %02d absolute %r path %r relative %r counter %r>' % (
             self.number, self.absolute, self.path, self.relative, self.counter)
+
 
 class Table(object, log.Loggable):
     """
@@ -232,7 +234,6 @@ class Table(object, log.Loggable):
         """
         return len([t for t in self.tracks if not t.audio]) > 0
 
-
     def _cddbSum(self, i):
         ret = 0
         while i > 0:
@@ -286,8 +287,6 @@ class Table(object, log.Loggable):
 
         self.debug('CDDB values: %r', result)
         return result
-
-
 
     def getCDDBValues(self):
         """
@@ -353,7 +352,6 @@ class Table(object, log.Loggable):
 
         return result
 
-
     def getCDDBDiscId(self):
         """
         Calculate the CDDB disc ID.
@@ -363,7 +361,6 @@ class Table(object, log.Loggable):
         """
         values = self.getCDDBValues()
         return "%08x" % values[0]
-
 
     def getMusicBrainzDiscId(self):
         """
@@ -507,7 +504,6 @@ class Table(object, log.Loggable):
         self.debug('Musicbrainz values: %r', result)
         return result
 
-
     def getAccurateRipIds(self):
         """
         Calculate the two AccurateRip ID's.
@@ -622,6 +618,7 @@ class Table(object, log.Loggable):
         return "\n".join(lines)
 
     ### methods that modify the table
+
     def clearFiles(self):
         """
         Clear all file backings.
@@ -644,7 +641,6 @@ class Table(object, log.Loggable):
                 t, i = self.getNextTrackIndex(t, i)
             except IndexError:
                 break
-
 
     def setFile(self, track, index, path, length, counter=None):
         """
@@ -763,6 +759,7 @@ class Table(object, log.Loggable):
         return gap
 
     ### lookups
+
     def getNextTrackIndex(self, track, index):
         """
         Return the next track and index.
@@ -790,8 +787,8 @@ class Table(object, log.Loggable):
 
         return track, indexes[0]
 
-
     # various tests for types of Table
+
     def hasTOC(self):
         """
         Check if the Table has a complete TOC.

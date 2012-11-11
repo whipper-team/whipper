@@ -37,6 +37,7 @@ class MusicBrainzException(Exception):
 
 
 class TrackMetadata(object):
+
     artist = None
     title = None
     duration = None # in ms
@@ -131,6 +132,8 @@ def _getMetadata(release):
 
 
 # see http://bugs.musicbrainz.org/browser/python-musicbrainz2/trunk/examples/ripper.py
+
+
 def musicbrainz(discid):
     """
     Based on a MusicBrainz disc id, get a list of DiscMetadata objects

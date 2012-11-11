@@ -24,6 +24,7 @@ from morituri.common import logcommand
 
 from morituri.common import task
 
+
 class Checksum(logcommand.LogCommand):
 
     summary = "run a checksum task"
@@ -44,7 +45,6 @@ class Checksum(logcommand.LogCommand):
         runner.run(checksumtask)
 
         self.stdout.write('Checksum: %08x\n' % checksumtask.checksum)
-
 
 
 class Encode(logcommand.LogCommand):
@@ -85,10 +85,10 @@ class Encode(logcommand.LogCommand):
 
         runner.run(encodetask)
 
+
 class MusicBrainzNGS(logcommand.LogCommand):
 
     summary = "examine MusicBrainz NGS info"
-
 
     def do(self, args):
         try:
@@ -112,7 +112,9 @@ class MusicBrainzNGS(logcommand.LogCommand):
                     j + 1, track.artist.encode('utf-8'),
                     track.title.encode('utf-8')))
 
+
 class Debug(logcommand.LogCommand):
+
     summary = "debug internals"
 
     subCommandClasses = [Checksum, Encode, MusicBrainzNGS]

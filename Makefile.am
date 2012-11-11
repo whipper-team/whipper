@@ -21,7 +21,7 @@ coverage: _trial_temp/coverage
 	python misc/show-coverage.py `ls _trial_temp/coverage/morituri* | grep -v morituri.test | grep -v morituri.extern`
 
 pep8:
-	python misc/pep8.py $(SOURCES)
+	for file in $(SOURCES); do python misc/pep8.py --repeat $$file; done
 
 clean-local:
 	@rm -rf _trial_temp

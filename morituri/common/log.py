@@ -27,6 +27,7 @@ Logging
 from morituri.extern.log import log as externlog
 from morituri.extern.log.log import *
 
+
 def init():
     externlog.init('RIP_DEBUG')
     externlog.setPackageScrubList('morituri')

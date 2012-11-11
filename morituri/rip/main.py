@@ -10,6 +10,7 @@ from morituri.rip import cd, offset, drive, image, accurip, debug
 from morituri.extern.command import command
 from morituri.extern.task import task
 
+
 def main(argv):
     c = Rip()
     try:
@@ -52,6 +53,7 @@ cdrdao says:
         return 0
 
     return ret
+
 
 class Rip(logcommand.LogCommand):
     usage = "%prog %command"

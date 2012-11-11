@@ -29,6 +29,7 @@ Rename files on file system and inside metafiles in a resumable way.
 
 
 class Operator(object):
+
     def __init__(self, statePath, key):
         self._todo = []
         self._done = []
@@ -69,7 +70,6 @@ class Operator(object):
 
         # last task done is i; check if the next one might have gotten done.
         self._resuming = True
-
 
     def save(self):
         """
@@ -112,6 +112,7 @@ class Operator(object):
 
 
 class FileRenamer(Operator):
+
     def addRename(self, source, destination):
         """
         Add a rename operation.
@@ -124,6 +125,7 @@ class FileRenamer(Operator):
 
 
 class Operation(object):
+
     def verify(self):
         """
         Check if the operation will succeed in the current conditions.
@@ -164,6 +166,7 @@ class Operation(object):
 
 
 class RenameFile(Operation):
+
     def __init__(self, source, destination):
         self._source = source
         self._destination = destination
@@ -189,6 +192,7 @@ class RenameFile(Operation):
 
 
 class RenameInFile(Operation):
+
     def __init__(self, path, source, destination):
         self._path = path
         self._source = source

@@ -24,6 +24,7 @@ import time
 
 from morituri.result import logger
 
+
 class TrackResult:
     """
     @type filename:          unicode
@@ -70,6 +71,7 @@ class TrackResult:
 
     classVersion = 2
 
+
 class RipResult:
     """
     I hold information about the result for rips.
@@ -104,6 +106,7 @@ class RipResult:
 
         return None
 
+
 class Logger(object):
     """
     I log the result of a rip.
@@ -119,6 +122,7 @@ class Logger(object):
         @rtype: str
         """
         raise NotImplementedError
+
 
 def getLogger():
     return logger.MorituriLogger()

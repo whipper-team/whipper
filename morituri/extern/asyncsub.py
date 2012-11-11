@@ -19,7 +19,9 @@ else:
     import select
     import fcntl
 
+
 class Popen(subprocess.Popen):
+
     def recv(self, maxsize=None):
         return self._recv('stdout', maxsize)
 
@@ -41,6 +43,7 @@ class Popen(subprocess.Popen):
         setattr(self, which, None)
 
     if subprocess.mswindows:
+
         def send(self, input):
             if not self.stdin:
                 return None
@@ -81,6 +84,7 @@ class Popen(subprocess.Popen):
             return read
 
     else:
+
         def send(self, input):
             if not self.stdin:
                 return None
@@ -123,6 +127,7 @@ class Popen(subprocess.Popen):
 
 message = "Other end disconnected!"
 
+
 def recv_some(p, t=.1, e=1, tr=5, stderr=0):
     if tr < 1:
         tr = 1
@@ -144,6 +149,7 @@ def recv_some(p, t=.1, e=1, tr=5, stderr=0):
         else:
             time.sleep(max((x-time.time())/tr, 0))
     return ''.join(y)
+
 
 def send_all(p, data):
     while len(data):

@@ -218,6 +218,7 @@ class File:
     """
     I represent a FILE line in a cue file.
     """
+
     def __init__(self, path, format):
         """
         @type  path: unicode

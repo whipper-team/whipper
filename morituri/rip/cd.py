@@ -201,6 +201,7 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
             prog.result.model = 'Unknown'
 
         # FIXME: turn this into a method
+
         def ripIfNotRipped(number):
             # we can have a previous result
             trackResult = prog.result.getTrackResult(number)
@@ -364,6 +365,7 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
 
 
 class CD(logcommand.LogCommand):
+
     summary = "handle CD's"
 
     subCommandClasses = [Rip, ]

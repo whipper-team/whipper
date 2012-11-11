@@ -45,6 +45,7 @@ OFFSETS = "+6, +48, +102, +667, +12, +30, +618, +594, +738, -472, " + \
           "-495, -494, +975, +935, +87, +668, +1776, +1364, +1336, " + \
           "+1127"
 
+
 class Find(logcommand.LogCommand):
     summary = "find drive read offset"
     description = """Find drive's read offset by ripping tracks from a
@@ -84,7 +85,6 @@ CD in the AccurateRip database."""
             self.options.device = drives[0]
 
         # this can be a symlink to another device
-
 
     def do(self, args):
         prog = program.Program()
@@ -213,6 +213,7 @@ CD in the AccurateRip database."""
 
         os.unlink(path)
         return "%08x" % t.checksum
+
 
 class Offset(logcommand.LogCommand):
     summary = "handle drive offsets"

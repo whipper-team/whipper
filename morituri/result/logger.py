@@ -25,12 +25,12 @@ import time
 from morituri.common import common
 from morituri.configure import configure
 
+
 class MorituriLogger(object):
 
     def log(self, ripResult, epoch=time.time()):
         lines = self.logRip(ripResult, epoch=epoch)
         return '\n'.join(lines)
-
 
     def logRip(self, ripResult, epoch):
 

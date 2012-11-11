@@ -30,6 +30,7 @@ from morituri.extern.task import task
 
 
 class Encode(logcommand.LogCommand):
+
     summary = "encode image"
 
     def addOptions(self):
@@ -48,7 +49,6 @@ class Encode(logcommand.LogCommand):
             help="profile for encoding (default '%s', choices '%s')" % (
                 default, "', '".join(encode.ALL_PROFILES.keys())),
             default=default)
-
 
     def do(self, args):
         prog = program.Program()
@@ -98,7 +98,9 @@ class Encode(logcommand.LogCommand):
                         outm3u.write('%s' % root)
                 outm3u.close()
 
+
 class Retag(logcommand.LogCommand):
+
     summary = "retag image files"
 
     def do(self, args):
@@ -135,7 +137,9 @@ class Retag(logcommand.LogCommand):
                     print '%s already tagged correctly' % path
             print
 
+
 class Verify(logcommand.LogCommand):
+
     summary = "verify image"
 
     def do(self, args):
@@ -163,7 +167,9 @@ class Verify(logcommand.LogCommand):
 
             print "\n".join(prog.getAccurateRipResults()) + "\n"
 
+
 class Image(logcommand.LogCommand):
+
     summary = "handle images"
 
     description = """

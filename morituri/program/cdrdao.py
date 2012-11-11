@@ -38,6 +38,7 @@ class ProgramError(Exception):
     """
     The program had a fatal error.
     """
+
     def __init__(self, errorMessage):
         self.args = (errorMessage, )
         self.errorMessage = errorMessage
@@ -80,6 +81,7 @@ class LineParser(object, log.Loggable):
     Parse incoming bytes into lines
     Calls 'parse' on owner for each parsed line.
     """
+
     def __init__(self, owner):
         self._buffer = ""     # accumulate characters
         self._lines = []      # accumulate lines
@@ -132,7 +134,8 @@ class OutputParser(object, log.Loggable):
         # find counter in LEADOUT state; only when we read full toc
         self.log('state: %s, buffer bytes: %d', self._state, len(self._buffer))
         if self._buffer and self._state == 'LEADOUT':
-            # split on lines that end in \r, which reset cursor to counter start
+            # split on lines that end in \r, which reset cursor to counter
+            # start
             # this misses the first one, but that's ok:
             # length 03:40:71...\n00:01:00
             times = self._buffer.split('\r')
@@ -183,7 +186,6 @@ class OutputParser(object, log.Loggable):
             self._parse(lines)
             self._lines.extend(lines)
 
-
     def _parse(self, lines):
         for line in lines:
             #print 'parsing', len(line), line
@@ -206,7 +208,6 @@ class OutputParser(object, log.Loggable):
         if m:
             error = m.group('error')
             self._task.errors.append(error)
-
 
     def _parse_TRACK(self, line):
         if line.startswith('---'):
@@ -381,7 +382,6 @@ class DiscInfoTask(CDRDAOTask):
 
     def readbyteserr(self, bytes):
         self.parser.read(bytes)
-
 
     def parse(self, line):
         # called by parser
@@ -572,12 +572,14 @@ class ReadTOCTask(ReadAllSessionsTask):
 
 
 class DeviceOpenException(Exception):
+
     def __init__(self, msg):
         self.msg = msg
         self.args = (msg, )
 
 
 class ProgramFailedException(Exception):
+
     def __init__(self, code):
         self.code = code
         self.args = (code, )

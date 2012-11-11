@@ -22,7 +22,9 @@
 
 from morituri.common import logcommand, drive
 
+
 class List(logcommand.LogCommand):
+
     summary = "list drives"
 
     def do(self, args):
@@ -52,6 +54,7 @@ class List(logcommand.LogCommand):
 
 
 class Drive(logcommand.LogCommand):
+
     summary = "handle drives"
 
     subCommandClasses = [List, ]

@@ -31,6 +31,7 @@ from morituri.image import cue, table
 
 from morituri.extern.task import task, gstreamer
 
+
 class Image(object, log.Loggable):
     """
     @ivar table: The Table of Contents for this image.
@@ -90,7 +91,8 @@ class Image(object, log.Loggable):
             tracks.append(t)
             # FIXME: this probably only works for non-compliant .CUE files
             # where pregap is put at end of previous file
-            t.index(1, absolute=offset, path=self.cue.table.tracks[i].getIndex(1).path,
+            t.index(1, absolute=offset,
+                path=self.cue.table.tracks[i].getIndex(1).path,
                 relative=0)
 
             offset += length
@@ -135,6 +137,7 @@ class AccurateRipChecksumTask(log.Loggable, task.MultiSeparateTask):
         self.checksums = [t.checksum for t in self.tasks]
         task.MultiSeparateTask.stop(self)
 
+
 class AudioLengthTask(log.Loggable, gstreamer.GstPipelineTask):
     """
     I calculate the length of a track in audio frames.
@@ -146,7 +149,6 @@ class AudioLengthTask(log.Loggable, gstreamer.GstPipelineTask):
     length = None
 
     playing = False
-
 
     def __init__(self, path):
         """
@@ -185,6 +187,7 @@ class AudioLengthTask(log.Loggable, gstreamer.GstPipelineTask):
 
         self.pipeline.set_state(self.gst.STATE_NULL)
         self.stop()
+
 
 class ImageVerifyTask(log.Loggable, task.MultiSeparateTask):
     """
@@ -234,6 +237,7 @@ class ImageVerifyTask(log.Loggable, task.MultiSeparateTask):
             self.lengths[trackIndex] = end - index.relative
 
         task.MultiSeparateTask.stop(self)
+
 
 class ImageEncodeTask(log.Loggable, task.MultiSeparateTask):
     """

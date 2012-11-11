@@ -32,6 +32,7 @@ from morituri.result import result
 from morituri.program import cdrdao, cdparanoia
 from morituri.image import image
 
+
 def filterForPath(text):
     return "-".join(text.split("/"))
 

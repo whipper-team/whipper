@@ -22,7 +22,9 @@
 
 from morituri.common import logcommand, accurip
 
+
 class Show(logcommand.LogCommand):
+
     summary = "show accuraterip data"
 
     def do(self, args):
