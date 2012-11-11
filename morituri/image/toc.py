@@ -6,17 +6,17 @@
 # Copyright (C) 2009 Thomas Vander Stichele
 
 # This file is part of morituri.
-# 
+#
 # morituri is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # morituri is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -264,7 +264,7 @@ class TocFile(object, log.Loggable):
                 # store the pregapLength to add it when we index 1 for this
                 # track on the next iteration
                 pregapLength = length
-                
+
             # look for INDEX lines
             m = _INDEX_RE.search(line)
             if m:

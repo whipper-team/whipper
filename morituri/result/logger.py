@@ -6,17 +6,17 @@
 # Copyright (C) 2009 Thomas Vander Stichele
 
 # This file is part of morituri.
-# 
+#
 # morituri is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # morituri is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -77,7 +77,7 @@ class MorituriLogger(object):
             length = table.getTrackLength(t.number)
             lines.append(
             "       %2d  | %6d - %s | %6d - %s" % (
-                t.number, 
+                t.number,
                 start, common.framesToMSF(start),
                 length, common.framesToMSF(length)))
 
@@ -115,7 +115,7 @@ class MorituriLogger(object):
                 lines.append("  WARNING: CRCs don't match!")
         else:
             lines.append("  WARNING: no CRC check done")
-        
+
         if trackResult.accurip:
             lines.append('  Accurately ripped (confidence %d) [%08X]' % (
                 trackResult.ARDBConfidence, trackResult.ARCRC))
