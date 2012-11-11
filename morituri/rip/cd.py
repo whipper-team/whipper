@@ -246,7 +246,7 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
                     except Exception, e:
                         self.debug('Got exception %r on try %d',
                             e, tries)
-                        
+
 
                 if tries == MAX_TRIES:
                     self.error('Giving up on track %d after %d times' % (

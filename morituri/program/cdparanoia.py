@@ -53,6 +53,11 @@ class ReturnCodeError(Exception):
         self.args = (returncode, )
         self.returncode = returncode
 
+
+class ChecksumException(Exception):
+    pass
+
+
 _PROGRESS_RE = re.compile(r"""
     ^\#\#: (?P<code>.+)\s      # function code
     \[(?P<function>.*)\]\s@\s     # function name
@@ -468,27 +473,32 @@ class ReadVerifyTrackTask(log.Loggable, task.MultiSeparateTask):
                     # FIXME: detect this before encoding
                     self.info('Checksums do not match, %08x %08x' % (
                         c1, c2))
-                    self.error('read and verify failed: test checksum')
+                    self.exception = ChecksumException(
+                        'read and verify failed: test checksum')
 
                 if self.tasks[5].checksum != self.checksum:
-                    self.error('Encoding failed, checksum does not match')
+                    self.exception = ChecksumException(
+                        'Encoding failed, checksum does not match')
 
                 # delete the unencoded file
                 os.unlink(self._tmpwavpath)
 
                 os.chmod(self._tmppath, self.file_mode)
 
-                try:
-                    self.debug('Moving to final path %r', self.path)
-                    shutil.move(self._tmppath, self.path)
-                except IOError, e:
-                    if e.errno == errno.ENAMETOOLONG:
-                        self.path = common.shrinkPath(self.path)
+                if not self.exception:
+                    try:
+                        self.debug('Moving to final path %r', self.path)
                         shutil.move(self._tmppath, self.path)
-                except Exception, e:
-                    self.debug('Exception while moving to final path %r: %r',
-                        self.path, log.getExceptionMessage(e))
-                    self.exception = e
+                    except IOError, e:
+                        if e.errno == errno.ENAMETOOLONG:
+                            self.path = common.shrinkPath(self.path)
+                            shutil.move(self._tmppath, self.path)
+                    except Exception, e:
+                        self.debug('Exception while moving to final path %r: %r',
+                            self.path, log.getExceptionMessage(e))
+                        self.exception = e
+                else:
+                    os.unlink(self._tmppath)
             else:
                 self.debug('stop: exception %r', self.exception)
         except Exception, e:
