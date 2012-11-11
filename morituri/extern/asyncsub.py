@@ -22,7 +22,7 @@ else:
 class Popen(subprocess.Popen):
     def recv(self, maxsize=None):
         return self._recv('stdout', maxsize)
-    
+
     def recv_err(self, maxsize=None):
         return self._recv('stderr', maxsize)
 
@@ -35,11 +35,11 @@ class Popen(subprocess.Popen):
         elif maxsize < 1:
             maxsize = 1
         return getattr(self, which), maxsize
-    
+
     def _close(self, which):
         getattr(self, which).close()
         setattr(self, which, None)
-    
+
     if subprocess.mswindows:
         def send(self, input):
             if not self.stdin:
@@ -61,7 +61,7 @@ class Popen(subprocess.Popen):
             conn, maxsize = self.get_conn_maxsize(which, maxsize)
             if conn is None:
                 return None
-            
+
             try:
                 x = msvcrt.get_osfhandle(conn.fileno())
                 (read, nAvail, nMessage) = PeekNamedPipe(x, 0)
@@ -75,7 +75,7 @@ class Popen(subprocess.Popen):
                 if why[0] in (109, errno.ESHUTDOWN):
                     return self._close(which)
                 raise
-            
+
             if self.universal_newlines:
                 read = self._translate_newlines(read)
             return read
@@ -101,19 +101,19 @@ class Popen(subprocess.Popen):
             conn, maxsize = self.get_conn_maxsize(which, maxsize)
             if conn is None:
                 return None
-            
+
             flags = fcntl.fcntl(conn, fcntl.F_GETFL)
             if not conn.closed:
                 fcntl.fcntl(conn, fcntl.F_SETFL, flags| os.O_NONBLOCK)
-            
+
             try:
                 if not select.select([conn], [], [], 0)[0]:
                     return ''
-                
+
                 r = conn.read(maxsize)
                 if not r:
                     return self._close(which)
-    
+
                 if self.universal_newlines:
                     r = self._translate_newlines(r)
                 return r
@@ -144,7 +144,7 @@ def recv_some(p, t=.1, e=1, tr=5, stderr=0):
         else:
             time.sleep(max((x-time.time())/tr, 0))
     return ''.join(y)
-    
+
 def send_all(p, data):
     while len(data):
         sent = p.send(data)
@@ -157,7 +157,7 @@ if __name__ == '__main__':
         shell, commands, tail = ('cmd', ('dir /w', 'echo HELLO WORLD'), '\r\n')
     else:
         shell, commands, tail = ('sh', ('ls', 'echo HELLO WORLD'), '\n')
-    
+
     a = Popen(shell, stdin=PIPE, stdout=PIPE)
     print recv_some(a),
     for cmd in commands:
