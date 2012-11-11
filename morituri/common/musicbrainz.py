@@ -30,6 +30,7 @@ from morituri.common import log
 
 
 class MusicBrainzException(Exception):
+
     def __init__(self, exc):
         self.args = (exc, )
         self.exception = exc
