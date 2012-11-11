@@ -10,6 +10,7 @@ from morituri.result import result
 from morituri.common import program, accurip, musicbrainzngs
 from morituri.rip import cd
 
+
 class TrackImageVerifyTestCase(unittest.TestCase):
     # example taken from a rip of Luke Haines Is Dead, disc 1
     # AccurateRip database has 0 confidence for 1st track
@@ -71,7 +72,7 @@ class HTOATestCase(unittest.TestCase):
         path = os.path.join(os.path.dirname(__file__),
             'silentalarm.result.pickle')
         self._tracks = pickle.load(open(path, 'rb'))
-        
+
     def testGetAccurateRipResults(self):
         prog = program.Program()
         prog.result = result.RipResult()
@@ -87,7 +88,7 @@ class PathTestCase(unittest.TestCase):
         path = prog.getPath(u'/tmp', cd.DEFAULT_DISC_TEMPLATE, 'mbdiscid', 0)
         self.assertEquals(path,
             u'/tmp/Unknown Artist - mbdiscid/Unknown Artist - mbdiscid')
-        
+
     def testStandardTemplateFilled(self):
         prog = program.Program()
         md = musicbrainzngs.DiscMetadata()

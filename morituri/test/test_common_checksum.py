@@ -21,7 +21,7 @@ class EmptyTestCase(tcommon.TestCase):
         # this test makes sure that checksumming empty files doesn't hang
         self.runner = task.SyncRunner(verbose=False)
         fd, path = tempfile.mkstemp(suffix=u'morituri.test.empty')
-        checksumtask = checksum.ChecksumTask(path) 
+        checksumtask = checksum.ChecksumTask(path)
         # FIXME: do we want a specific error for this ?
         e = self.assertRaises(task.TaskException, self.runner.run,
             checksumtask, verbose=False)
@@ -32,7 +32,7 @@ class PathTestCase(tcommon.TestCase):
     def _testSuffix(self, suffix):
         self.runner = task.SyncRunner(verbose=False)
         fd, path = tempfile.mkstemp(suffix=suffix)
-        checksumtask = checksum.ChecksumTask(path) 
+        checksumtask = checksum.ChecksumTask(path)
         e = self.assertRaises(task.TaskException, self.runner.run,
             checksumtask, verbose=False)
         self.failUnless(isinstance(e.exception, gstreamer.GstException))

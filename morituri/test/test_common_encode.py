@@ -9,7 +9,7 @@ gobject.threads_init()
 
 import gst
 
-from morituri.common import encode, log
+from morituri.common import encode
 
 from morituri.extern.task import task, gstreamer
 
@@ -60,7 +60,7 @@ class TagReadTestCase(common.TestCase):
 class TagWriteTestCase(common.TestCase):
     def testWrite(self):
         fd, inpath = tempfile.mkstemp(suffix=u'.morituri.tagwrite.flac')
-        
+
         # wave is pink-noise because a pure sine is encoded too efficiently
         # by flacenc and triggers not enough frames in parsing
         # FIXME: file a bug for this in GStreamer
@@ -91,11 +91,11 @@ class TagWriteTestCase(common.TestCase):
 
         os.unlink(inpath)
         os.unlink(outpath)
-        
+
 class SafeRetagTestCase(common.TestCase):
     def setUp(self):
         self._fd, self._path = tempfile.mkstemp(suffix=u'.morituri.retag.flac')
-        
+
         os.system('gst-launch '
             'audiotestsrc '
                 'num-buffers=40 samplesperbuffer=588 wave=pink-noise ! '
