@@ -8,7 +8,9 @@ import unittest
 
 from morituri.common import renamer
 
+
 class RenameInFileTestcase(unittest.TestCase):
+
     def setUp(self):
         (fd, self._path) = tempfile.mkstemp(suffix='.morituri.renamer.infile')
         os.write(fd, 'This is a test\nThis is another\n')
@@ -36,7 +38,9 @@ class RenameInFileTestcase(unittest.TestCase):
         self.assertEquals(output, 'That was some test\nThat was somenother\n')
         os.unlink(self._path)
 
+
 class RenameFileTestcase(unittest.TestCase):
+
     def setUp(self):
         (fd, self._source) = tempfile.mkstemp(suffix='.morituri.renamer.file')
         os.write(fd, 'This is a test\nThis is another\n')
@@ -73,8 +77,10 @@ class RenameFileTestcase(unittest.TestCase):
         output = open(self._destination).read()
         self.assertEquals(output, 'This is a test\nThis is another\n')
         os.unlink(self._destination)
-  
+
+
 class OperatorTestCase(unittest.TestCase):
+
     def setUp(self):
         self._statePath = tempfile.mkdtemp(suffix='.morituri.renamer.operator')
         self._operator = renamer.Operator(self._statePath, 'test')
