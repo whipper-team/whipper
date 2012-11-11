@@ -6,17 +6,17 @@
 # Copyright (C) 2009 Thomas Vander Stichele
 
 # This file is part of morituri.
-# 
+#
 # morituri is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # morituri is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -44,7 +44,7 @@ class Image(object, log.Loggable):
         @param path: .cue path
         """
         assert type(path) is unicode, "%r is not unicode" % path
-        
+
         self._path = path
         self.cue = cue.CueFile(path)
         self.cue.parse()
@@ -104,7 +104,7 @@ class AccurateRipChecksumTask(log.Loggable, task.MultiSeparateTask):
     """
     I calculate the AccurateRip checksums of all tracks.
     """
-    
+
     description = "Checksumming tracks"
 
     def __init__(self, image):
@@ -190,7 +190,7 @@ class ImageVerifyTask(log.Loggable, task.MultiSeparateTask):
     """
     I verify a disk image and get the necessary track lengths.
     """
-    
+
     logCategory = 'ImageVerifyTask'
 
     description = "Checking tracks"
@@ -239,7 +239,7 @@ class ImageEncodeTask(log.Loggable, task.MultiSeparateTask):
     """
     I encode a disk image to a different format.
     """
-    
+
     description = "Encoding tracks"
 
     def __init__(self, image, profile, outdir):
