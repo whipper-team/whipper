@@ -6,17 +6,17 @@
 # Copyright (C) 2009 Thomas Vander Stichele
 
 # This file is part of morituri.
-# 
+#
 # morituri is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # morituri is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -79,7 +79,7 @@ CD in the AccurateRip database."""
             if not drives:
                 self.error('No CD-DA drives found!')
                 return 3
-        
+
             # pick the first
             self.options.device = drives[0]
 
@@ -106,7 +106,7 @@ CD in the AccurateRip database."""
         except cdrdao.DeviceOpenException, e:
             self.error(e.msg)
             return 3
-            
+
         table = t.table
 
         self.debug("CDDB disc id: %r", table.getCDDBDiscId())
@@ -136,7 +136,7 @@ CD in the AccurateRip database."""
 
         # now rip the first track at various offsets, calculating AccurateRip
         # CRC, and matching it against the retrieved ones
-        
+
         def match(archecksum, track, responses):
             for i, r in enumerate(responses):
                 if archecksum == r.checksums[track - 1]:
@@ -184,10 +184,10 @@ CD in the AccurateRip database."""
                 else:
                     print 'Only %d of %d tracks matched, continuing ...' % (
                         count, len(table.tracks))
-                    
+
         print 'No matching offset found.'
         print 'Consider trying again with a different disc.'
-                 
+
     def _arcs(self, runner, table, track, offset):
         # rips the track with the given offset, return the arcs checksum
         self.debug('Ripping track %r with offset %d ...', track, offset)
@@ -210,7 +210,7 @@ CD in the AccurateRip database."""
         t = checksum.AccurateRipChecksumTask(path, trackNumber=track,
             trackCount=len(table.tracks))
         runner.run(t)
-        
+
         os.unlink(path)
         return "%08x" % t.checksum
 

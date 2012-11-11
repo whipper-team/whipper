@@ -37,6 +37,9 @@ from morituri.extern.task import task
 DEFAULT_TRACK_TEMPLATE = u'%A - %d/%t. %a - %n'
 DEFAULT_DISC_TEMPLATE = u'%A - %d/%A - %d'
 
+MAX_TRIES = 5
+
+
 class Rip(logcommand.LogCommand):
     summary = "rip CD"
 
@@ -224,16 +227,30 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
                     os.unlink(path)
 
             if not os.path.exists(path):
+                tries = 0
                 print 'Ripping track %d of %d: %s' % (
                     number, len(itable.tracks),
                     os.path.basename(path).encode('utf-8'))
-                prog.ripTrack(runner, trackResult,
-                    offset=int(self.options.offset),
-                    device=self.parentCommand.options.device,
-                    profile=profile,
-                    taglist=prog.getTagList(number),
-                    what='track %d of %d' % (number, len(itable.tracks)))
+                while tries < MAX_TRIES:
+                    tries += 1
+                    try:
+                        self.debug('ripIfNotRipped: track %d, try %d',
+                            number, tries)
+                        prog.ripTrack(runner, trackResult,
+                            offset=int(self.options.offset),
+                            device=self.parentCommand.options.device,
+                            profile=profile,
+                            taglist=prog.getTagList(number),
+                            what='track %d of %d' % (number, len(itable.tracks)))
+                        break
+                    except Exception, e:
+                        self.debug('Got exception %r on try %d',
+                            e, tries)
+                        
 
+                if tries == MAX_TRIES:
+                    self.error('Giving up on track %d after %d times' % (
+                        number, tries))
                 if trackResult.testcrc == trackResult.copycrc:
                     print 'Checksums match for track %d' % (number)
                 else:

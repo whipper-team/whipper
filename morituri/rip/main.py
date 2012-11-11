@@ -40,7 +40,7 @@ cdrdao says:
             log.debug('main',
                 "EmptyError: %r", log.getExceptionMessage(e.exception))
             sys.stderr.write(
-                'rip: error: Could not create encoded file.\n') 
+                'rip: error: Could not create encoded file.\n')
             return 255
 
         raise
