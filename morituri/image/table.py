@@ -6,17 +6,17 @@
 # Copyright (C) 2009 Thomas Vander Stichele
 
 # This file is part of morituri.
-# 
+#
 # morituri is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # morituri is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -350,7 +350,7 @@ class Table(object, log.Loggable):
 
         self.debug('cddb disc id debug: %s',
             " ".join(["%08x" % value, ] + debug))
-        
+
         return result
 
 
@@ -549,7 +549,7 @@ class Table(object, log.Loggable):
         discId1, discId2 = self.getAccurateRipIds()
 
         return "http://www.accuraterip.com/accuraterip/" \
-            "%s/%s/%s/dBAR-%.3d-%s-%s-%s.bin" % ( 
+            "%s/%s/%s/dBAR-%.3d-%s-%s-%s.bin" % (
                 discId1[-1], discId1[-2], discId1[-3],
                 self.getAudioTracks(), discId1, discId2, self.getCDDBDiscId())
 
@@ -619,7 +619,7 @@ class Table(object, log.Loggable):
 
         lines.append("")
 
-        return "\n".join(lines) 
+        return "\n".join(lines)
 
     ### methods that modify the table
     def clearFiles(self):
@@ -682,7 +682,7 @@ class Table(object, log.Loggable):
         """
         Calculate absolute offsets on indexes as much as possible.
         Only possible for as long as tracks draw from the same file.
-        """ 
+        """
         t = self.tracks[0].number
         index = self.tracks[0].getFirstIndex()
         i = index.number

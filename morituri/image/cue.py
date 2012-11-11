@@ -61,7 +61,7 @@ _INDEX_RE = re.compile(r"""
 class CueFile(object, log.Loggable):
     """
     I represent a .cue file as an object.
-    
+
     @type table: L{table.Table}
     @ivar table: the index table.
     """
