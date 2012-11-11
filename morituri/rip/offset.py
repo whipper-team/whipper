@@ -218,5 +218,3 @@ class Offset(logcommand.LogCommand):
     summary = "handle drive offsets"
 
     subCommandClasses = [Find, ]
-
-

@@ -50,9 +50,8 @@ class List(logcommand.LogCommand):
         if not paths:
             print 'No drives found.'
 
+
 class Drive(logcommand.LogCommand):
     summary = "handle drives"
 
     subCommandClasses = [List, ]
-
-
