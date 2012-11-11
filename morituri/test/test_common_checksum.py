@@ -13,10 +13,13 @@ from morituri.extern.task import task, gstreamer
 
 from morituri.test import common as tcommon
 
+
 def h(i):
     return "0x%08x" % i
 
+
 class EmptyTestCase(tcommon.TestCase):
+
     def testEmpty(self):
         # this test makes sure that checksumming empty files doesn't hang
         self.runner = task.SyncRunner(verbose=False)
@@ -28,7 +31,9 @@ class EmptyTestCase(tcommon.TestCase):
         self.failUnless(isinstance(e.exception, gstreamer.GstException))
         os.unlink(path)
 
+
 class PathTestCase(tcommon.TestCase):
+
     def _testSuffix(self, suffix):
         self.runner = task.SyncRunner(verbose=False)
         fd, path = tempfile.mkstemp(suffix=suffix)
@@ -38,12 +43,16 @@ class PathTestCase(tcommon.TestCase):
         self.failUnless(isinstance(e.exception, gstreamer.GstException))
         os.unlink(path)
 
+
 class UnicodePathTestCase(PathTestCase, tcommon.UnicodeTestMixin):
+
     def testUnicodePath(self):
         # this test makes sure we can checksum a unicode path
         self._testSuffix(u'morituri.test.B\xeate Noire.empty')
 
+
 class NormalPathTestCase(PathTestCase):
+
     def testSingleQuote(self):
         self._testSuffix(u"morituri.test.Guns 'N Roses")
 

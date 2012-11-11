@@ -9,6 +9,7 @@ from morituri.common import musicbrainz
 
 
 class MetadataLengthTestCase(unittest.TestCase):
+
     def testLamprey(self):
         from musicbrainz2 import wsxml
 

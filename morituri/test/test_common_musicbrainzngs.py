@@ -10,6 +10,7 @@ from morituri.common import musicbrainzngs
 
 
 class MetadataTestCase(unittest.TestCase):
+
     def testJeffEverybodySingle(self):
         path = os.path.join(os.path.dirname(__file__),
             'morituri.release.3451f29c-9bb8-4cc5-bfcc-bd50104b94f8.json')

@@ -67,7 +67,9 @@ class TrackImageVerifyTestCase(unittest.TestCase):
             "Track 10: rip NOT accurate (max confidence      2) "
             "[16457a5a], DB [eb6e55b4]")
 
+
 class HTOATestCase(unittest.TestCase):
+
     def setUp(self):
         path = os.path.join(os.path.dirname(__file__),
             'silentalarm.result.pickle')
@@ -82,6 +84,7 @@ class HTOATestCase(unittest.TestCase):
 
 
 class PathTestCase(unittest.TestCase):
+
     def testStandardTemplateEmpty(self):
         prog = program.Program()
 

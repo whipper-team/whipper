@@ -4,6 +4,7 @@
 from morituri.test import common
 from morituri.common import drive
 
+
 class ListifyTestCase(common.TestCase):
 
     def testString(self):

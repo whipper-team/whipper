@@ -17,6 +17,7 @@ from morituri.test import common
 
 
 class PathTestCase(common.TestCase):
+
     def _testSuffix(self, suffix):
         self.runner = task.SyncRunner(verbose=False)
         fd, path = tempfile.mkstemp(suffix=suffix)
@@ -35,19 +36,25 @@ class PathTestCase(common.TestCase):
         os.unlink(path)
         os.unlink(path + '.out')
 
+
 class UnicodePathTestCase(PathTestCase, common.UnicodeTestMixin):
+
     def testUnicodePath(self):
         # this test makes sure we can checksum a unicode path
         self._testSuffix(u'.morituri.test_encode.B\xeate Noire')
 
+
 class NormalPathTestCase(PathTestCase):
+
     def testSingleQuote(self):
         self._testSuffix(u".morituri.test_encode.Guns 'N Roses")
 
     def testDoubleQuote(self):
         self._testSuffix(u'.morituri.test_encode.12" edit')
 
+
 class TagReadTestCase(common.TestCase):
+
     def testRead(self):
         path = os.path.join(os.path.dirname(__file__), u'track.flac')
         self.runner = task.SyncRunner(verbose=False)
@@ -57,7 +64,9 @@ class TagReadTestCase(common.TestCase):
         self.assertEquals(t.taglist['audio-codec'], 'FLAC')
         self.assertEquals(t.taglist['description'], 'audiotest wave')
 
+
 class TagWriteTestCase(common.TestCase):
+
     def testWrite(self):
         fd, inpath = tempfile.mkstemp(suffix=u'.morituri.tagwrite.flac')
 
@@ -92,7 +101,9 @@ class TagWriteTestCase(common.TestCase):
         os.unlink(inpath)
         os.unlink(outpath)
 
+
 class SafeRetagTestCase(common.TestCase):
+
     def setUp(self):
         self._fd, self._path = tempfile.mkstemp(suffix=u'.morituri.retag.flac')
 

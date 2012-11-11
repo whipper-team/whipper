@@ -7,7 +7,9 @@ from morituri.common import accurip
 
 from morituri.test import common as tcommon
 
+
 class AccurateRipResponseTestCase(tcommon.TestCase):
+
     def testResponse(self):
         path = os.path.join(os.path.dirname(__file__),
             'dBAR-011-0010e284-009228a3-9809ff0b.bin')

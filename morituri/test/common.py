@@ -13,6 +13,7 @@ log.init()
 
 # lifted from flumotion
 
+
 def _diff(old, new, desc):
     import difflib
     lines = difflib.unified_diff(old, new)
@@ -37,10 +38,12 @@ def diffStrings(orig, new, desc='input'):
                  _tolines(new),
                  desc=desc)
 
+
 class TestCase(unittest.TestCase):
     # unittest.TestCase.failUnlessRaises does not return the exception,
     # and we'd like to check for the actual exception under TaskException,
     # so override the way twisted.trial.unittest does, without failure
+
     def failUnlessRaises(self, exception, f, *args, **kwargs):
         try:
             result = f(*args, **kwargs)
@@ -60,6 +63,7 @@ class TestCase(unittest.TestCase):
 
 class UnicodeTestMixin:
     # A helper mixin to skip tests if we're not in a UTF-8 locale
+
     try:
         os.stat(u'morituri.test.B\xeate Noire.empty')
     except UnicodeEncodeError:

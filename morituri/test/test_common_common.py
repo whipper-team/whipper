@@ -7,7 +7,9 @@ from morituri.common import common
 
 from morituri.test import common as tcommon
 
+
 class ShrinkTestCase(tcommon.TestCase):
+
     def testSufjan(self):
         path = u'morituri/Sufjan Stevens - Illinois/02. Sufjan Stevens - The Black Hawk War, or, How to Demolish an Entire Civilization and Still Feel Good About Yourself in the Morning, or, We Apologize for the Inconvenience but You\'re Going to Have to Leave Now, or, "I Have Fought the Big Knives and Will Continue to Fight Them Until They Are Off Our Lands!".flac'
 
