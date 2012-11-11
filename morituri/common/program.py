@@ -6,17 +6,17 @@
 # Copyright (C) 2009, 2010, 2011 Thomas Vander Stichele
 
 # This file is part of morituri.
-# 
+#
 # morituri is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # morituri is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -94,7 +94,7 @@ class Program(log.Loggable):
         if device in proc:
             print 'Device %s is mounted, unmounting' % device
             os.system('umount %s' % device)
-        
+
     def getTable(self, runner, cddbdiscid, device):
         """
         Retrieve the Table either from the cache or the drive.
@@ -118,6 +118,7 @@ class Program(log.Loggable):
         return itable
 
     # FIXME: the cache should be model/offset specific
+
     def getRipResult(self, cddbdiscid):
         """
         Retrieve the persistable RipResult either from our cache (from a
@@ -215,19 +216,18 @@ class Program(log.Loggable):
         """
         # FIXME: convert to nonblocking?
         import CDDB
-        code, md = CDDB.query(cddbdiscid) 
+        code, md = CDDB.query(cddbdiscid)
         self.debug('CDDB query result: %r, %r', code, md)
         if code == 200:
             return md['title']
 
         return None
 
-
     def getMusicBrainz(self, ittoc, mbdiscid, release=None):
         # look up disc on musicbrainz
         print 'Disc duration: %s' % common.formatTime(
             ittoc.duration() / 1000.0)
-        self.debug('MusicBrainz submit url: %r', 
+        self.debug('MusicBrainz submit url: %r',
             ittoc.getMusicBrainzSubmitURL())
         ret = None
 
@@ -315,7 +315,6 @@ class Program(log.Loggable):
         print
         return ret
 
-
     def getTagList(self, number):
         """
         Based on the metadata, get a gst.TagList for the given track.
@@ -391,15 +390,15 @@ class Program(log.Loggable):
                 s = gst.structure_from_string('hi,date=(GstDate)%s' %
                     str(date))
                 ret[gst.TAG_DATE] = s['date']
-            
+
             # no musicbrainz info for htoa tracks
             if number > 0:
                 ret["musicbrainz-trackid"] = mbidTrack
                 ret["musicbrainz-artistid"] = mbidTrackArtist
                 ret["musicbrainz-albumid"] = mbidAlbum
                 ret["musicbrainz-albumartistid"] = mbidTrackAlbum
-            
-        # FIXME: gst.TAG_ISRC 
+
+        # FIXME: gst.TAG_ISRC
 
         return ret
 
