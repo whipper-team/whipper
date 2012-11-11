@@ -3,6 +3,6 @@
 
 def get():
     return {
-        'isinstalled':   True,
-        'version':       '@VERSION@',
+        'isinstalled': True,
+        'version': '@VERSION@',
     }
