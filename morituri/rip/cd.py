@@ -123,7 +123,7 @@ filling in the variables and expanding the file extension. Variables are:
 
         # if the device is mounted (data session), unmount it
         device = self.parentCommand.options.device
-        print 'Checking device', device
+        self.stdout.write('Checking device %s\n' % device)
 
         prog.loadDevice(device)
         prog.unmountDevice(device)
@@ -137,21 +137,22 @@ filling in the variables and expanding the file extension. Variables are:
             from pkg_resources import parse_version as V
             # we've built a cdrdao 1.2.3rc2 modified package with the patch
             if V(version) < V('1.2.3rc2p1'):
-                print '''
+                self.stdout.write('''
 Warning: cdrdao older than 1.2.3 has a pre-gap length bug.
 See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=102171
-'''
+''')
             ptoc.persist(t.table)
         ittoc = ptoc.object
         assert ittoc.hasTOC()
 
         # already show us some info based on this
         prog.getRipResult(ittoc.getCDDBDiscId())
-        print "CDDB disc id", ittoc.getCDDBDiscId()
+        self.stdout.write("CDDB disc id: %s\n" % ittoc.getCDDBDiscId())
         mbdiscid = ittoc.getMusicBrainzDiscId()
-        print "MusicBrainz disc id", mbdiscid
+        self.stdout.write("MusicBrainz disc id %s\n" % mbdiscid)
 
-        print "MusicBrainz lookup URL", ittoc.getMusicBrainzSubmitURL()
+        self.stdout.write("MusicBrainz lookup URL %s\n" %
+            ittoc.getMusicBrainzSubmitURL())
 
         prog.metadata = prog.getMusicBrainz(ittoc, mbdiscid,
             self.options.release)
@@ -161,7 +162,7 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
             cddbid = ittoc.getCDDBValues()
             cddbmd = prog.getCDDB(cddbid)
             if cddbmd:
-                print 'FreeDB identifies disc as %s' % cddbmd
+                self.stdout.write('FreeDB identifies disc as %s\n' % cddbmd)
 
             if not self.options.unknown:
                 prog.ejectDevice(device)
@@ -189,14 +190,18 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
         # result
 
         prog.result.offset = int(self.options.offset)
-        prog.result.artist = prog.metadata and prog.metadata.artist or 'Unknown Artist'
-        prog.result.title = prog.metadata and prog.metadata.title or 'Unknown Title'
+        prog.result.artist = prog.metadata and prog.metadata.artist \
+            or 'Unknown Artist'
+        prog.result.title = prog.metadata and prog.metadata.title \
+            or 'Unknown Title'
         # cdio is optional for now
         try:
             import cdio
-            _, prog.result.vendor, prog.result.model, __ = cdio.Device(device).get_hwinfo()
+            _, prog.result.vendor, prog.result.model, __ = \
+                cdio.Device(device).get_hwinfo()
         except ImportError:
-            print 'WARNING: pycdio not installed, cannot identify drive'
+            self.stdout.write(
+                'WARNING: pycdio not installed, cannot identify drive\n')
             prog.result.vendor = 'Unknown'
             prog.result.model = 'Unknown'
 
@@ -220,18 +225,18 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
 
             # FIXME: optionally allow overriding reripping
             if os.path.exists(path):
-                print 'Verifying track %d of %d: %s' % (
+                self.stdout.write('Verifying track %d of %d: %s\n' % (
                     number, len(itable.tracks),
-                    os.path.basename(path).encode('utf-8'))
+                    os.path.basename(path).encode('utf-8')))
                 if not prog.verifyTrack(runner, trackResult):
-                    print 'Verification failed, reripping...'
+                    self.stdout.write('Verification failed, reripping...\n')
                     os.unlink(path)
 
             if not os.path.exists(path):
                 tries = 0
-                print 'Ripping track %d of %d: %s' % (
+                self.stdout.write('Ripping track %d of %d: %s\n' % (
                     number, len(itable.tracks),
-                    os.path.basename(path).encode('utf-8'))
+                    os.path.basename(path).encode('utf-8')))
                 while tries < MAX_TRIES:
                     tries += 1
                     try:
@@ -242,7 +247,8 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
                             device=self.parentCommand.options.device,
                             profile=profile,
                             taglist=prog.getTagList(number),
-                            what='track %d of %d' % (number, len(itable.tracks)))
+                            what='track %d of %d' % (
+                                number, len(itable.tracks)))
                         break
                     except Exception, e:
                         self.debug('Got exception %r on try %d',
@@ -253,14 +259,18 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
                     self.error('Giving up on track %d after %d times' % (
                         number, tries))
                 if trackResult.testcrc == trackResult.copycrc:
-                    print 'Checksums match for track %d' % (number)
+                    self.stdout.write('Checksums match for track %d\n' %
+                        number)
                 else:
-                    print 'ERROR: checksums did not match for track %d' % (
+                    self.stdout.write(
+                        'ERROR: checksums did not match for track %d\n' %
                         number)
                     raise
 
-                print 'Peak level: %.2f %%' % (math.sqrt(trackResult.peak) * 100.0, )
-                print 'Rip quality: %.2f %%' % (trackResult.quality * 100.0, )
+                self.stdout.write('Peak level: %.2f %%\n' % (
+                    math.sqrt(trackResult.peak) * 100.0, ))
+                self.stdout.write('Rip quality: %.2f %%\n' % (
+                    trackResult.quality * 100.0, ))
 
             # overlay this rip onto the Table
             if number == 0:
@@ -279,8 +289,9 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
         htoa = prog.getHTOA()
         if htoa:
             start, stop = htoa
-            print 'Found Hidden Track One Audio from frame %d to %d' % (
-                start, stop)
+            self.stdout.write(
+                'Found Hidden Track One Audio from frame %d to %d\n' % (
+                start, stop))
 
             # rip it
             ripIfNotRipped(0)
@@ -289,8 +300,9 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
         for i, track in enumerate(itable.tracks):
             # FIXME: rip data tracks differently
             if not track.audio:
-                print 'WARNING: skipping data track %d, not implemented' % (
-                    i + 1, )
+                self.stdout.write(
+                    'WARNING: skipping data track %d, not implemented\n' % (
+                    i + 1, ))
                 # FIXME: make it work for now
                 track.indexes[1].relative = 0
                 continue
@@ -337,25 +349,27 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
 
         # verify using accuraterip
         url = ittoc.getAccurateRipURL()
-        print "AccurateRip URL", url
+        self.stdout.write("AccurateRip URL %s\n" % url)
 
         cache = accurip.AccuCache()
         responses = cache.retrieve(url)
 
         if not responses:
-            print 'Album not found in AccurateRip database'
+            self.stdout.write('Album not found in AccurateRip database\n')
 
         if responses:
-            print '%d AccurateRip reponses found' % len(responses)
+            self.stdout.write('%d AccurateRip reponses found\n' %
+                len(responses))
 
             if responses[0].cddbDiscId != itable.getCDDBDiscId():
-                print "AccurateRip response discid different: %s" % \
-                    responses[0].cddbDiscId
+                self.stdout.write(
+                    "AccurateRip response discid different: %s\n" %
+                    responses[0].cddbDiscId)
 
 
         prog.verifyImage(runner, responses)
 
-        print "\n".join(prog.getAccurateRipResults()) + "\n"
+        self.stdout.write("\n".join(prog.getAccurateRipResults()) + "\n")
 
         # write log file
         logger = result.getLogger()
