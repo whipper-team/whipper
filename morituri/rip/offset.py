@@ -93,7 +93,7 @@ CD in the AccurateRip database."""
         device = self.options.device
 
         # if necessary, load and unmount
-        print 'Checking device', device
+        self.stdout.write('Checking device %s\n' % device)
 
         prog.loadDevice(device)
         prog.unmountDevice(device)
@@ -122,7 +122,8 @@ CD in the AccurateRip database."""
             responses = accurip.getAccurateRipResponses(data)
         except urllib2.HTTPError, e:
             if e.code == 404:
-                print 'Album not found in AccurateRip database.'
+                self.stdout.write(
+                    'Album not found in AccurateRip database.\n')
                 return 1
             else:
                 raise
@@ -145,12 +146,13 @@ CD in the AccurateRip database."""
             return None, None
 
         for offset in self._offsets:
-            print 'Trying read offset %d ...' % offset
+            self.stdout.write('Trying read offset %d ...\n' % offset)
             try:
                 archecksum = self._arcs(runner, table, 1, offset)
             except task.TaskException, e:
                 if isinstance(e.exception, cdparanoia.FileSizeError):
-                    print 'WARNING: cannot rip with offset %d...' % offset
+                    self.stdout.write(
+                        'WARNING: cannot rip with offset %d...\n' % offset)
                     continue
 
             self.debug('AR checksum calculated: %s' % archecksum)
@@ -159,7 +161,9 @@ CD in the AccurateRip database."""
             if c:
                 count = 1
                 self.debug('MATCHED against response %d' % i)
-                print 'Offset of device is likely %d, confirming ...' % offset
+                self.stdout.write(
+                    'Offset of device is likely %d, confirming ...\n' %
+                        offset)
 
                 # now try and rip all other tracks as well
                 for track in range(2, len(table.tracks) + 1):
@@ -167,8 +171,9 @@ CD in the AccurateRip database."""
                         archecksum = self._arcs(runner, table, track, offset)
                     except task.TaskException, e:
                         if isinstance(e.exception, cdparanoia.FileSizeError):
-                            print 'WARNING: cannot rip with offset %d...' % \
-                                offset
+                            self.stdout.write(
+                                'WARNING: cannot rip with offset %d...\n' %
+                                offset)
                             continue
 
                     c, i = match(archecksum, track, responses)
@@ -178,15 +183,16 @@ CD in the AccurateRip database."""
                         count += 1
 
                 if count == len(table.tracks):
-                    print
-                    print 'Read offset of device is: %d.' % offset
+                    self.stdout.write('\nRead offset of device is: %d.\n' %
+                        offset)
                     return 0
                 else:
-                    print 'Only %d of %d tracks matched, continuing ...' % (
-                        count, len(table.tracks))
+                    self.stdout.write(
+                        'Only %d of %d tracks matched, continuing ...\n' % (
+                        count, len(table.tracks)))
 
-        print 'No matching offset found.'
-        print 'Consider trying again with a different disc.'
+        self.stdout.write('No matching offset found.\n')
+        self.stdout.write('Consider trying again with a different disc.\n')
 
     def _arcs(self, runner, table, track, offset):
         # rips the track with the given offset, return the arcs checksum
