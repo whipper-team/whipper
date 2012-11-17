@@ -154,6 +154,11 @@ CD in the AccurateRip database."""
                     self.stdout.write(
                         'WARNING: cannot rip with offset %d...\n' % offset)
                     continue
+                self.warning("Unknown exception for offset %d: %r" % (
+                    offset, e))
+                self.stdout.write(
+                    'WARNING: cannot rip with offset %d...\n' % offset)
+                continue
 
             self.debug('AR checksum calculated: %s' % archecksum)
 

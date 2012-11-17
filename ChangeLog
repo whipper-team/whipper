@@ -1,3 +1,9 @@
+2012-11-17  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/rip/offset.py:
+	  Don't let an exception on testing an offset slip pass.
+	  Fixes #99.
+
 2012-11-11  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/program/cdparanoia.py:
