@@ -39,8 +39,15 @@ EXTRA_DIST = log/test_log.py command/test_command.py command/help2man.py
 musicbrainzngs/musicbrainz.py: all
 
 python-musicbrainz-ngs:
-	pwd
 	git clone https://github.com/thomasvs/python-musicbrainz-ngs.git
 
-all:
+python-musicbrainz-ngs-check:
 	if test ! -e $(top_srcdir)/morituri/extern/musicbrainzngs/musicbrainz.py; then echo cloning python-musicbrainz-ngs; make python-musicbrainz-ngs; fi
+
+python-command:
+	git clone https://github.com/thomasvs/python-command.git
+
+python-command-check:
+	if test ! -e $(top_srcdir)/morituri/extern/command/command.py; then echo cloning python-command; make python-command; fi
+
+all: python-musicbrainz-ngs-check python-command-check
