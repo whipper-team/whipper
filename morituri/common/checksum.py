@@ -60,6 +60,8 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
         """
         assert type(path) is unicode, "%r is not unicode" % path
 
+        self.logName = "ChecksumTask 0x%x" % id(self)
+
         # use repr/%r because path can be unicode
         self.debug('Creating checksum task on %r from %d to %d',
             path, frameStart, frameLength)
@@ -147,9 +149,8 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
     def stopped(self):
         self.debug('stopped')
         if not self._last:
-            self.debug('raising EmptyError')
             # see http://bugzilla.gnome.org/show_bug.cgi?id=578612
-            self.debug('not a single buffer gotten, raising')
+            self.debug('not a single buffer gotten, setting exception EmptyError')
             self.setException(common.EmptyError('not a single buffer gotten'))
         else:
             self._checksum = self._checksum % 2 ** 32
