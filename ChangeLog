@@ -1,5 +1,11 @@
 2012-11-18  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* Makefile.am:
+	* doc/Makefile.am:
+	  Adapt to changing over to git module for python-command
+
+2012-11-18  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/extern/task/gstreamer.py:
 	  Fix wrong commit made to fix #89.
 

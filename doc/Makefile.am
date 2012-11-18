@@ -23,8 +23,8 @@ morituri.ics: $(top_srcdir)/morituri.doap
 
 man_MANS = rip.1
 
-rip.1: $(top_srcdir)/morituri/extern/command/help2man.py $(top_srcdir)/morituri
-	PYTHONPATH=$(top_srcdir) python $(top_srcdir)/morituri/extern/command/help2man.py morituri.rip.main.Rip rip > rip.1
+rip.1: $(top_srcdir)/morituri/extern/python-command/scripts/help2man $(top_srcdir)/morituri
+	PYTHONPATH=$(top_srcdir) python $(top_srcdir)/morituri/extern/python-command/scripts/help2man morituri.rip.main.Rip rip > rip.1
 
 clean-local:
 	@rm -rf reference
