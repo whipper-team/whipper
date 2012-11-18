@@ -7,7 +7,7 @@ import tempfile
 import gobject
 gobject.threads_init()
 
-from morituri.common import checksum
+from morituri.common import checksum, task as ctask
 
 from morituri.extern.task import task, gstreamer
 
@@ -22,7 +22,7 @@ class EmptyTestCase(tcommon.TestCase):
 
     def testEmpty(self):
         # this test makes sure that checksumming empty files doesn't hang
-        self.runner = task.SyncRunner(verbose=False)
+        self.runner = ctask.SyncRunner(verbose=False)
         fd, path = tempfile.mkstemp(suffix=u'morituri.test.empty')
         checksumtask = checksum.ChecksumTask(path)
         # FIXME: do we want a specific error for this ?
@@ -35,7 +35,7 @@ class EmptyTestCase(tcommon.TestCase):
 class PathTestCase(tcommon.TestCase):
 
     def _testSuffix(self, suffix):
-        self.runner = task.SyncRunner(verbose=False)
+        self.runner = ctask.SyncRunner(verbose=False)
         fd, path = tempfile.mkstemp(suffix=suffix)
         checksumtask = checksum.ChecksumTask(path)
         e = self.assertRaises(task.TaskException, self.runner.run,
