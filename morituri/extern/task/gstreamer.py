@@ -209,6 +209,10 @@ class GstPipelineTask(task.Task):
         Called synchronously (ie from messaging thread) on error message.
         """
         self.debug('bus_error_cb: bus %r, message %r' % (bus, message))
+        if self.exception:
+            self.debug('bus_error_cb: already got an exception, ignoring')
+            return
+
         exc = GstException(*message.parse_error())
         self.setAndRaiseException(exc)
         self.debug('error, scheduling stop')

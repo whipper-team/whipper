@@ -1,3 +1,11 @@
+2012-11-18  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gstreamer.py:
+	  Only set an exception once in bus_error_cb.
+	  Was triggered by morituri's checksum test, but only
+	  if multiple tests were run - got the same bus error
+	  twice.
+
 2012-07-12  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* task.py:
