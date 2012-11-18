@@ -193,15 +193,24 @@ class LadyhawkeTestCase(common.TestCase):
         # 149997 161710 177832 207256 2807
 
     def testMusicBrainz(self):
-        # URL to submit: http://mm.musicbrainz.org/bare/cdlookup.html?toc=1+11+197850+24320+44855+64090+77885+88095+104020+118245+129255+141765+164487+181780&tracks=11&id=MAj3xXf6QMy7G.BIFOyHyq4MySE-
         self.assertEquals(self.toc.table.getMusicBrainzDiscId(),
             "KnpGsLhvH.lPrNc1PBL21lb9Bg4-")
+        self.assertEquals(self.toc.table.getMusicBrainzSubmitURL(),
+            "http://mm.musicbrainz.org/bare/cdlookup.html?toc=1+12+195856+150+15687+31841+51016+66616+81352+99559+116070+133243+149997+161710+177832&tracks=12&id=KnpGsLhvH.lPrNc1PBL21lb9Bg4-")
 
     # FIXME: I don't trust this toc, but I can't find the CD anymore
 
     def testDuration(self):
         self.assertEquals(self.toc.table.duration(), 2761413)
 
+    def testGetFrameLength(self):
+        self.assertEquals(self.toc.table.getFrameLength(data=True), 210385)
+
+    def testCue(self):
+        self.failUnless(self.toc.table.canCue())
+        data = self.toc.table.cue()
+        lines = data.split("\n")
+        self.assertEquals(lines[0], "REM DISCID C60AF50D")
 
 class CapitalMergeTestCase(common.TestCase):
 

@@ -242,52 +242,6 @@ class Table(object, log.Loggable):
 
         return ret
 
-    def _getCDDBValues(self):
-        """
-        Get all CDDB values needed to calculate disc id and lookup URL.
-
-        This includes:
-         - CDDB disc id
-         - number of audio tracks
-         - offset of index 1 of each track
-         - length of disc in seconds
-
-        @rtype:   list of int
-        """
-        result = []
-
-        # number of first track
-        result.append(1)
-
-        # number of last audio track
-        result.append(self.getAudioTracks())
-
-        leadout = self.leadout
-        # if the disc is multi-session, last track is the data track,
-        # and we should subtract 11250 + 150 from the last track's offset
-        # for the leadout
-        if self.hasDataTracks():
-            assert not self.tracks[-1].audio
-            leadout = self.tracks[-1].getIndex(1).absolute - 11250 - 150
-
-        # treat leadout offset as track 0 offset
-        result.append(150 + leadout)
-
-        # offsets of tracks
-        for i in range(1, 100):
-            try:
-                track = self.tracks[i - 1]
-                if not track.audio:
-                    continue
-                offset = track.getIndex(1).absolute + 150
-                result.append(offset)
-            except IndexError:
-                pass
-
-
-        self.debug('CDDB values: %r', result)
-        return result
-
     def getCDDBValues(self):
         """
         Get all CDDB values needed to calculate disc id and lookup URL.

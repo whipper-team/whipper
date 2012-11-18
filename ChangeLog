@@ -1,5 +1,12 @@
 2012-11-18  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/image/table.py:
+	* morituri/test/test_image_table.py:
+	* morituri/test/test_image_toc.py:
+	  Increase coverage.
+
+2012-11-18  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* Makefile.am:
 	* doc/Makefile.am:
 	  Adapt to changing over to git module for python-command

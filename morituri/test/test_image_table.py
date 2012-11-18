@@ -9,6 +9,13 @@ from morituri.test import common as tcommon
 def h(i):
     return "0x%08x" % i
 
+class TrackTestCase(tcommon.TestCase):
+    def testRepr(self):
+        track = table.Track(1)
+        self.assertEquals(repr(track), "<Track 01>")
+
+        track.index(1, 100)
+        self.failUnless(repr(track.indexes[1]).startswith('<Index 01 '))
 
 class LadyhawkeTestCase(tcommon.TestCase):
     # Ladyhawke - Ladyhawke - 0602517818866
@@ -36,6 +43,7 @@ class LadyhawkeTestCase(tcommon.TestCase):
         self.table.leadout = 210385
 
         self.failUnless(self.table.hasTOC())
+        self.assertEquals(self.table.tracks[0].getPregap(), 0)
 
     def testCDDB(self):
         self.assertEquals(self.table.getCDDBDiscId(), "c60af50d")
@@ -82,3 +90,23 @@ class MusicBrainzTestCase(tcommon.TestCase):
     def testMusicBrainz(self):
         self.assertEquals(self.table.getMusicBrainzDiscId(),
             '49HHV7Eb8UKF3aQiNmu1GR8vKTY-')
+
+class PregapTestCase(tcommon.TestCase):
+
+    def setUp(self):
+        self.table = table.Table()
+
+        for i in range(2):
+            self.table.tracks.append(table.Track(i + 1, audio=True))
+
+        offsets = [0, 15537]
+        t = self.table.tracks
+        for i, offset in enumerate(offsets):
+            t[i].index(1, absolute=offset)
+        t[1].index(0, offsets[1] - 200)
+
+    def testPreGap(self):
+        self.assertEquals(self.table.tracks[0].getPregap(), 0)
+        self.assertEquals(self.table.tracks[1].getPregap(), 200)
+
+
