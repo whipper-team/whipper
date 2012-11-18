@@ -29,7 +29,7 @@ def quoteParse(path):
     # Make sure double quotes and backslashes are escaped.  See
     # morituri.test.test_common_checksum.NormalPathTestCase
 
-    return path.replace('"', '\\"').replace('\\', '\\\\')
+    return path.replace('\\', '\\\\').replace('"', '\\"')
 
 
 class GstException(Exception):
