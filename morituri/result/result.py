@@ -79,7 +79,7 @@ class RipResult:
 
     @ivar offset: sample read offset
     @ivar table:  the full index table
-    @type table:  L{morituri.common.table.Table}
+    @type table:  L{morituri.image.table.Table}
     """
 
     offset = 0
