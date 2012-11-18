@@ -1,4 +1,4 @@
-# -*- Mode: Python; test-case-name: test_task -*-
+# -*- Mode: Python -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
 # Morituri - for those about to RIP
@@ -64,8 +64,29 @@ def _getExceptionMessage(exception, frame=-1, filename=None):
         % locals()
 
 
+class LogStub(object):
+    """
+    I am a stub for a log interface.
+    """
 
-class Task(object):
+    ### log stubs
+    def log(self, message, *args):
+        pass
+
+    def debug(self, message, *args):
+        pass
+
+    def info(self, message, *args):
+        pass
+
+    def warning(self, message, *args):
+        pass
+
+    def error(self, message, *args):
+        pass
+
+
+class Task(LogStub):
     """
     I wrap a task in an asynchronous interface.
     I can be listened to for starting, stopping, description changes
@@ -93,22 +114,6 @@ class Task(object):
 
     _listeners = None
 
-
-    ### log stubs
-    def warning(self, message, *args):
-        pass
-
-    def info(self, message, *args):
-        pass
-
-    def debug(self, message, *args):
-        pass
-
-    def log(self, message, *args):
-        pass
-
-    def error(self, message, *args):
-        pass
 
     ### subclass methods
     def start(self, runner):
@@ -421,29 +426,12 @@ class MultiCombinedTask(BaseMultiTask):
         self.setProgress(float(self._stopped) / len(self.tasks))
         BaseMultiTask.stopped(self, task)
 
-class TaskRunner(object):
+class TaskRunner(LogStub):
     """
     I am a base class for task runners.
     Task runners should be reusable.
     """
     logCategory = 'TaskRunner'
-
-    ### log stubs
-    def warning(self, message, *args):
-        pass
-
-    def info(self, message, *args):
-        pass
-
-    def debug(self, message, *args):
-        pass
-
-    def log(self, message, *args):
-        pass
-
-    def error(self, message, *args):
-        pass
-
 
     def run(self, task):
         """
