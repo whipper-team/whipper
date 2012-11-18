@@ -6,17 +6,17 @@
 # Copyright (C) 2009 Thomas Vander Stichele
 
 # This file is part of morituri.
-# 
+#
 # morituri is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # morituri is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -161,7 +161,7 @@ class Task(object):
             self.progress = value
             self._notifyListeners('progressed', value)
             self.log('notifying progress: %r on %r', value, self.description)
-        
+
     def setDescription(self, description):
         if description != self.description:
             self._notifyListeners('described', description)
@@ -297,7 +297,7 @@ class BaseMultiTask(Task, ITaskListener):
     def __init__(self):
         self.tasks = []
         self._task = 0
-         
+
     def addTask(self, task):
         """
         Add a task.
@@ -345,7 +345,7 @@ class BaseMultiTask(Task, ITaskListener):
             self.debug('Got exception during next: %r', self.exceptionMessage)
             self.stop()
             return
-        
+
     ### ITaskListener methods
     def started(self, task):
         pass
@@ -394,7 +394,7 @@ class MultiSeparateTask(BaseMultiTask):
         # start next task
         self.progress = 0.0 # reset progress for each task
         BaseMultiTask.next(self)
-        
+
     ### ITaskListener methods
     def progressed(self, task, value):
         self.setProgress(value)
@@ -411,7 +411,7 @@ class MultiCombinedTask(BaseMultiTask):
 
     description = 'Doing various tasks combined'
     _stopped = 0
-       
+
     ### ITaskListener methods
     def progressed(self, task, value):
         self.setProgress(float(self._stopped + value) / len(self.tasks))
