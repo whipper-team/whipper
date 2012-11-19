@@ -17,3 +17,11 @@ class ShrinkTestCase(tcommon.TestCase):
         self.failUnless(os.path.splitext(path)[0].startswith(
             os.path.splitext(shorter)[0]))
         self.failIfEquals(path, shorter)
+
+class FramesTestCase(tcommon.TestCase):
+    def testFrames(self):
+        self.assertEquals(common.framesToHMSF(123456), '00:27:26.06')
+
+class FormatTimeTestCase(tcommon.TestCase):
+    def testFormatTime(self):
+        self.assertEquals(common.formatTime(7202), '02:00:02.000')
