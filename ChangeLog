@@ -1,5 +1,10 @@
 2012-11-19  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/test/common.py:
+	  Make tests log.
+
+2012-11-19  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/common.py:
 	* morituri/image/cue.py:
 	* morituri/image/toc.py:

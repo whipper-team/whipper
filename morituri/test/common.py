@@ -39,7 +39,7 @@ def diffStrings(orig, new, desc='input'):
                  desc=desc)
 
 
-class TestCase(unittest.TestCase):
+class TestCase(log.Loggable, unittest.TestCase):
     # unittest.TestCase.failUnlessRaises does not return the exception,
     # and we'd like to check for the actual exception under TaskException,
     # so override the way twisted.trial.unittest does, without failure
