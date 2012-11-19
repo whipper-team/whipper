@@ -1,5 +1,10 @@
 2012-11-19  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/test/test_common_encode.py:
+	  Work around https://bugzilla.gnome.org/show_bug.cgi?id=688625
+
+2012-11-19  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/test/common.py:
 	  Make tests log.
 

@@ -19,22 +19,31 @@ from morituri.test import common
 class PathTestCase(common.TestCase):
 
     def _testSuffix(self, suffix):
+        # because of https://bugzilla.gnome.org/show_bug.cgi?id=688625
+        # we first create the file with a 'normal' filename, then rename
         self.runner = task.SyncRunner(verbose=False)
-        fd, path = tempfile.mkstemp(suffix=suffix)
+        fd, path = tempfile.mkstemp()
+
         cmd = "gst-launch " \
             "audiotestsrc num-buffers=100 samplesperbuffer=1024 ! " \
             "audioconvert ! audio/x-raw-int,width=16,depth=16,channels =2 ! " \
             "wavenc ! " \
             "filesink location=\"%s\" > /dev/null 2>&1" % (
             gstreamer.quoteParse(path).encode('utf-8'), )
+        self.debug('Running cmd %r' % cmd)
         os.system(cmd)
         self.failUnless(os.path.exists(path))
-        encodetask = encode.EncodeTask(path, path + '.out',
+        os.close(fd)
+
+        fd, newpath = tempfile.mkstemp(suffix=suffix)
+        os.rename(path, newpath)
+
+        encodetask = encode.EncodeTask(newpath, newpath + '.out',
             encode.WavProfile())
         self.runner.run(encodetask, verbose=False)
         os.close(fd)
-        os.unlink(path)
-        os.unlink(path + '.out')
+        os.unlink(newpath)
+        os.unlink(newpath + '.out')
 
 
 class UnicodePathTestCase(PathTestCase, common.UnicodeTestMixin):
