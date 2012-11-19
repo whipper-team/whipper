@@ -295,3 +295,42 @@ def shrinkPath(path):
     parts[-1] = u'%s%s' % (name, ext)
     path = os.path.join(*parts)
     return path
+
+def getRealPath(refPath, filePath):
+    """
+    Translate a .cue or .toc's FILE to an existing path.
+
+    @type  refPath: unicode
+    @type  filePath: unicode
+    """
+    assert type(filePath) is unicode, "%r is not unicode" % filePath
+
+    if os.path.exists(filePath):
+        return filePath
+
+    # .cue FILE statements have Windows-style path separators, so convert
+    parts = filePath.split('\\')
+    if parts[0] == '':
+        parts[0] = os.path.sep
+    tpath = os.path.join(*parts)
+    candidatePaths = []
+
+    if tpath == os.path.abspath(tpath):
+        candidatePaths.append(tpath)
+    else:
+        # if the path is relative:
+        # - check relatively to the cue file
+        # - check only the filename part relative to the cue file
+        candidatePaths.append(os.path.join(
+            os.path.dirname(refPath), tpath))
+        candidatePaths.append(os.path.join(
+            os.path.dirname(refPath), os.path.basename(tpath)))
+
+    for candidate in candidatePaths:
+        noext, _ = os.path.splitext(candidate)
+        for ext in ['wav', 'flac']:
+            cpath = '%s.%s' % (noext, ext)
+            if os.path.exists(cpath):
+                return cpath
+
+    raise KeyError("Cannot find file for %r" % filePath)
