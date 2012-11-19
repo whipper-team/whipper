@@ -324,7 +324,7 @@ class TocFile(object, log.Loggable):
 
     def getRealPath(self, path):
         """
-        Translate the .cue's FILE to an existing path.
+        Translate the .toc's FILE to an existing path.
 
         @type  path: unicode
         """
@@ -334,15 +334,18 @@ class TocFile(object, log.Loggable):
             return path
 
         # .cue FILE statements have Windows-style path separators, so convert
-        tpath = os.path.join(*path.split('\\'))
+        parts = path.split('\\')
+        if parts[0] == '':
+            parts[0] = os.path.sep
+        tpath = os.path.join(*parts)
         candidatePaths = []
 
-        # if the path is relative:
-        # - check relatively to the cue file
-        # - check only the filename part relative to the cue file
         if tpath == os.path.abspath(tpath):
             candidatePaths.append(tpath)
         else:
+            # if the path is relative:
+            # - check relatively to the cue file
+            # - check only the filename part relative to the cue file
             candidatePaths.append(os.path.join(
                 os.path.dirname(self._path), tpath))
             candidatePaths.append(os.path.join(

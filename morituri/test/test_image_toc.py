@@ -92,6 +92,17 @@ class CureTestCase(common.TestCase):
             'http://www.accuraterip.com/accuraterip/'
             '3/c/4/dBAR-013-0019d4c3-00fe8924-b90c650d.bin')
 
+
+    def testGetRealPath(self):
+        self.assertRaises(KeyError, self.toc.getRealPath, u'track01.wav')
+        (fd, path) = tempfile.mkstemp(suffix=u'.morituri.test.wav')
+        self.assertEquals(self.toc.getRealPath(path), path)
+
+        winpath = path.replace('/', '\\')
+        self.assertEquals(self.toc.getRealPath(winpath), path)
+        os.close(fd)
+        os.unlink(path)
+
 # Bloc Party - Silent Alarm has a Hidden Track One Audio
 
 
