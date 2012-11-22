@@ -170,6 +170,7 @@ class Program(log.Loggable):
         assert type(template) is unicode, "%r is not unicode" % template
 
         # the template is similar to grip, except for %s/%S
+        # see #gripswitches
 
         # returns without extension
 
@@ -189,6 +190,8 @@ class Program(log.Loggable):
 
 
         if self.metadata:
+            release = self.metadata.release or '0000'
+            v['y'] = release[:4]
             v['A'] = filterForPath(self.metadata.artist)
             v['S'] = filterForPath(self.metadata.sortName)
             v['d'] = filterForPath(self.metadata.title)

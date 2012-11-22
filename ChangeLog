@@ -1,5 +1,10 @@
 2012-11-23  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/program.py:
+	  Add %y to template for year.  Fixes #98.
+
+2012-11-23  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/common.py:
 	* morituri/common/program.py:
 	* morituri/image/table.py:
