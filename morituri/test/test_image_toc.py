@@ -14,8 +14,9 @@ from morituri.test import common
 class CureTestCase(common.TestCase):
 
     def setUp(self):
-        self.toc = toc.TocFile(os.path.join(os.path.dirname(__file__),
-            u'cure.toc'))
+        self.path = os.path.join(os.path.dirname(__file__),
+            u'cure.toc')
+        self.toc = toc.TocFile(self.path)
         self.toc.parse()
         self.assertEquals(len(self.toc.table.tracks), 13)
 
@@ -85,7 +86,7 @@ class CureTestCase(common.TestCase):
         self.toc.table.absolutize()
         cue = self.toc.table.cue()
         ref = open(os.path.join(os.path.dirname(__file__), 'cure.cue')).read()
-        self.assertEquals(cue, ref)
+        common.diffStrings(cue, ref)
 
         # we verify it because it has failed in readdisc in the past
         self.assertEquals(self.toc.table.getAccurateRipURL(),
@@ -109,8 +110,9 @@ class CureTestCase(common.TestCase):
 class BlocTestCase(common.TestCase):
 
     def setUp(self):
-        self.toc = toc.TocFile(os.path.join(os.path.dirname(__file__),
-            u'bloc.toc'))
+        self.path = os.path.join(os.path.dirname(__file__),
+            u'bloc.toc')
+        self.toc = toc.TocFile(self.path)
         self.toc.parse()
         self.assertEquals(len(self.toc.table.tracks), 13)
 
@@ -160,8 +162,9 @@ class BlocTestCase(common.TestCase):
 class BreedersTestCase(common.TestCase):
 
     def setUp(self):
-        self.toc = toc.TocFile(os.path.join(os.path.dirname(__file__),
-            u'breeders.toc'))
+        self.path = os.path.join(os.path.dirname(__file__),
+            u'breeders.toc')
+        self.toc = toc.TocFile(self.path)
         self.toc.parse()
         self.assertEquals(len(self.toc.table.tracks), 13)
 
@@ -189,8 +192,9 @@ class BreedersTestCase(common.TestCase):
 class LadyhawkeTestCase(common.TestCase):
 
     def setUp(self):
-        self.toc = toc.TocFile(os.path.join(os.path.dirname(__file__),
-            u'ladyhawke.toc'))
+        self.path = os.path.join(os.path.dirname(__file__),
+            u'ladyhawke.toc')
+        self.toc = toc.TocFile(self.path)
         self.toc.parse()
         self.assertEquals(len(self.toc.table.tracks), 13)
         #import code; code.interact(local=locals())

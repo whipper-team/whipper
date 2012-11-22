@@ -25,3 +25,14 @@ class FramesTestCase(tcommon.TestCase):
 class FormatTimeTestCase(tcommon.TestCase):
     def testFormatTime(self):
         self.assertEquals(common.formatTime(7202), '02:00:02.000')
+
+
+class GetRelativePathTestCase(tcommon.TestCase):
+
+    def testRelativeOutputDirectory(self):
+        directory = '.Placebo - Black Market Music (2000)'
+        cue = './' + directory + '/Placebo - Black Market Music (2000)'
+        track = './' + directory + '/01. Placebo - Taste in Men.flac'
+
+        self.assertEquals(common.getRelativePath(track, cue),
+            '01. Placebo - Taste in Men.flac')

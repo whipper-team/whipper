@@ -1,3 +1,14 @@
+2012-11-23  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/common.py:
+	* morituri/common/program.py:
+	* morituri/image/table.py:
+	* morituri/rip/cd.py:
+	* morituri/test/test_common_common.py:
+	* morituri/test/test_image_toc.py:
+	  Handle cases where disc_template and track_template are not in
+	  the same directory.
+
 2012-11-19  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/test/test_common_encode.py:

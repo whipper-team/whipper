@@ -600,7 +600,7 @@ class Program(log.Loggable):
         self.debug('write .cue file to %s', cuePath)
         handle = open(cuePath, 'w')
         # FIXME: do we always want utf-8 ?
-        handle.write(self.result.table.cue().encode('utf-8'))
+        handle.write(self.result.table.cue(cuePath).encode('utf-8'))
         handle.close()
 
         self.cuePath = cuePath

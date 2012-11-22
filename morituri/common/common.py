@@ -21,9 +21,13 @@
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import os.path
 import math
 import tempfile
 import shutil
+
+from morituri.extern.log import log
+
 
 SAMPLES_PER_FRAME = 588
 WORDS_PER_FRAME = SAMPLES_PER_FRAME * 2
@@ -334,3 +338,28 @@ def getRealPath(refPath, filePath):
                 return cpath
 
     raise KeyError("Cannot find file for %r" % filePath)
+
+def getRelativePath(targetPath, collectionPath):
+    """
+    Get a relative path from the directory of collectionPath to
+    targetPath.
+
+    Used to determine the path to use in .cue/.m3u files
+    """
+    log.debug('common', 'getRelativePath: target %r, collection %r' % (
+        targetPath, collectionPath))
+
+    targetDir = os.path.dirname(targetPath)
+    collectionDir = os.path.dirname(collectionPath)
+    if targetDir == collectionDir:
+        log.debug('common',
+            'getRelativePath: target and collection in same dir')
+        return os.path.basename(targetPath)
+    else:
+        rel = os.path.relpath(
+            targetDir + os.path.sep,
+            collectionDir + os.path.sep)
+        log.debug('common',
+            'getRelativePath: target and collection in different dir, %r' %
+                rel)
+        return os.path.join(rel, os.path.basename(targetPath))

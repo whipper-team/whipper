@@ -58,6 +58,13 @@ filling in the variables and expanding the file extension. Variables are:
  - %A: album artist
  - %S: album sort name
  - %d: disc title
+ - %y: release year
+
+Paths to track files referenced in .cue and .m3u files will be made
+relative to the directory of the disc files.
+
+All files will be created relative to the given output directory.
+Log files will log the path to tracks relative to this directory.
 """
 
     def addOptions(self):
@@ -69,7 +76,9 @@ filling in the variables and expanding the file extension. Variables are:
             default=default)
         self.parser.add_option('-O', '--output-directory',
             action="store", dest="output_directory",
-            help="output directory (defaults to current directory)")
+            help="output directory "
+                "(defaults to absolute path to current directory) "
+        )
         # FIXME: have a cache of these pickles somewhere
         self.parser.add_option('-T', '--toc-pickle',
             action="store", dest="toc_pickle",
@@ -106,13 +115,6 @@ filling in the variables and expanding the file extension. Variables are:
     def handleOptions(self, options):
         options.track_template = options.track_template.decode('utf-8')
         options.disc_template = options.disc_template.decode('utf-8')
-
-        slashCountT = len(options.track_template.split(os.path.sep))
-        slashCountD = len(options.disc_template.split(os.path.sep))
-        if slashCountT != slashCountD:
-            raise command.CommandError(
-                "The number of path separators in the templates " \
-                "should be the same.")
 
     def do(self, args):
         prog = program.Program(record=self.getRootCommand().record)
@@ -208,14 +210,19 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
         # FIXME: turn this into a method
 
         def ripIfNotRipped(number):
+            self.debug('ripIfNotRipped for track %d' % number)
             # we can have a previous result
             trackResult = prog.result.getTrackResult(number)
             if not trackResult:
                 trackResult = result.TrackResult()
                 prog.result.tracks.append(trackResult)
+            else:
+                self.debug('ripIfNotRipped have trackresult, path %r' %
+                    trackResult.filename)
 
             path = prog.getPath(prog.outdir, self.options.track_template,
                 mbdiscid, number) + '.' + profile.extension
+            self.debug('ripIfNotRipped: path %r' % path)
             trackResult.number = number
 
             assert type(path) is unicode, "%r is not unicode" % path
@@ -225,6 +232,12 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
 
             # FIXME: optionally allow overriding reripping
             if os.path.exists(path):
+                if path != trackResult.filename:
+                    # the path is different (different name/template ?)
+                    # but we can copy it
+                    self.debug('previous result %r, expected %r' % (
+                        trackResult.filename, path))
+
                 self.stdout.write('Verifying track %d of %d: %s\n' % (
                     number, len(itable.tracks),
                     os.path.basename(path).encode('utf-8')))
@@ -326,9 +339,10 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
         handle.write(u'#EXTM3U\n')
 
         def writeFile(handle, path, length):
-            u = u'#EXTINF:%d,%s\n' % (length, os.path.basename(path))
+            targetPath = common.getRelativePath(path, m3uPath)
+            u = u'#EXTINF:%d,%s\n' % (length, targetPath)
             handle.write(u.encode('utf-8'))
-            u = '%s\n' % os.path.basename(path)
+            u = '%s\n' % targetPath
             handle.write(u.encode('utf-8'))
 
 
