@@ -26,7 +26,6 @@ Reading .cue files
 See http://digitalx.org/cuesheetsyntax.php
 """
 
-import os
 import re
 import codecs
 

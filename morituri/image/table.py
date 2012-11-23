@@ -25,7 +25,6 @@ Wrap Table of Contents.
 """
 
 import copy
-import os
 import urllib
 import urlparse
 

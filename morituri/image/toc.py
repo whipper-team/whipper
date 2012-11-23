@@ -24,7 +24,6 @@
 Reading .toc files
 """
 
-import os
 import re
 import codecs
 
