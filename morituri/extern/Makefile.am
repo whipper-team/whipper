@@ -45,7 +45,7 @@ python-musicbrainz-ngs-check:
 	if test ! -e $(top_srcdir)/morituri/extern/musicbrainzngs/musicbrainz.py; then echo cloning python-musicbrainz-ngs; make python-musicbrainz-ngs; fi
 
 python-command:
-	git clone git://github.com/thomasvs/python-musicbrainz-ngs.git
+	git clone git://github.com/thomasvs/python-command.git
 
 python-command-check:
 	if test ! -e $(top_srcdir)/morituri/extern/command/command.py; then echo cloning python-command; make python-command; fi
