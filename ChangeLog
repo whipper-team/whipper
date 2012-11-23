@@ -1,5 +1,14 @@
 2012-11-23  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* NEWS:
+	* README:
+	* RELEASE:
+	* configure.ac:
+	* morituri.doap:
+	  Releasing 0.1.3, "cranes"
+
+2012-11-23  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/encode.py:
 	  Also remove buggy audio parsers when encoding.
 	  Fixes #73.

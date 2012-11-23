@@ -32,13 +32,34 @@ Morituri is a CD ripper aiming for maximum quality.
      <location rdf:resource="http://thomas.apestaart.org/morituri/svn/trunk/" />
      <browse rdf:resource="http://thomas.apestaart.org/morituri/trac/browser/trunk" />
    </SVNRepository>
- </repository> 
+ </repository>
 
  <maintainer>
   <foaf:Person>
      <foaf:name>Thomas Vander Stichele</foaf:name>
   </foaf:Person>
  </maintainer>
+
+ <release>
+  <Version>
+   <revision>0.1.3</revision>
+   <branch>trunk</branch>
+   <name>cranes</name>
+   <created>2012-11-23</created>
+   <file-release rdf:resource="http://thomas.apestaart.org/download/morituri/morituri-0.1.3.tar.bz2" />
+   <file-release rdf:resource="http://thomas.apestaart.org/download/morituri/morituri-0.1.3-1.noarch.rpm" />
+   <dc:description>
+- shorten really long file names if needed
+- support multi-disc ripping with musicbrainz NGS
+- add %y for release year in templates
+- added rip cd rip --release-id option to select the exact release
+- allow track and disc templates to create files in different directories
+- work out relative paths from cue/m3u files to audio files
+- Update mp3vbr profile
+    </dc:description>
+  </Version>
+ </release>
+
 
  <release>
   <Version>

@@ -18,7 +18,7 @@ FEATURES
 * support for lossless encoding and lossy encoding or re-encoding of images
 * tagging using GStreamer, including embedding MusicBrainz id's
 * retagging of images
-* for now, only a command line client (rip) is shipped 
+* for now, only a command line client (rip) is shipped
 
 REQUIREMENTS
 ------------
@@ -85,7 +85,7 @@ The simplest way to get started making accurate rips is:
 - optionally, confirm this offset with two more discs
 - rip the disc by running
   rip cd rip --offset (the number you got before)
-  
+
 FILING BUGS
 -----------
 morituri's bug tracker is at https://thomas.apestaart.org/morituri/trac/
