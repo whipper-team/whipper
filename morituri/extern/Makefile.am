@@ -34,7 +34,7 @@ musicbrainzngs_PYTHON = \
 	musicbrainzngs/mbxml.py
 
 
-EXTRA_DIST = log/test_log.py command/test_command.py command/help2man.py
+EXTRA_DIST = log/test_log.py python-command/scripts/help2man
 
 musicbrainzngs/musicbrainz.py: all
 
