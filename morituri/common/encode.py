@@ -26,6 +26,7 @@ import shutil
 import tempfile
 
 from morituri.common import common, log
+from morituri.common import gstreamer as cgstreamer
 from morituri.common import task as ctask
 
 from morituri.extern.task import task, gstreamer
@@ -173,6 +174,8 @@ class EncodeTask(ctask.GstPipelineTask):
 
         self.description = "Encoding %s" % what
         self._profile.test()
+
+        cgstreamer.removeAudioParsers()
 
     def getPipelineDesc(self):
         return '''
