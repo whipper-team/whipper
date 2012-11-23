@@ -1,5 +1,10 @@
 2012-11-23  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/encode.py:
+	  Use vbr-quality instead of quality for vbr.  Fixes #94.
+
+2012-11-23  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/image/cue.py:
 	* morituri/image/table.py:
 	* morituri/image/toc.py:

@@ -108,8 +108,9 @@ class MP3Profile(Profile):
 class MP3VBRProfile(Profile):
     name = 'mp3vbr'
     extension = 'mp3'
-    pipeline = 'lame name=tagger quality=0 vbr=new vbr-mean-bitrate=192 ! ' \
-                'id3v2mux'
+    pipeline = 'lame name=tagger ' \
+               'vbr-quality=0 vbr=new vbr-mean-bitrate=192 ! ' \
+               'id3v2mux'
     lossless = False
 
 
