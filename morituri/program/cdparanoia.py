@@ -22,6 +22,7 @@
 
 import os
 import errno
+import time
 import re
 import stat
 import shutil
@@ -203,6 +204,7 @@ class ReadTrackTask(log.Loggable, task.Task):
 
     description = "Reading track"
     quality = None # set at end of reading
+    speed = None
 
     _MAXERROR = 100 # number of errors detected by parser
 
@@ -237,6 +239,7 @@ class ReadTrackTask(log.Loggable, task.Task):
         self._offset = offset
         self._parser = ProgressParser(start, stop)
         self._device = device
+        self._start_time = None
 
         self._buffer = "" # accumulate characters
         self._errors = []
@@ -288,6 +291,7 @@ class ReadTrackTask(log.Loggable, task.Task):
 
             raise
 
+        self._start_time = time.time()
         self.schedule(1.0, self._read, runner)
 
     def _read(self, runner):
@@ -339,6 +343,7 @@ class ReadTrackTask(log.Loggable, task.Task):
         self._done()
 
     def _done(self):
+        end_time = time.time()
         self.setProgress(1.0)
 
         # check if the length matches
@@ -368,6 +373,7 @@ class ReadTrackTask(log.Loggable, task.Task):
                 self.exception = ReturnCodeError(self._popen.returncode)
 
         self.quality = self._parser.getTrackQuality()
+        self.speed = (offsetLength / 75) / (end_time - self._start_time)
 
         self.stop()
         return
@@ -392,6 +398,8 @@ class ReadVerifyTrackTask(log.Loggable, task.MultiSeparateTask):
     copychecksum = None
     peak = None
     quality = None
+    testspeed = None
+    copyspeed = None
 
     _tmpwavpath = None
     _tmppath = None
@@ -471,6 +479,8 @@ class ReadVerifyTrackTask(log.Loggable, task.MultiSeparateTask):
                     self.tasks[2].quality)
                 self.peak = self.tasks[4].peak
                 self.debug('peak: %r', self.peak)
+                self.testspeed = self.tasks[0].speed
+                self.copyspeed = self.tasks[2].speed
 
                 self.testchecksum = c1 = self.tasks[1].checksum
                 self.copychecksum = c2 = self.tasks[3].checksum

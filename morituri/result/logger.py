@@ -105,6 +105,13 @@ class MorituriLogger(result.Logger):
             lines.append('')
 
         lines.append('  Peak level %.1f %%' % (trackResult.peak * 100.0))
+        if trackResult.copyspeed:
+            lines.append('  Extraction Speed (Copy) %.4f X' % (
+                trackResult.copyspeed))
+        if trackResult.testspeed:
+            lines.append('  Extraction Speed (Test) %.4f X' % (
+                trackResult.testspeed))
+
         if trackResult.copycrc is not None:
             lines.append('  Copy CRC %08X' % trackResult.copycrc)
         if trackResult.testcrc is not None:
@@ -115,6 +122,7 @@ class MorituriLogger(result.Logger):
                 lines.append("  WARNING: CRCs don't match!")
         else:
             lines.append("  WARNING: no CRC check done")
+
 
         if trackResult.accurip:
             lines.append('  Accurately ripped (confidence %d) [%08X]' % (

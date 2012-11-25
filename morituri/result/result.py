@@ -60,6 +60,8 @@ class TrackResult:
 
     peak = 0.0
     quality = 0.0
+    testspeed = 0.0
+    copyspeed = 0.0
     testcrc = None
     copycrc = None
     accurip = False # whether it's in the database

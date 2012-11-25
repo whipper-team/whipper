@@ -1,5 +1,16 @@
 2012-11-25  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	patch by: mustbenice
+
+	* morituri/common/program.py:
+	* morituri/program/cdparanoia.py:
+	* morituri/result/logger.py:
+	* morituri/result/result.py:
+	  Calculate speed of reading track.
+	  Output Test and Copy speed per track in log.
+
+2012-11-25  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri.spec.in:
 	  Add plugins directory.
 

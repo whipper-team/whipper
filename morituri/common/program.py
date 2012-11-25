@@ -474,6 +474,8 @@ class Program(log.Loggable):
         trackResult.copycrc = t.copychecksum
         trackResult.peak = t.peak
         trackResult.quality = t.quality
+        trackResult.testspeed = t.testspeed
+        trackResult.copyspeed = t.copyspeed
 
         if trackResult.filename != t.path:
             trackResult.filename = t.path
