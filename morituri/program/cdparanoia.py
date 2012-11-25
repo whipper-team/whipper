@@ -373,7 +373,7 @@ class ReadTrackTask(log.Loggable, task.Task):
                 self.exception = ReturnCodeError(self._popen.returncode)
 
         self.quality = self._parser.getTrackQuality()
-        self.speed = (offsetLength / 75) / (end_time - self._start_time)
+        self.speed = (offsetLength / 75.0) / (end_time - self._start_time)
 
         self.stop()
         return

@@ -1,5 +1,10 @@
 2012-11-25  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/program/cdparanoia.py:
+	  Make sure we calculate fractional speed.
+
+2012-11-25  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	patch by: mustbenice
 
 	* morituri/common/program.py:
