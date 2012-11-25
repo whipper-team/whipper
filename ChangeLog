@@ -1,5 +1,10 @@
 2012-11-25  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri.spec.in:
+	  Add plugins directory.
+
+2012-11-25  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/result/logger.py:
 	* morituri/result/result.py:
 	* morituri/rip/cd.py:

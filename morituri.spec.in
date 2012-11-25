@@ -41,6 +41,7 @@ Morituri is a CD ripper.
 rm -rf $RPM_BUILD_ROOT
 make DESTDIR=$RPM_BUILD_ROOT install
 
+mkdir -p $RPM_BUILD_ROOT%{_libdir}/morituri/plugins
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -48,6 +49,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 %doc README morituri.doap NEWS RELEASE ChangeLog
 %{_bindir}/rip
+%{_libdir}/morituri/plugins
 %{_mandir}/man1/rip.1*
 %{python_sitelib}/morituri
 %{_sysconfdir}/bash_completion.d/
