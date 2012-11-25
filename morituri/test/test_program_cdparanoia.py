@@ -41,3 +41,9 @@ class ErrorTestCase(unittest.TestCase):
 
         q = '%.01f %%' % (self._parser.getTrackQuality() * 100.0, )
         self.assertEquals(q, '79.6 %')
+
+
+class VersionTestCase(unittest.TestCase):
+
+    def testGetVersion(self):
+        self.failUnless(cdparanoia.getCdparanoiaVersion())

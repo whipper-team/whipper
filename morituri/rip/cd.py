@@ -29,7 +29,7 @@ gobject.threads_init()
 from morituri.common import logcommand, common, accurip
 from morituri.common import drive, program
 from morituri.result import result
-from morituri.program import cdrdao
+from morituri.program import cdrdao, cdparanoia
 
 from morituri.extern.command import command
 from morituri.extern.task import task
@@ -139,6 +139,8 @@ Log files will log the path to tracks relative to this directory.
         prog.loadDevice(device)
         prog.unmountDevice(device)
 
+        version = None
+
         # first, read the normal TOC, which is fast
         ptoc = common.Persister(self.options.toc_pickle or None)
         if not ptoc.object:
@@ -200,6 +202,8 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
 
         # result
 
+        prog.result.cdrdaoVersion = version
+        prog.result.cdparanoiaVersion = cdparanoia.getCdparanoiaVersion()
         prog.result.offset = int(self.options.offset)
         prog.result.artist = prog.metadata and prog.metadata.artist \
             or 'Unknown Artist'
@@ -208,13 +212,14 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
         # cdio is optional for now
         try:
             import cdio
-            _, prog.result.vendor, prog.result.model, __ = \
+            _, prog.result.vendor, prog.result.model, prog.result.release = \
                 cdio.Device(device).get_hwinfo()
         except ImportError:
             self.stdout.write(
                 'WARNING: pycdio not installed, cannot identify drive\n')
             prog.result.vendor = 'Unknown'
             prog.result.model = 'Unknown'
+            prog.result.release = 'Unknown'
 
         # FIXME: turn this into a method
 

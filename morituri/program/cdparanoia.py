@@ -523,3 +523,27 @@ class ReadVerifyTrackTask(log.Loggable, task.MultiSeparateTask):
             print 'WARNING: unhandled exception %r' % (e, )
 
         task.MultiSeparateTask.stop(self)
+
+_VERSION_RE = re.compile("^cdparanoia (?P<version>.+) release (?P<release>.+) \(.*\)")
+
+
+def getCdparanoiaVersion():
+    version = "(Unknown)"
+
+    try:
+        p = asyncsub.Popen(["cdparanoia", "-V"],
+                stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE, close_fds=True)
+        version = asyncsub.recv_some(p, e=0, stderr=1)
+        vre = _VERSION_RE.search(version)
+        if vre and len(vre.groups()) == 2:
+            version = "%s %s" % (
+                vre.groupdict().get('version'),
+                vre.groupdict().get('release'))
+    except OSError, e:
+        import errno
+        if e.errno == errno.ENOENT:
+            raise common.MissingDependencyException('cdparanoia')
+        raise
+
+    return version

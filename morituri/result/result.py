@@ -81,6 +81,13 @@ class RipResult:
     @ivar offset: sample read offset
     @ivar table:  the full index table
     @type table:  L{morituri.image.table.Table}
+
+    @ivar vendor:  vendor of the CD drive
+    @ivar model:   model of the CD drive
+    @ivar release: release of the CD drive
+
+    @ivar cdrdaoVersion:     version of cdrdao used for the rip
+    @ivar cdparanoiaVersion: version of cdparanoia used for the rip
     """
 
     offset = 0
@@ -90,6 +97,10 @@ class RipResult:
 
     vendor = None
     model = None
+    release = None
+
+    cdrdaoVersion = None
+    cdparanoiaVersion = None
 
     def __init__(self):
         self.tracks = []

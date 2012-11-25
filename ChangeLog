@@ -1,5 +1,16 @@
 2012-11-25  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	patch by: mustbenice
+
+	* morituri/program/cdparanoia.py:
+	* morituri/result/result.py:
+	* morituri/rip/cd.py:
+	* morituri/test/test_program_cdparanoia.py:
+	  Get cdparanoia version.
+	  Store both cdparanoia and cdrdao versions on rip result.
+
+2012-11-25  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/program/cdparanoia.py:
 	  Make sure we calculate fractional speed.
 
