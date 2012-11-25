@@ -35,6 +35,9 @@ AS_AC_EXPAND(PYTHONLIBDIR, "\${exec_prefix}/lib/python$PYVER/site-packages")
 AC_MSG_NOTICE(Installing python code in $PYTHONLIBDIR)
 AC_SUBST(PYTHONLIBDIR)
 
+AS_AC_EXPAND(PLUGINSDIR, "\${libdir}/morituri/plugins")
+AC_MSG_NOTICE(Setting plugins directory to $PLUGINSDIR)
+
 dnl check for epydoc
 AC_CHECK_PROG(EPYDOC, epydoc, yes, no)
 AM_CONDITIONAL(HAVE_EPYDOC, test "x$EPYDOC" = "xyes")

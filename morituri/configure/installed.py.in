@@ -5,5 +5,6 @@
 def get():
     return {
         'isinstalled': True,
+        'pluginsdir': '@PLUGINSDIR@',
         'version': '@VERSION@',
     }
