@@ -24,9 +24,9 @@ import time
 
 from morituri.common import common
 from morituri.configure import configure
+from morituri.result import result
 
-
-class MorituriLogger(object):
+class MorituriLogger(result.Logger):
 
     def log(self, ripResult, epoch=time.time()):
         lines = self.logRip(ripResult, epoch=epoch)

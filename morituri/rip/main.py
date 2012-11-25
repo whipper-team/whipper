@@ -1,7 +1,9 @@
 # -*- Mode: Python -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
+import os
 import sys
+import pkg_resources
 
 from morituri.common import log, logcommand, common
 
@@ -12,6 +14,20 @@ from morituri.extern.task import task
 
 
 def main(argv):
+    # load plugins
+
+    from morituri.configure import configure
+    pluginsdir = configure.pluginsdir
+    homepluginsdir = os.path.join(os.path.expanduser('~'),
+        '.morituri', 'plugins')
+
+    distributions, errors = pkg_resources.working_set.find_plugins(
+        pkg_resources.Environment([pluginsdir, homepluginsdir]))
+    if errors:
+        log.warning('errors finding plugins: %r', errors)
+    log.debug('mapping distributions %r', distributions)
+    map(pkg_resources.working_set.add, distributions)
+
     c = Rip()
     try:
         ret = c.parse(argv)

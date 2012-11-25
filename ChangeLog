@@ -1,5 +1,14 @@
 2012-11-25  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/result/logger.py:
+	* morituri/result/result.py:
+	* morituri/rip/cd.py:
+	* morituri/rip/main.py:
+	  Expose loggers as pluggable.
+	  Add --logger option to rip cd rip to specify logger.
+
+2012-11-25  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* configure.ac:
 	* morituri/configure/installed.py.in:
 	* morituri/configure/uninstalled.py.in:

@@ -20,9 +20,8 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
+import pkg_resources
 import time
-
-from morituri.result import logger
 
 
 class TrackResult:
@@ -117,6 +116,7 @@ class Logger(object):
         Create a log from the given ripresult.
 
         @param epoch:     when the log file gets generated
+        @type  epoch:     float
         @type  ripResult: L{RipResult}
 
         @rtype: str
@@ -124,5 +124,27 @@ class Logger(object):
         raise NotImplementedError
 
 
-def getLogger():
-    return logger.MorituriLogger()
+# A setuptools-like entry point
+
+class EntryPoint(object):
+    name = 'morituri'
+
+    def load(self):
+        from morituri.result import logger
+        return logger.MorituriLogger
+
+
+def getLoggers():
+    """
+    Get all logger plugins with entry point 'morituri.logger'.
+
+    @rtype: dict of C{str} -> C{Logger}
+    """
+    d = {}
+
+    pluggables = list(pkg_resources.iter_entry_points("morituri.logger"))
+    for entrypoint in [EntryPoint(), ] + pluggables:
+        plugin_class = entrypoint.load()
+        d[entrypoint.name] = plugin_class
+
+    return d

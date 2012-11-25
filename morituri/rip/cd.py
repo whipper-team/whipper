@@ -68,6 +68,15 @@ Log files will log the path to tracks relative to this directory.
 """
 
     def addOptions(self):
+        loggers = result.getLoggers().keys()
+
+        self.parser.add_option('-L', '--logger',
+            action="store", dest="logger",
+            default='morituri',
+            help="logger to use "
+                "(default '%default', choose from '" +
+                    "', '".join(loggers) + "')"
+        )
         # FIXME: get from config
         default = 0
         self.parser.add_option('-o', '--offset',
@@ -386,8 +395,12 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
         self.stdout.write("\n".join(prog.getAccurateRipResults()) + "\n")
 
         # write log file
-        logger = result.getLogger()
-        prog.writeLog(discName, logger)
+        try:
+            klazz = result.getLoggers()[self.options.logger]
+            prog.writeLog(discName, klazz())
+        except KeyError:
+            self.stderr.write("No logger named %s found!\n" % (
+                self.options.logger))
 
         prog.ejectDevice(device)
 
