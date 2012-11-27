@@ -205,6 +205,7 @@ class ReadTrackTask(log.Loggable, task.Task):
     description = "Reading track"
     quality = None # set at end of reading
     speed = None
+    duration = None # in seconds
 
     _MAXERROR = 100 # number of errors detected by parser
 
@@ -373,7 +374,8 @@ class ReadTrackTask(log.Loggable, task.Task):
                 self.exception = ReturnCodeError(self._popen.returncode)
 
         self.quality = self._parser.getTrackQuality()
-        self.speed = (offsetLength / 75.0) / (end_time - self._start_time)
+        self.duration = end_time - self._start_time
+        self.speed = (offsetLength / 75.0) / self.duration
 
         self.stop()
         return
@@ -382,6 +384,7 @@ class ReadTrackTask(log.Loggable, task.Task):
 class ReadVerifyTrackTask(log.Loggable, task.MultiSeparateTask):
     """
     I am a task that reads and verifies a track using cdparanoia.
+    I also encode the track.
 
     The path where the file is stored can be changed if necessary, for
     example if the file name is too long.
@@ -390,6 +393,12 @@ class ReadVerifyTrackTask(log.Loggable, task.MultiSeparateTask):
     @ivar checksum:     the checksum of the track; set if they match.
     @ivar testchecksum: the test checksum of the track.
     @ivar copychecksum: the copy checksum of the track.
+    @ivar testspeed:    the test speed of the track, as a multiple of
+                        track duration.
+    @ivar copyspeed:    the copy speed of the track, as a multiple of
+                        track duration.
+    @ivar testduration: the test duration of the track, in seconds.
+    @ivar copyduration: the copy duration of the track, in seconds.
     @ivar peak:         the peak level of the track
     """
 
@@ -400,6 +409,8 @@ class ReadVerifyTrackTask(log.Loggable, task.MultiSeparateTask):
     quality = None
     testspeed = None
     copyspeed = None
+    testduration = None
+    copyduration = None
 
     _tmpwavpath = None
     _tmppath = None
@@ -481,6 +492,8 @@ class ReadVerifyTrackTask(log.Loggable, task.MultiSeparateTask):
                 self.debug('peak: %r', self.peak)
                 self.testspeed = self.tasks[0].speed
                 self.copyspeed = self.tasks[2].speed
+                self.testduration = self.tasks[0].duration
+                self.copyduration = self.tasks[2].duration
 
                 self.testchecksum = c1 = self.tasks[1].checksum
                 self.copychecksum = c2 = self.tasks[3].checksum

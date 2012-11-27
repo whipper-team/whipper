@@ -1,3 +1,10 @@
+2012-11-27  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/program.py:
+	* morituri/program/cdparanoia.py:
+	* morituri/result/result.py:
+	  Track ripping speed for test and encode per-track.
+
 2012-11-25  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	patch by: mustbenice

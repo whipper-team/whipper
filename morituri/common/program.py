@@ -476,6 +476,9 @@ class Program(log.Loggable):
         trackResult.quality = t.quality
         trackResult.testspeed = t.testspeed
         trackResult.copyspeed = t.copyspeed
+        # we want rerips to add cumulatively to the time
+        trackResult.testduration += t.testduration
+        trackResult.copyduration += t.copyduration
 
         if trackResult.filename != t.path:
             trackResult.filename = t.path

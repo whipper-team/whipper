@@ -62,6 +62,8 @@ class TrackResult:
     quality = 0.0
     testspeed = 0.0
     copyspeed = 0.0
+    testduration = 0.0
+    copyduration = 0.0
     testcrc = None
     copycrc = None
     accurip = False # whether it's in the database
