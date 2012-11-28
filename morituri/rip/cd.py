@@ -260,7 +260,11 @@ See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=1
                     os.unlink(path)
 
             if not os.path.exists(path):
+                self.debug('path %r does not exist, ripping...' % path)
                 tries = 0
+                # we reset durations for test and copy here
+                trackResult.testduration = 0.0
+                trackResult.copyduration = 0.0
                 self.stdout.write('Ripping track %d of %d: %s\n' % (
                     number, len(itable.tracks),
                     os.path.basename(path).encode('utf-8')))

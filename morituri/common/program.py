@@ -470,6 +470,11 @@ class Program(log.Loggable):
 
         runner.run(t)
 
+        self.debug('ripped track')
+        self.debug('test speed %.3f/%.3f seconds' % (
+            t.testspeed, t.testduration))
+        self.debug('copy speed %.3f/%.3f seconds' % (
+            t.copyspeed, t.copyduration))
         trackResult.testcrc = t.testchecksum
         trackResult.copycrc = t.copychecksum
         trackResult.peak = t.peak

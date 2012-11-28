@@ -1,3 +1,10 @@
+2012-11-28  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/program.py:
+	* morituri/rip/cd.py:
+	  Reset rip duration when we continue a rip but have to rerip
+	  a track.
+
 2012-11-27  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/program.py:
