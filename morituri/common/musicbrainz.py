@@ -90,7 +90,8 @@ def _getMetadata(release):
     metadata.release = release.getEarliestReleaseDate()
 
     metadata.mbid = urlparse.urlparse(release.id)[2].split("/")[-1]
-    metadata.mbidArtist = urlparse.urlparse(release.artist.id)[2].split("/")[-1]
+    metadata.mbidArtist = urlparse.urlparse(
+        release.artist.id)[2].split("/")[-1]
     metadata.url = release.getId()
 
     tainted = False
@@ -131,7 +132,8 @@ def _getMetadata(release):
     return metadata
 
 
-# see http://bugs.musicbrainz.org/browser/python-musicbrainz2/trunk/examples/ripper.py
+# see http://bugs.musicbrainz.org/browser/python-musicbrainz2/trunk/examples/
+#     ripper.py
 
 
 def musicbrainz(discid):

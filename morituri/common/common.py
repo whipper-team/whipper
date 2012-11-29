@@ -300,6 +300,7 @@ def shrinkPath(path):
     path = os.path.join(*parts)
     return path
 
+
 def getRealPath(refPath, filePath):
     """
     Translate a .cue or .toc's FILE to an existing path.
@@ -338,6 +339,7 @@ def getRealPath(refPath, filePath):
                 return cpath
 
     raise KeyError("Cannot find file for %r" % filePath)
+
 
 def getRelativePath(targetPath, collectionPath):
     """

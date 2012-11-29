@@ -9,13 +9,16 @@ from morituri.test import common as tcommon
 def h(i):
     return "0x%08x" % i
 
+
 class TrackTestCase(tcommon.TestCase):
+
     def testRepr(self):
         track = table.Track(1)
         self.assertEquals(repr(track), "<Track 01>")
 
         track.index(1, 100)
         self.failUnless(repr(track.indexes[1]).startswith('<Index 01 '))
+
 
 class LadyhawkeTestCase(tcommon.TestCase):
     # Ladyhawke - Ladyhawke - 0602517818866
@@ -50,7 +53,9 @@ class LadyhawkeTestCase(tcommon.TestCase):
 
     def testMusicBrainz(self):
         # output from mb-submit-disc:
-        # http://mm.musicbrainz.org/bare/cdlookup.html?toc=1+12+195856+150+15687+31841+51016+66616+81352+99559+116070+133243+149997+161710+177832&tracks=12&id=KnpGsLhvH.lPrNc1PBL21lb9Bg4-
+        # http://mm.musicbrainz.org/bare/cdlookup.html?toc=1+12+195856+150+
+        # 15687+31841+51016+66616+81352+99559+116070+133243+149997+161710+
+        # 177832&tracks=12&id=KnpGsLhvH.lPrNc1PBL21lb9Bg4-
         # however, not (yet) in musicbrainz database
 
         self.assertEquals(self.table.getMusicBrainzDiscId(),
@@ -60,7 +65,8 @@ class LadyhawkeTestCase(tcommon.TestCase):
         self.assertEquals(self.table.getAccurateRipIds(), (
             "0013bd5a", "00b8d489"))
         self.assertEquals(self.table.getAccurateRipURL(),
-        "http://www.accuraterip.com/accuraterip/a/5/d/dBAR-012-0013bd5a-00b8d489-c60af50d.bin")
+        "http://www.accuraterip.com/accuraterip/a/5/d/"
+        "dBAR-012-0013bd5a-00b8d489-c60af50d.bin")
 
     def testDuration(self):
         self.assertEquals(self.table.duration(), 2761413)
@@ -91,6 +97,7 @@ class MusicBrainzTestCase(tcommon.TestCase):
         self.assertEquals(self.table.getMusicBrainzDiscId(),
             '49HHV7Eb8UKF3aQiNmu1GR8vKTY-')
 
+
 class PregapTestCase(tcommon.TestCase):
 
     def setUp(self):
@@ -108,5 +115,3 @@ class PregapTestCase(tcommon.TestCase):
     def testPreGap(self):
         self.assertEquals(self.table.tracks[0].getPregap(), 0)
         self.assertEquals(self.table.tracks[1].getPregap(), 200)
-
-

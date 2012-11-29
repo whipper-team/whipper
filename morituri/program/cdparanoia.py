@@ -525,7 +525,8 @@ class ReadVerifyTrackTask(log.Loggable, task.MultiSeparateTask):
                             self.path = common.shrinkPath(self.path)
                             shutil.move(self._tmppath, self.path)
                     except Exception, e:
-                        self.debug('Exception while moving to final path %r: %r',
+                        self.debug('Exception while moving to final path %r: '
+                            '%r',
                             self.path, log.getExceptionMessage(e))
                         self.exception = e
                 else:
@@ -537,7 +538,8 @@ class ReadVerifyTrackTask(log.Loggable, task.MultiSeparateTask):
 
         task.MultiSeparateTask.stop(self)
 
-_VERSION_RE = re.compile("^cdparanoia (?P<version>.+) release (?P<release>.+) \(.*\)")
+_VERSION_RE = re.compile(
+    "^cdparanoia (?P<version>.+) release (?P<release>.+) \(.*\)")
 
 
 def getCdparanoiaVersion():

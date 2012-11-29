@@ -141,6 +141,7 @@ class Logger(object):
 
 # A setuptools-like entry point
 
+
 class EntryPoint(object):
     name = 'morituri'
 

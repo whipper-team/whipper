@@ -110,7 +110,7 @@ class TocFile(object, log.Loggable):
         trackNumber = 0
         indexNumber = 0
         absoluteOffset = 0 # running absolute offset of where each track starts
-        relativeOffset = 0 # running relative offset, relative to counter source
+        relativeOffset = 0 # running relative offset, relative to counter src
         currentLength = 0 # accrued during TRACK record parsing, current track
         totalLength = 0 # accrued during TRACK record parsing, total disc
         pregapLength = 0 # length of the pre-gap, current track
@@ -163,7 +163,8 @@ class TocFile(object, log.Loggable):
                     # FIXME: why not set absolute offsets too ?
                     currentTrack.index(1, path=currentFile.path,
                         absolute=absoluteOffset + pregapLength,
-                        relative=relativeOffset + pregapLength, counter=counter)
+                        relative=relativeOffset + pregapLength,
+                        counter=counter)
                     self.debug('track %d, added index %r',
                         currentTrack.number, currentTrack.getIndex(1))
 
@@ -223,7 +224,8 @@ class TocFile(object, log.Loggable):
                 if not currentFile or filePath != currentFile.path:
                     counter += 1
                     relativeOffset = 0
-                    self.debug('track %d, switched to new FILE, increased counter to %d',
+                    self.debug('track %d, switched to new FILE, '
+                               'increased counter to %d',
                         trackNumber, counter)
                 currentFile = File(filePath, start, length)
                 #absoluteOffset += common.msfToFrames(start)
@@ -240,7 +242,8 @@ class TocFile(object, log.Loggable):
                 if not currentFile or filePath != currentFile.path:
                     counter += 1
                     relativeOffset = 0
-                    self.debug('track %d, switched to new FILE, increased counter to %d',
+                    self.debug('track %d, switched to new FILE, '
+                        'increased counter to %d',
                         trackNumber, counter)
                 # FIXME: assume that a MODE2_FORM_MIX track always starts at 0
                 currentFile = File(filePath, 0, length)

@@ -93,7 +93,6 @@ class CureTestCase(common.TestCase):
             'http://www.accuraterip.com/accuraterip/'
             '3/c/4/dBAR-013-0019d4c3-00fe8924-b90c650d.bin')
 
-
     def testGetRealPath(self):
         self.assertRaises(KeyError, self.toc.getRealPath, u'track01.wav')
         (fd, path) = tempfile.mkstemp(suffix=u'.morituri.test.wav')
@@ -211,7 +210,10 @@ class LadyhawkeTestCase(common.TestCase):
         self.assertEquals(self.toc.table.getMusicBrainzDiscId(),
             "KnpGsLhvH.lPrNc1PBL21lb9Bg4-")
         self.assertEquals(self.toc.table.getMusicBrainzSubmitURL(),
-            "http://mm.musicbrainz.org/bare/cdlookup.html?toc=1+12+195856+150+15687+31841+51016+66616+81352+99559+116070+133243+149997+161710+177832&tracks=12&id=KnpGsLhvH.lPrNc1PBL21lb9Bg4-")
+            "http://mm.musicbrainz.org/bare/cdlookup.html?toc="
+            "1+12+195856+150+15687+31841+51016+66616+81352+99559+"
+            "116070+133243+149997+161710+177832&"
+            "tracks=12&id=KnpGsLhvH.lPrNc1PBL21lb9Bg4-")
 
     # FIXME: I don't trust this toc, but I can't find the CD anymore
 
@@ -226,6 +228,7 @@ class LadyhawkeTestCase(common.TestCase):
         data = self.toc.table.cue()
         lines = data.split("\n")
         self.assertEquals(lines[0], "REM DISCID C60AF50D")
+
 
 class CapitalMergeTestCase(common.TestCase):
 
@@ -249,15 +252,19 @@ class CapitalMergeTestCase(common.TestCase):
         self.table.absolutize()
         self.assertEquals(self.table.getCDDBDiscId(), 'b910140c')
         # output from cd-discid:
-        # b910140c 12 24320 44855 64090 77885 88095 104020 118245 129255 141765 164487 181780 209250 4440
+        # b910140c 12 24320 44855 64090 77885 88095 104020 118245 129255 141765
+        # 164487 181780 209250 4440
 
     def testMusicBrainz(self):
-        # URL to submit: http://mm.musicbrainz.org/bare/cdlookup.html?toc=1+11+197850+24320+44855+64090+77885+88095+104020+118245+129255+141765+164487+181780&tracks=11&id=MAj3xXf6QMy7G.BIFOyHyq4MySE-
+        # URL to submit: http://mm.musicbrainz.org/bare/cdlookup.html?toc=1+11+
+        # 197850+24320+44855+64090+77885+88095+104020+118245+129255+141765+
+        # 164487+181780&tracks=11&id=MAj3xXf6QMy7G.BIFOyHyq4MySE-
         self.assertEquals(self.table.getMusicBrainzDiscId(),
             "MAj3xXf6QMy7G.BIFOyHyq4MySE-")
 
     def testDuration(self):
-        # this matches track 11 end sector - track 1 start sector on musicbrainz
+        # this matches track 11 end sector - track 1 start sector on
+        # musicbrainz
         # compare to 3rd and 4th value in URL above
         self.assertEquals(self.table.getFrameLength(), 173530)
         self.assertEquals(self.table.duration(), 2313733)

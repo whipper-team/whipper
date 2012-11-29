@@ -75,8 +75,7 @@ Log files will log the path to tracks relative to this directory.
             default='morituri',
             help="logger to use "
                 "(default '%default', choose from '" +
-                    "', '".join(loggers) + "')"
-        )
+                    "', '".join(loggers) + "')")
         # FIXME: get from config
         default = 0
         self.parser.add_option('-o', '--offset',
@@ -86,8 +85,7 @@ Log files will log the path to tracks relative to this directory.
         self.parser.add_option('-O', '--output-directory',
             action="store", dest="output_directory",
             help="output directory "
-                "(defaults to absolute path to current directory) "
-        )
+                "(defaults to absolute path to current directory) ")
         # FIXME: have a cache of these pickles somewhere
         self.parser.add_option('-T', '--toc-pickle',
             action="store", dest="toc_pickle",
@@ -150,10 +148,10 @@ Log files will log the path to tracks relative to this directory.
             from pkg_resources import parse_version as V
             # we've built a cdrdao 1.2.3rc2 modified package with the patch
             if V(version) < V('1.2.3rc2p1'):
-                self.stdout.write('''
-Warning: cdrdao older than 1.2.3 has a pre-gap length bug.
-See  http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=102171
-''')
+                self.stdout.write('Warning: cdrdao older than 1.2.3 has a '
+                    'pre-gap length bug.\n'
+                    'See http://sourceforge.net/tracker/?func=detail'
+                    '&aid=604751&group_id=2171&atid=102171\n')
             ptoc.persist(t.table)
         ittoc = ptoc.object
         assert ittoc.hasTOC()

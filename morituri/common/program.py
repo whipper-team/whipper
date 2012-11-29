@@ -198,7 +198,8 @@ class Program(log.Loggable):
             if i > 0:
                 try:
                     v['a'] = filterForPath(self.metadata.tracks[i - 1].artist)
-                    v['s'] = filterForPath(self.metadata.tracks[i - 1].sortName)
+                    v['s'] = filterForPath(
+                        self.metadata.tracks[i - 1].sortName)
                     v['n'] = filterForPath(self.metadata.tracks[i - 1].title)
                 except IndexError, e:
                     print 'ERROR: no track %d found, %r' % (i, e)
@@ -359,7 +360,8 @@ class Program(log.Loggable):
 
         ret = gst.TagList()
 
-        # gst-python 0.10.15.1 does not handle unicode -> utf8 string conversion
+        # gst-python 0.10.15.1 does not handle unicode -> utf8 string
+        # conversion
         # see http://bugzilla.gnome.org/show_bug.cgi?id=584445
         if self.metadata and self.metadata.various:
             ret["album-artist"] = albumArtist.encode('utf-8')
@@ -380,8 +382,8 @@ class Program(log.Loggable):
             # 0.10.15.1
             # FIXME: The dates are strings and must have the format 'YYYY',
             # 'YYYY-MM' or 'YYYY-MM-DD'.
-            # GstDate expects a full date, so default to Jan and 1st if MM and DD
-            # are missing
+            # GstDate expects a full date, so default to
+            # Jan and 1st if MM and DD are missing
             date = self.metadata.release
             if date:
                 log.debug('metadata',

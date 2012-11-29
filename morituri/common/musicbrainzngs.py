@@ -204,7 +204,8 @@ def _getMetadata(release, discid):
     return metadata
 
 
-# see http://bugs.musicbrainz.org/browser/python-musicbrainz2/trunk/examples/ripper.py
+# see http://bugs.musicbrainz.org/browser/python-musicbrainz2/trunk/examples/
+#     ripper.py
 
 
 def musicbrainz(discid, record=False):

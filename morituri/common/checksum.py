@@ -150,7 +150,8 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
         self.debug('stopped')
         if not self._last:
             # see http://bugzilla.gnome.org/show_bug.cgi?id=578612
-            self.debug('not a single buffer gotten, setting exception EmptyError')
+            self.debug(
+                'not a single buffer gotten, setting exception EmptyError')
             self.setException(common.EmptyError('not a single buffer gotten'))
         else:
             self._checksum = self._checksum % 2 ** 32
