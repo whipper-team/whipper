@@ -31,7 +31,6 @@ from morituri.common import drive, program
 from morituri.result import result
 from morituri.program import cdrdao, cdparanoia
 
-from morituri.extern.command import command
 from morituri.extern.task import task
 
 DEFAULT_TRACK_TEMPLATE = u'%A - %d/%t. %a - %n'
