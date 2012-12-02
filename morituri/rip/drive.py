@@ -38,7 +38,7 @@ class List(logcommand.LogCommand):
             return
 
         try:
-            import cdio
+            import cdio as _
         except ImportError:
             self.stdout.write(
                 'Install pycdio for vendor/model/release detection.\n')

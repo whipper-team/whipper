@@ -77,10 +77,11 @@ class Config(log.Loggable):
         except KeyError:
             section = 'drive:' + urllib.quote('%s:%s:%s' % (vendor, model, release))
             self._parser.add_section(section)
+            __pychecker__ = 'no-local'
             read_offset = str(offset)
             for key in ['vendor', 'model', 'release', 'read_offset']:
                 self._parser.set(section, key, locals()[key].strip())
-            
+
         self.write()
 
     def getReadOffset(self, vendor, model, release):
