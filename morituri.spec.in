@@ -23,6 +23,7 @@ Requires:       gstreamer-python
 Requires:       python-musicbrainz2
 Requires:       python-CDDB
 Requires:       pycdio
+Requires:       pyxdg
 
 # we use parse_version in code
 Requires:       python-setuptools
@@ -55,6 +56,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/bash_completion.d/
 
 %changelog
+* Sun Dec 02 2012 Thomas Vander Stichele <thomas at apestaart dot org>
+- Require pyxdg for XDG config file.
+
 * Sun Jan 09 2011 Thomas Vander Stichele <thomas at apestaart dot org>
 - Fix URL
 

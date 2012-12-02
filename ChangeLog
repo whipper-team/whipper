@@ -1,5 +1,12 @@
 2012-12-02  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri.spec.in:
+	* morituri/common/config.py:
+	  Use XDG if we can import xdg.
+	  Fix writing the config.
+
+2012-12-02  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/drive.py:
 	* morituri/rip/drive.py:
 	  Extract getDeviceInfo function.

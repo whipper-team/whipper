@@ -21,6 +21,7 @@
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
 import os.path
+import shutil
 import urllib
 import codecs
 import tempfile
@@ -33,7 +34,7 @@ class Config(log.Loggable):
 
     def __init__(self, path=None):
         if not path:
-            path = os.path.expanduser('~/.moriturirc')
+            path = self.getDefaultPath()
 
         self._path = path
 
@@ -41,16 +42,35 @@ class Config(log.Loggable):
 
         self.open()
 
+    def getDefaultPath(self):
+        try:
+            from xdg import BaseDirectory
+            directory = os.path.join(BaseDirectory.xdg_config_home, 'morituri')
+            if not os.path.isdir(directory):
+                os.mkdir(directory)
+            path = os.path.join(directory, 'morituri.conf')
+            self.info('Using XDG, configuration file is %s' % path)
+            return path
+        except ImportError:
+            path = os.path.expanduser('~/.moriturirc')
+            self.info('Not using XDG, configuration file is %s' % path)
+            return path
+
     def open(self):
         # Open the file with the correct encoding
         if os.path.exists(self._path):
             with codecs.open(self._path, 'r', encoding='utf-8') as f:
                 self._parser.readfp(f)
 
+        self.info('Loaded %d sections from config file' %
+            len(self._parser.sections()))
+
 
     def setReadOffset(self, vendor, model, release, offset):
         """
         Set a read offset for the given drive.
+
+        Strips the given strings of leading and trailing whitespace.
         """
         try:
             section = self._findDriveSection(vendor, model, release)
@@ -59,8 +79,10 @@ class Config(log.Loggable):
             self._parser.add_section(section)
             read_offset = str(offset)
             for key in ['vendor', 'model', 'release', 'read_offset']:
-                self._parser.set(section, key, locals()[key])
+                self._parser.set(section, key, locals()[key].strip())
             
+        self.write()
+
     def getReadOffset(self, vendor, model, release):
         """
         Get a read offset for the given drive.
@@ -74,11 +96,18 @@ class Config(log.Loggable):
             if not name.startswith('drive:'):
                 continue
 
-            if vendor != self._parser.get(name, 'vendor'):
+            self.debug('Looking at section %r' % name)
+            conf = {}
+            for key in ['vendor', 'model', 'release']:
+                locals()[key] = locals()[key].strip()
+                conf[key] = self._parser.get(name, key)
+                self.debug("%s: '%s' versus '%s'" % (
+                    key, locals()[key], conf[key]))
+            if vendor.strip() != conf['vendor']:
                 continue
-            if model != self._parser.get(name, 'model'):
+            if model != conf['model']:
                 continue
-            if release != self._parser.get(name, 'release'):
+            if release != conf['release']:
                 continue
 
             return name
@@ -87,6 +116,7 @@ class Config(log.Loggable):
 
     def write(self):
         fd, path = tempfile.mkstemp(suffix=u'.moriturirc')
-        self._parser.write(fd)
-        os.close(fd)
-        os.rename(path, self._path)
+        handle = os.fdopen(fd, 'w')
+        self._parser.write(handle)
+        handle.close()
+        shutil.move(path, self._path)
