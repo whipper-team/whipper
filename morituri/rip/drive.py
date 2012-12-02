@@ -31,9 +31,9 @@ class List(logcommand.LogCommand):
         paths = drive.getAllDevicePaths()
 
         if not paths:
-            print 'No drives found.'
-            print 'Create /dev/cdrom if you have a CD drive, '
-            print 'or install pycdio for better detection.'
+            self.stdout.write('No drives found.\n')
+            self.stdout.write('Create /dev/cdrom if you have a CD drive, \n')
+            self.stdout.write('or install pycdio for better detection.\n')
 
             return
 
@@ -46,11 +46,20 @@ class List(logcommand.LogCommand):
 
         for path in paths:
             vendor, model, release = drive.getDeviceInfo(path)
-            print "drive: %s, vendor: %s, model: %s, release: %s" % (
-                path, vendor, model, release)
+            self.stdout.write(
+                "drive: %s, vendor: %s, model: %s, release: %s\n" % (
+                path, vendor, model, release))
+
+            try:
+                offset = self.getRootCommand().config.getReadOffset(
+                    vendor, model, release)
+                self.stdout.write(
+                    "       Configured read offset: %d\n" % offset)
+            except KeyError:
+                pass
 
         if not paths:
-            print 'No drives found.'
+            self.stdout.write('No drives found.\n')
 
 
 class Drive(logcommand.LogCommand):
