@@ -58,3 +58,15 @@ def _getAllDevicePathsStatic():
             ret.append(c)
 
     return ret
+
+def getDeviceInfo(path):
+    try:
+        import cdio
+    except ImportError:
+        return None
+
+    device = cdio.Device(path)
+    ok, vendor, model, release = device.get_hwinfo()
+
+    return (vendor, model, release)
+

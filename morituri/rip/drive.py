@@ -40,12 +40,12 @@ class List(logcommand.LogCommand):
         try:
             import cdio
         except ImportError:
-            print 'Install pycdio for vendor/model/release detection.'
+            self.stdout.write(
+                'Install pycdio for vendor/model/release detection.\n')
             return
 
         for path in paths:
-            device = cdio.Device(path)
-            ok, vendor, model, release = device.get_hwinfo()
+            vendor, model, release = drive.getDeviceInfo(path)
             print "drive: %s, vendor: %s, model: %s, release: %s" % (
                 path, vendor, model, release)
 
