@@ -5,8 +5,10 @@ EXTRA_DIST = \
 	common.py \
 	test_common_accurip.py \
 	test_common_checksum.py \
+	test_common_common.py \
 	test_common_config.py \
 	test_common_drive.py \
+	test_common_encode.py \
 	test_common_musicbrainzngs.py \
 	test_common_program.py \
 	test_common_renamer.py \
@@ -16,6 +18,7 @@ EXTRA_DIST = \
 	test_image_toc.py \
 	test_program_cdparanoia.py \
 	test_program_cdrdao.py \
+	test_result_logger.py \
 	bloc.cue \
 	bloc.toc \
 	breeders.cue \
@@ -54,3 +57,4 @@ regenerate: track.flac
 
 track.flac:
 	gst-launch audiotestsrc num-buffers=10 samplesperbuffer=588 ! audioconvert ! audio/x-raw-int,channels=2,width=16,height=16,rate=44100 ! flacenc ! filesink location=track.flac
+
