@@ -1,5 +1,12 @@
 2012-12-02  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/rip/main.py:
+	  Add the config object to the root command.
+	* morituri/rip/offset.py:
+	  Save the drive's read offset when we find it.
+
+2012-12-02  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri.spec.in:
 	* morituri/common/config.py:
 	  Use XDG if we can import xdg.

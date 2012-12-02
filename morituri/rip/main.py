@@ -5,7 +5,7 @@ import os
 import sys
 import pkg_resources
 
-from morituri.common import log, logcommand, common
+from morituri.common import log, logcommand, common, config
 
 from morituri.rip import cd, offset, drive, image, accurip, debug
 
@@ -103,6 +103,8 @@ You can get help on subcommands by using the -h option to the subcommand.
             sys.exit(0)
 
         self.record = options.record
+
+        self.config = config.Config()
 
     def parse(self, argv):
         log.debug("morituri", "rip %s" % " ".join(argv))

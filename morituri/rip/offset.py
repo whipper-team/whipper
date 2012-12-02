@@ -188,8 +188,7 @@ CD in the AccurateRip database."""
                         count += 1
 
                 if count == len(table.tracks):
-                    self.stdout.write('\nRead offset of device is: %d.\n' %
-                        offset)
+                    self._foundOffset(device, offset)
                     return 0
                 else:
                     self.stdout.write(
@@ -225,6 +224,20 @@ CD in the AccurateRip database."""
         os.unlink(path)
         return "%08x" % t.checksum
 
+    def _foundOffset(self, device, offset):
+        self.stdout.write('\nRead offset of device is: %d.\n' %
+            offset)
+
+        info = drive.getDeviceInfo(device)
+        if not info:
+            return
+
+        self.stdout.write('Adding read offset to configuration file.\n')
+
+        self.getRootCommand().config.setReadOffset(info[0], info[1], info[2],
+            offset)
+
+        
 
 class Offset(logcommand.LogCommand):
     summary = "handle drive offsets"
