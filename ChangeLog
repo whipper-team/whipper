@@ -1,5 +1,10 @@
 2012-12-02  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/common.py:
+	  Remove migrated classes.
+
+2012-12-02  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/cache.py:
 	  Disable the version-based persistence deleting.
 	  Allow not creating a fresh ripresult when getting one.
