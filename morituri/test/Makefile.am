@@ -5,6 +5,7 @@ EXTRA_DIST = \
 	common.py \
 	test_common_accurip.py \
 	test_common_checksum.py \
+	test_common_config.py \
 	test_common_drive.py \
 	test_common_musicbrainzngs.py \
 	test_common_program.py \

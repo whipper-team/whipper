@@ -7,6 +7,7 @@ morituri_PYTHON = \
 	accurip.py \
 	checksum.py \
 	common.py \
+	config.py \
 	drive.py \
 	encode.py \
 	gstreamer.py \

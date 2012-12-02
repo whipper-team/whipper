@@ -1,3 +1,12 @@
+2012-12-02  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/config.py (added):
+	* morituri/test/test_common_config.py (added):
+	* morituri/common/Makefile.am:
+	* morituri/test/Makefile.am:
+	  First stab at adding a configuration file to store
+	  drive read offsets.
+
 2012-11-28  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/program.py:
