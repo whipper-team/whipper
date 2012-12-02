@@ -10,6 +10,7 @@ EXTRA_DIST = \
 	test_common_config.py \
 	test_common_drive.py \
 	test_common_encode.py \
+	test_common_gstreamer.py \
 	test_common_musicbrainzngs.py \
 	test_common_program.py \
 	test_common_renamer.py \

@@ -1,5 +1,13 @@
 2012-12-02  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/test/test_common_gstreamer.py (added):
+	* morituri/common/gstreamer.py:
+	* morituri/test/Makefile.am:
+	  add functions to get versions of gstreamer, gst-python,
+	  and element factory plugins.
+
+2012-12-02  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/rip/debug.py:
 	  add rip debug resultcache log command to generate a log
 	  based on a cached result.
