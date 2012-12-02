@@ -1,5 +1,17 @@
 2012-12-02  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/cache.py (added):
+	* morituri/test/cache (added):
+	* morituri/test/cache/result (added):
+	* morituri/test/cache/result/fe105a11.pickle (added):
+	* morituri/test/test_common_cache.py (added):
+	* morituri/common/Makefile.am:
+	* morituri/common/program.py:
+	* morituri/test/Makefile.am:
+	  Extract ResultCache object into separate file.
+
+2012-12-02  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/rip/drive.py:
 	  rip drive list now shows configured read offset if applicable.
 

@@ -4,6 +4,7 @@ EXTRA_DIST = \
 	__init__.py \
 	common.py \
 	test_common_accurip.py \
+	test_common_cache.py \
 	test_common_checksum.py \
 	test_common_common.py \
 	test_common_config.py \
@@ -45,7 +46,8 @@ EXTRA_DIST = \
 	cdparanoia.progress.error \
 	cdrdao.readtoc.progress \
 	silentalarm.result.pickle \
-	track.flac
+	track.flac \
+	cache/result/fe105a11.pickle
 
 
 # re-generation of test files when needed
@@ -57,4 +59,3 @@ regenerate: track.flac
 
 track.flac:
 	gst-launch audiotestsrc num-buffers=10 samplesperbuffer=588 ! audioconvert ! audio/x-raw-int,channels=2,width=16,height=16,rate=44100 ! flacenc ! filesink location=track.flac
-

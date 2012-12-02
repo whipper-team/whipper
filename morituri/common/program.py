@@ -27,8 +27,7 @@ Common functionality and class for all programs using morituri.
 import os
 import time
 
-from morituri.common import common, log, musicbrainzngs
-from morituri.result import result
+from morituri.common import common, log, musicbrainzngs, cache
 from morituri.program import cdrdao, cdparanoia
 from morituri.image import image
 
@@ -59,16 +58,13 @@ class Program(log.Loggable):
         @param record: whether to record results of API calls for playback.
         """
         self._record = record
+        self._cache = cache.ResultCache()
 
     def _getTableCachePath(self):
         path = os.path.join(os.path.expanduser('~'), '.morituri', 'cache',
             'table')
         return path
 
-    def _getResultCachePath(self):
-        path = os.path.join(os.path.expanduser('~'), '.morituri', 'cache',
-            'result')
-        return path
 
     def loadDevice(self, device):
         """
@@ -129,22 +125,8 @@ class Program(log.Loggable):
         """
         assert self.result is None
 
-        path = self._getResultCachePath()
-
-        pcache = common.PersistedCache(path)
-        presult = pcache.get(cddbdiscid)
-
-        if not presult.object:
-            self.debug('result for cddbdiscid %r not in cache, creating',
-                cddbdiscid)
-            presult.object = result.RipResult()
-            presult.persist(self.result)
-        else:
-            self.debug('result for cddbdiscid %r found in cache, reusing',
-                cddbdiscid)
-
-        self.result = presult.object
-        self._presult = presult
+        self._presult = self._cache.getRipResult(cddbdiscid)
+        self.result = self._presult.object
 
         return self.result
 
