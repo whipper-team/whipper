@@ -65,7 +65,6 @@ class Program(log.Loggable):
             'table')
         return path
 
-
     def loadDevice(self, device):
         """
         Load the given device.

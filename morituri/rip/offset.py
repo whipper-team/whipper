@@ -237,7 +237,6 @@ CD in the AccurateRip database."""
         self.getRootCommand().config.setReadOffset(info[0], info[1], info[2],
             offset)
 
-        
 
 class Offset(logcommand.LogCommand):
     summary = "handle drive offsets"

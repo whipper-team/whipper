@@ -65,7 +65,6 @@ class Config(log.Loggable):
         self.info('Loaded %d sections from config file' %
             len(self._parser.sections()))
 
-
     def setReadOffset(self, vendor, model, release, offset):
         """
         Set a read offset for the given drive.
@@ -75,7 +74,8 @@ class Config(log.Loggable):
         try:
             section = self._findDriveSection(vendor, model, release)
         except KeyError:
-            section = 'drive:' + urllib.quote('%s:%s:%s' % (vendor, model, release))
+            section = 'drive:' + urllib.quote('%s:%s:%s' % (
+                vendor, model, release))
             self._parser.add_section(section)
             __pychecker__ = 'no-local'
             read_offset = str(offset)

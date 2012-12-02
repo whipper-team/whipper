@@ -20,7 +20,7 @@ class OffsetTestCase(tcommon.TestCase):
         os.unlink(self._path)
 
     def testAddReadOffset(self):
-        self.assertRaises(KeyError, 
+        self.assertRaises(KeyError,
             self._config.getReadOffset, 'PLEXTOR ', 'DVDR   PX-L890SA', '1.05')
         self._config.setReadOffset('PLEXTOR ', 'DVDR   PX-L890SA', '1.05', 6)
 

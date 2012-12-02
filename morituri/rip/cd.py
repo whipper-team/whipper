@@ -136,7 +136,6 @@ Log files will log the path to tracks relative to this directory.
             self.stdout.write("Using fallback read offset %d\n" %
                         options.offset)
 
-
     def do(self, args):
         prog = program.Program(record=self.getRootCommand().record)
         runner = task.SyncRunner()

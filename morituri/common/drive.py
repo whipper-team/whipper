@@ -59,6 +59,7 @@ def _getAllDevicePathsStatic():
 
     return ret
 
+
 def getDeviceInfo(path):
     try:
         import cdio
@@ -69,4 +70,3 @@ def getDeviceInfo(path):
     ok, vendor, model, release = device.get_hwinfo()
 
     return (vendor, model, release)
-
