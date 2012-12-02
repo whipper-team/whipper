@@ -137,8 +137,8 @@ class PersistedCache(object):
         if persister.object:
             if hasattr(persister.object, 'instanceVersion'):
                 o = persister.object
-                if o.instanceVersion < o.__class__.classVersion:
-                    persister.delete()
+                # if o.instanceVersion < o.__class__.classVersion:
+                #     persister.delete()
 
         return persister
 
@@ -157,7 +157,7 @@ class ResultCache(log.Loggable):
             'result')
         return path
 
-    def getRipResult(self, cddbdiscid):
+    def getRipResult(self, cddbdiscid, create=True):
         """
         Retrieve the persistable RipResult either from our cache (from a
         previous, possibly aborted rip), or return a new one.
@@ -167,10 +167,14 @@ class ResultCache(log.Loggable):
         presult = self._pcache.get(cddbdiscid)
 
         if not presult.object:
-            self.debug('result for cddbdiscid %r not in cache, creating',
-                cddbdiscid)
+            self.debug('result for cddbdiscid %r not in cache', cddbdiscid)
+            if not create:
+                self.debug('returning None')
+                return None
+
+            self.debug('creating result')
             presult.object = result.RipResult()
-            presult.persist(self.result)
+            presult.persist(presult.object)
         else:
             self.debug('result for cddbdiscid %r found in cache, reusing',
                 cddbdiscid)

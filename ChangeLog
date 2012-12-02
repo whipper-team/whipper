@@ -1,6 +1,12 @@
 2012-12-02  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/cache.py:
+	  Disable the version-based persistence deleting.
+	  Allow not creating a fresh ripresult when getting one.
+
+2012-12-02  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/cache.py:
 	* morituri/rip/debug.py:
 	* morituri/test/test_common_cache.py:
 	  Add rip debug resultcache list to list cached results.
