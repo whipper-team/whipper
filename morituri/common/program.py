@@ -99,7 +99,7 @@ class Program(log.Loggable):
         """
         path = self._getTableCachePath()
 
-        pcache = common.PersistedCache(path)
+        pcache = cache.PersistedCache(path)
         ptable = pcache.get(cddbdiscid)
 
         if not ptable.object:
