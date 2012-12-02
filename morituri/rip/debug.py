@@ -22,7 +22,36 @@
 
 from morituri.common import logcommand
 
-from morituri.common import task
+from morituri.common import task, cache
+
+
+class RCList(logcommand.LogCommand):
+
+    name = "list"
+    summary = "list cached results"
+
+    def do(self, args):
+        self._cache = cache.ResultCache()
+        results = []
+
+        for i in self._cache.getIds():
+            r = self._cache.getRipResult(i)
+            results.append((r.object.artist, r.object.title, i))
+
+        results.sort()
+
+        for artist, title, cddbid in results:
+            self.stdout.write('%s: %s - %s\n' % (
+                cddbid, artist, title))
+        
+
+
+class ResultCache(logcommand.LogCommand):
+
+    summary = "debug result cache"
+    aliases = ['rc', ]
+
+    subCommandClasses = [RCList, ]
 
 
 class Checksum(logcommand.LogCommand):
@@ -117,4 +146,4 @@ class Debug(logcommand.LogCommand):
 
     summary = "debug internals"
 
-    subCommandClasses = [Checksum, Encode, MusicBrainzNGS]
+    subCommandClasses = [Checksum, Encode, MusicBrainzNGS, ResultCache]

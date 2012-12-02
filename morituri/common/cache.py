@@ -22,6 +22,7 @@
 
 import os
 import os.path
+import glob
 import tempfile
 import shutil
 
@@ -175,3 +176,9 @@ class ResultCache(log.Loggable):
                 cddbdiscid)
 
         return presult
+
+    def getIds(self):
+        paths = glob.glob(os.path.join(self._path, '*.pickle'))
+
+        return [os.path.splitext(os.path.basename(path))[0] for path in paths]
+        

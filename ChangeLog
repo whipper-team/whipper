@@ -1,5 +1,12 @@
 2012-12-02  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/cache.py:
+	* morituri/rip/debug.py:
+	* morituri/test/test_common_cache.py:
+	  Add rip debug resultcache list to list cached results.
+
+2012-12-02  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/cache.py (added):
 	* morituri/test/cache (added):
 	* morituri/test/cache/result (added):

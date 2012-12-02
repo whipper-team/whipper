@@ -14,6 +14,10 @@ class ResultCacheTestCase(tcommon.TestCase):
         self.cache = cache.ResultCache(
             os.path.join(os.path.dirname(__file__), 'cache', 'result'))
 
-    def testGet(self):
+    def testGetResult(self):
         result = self.cache.getRipResult('fe105a11')
         self.assertEquals(result.object.title, "The Writing's on the Wall")
+
+    def testGetIds(self):
+        ids = self.cache.getIds()
+        self.assertEquals(ids, ['fe105a11'])
