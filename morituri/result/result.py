@@ -72,7 +72,7 @@ class TrackResult:
     ARDBConfidence = None
     ARDBMaxConfidence = None
 
-    classVersion = 2
+    classVersion = 3
 
 
 class RipResult:
@@ -103,6 +103,8 @@ class RipResult:
 
     cdrdaoVersion = None
     cdparanoiaVersion = None
+
+    classVersion = 3
 
     def __init__(self):
         self.tracks = []
