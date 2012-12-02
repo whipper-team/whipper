@@ -21,6 +21,7 @@
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
 from morituri.common import logcommand
+from morituri.result import result
 
 from morituri.common import task, cache
 
@@ -35,23 +36,63 @@ class RCList(logcommand.LogCommand):
         results = []
 
         for i in self._cache.getIds():
-            r = self._cache.getRipResult(i)
+            r = self._cache.getRipResult(i, create=False)
             results.append((r.object.artist, r.object.title, i))
 
         results.sort()
 
         for artist, title, cddbid in results:
+            if artist is None:
+                artist = '(None)'
+            if title is None:
+                title = '(None)'
+
             self.stdout.write('%s: %s - %s\n' % (
-                cddbid, artist, title))
+                cddbid, artist.encode('utf-8'), title.encode('utf-8')))
         
 
+class RCLog(logcommand.LogCommand):
+
+    name = "log"
+    summary = "write a log file for the cached result"
+
+    def addOptions(self):
+        loggers = result.getLoggers().keys()
+
+        self.parser.add_option('-L', '--logger',
+            action="store", dest="logger",
+            default='morituri',
+            help="logger to use "
+                "(default '%default', choose from '" +
+                    "', '".join(loggers) + "')")
+
+    def do(self, args):
+        self._cache = cache.ResultCache()
+
+        persisted = self._cache.getRipResult(args[0], create=False)
+
+        if not persisted:
+            self.stderr.write(
+                'Could not find a result for cddb disc id %s\n' % args[0])
+            return 3
+
+        try:
+            klazz = result.getLoggers()[self.options.logger]
+        except KeyError:
+            self.stderr.write("No logger named %s found!\n" % (
+                self.options.logger))
+            return 3
+
+        logger = klazz()
+        self.stdout.write(logger.log(persisted.object).encode('utf-8'))
+ 
 
 class ResultCache(logcommand.LogCommand):
 
     summary = "debug result cache"
     aliases = ['rc', ]
 
-    subCommandClasses = [RCList, ]
+    subCommandClasses = [RCList, RCLog, ]
 
 
 class Checksum(logcommand.LogCommand):
