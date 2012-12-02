@@ -77,11 +77,9 @@ Log files will log the path to tracks relative to this directory.
                 "(default '%default', choose from '" +
                     "', '".join(loggers) + "')")
         # FIXME: get from config
-        default = 0
         self.parser.add_option('-o', '--offset',
             action="store", dest="offset",
-            help="sample read offset (defaults to %d)" % default,
-            default=default)
+            help="sample read offset (defaults to configured value, or 0)")
         self.parser.add_option('-O', '--output-directory',
             action="store", dest="output_directory",
             help="output directory "
@@ -89,8 +87,7 @@ Log files will log the path to tracks relative to this directory.
         # FIXME: have a cache of these pickles somewhere
         self.parser.add_option('-T', '--toc-pickle',
             action="store", dest="toc_pickle",
-            help="pickle to use for reading and writing the TOC",
-            default=default)
+            help="pickle to use for reading and writing the TOC")
         # FIXME: get from config
         self.parser.add_option('', '--track-template',
             action="store", dest="track_template",
@@ -122,6 +119,23 @@ Log files will log the path to tracks relative to this directory.
     def handleOptions(self, options):
         options.track_template = options.track_template.decode('utf-8')
         options.disc_template = options.disc_template.decode('utf-8')
+
+        if options.offset is None:
+            info = drive.getDeviceInfo(self.parentCommand.options.device)
+            if info:
+                try:
+                    options.offset = self.getRootCommand(
+                        ).config.getReadOffset(*info)
+                    self.stdout.write("Using configured read offset %d\n" %
+                        options.offset)
+                except KeyError:
+                    pass
+
+        if options.offset is None:
+            options.offset = 0
+            self.stdout.write("Using fallback read offset %d\n" %
+                        options.offset)
+
 
     def do(self, args):
         prog = program.Program(record=self.getRootCommand().record)
