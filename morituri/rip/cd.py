@@ -26,8 +26,8 @@ import math
 import gobject
 gobject.threads_init()
 
-from morituri.common import logcommand, common, accurip
-from morituri.common import drive, program
+from morituri.common import logcommand, common, accurip, gstreamer
+from morituri.common import drive, program, cache
 from morituri.result import result
 from morituri.program import cdrdao, cdparanoia
 
@@ -152,7 +152,7 @@ Log files will log the path to tracks relative to this directory.
         version = None
 
         # first, read the normal TOC, which is fast
-        ptoc = common.Persister(self.options.toc_pickle or None)
+        ptoc = cache.Persister(self.options.toc_pickle or None)
         if not ptoc.object:
             t = cdrdao.ReadTOCTask(device=device)
             function(runner, t)
@@ -230,6 +230,14 @@ Log files will log the path to tracks relative to this directory.
             prog.result.vendor = 'Unknown'
             prog.result.model = 'Unknown'
             prog.result.release = 'Unknown'
+
+        prog.result.profileName = profile.name
+        prog.result.profilePipeline = profile.pipeline
+        elementFactory = profile.pipeline.split(' ')[0]
+        prog.result.gstreamerVersion = gstreamer.gstreamerVersion()
+        prog.result.gstPythonVersion = gstreamer.gstPythonVersion()
+        prog.result.encoderVersion = gstreamer.elementFactoryVersion(
+            elementFactory)
 
         # FIXME: turn this into a method
 
@@ -393,8 +401,8 @@ Log files will log the path to tracks relative to this directory.
         url = ittoc.getAccurateRipURL()
         self.stdout.write("AccurateRip URL %s\n" % url)
 
-        cache = accurip.AccuCache()
-        responses = cache.retrieve(url)
+        accucache = accurip.AccuCache()
+        responses = accucache.retrieve(url)
 
         if not responses:
             self.stdout.write('Album not found in AccurateRip database\n')

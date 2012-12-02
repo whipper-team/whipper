@@ -104,6 +104,13 @@ class RipResult:
     cdrdaoVersion = None
     cdparanoiaVersion = None
 
+    gstreamerVersion = None
+    gstPythonVersion = None
+    encoderVersion = None
+
+    profileName = None
+    profilePipeline = None
+
     classVersion = 3
 
     def __init__(self):
