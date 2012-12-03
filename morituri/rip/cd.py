@@ -421,6 +421,8 @@ Log files will log the path to tracks relative to this directory.
 
         self.stdout.write("\n".join(prog.getAccurateRipResults()) + "\n")
 
+        prog.saveRipResult()
+
         # write log file
         try:
             klazz = result.getLoggers()[self.options.logger]
