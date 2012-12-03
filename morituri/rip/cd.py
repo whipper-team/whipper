@@ -213,7 +213,7 @@ Log files will log the path to tracks relative to this directory.
         # result
 
         prog.result.cdrdaoVersion = version
-        prog.result.cdparanoiaVersion = cdparanoia.getCdparanoiaVersion()
+        prog.result.cdparanoiaVersion = cdparanoia.getCdParanoiaVersion()
         prog.result.offset = int(self.options.offset)
         prog.result.artist = prog.metadata and prog.metadata.artist \
             or 'Unknown Artist'

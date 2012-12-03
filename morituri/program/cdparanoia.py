@@ -542,7 +542,7 @@ _VERSION_RE = re.compile(
     "^cdparanoia (?P<version>.+) release (?P<release>.+) \(.*\)")
 
 
-def getCdparanoiaVersion():
+def getCdParanoiaVersion():
     version = "(Unknown)"
 
     try:
