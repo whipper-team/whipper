@@ -50,7 +50,9 @@ EXTRA_DIST = \
 	track.flac \
 	cache/result/fe105a11.pickle \
 	cdparanoia/MATSHITA.cdparanoia-A.log \
-	cdparanoia/MATSHITA.cdparanoia-A.stderr
+	cdparanoia/MATSHITA.cdparanoia-A.stderr \
+	cdparanoia/PX-L890SA.cdparanoia-A.log \
+	cdparanoia/PX-L890SA.cdparanoia-A.stderr
 
 
 # re-generation of test files when needed
