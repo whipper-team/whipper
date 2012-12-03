@@ -48,7 +48,9 @@ EXTRA_DIST = \
 	cdrdao.readtoc.progress \
 	silentalarm.result.pickle \
 	track.flac \
-	cache/result/fe105a11.pickle
+	cache/result/fe105a11.pickle \
+	cdparanoia/MATSHITA.cdparanoia-A.log \
+	cdparanoia/MATSHITA.cdparanoia-A.stderr
 
 
 # re-generation of test files when needed

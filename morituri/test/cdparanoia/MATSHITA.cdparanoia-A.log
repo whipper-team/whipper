@@ -1,0 +1,373 @@
+cdparanoia -A 
+cdparanoia III release 10.2 (September 11, 2008)
+
+Using cdda library version: 10.2
+Using paranoia library version: 10.2
+
+Attempting to set cdrom to full speed... 
+	drive returned OK.
+
+=================== Checking drive cache/timing behavior ===================
+
+Seek/read timing:
+
+	[45:24.28]: 
+204328:1:46 204329:27:33 204356:27:35 204383:27:33 204410:27:35 204437:27:33 204464:27:35 204491:27:33 204518:27:35 204545:27:33 204572:27:35 204599:27:32 204626:27:35 204653:27:33 204680:27:35 204707:27:33 204734:27:35 204761:27:33 204788:27:35 204815:27:33 204842:27:35 204869:27:33 204896:27:35 204923:27:32 204950:27:35 204977:27:33 205004:27:35 205031:27:33 205058:27:35 205085:27:33 205112:27:35 205139:27:33 205166:27:35 205193:27:33 205220:27:35 205247:27:33 205274:27:35 205301:27:33 
+	Initial seek latency (1000 sectors): 46ms
+	Average read latency: 1.26ms/sector (raw speed: 10.6x)
+	Read latency standard deviation: 0.04ms/sector
+	[45:24.27]: 
+204327:1:45 204328:27:33 204355:27:35 204382:27:33 204409:27:35 204436:27:33 204463:27:35 204490:27:33 204517:27:35 204544:27:32 204571:27:35 204598:27:32 204625:27:35 204652:27:33 204679:27:35 204706:27:33 204733:27:35 204760:27:33 204787:27:35 204814:27:33 204841:27:35 204868:27:32 204895:27:35 204922:27:32 204949:27:35 204976:27:33 205003:27:35 205030:27:33 205057:27:35 205084:27:33 205111:27:35 205138:27:33 205165:27:35 205192:27:33 205219:27:35 205246:27:33 205273:27:35 205300:27:33 
+	Initial seek latency (1000 sectors): 45ms
+	Average read latency: 1.25ms/sector (raw speed: 10.6x)
+	Read latency standard deviation: 0.04ms/sector
+	[45:24.26]: 
+204326:1:45 204327:27:33 204354:27:35 204381:27:33 204408:27:35 204435:27:33 204462:27:35 204489:27:33 204516:27:35 204543:27:33 204570:27:35 204597:27:33 204624:27:35 204651:27:33 204678:27:35 204705:27:33 204732:27:35 204759:27:33 204786:27:35 204813:27:33 204840:27:35 204867:27:33 204894:27:35 204921:27:33 204948:27:35 204975:27:33 205002:27:35 205029:27:33 205056:27:35 205083:27:32 205110:27:35 205137:27:33 205164:27:35 205191:27:33 205218:27:35 205245:27:33 205272:27:35 205299:27:32 
+	Initial seek latency (1000 sectors): 45ms
+	Average read latency: 1.26ms/sector (raw speed: 10.6x)
+	Read latency standard deviation: 0.04ms/sector
+	[45:24.25]: 
+204325:1:44 204326:27:33 204353:27:35 204380:27:33 204407:27:35 204434:27:32 204461:27:35 204488:27:33 204515:27:35 204542:27:33 204569:27:35 204596:27:33 204623:27:35 204650:27:33 204677:27:35 204704:27:33 204731:27:35 204758:27:32 204785:27:35 204812:27:33 204839:27:35 204866:27:33 204893:27:35 204920:27:33 204947:27:35 204974:27:33 205001:27:35 205028:27:33 205055:27:35 205082:27:33 205109:27:35 205136:27:33 205163:27:35 205190:27:32 205217:27:35 205244:27:33 205271:27:35 205298:27:33 
+	Initial seek latency (1000 sectors): 44ms
+	Average read latency: 1.26ms/sector (raw speed: 10.6x)
+	Read latency standard deviation: 0.04ms/sector
+	[45:24.24]: 
+204324:1:45 204325:27:33 204352:27:35 204379:27:32 204406:27:35 204433:27:33 204460:27:35 204487:27:33 204514:27:35 204541:27:33 204568:27:35 204595:27:32 204622:27:35 204649:27:33 204676:27:35 204703:27:33 204730:27:35 204757:27:33 204784:27:35 204811:27:32 204838:27:35 204865:27:33 204892:27:35 204919:27:33 204946:27:35 204973:27:33 205000:27:35 205027:27:33 205054:27:35 205081:27:33 205108:27:35 205135:27:33 205162:27:35 205189:27:33 205216:27:35 205243:27:33 205270:27:35 205297:27:33 
+	Initial seek latency (1000 sectors): 45ms
+	Average read latency: 1.26ms/sector (raw speed: 10.6x)
+	Read latency standard deviation: 0.04ms/sector
+	[40:00.00]: 
+180000:1:50 180001:27:34 180028:27:37 180055:27:34 180082:27:37 180109:27:34 180136:27:37 180163:27:34 180190:27:37 180217:27:34 180244:27:37 180271:27:34 180298:27:37 180325:27:34 180352:27:37 180379:27:34 180406:27:37 180433:27:34 180460:27:37 180487:27:34 180514:27:37 180541:27:34 180568:27:37 180595:27:34 180622:27:37 180649:27:34 180676:27:37 180703:27:34 180730:27:37 180757:27:34 180784:27:37 180811:27:34 180838:27:37 180865:27:34 180892:27:37 180919:27:34 180946:27:37 180973:27:34 
+	Initial seek latency (1000 sectors): 50ms
+	Average read latency: 1.31ms/sector (raw speed: 10.2x)
+	Read latency standard deviation: 0.06ms/sector
+	[30:00.00]: 
+135000:1:64 135001:27:38 135028:27:41 135055:27:38 135082:27:41 135109:27:38 135136:27:41 135163:27:38 135190:27:41 135217:27:38 135244:27:41 135271:27:38 135298:27:41 135325:27:38 135352:27:41 135379:27:38 135406:27:41 135433:27:38 135460:27:41 135487:27:38 135514:27:41 135541:27:38 135568:27:41 135595:27:38 135622:27:41 135649:27:38 135676:27:41 135703:27:38 135730:27:41 135757:27:38 135784:27:41 135811:27:38 135838:27:41 135865:27:38 135892:27:41 135919:27:38 135946:27:41 135973:27:38 
+	Initial seek latency (1000 sectors): 64ms
+	Average read latency: 1.46ms/sector (raw speed: 9.1x)
+	Read latency standard deviation: 0.06ms/sector
+	[20:00.00]: 
+90000:1:63 90001:27:43 90028:27:47 90055:27:43 90082:27:47 90109:27:43 90136:27:46 90163:27:43 90190:27:47 90217:27:43 90244:27:46 90271:27:43 90298:27:47 90325:27:43 90352:27:46 90379:27:43 90406:27:46 90433:27:43 90460:27:46 90487:27:43 90514:27:46 90541:27:43 90568:27:46 90595:27:43 90622:27:46 90649:27:43 90676:27:46 90703:27:43 90730:27:46 90757:27:43 90784:27:46 90811:27:43 90838:27:46 90865:27:43 90892:27:46 90919:27:43 90946:27:46 90973:27:43 
+	Initial seek latency (1000 sectors): 63ms
+	Average read latency: 1.65ms/sector (raw speed: 8.1x)
+	Read latency standard deviation: 0.06ms/sector
+	[10:00.00]: 
+45000:1:61 45001:27:51 45028:27:55 45055:27:51 45082:27:55 45109:27:52 45136:27:55 45163:27:51 45190:27:55 45217:27:51 45244:27:55 45271:27:51 45298:27:55 45325:27:51 45352:27:55 45379:27:51 45406:27:55 45433:27:51 45460:27:55 45487:27:51 45514:27:55 45541:27:51 45568:27:55 45595:27:51 45622:27:55 45649:27:51 45676:27:55 45703:27:51 45730:27:55 45757:27:51 45784:27:55 45811:27:51 45838:27:55 45865:27:51 45892:27:55 45919:27:51 45946:27:55 45973:27:51 
+	Initial seek latency (1000 sectors): 61ms
+	Average read latency: 1.96ms/sector (raw speed: 6.8x)
+	Read latency standard deviation: 0.07ms/sector
+	[00:00.00]: 
+0:1:84 1:27:67 28:27:72 55:27:67 82:27:72 109:27:67 136:27:72 163:27:67 190:27:72 217:27:67 244:27:72 271:27:67 298:27:72 325:27:67 352:27:72 379:27:67 406:27:72 433:27:67 460:27:72 487:27:67 514:27:72 541:27:67 568:27:72 595:27:67 622:27:72 649:27:67 676:27:72 703:27:67 730:27:72 757:27:67 784:27:72 811:27:67 838:27:72 865:27:67 892:27:72 919:27:67 946:27:72 973:27:67 
+	Initial seek latency (1000 sectors): 84ms
+	Average read latency: 2.57ms/sector (raw speed: 5.2x)
+	Read latency standard deviation: 0.09ms/sector
+
+Analyzing cache behavior...
+	Fast search for approximate cache size... 0 sectors            
+		>>> fast_read=10:1:71 seek_read=10:1:0
+	Fast search for approximate cache size... 1 sectors            
+		>>> fast_read=11:1:0 seek_read=10:1:65
+		>>> fast_read=11:1:0 
+	Fast search for approximate cache size... 2 sectors            
+		>>> fast_read=12:1:4 seek_read=10:1:61
+		>>> fast_read=12:1:5 
+	Fast search for approximate cache size... 3 sectors            
+		>>> fast_read=13:1:0 seek_read=10:1:61
+		>>> fast_read=13:1:5 
+	Fast search for approximate cache size... 4 sectors            
+		>>> fast_read=14:1:5 seek_read=10:1:56
+		>>> fast_read=14:1:10 seek_read=10:1:56
+		>>> fast_read=14:1:10 seek_read=10:1:56
+		>>> fast_read=14:1:10 seek_read=10:1:56
+		>>> fast_read=14:1:10 seek_read=10:1:56
+		>>> fast_read=14:1:10 seek_read=10:1:56
+		>>> fast_read=14:1:10 seek_read=10:1:56
+		>>> fast_read=14:1:10 seek_read=10:1:56
+		>>> fast_read=14:1:10 seek_read=10:1:56
+		>>> fast_read=14:1:10 seek_read=10:1:56
+		>>> fast_read=14:1:10 seek_read=10:1:56
+		>>> fast_read=14:1:10 seek_read=10:1:56
+		>>> fast_read=14:1:10 seek_read=10:1:56
+		>>> fast_read=14:1:10 seek_read=10:1:56
+		>>> fast_read=14:1:10 seek_read=10:1:56
+	Slow verify for approximate cache size... 4 sectors
+	Attempting to reduce read speed to 1x... drive said OK
+		>>> slow_read=10:5:10 seek_read=10:1:0
+	Attempting to reset read speed to full... drive said OK
+	Fast search for approximate cache size... 5 sectors            
+		>>> fast_read=15:1:0 seek_read=10:1:54
+		>>> fast_read=15:1:10 seek_read=10:1:56
+		>>> fast_read=15:1:10 seek_read=10:1:56
+		>>> fast_read=15:1:10 seek_read=10:1:56
+		>>> fast_read=15:1:10 seek_read=10:1:56
+		>>> fast_read=15:1:10 seek_read=10:1:56
+		>>> fast_read=15:1:10 seek_read=10:1:56
+		>>> fast_read=15:1:10 seek_read=10:1:56
+		>>> fast_read=15:1:10 seek_read=10:1:56
+		>>> fast_read=15:1:10 seek_read=10:1:56
+		>>> fast_read=15:1:10 seek_read=10:1:56
+		>>> fast_read=15:1:10 seek_read=10:1:56
+		>>> fast_read=15:1:10 seek_read=10:1:56
+		>>> fast_read=15:1:10 seek_read=10:1:56
+		>>> fast_read=15:1:10 seek_read=10:1:56
+	Slow verify for approximate cache size... 5 sectors
+	Attempting to reduce read speed to 1x... drive said OK
+		>>> slow_read=10:6:9 seek_read=10:1:0
+	Attempting to reset read speed to full... drive said OK
+	Fast search for approximate cache size... 6 sectors            
+		>>> fast_read=16:1:4 seek_read=10:1:51
+		>>> fast_read=16:1:15 seek_read=10:1:51
+		>>> fast_read=16:1:15 seek_read=10:1:51
+		>>> fast_read=16:1:15 seek_read=10:1:51
+		>>> fast_read=16:1:15 seek_read=10:1:51
+		>>> fast_read=16:1:15 seek_read=10:1:51
+		>>> fast_read=16:1:15 seek_read=10:1:51
+		>>> fast_read=16:1:15 seek_read=10:1:51
+		>>> fast_read=16:1:15 seek_read=10:1:51
+		>>> fast_read=16:1:15 seek_read=10:1:51
+		>>> fast_read=16:1:15 seek_read=10:1:51
+		>>> fast_read=16:1:15 seek_read=10:1:51
+		>>> fast_read=16:1:15 seek_read=10:1:51
+		>>> fast_read=16:1:15 seek_read=10:1:51
+		>>> fast_read=16:1:15 seek_read=10:1:51
+	Slow verify for approximate cache size... 6 sectors
+	Attempting to reduce read speed to 1x... drive said OK
+		>>> slow_read=10:7:15 seek_read=10:1:0
+	Attempting to reset read speed to full... drive said OK
+	Fast search for approximate cache size... 7 sectors            
+		>>> fast_read=17:1:0 seek_read=10:1:49
+		>>> fast_read=17:1:15 seek_read=10:1:51
+		>>> fast_read=17:1:15 seek_read=10:1:51
+		>>> fast_read=17:1:15 seek_read=10:1:51
+		>>> fast_read=17:1:15 seek_read=10:1:51
+		>>> fast_read=17:1:15 seek_read=10:1:51
+		>>> fast_read=17:1:15 seek_read=10:1:51
+		>>> fast_read=17:1:15 seek_read=10:1:51
+		>>> fast_read=17:1:15 seek_read=10:1:51
+		>>> fast_read=17:1:15 seek_read=10:1:51
+		>>> fast_read=17:1:15 seek_read=10:1:51
+		>>> fast_read=17:1:15 seek_read=10:1:51
+		>>> fast_read=17:1:15 seek_read=10:1:51
+		>>> fast_read=17:1:15 seek_read=10:1:51
+		>>> fast_read=17:1:15 seek_read=10:1:51
+	Slow verify for approximate cache size... 7 sectors
+	Attempting to reduce read speed to 1x... drive said OK
+		>>> slow_read=10:8:15 seek_read=10:1:0
+	Attempting to reset read speed to full... drive said OK
+	Fast search for approximate cache size... 8 sectors            
+		>>> fast_read=18:1:3 seek_read=10:1:46
+		>>> fast_read=18:1:20 seek_read=10:1:46
+		>>> fast_read=18:1:20 seek_read=10:1:46
+		>>> fast_read=18:1:21 seek_read=10:1:46
+		>>> fast_read=18:1:20 seek_read=10:1:46
+		>>> fast_read=18:1:20 seek_read=10:1:46
+		>>> fast_read=18:1:20 seek_read=10:1:46
+		>>> fast_read=18:1:21 seek_read=10:1:45
+		>>> fast_read=18:1:21 seek_read=10:1:45
+		>>> fast_read=18:1:20 seek_read=10:1:46
+		>>> fast_read=18:1:20 seek_read=10:1:46
+		>>> fast_read=18:1:20 seek_read=10:1:46
+		>>> fast_read=18:1:20 seek_read=10:1:46
+		>>> fast_read=18:1:20 seek_read=10:1:46
+		>>> fast_read=18:1:20 seek_read=10:1:46
+	Slow verify for approximate cache size... 8 sectors
+	Attempting to reduce read speed to 1x... drive said OK
+		>>> slow_read=10:9:18 seek_read=10:1:46
+		>>> slow_read=10:9:20 seek_read=10:1:46
+		>>> slow_read=10:9:20 seek_read=10:1:45
+		>>> slow_read=10:9:20 seek_read=10:1:46
+		>>> slow_read=10:9:20 seek_read=10:1:46
+		>>> slow_read=10:9:20 seek_read=10:1:46
+		>>> slow_read=10:9:20 seek_read=10:1:46
+		>>> slow_read=10:9:20 seek_read=10:1:46
+		>>> slow_read=10:9:20 seek_read=10:1:46
+		>>> slow_read=10:9:20 seek_read=10:1:46
+	Approximate random access cache size: 8 sector(s)               
+	Attempting to reset read speed to full... drive said OK
+	Verifying that cache is contiguous...		>>> 34:1:61 seek_read:10:1:49
+		>>> 34:1:62 seek_read:10:1:49
+		>>> 34:1:62 seek_read:10:1:49
+		>>> 34:1:62 seek_read:10:1:49
+		>>> 34:1:62 seek_read:10:1:49
+		>>> 34:1:62 seek_read:10:1:49
+		>>> 34:1:62 seek_read:10:1:49
+		>>> 34:1:62 seek_read:10:1:49
+		>>> 34:1:62 seek_read:10:1:49
+		>>> 34:1:62 seek_read:10:1:49
+		>>> 34:1:62 seek_read:10:1:49
+		>>> 34:1:62 seek_read:10:1:49
+		>>> 34:1:62 seek_read:10:1:49
+		>>> 34:1:62 seek_read:10:1:49
+		>>> 34:1:62 seek_read:10:1:49
+		>>> 34:1:62 seek_read:10:1:49
+		>>> 34:1:62 seek_read:10:1:49
+		>>> 34:1:62 seek_read:10:1:49
+		>>> 34:1:62 seek_read:10:1:49
+		>>> 34:1:62 seek_read:10:1:49
+	Drive cache tests as contiguous                           
+
+	Testing background readahead past read cursor... 64
+		0 >>> 10:8:15 sleep=197299us seek=81:1:0
+	Testing background readahead past read cursor... 128
+		0 >>> 10:8:69 sleep=394598us seek=145:1:0
+	Testing background readahead past read cursor... 192
+		0 >>> 10:8:73 sleep=591897us seek=209:1:0
+	Testing background readahead past read cursor... 256
+		0 >>> 10:8:77 sleep=789196us seek=273:1:0
+	Testing background readahead past read cursor... 320
+		0 >>> 10:8:81 sleep=986496us seek=337:1:50
+		1 >>> 10:8:81 sleep=1150912us seek=337:1:64
+	Retiming drive...                               
+10:1:65 11:27:67 38:27:72 65:27:67 92:27:72 119:27:67 146:27:72 173:27:67 200:27:72 227:27:67 254:27:72 281:27:67 308:27:72 335:27:67 362:27:72 389:27:67 416:27:72 443:27:67 470:27:72 497:27:67 524:27:72 551:27:67 578:27:72 605:27:67 632:27:72 659:27:67 686:27:72 713:27:67 740:27:72 767:27:67 794:27:72 821:27:67 848:27:72 875:27:67 902:27:72 929:27:67 956:27:72 983:27:67 1010:27:72 1037:27:67 1064:27:72 1091:27:67 1118:27:72 1145:27:67 1172:27:72 1199:27:67 1226:27:72 1253:27:67 1280:27:72 1307:27:67 1334:27:72 1361:27:67 1388:27:72 1415:27:66 1442:27:72 1469:27:67 1496:27:72 1523:27:66 1550:27:72 1577:27:66 1604:27:71 1631:27:66 1658:27:72 1685:27:66 1712:27:71 1739:27:66 1766:27:71 1793:27:66 1820:27:71 1847:27:66 1874:27:71 1901:27:66 1928:27:71 1955:1:0 
+	Initial seek latency (1946 sectors): 65ms
+	Average read latency: 2.57ms/sector (raw speed: 5.2x)
+	Read latency standard deviation: 0.11ms/sector
+	Old mean=2.57ms/sec, New mean=2.56ms/sec
+
+		2 >>> 10:8:106 sleep=1315328us seek=337:1:56
+	Testing background readahead past read cursor... 264
+		0 >>> 10:8:81 sleep=813859us seek=281:1:0
+	Testing background readahead past read cursor... 272
+		0 >>> 10:8:79 sleep=838521us seek=289:1:50
+		1 >>> 10:8:72 sleep=978275us seek=289:1:45
+	Retiming drive...                               
+10:1:56 11:27:67 38:27:72 65:27:67 92:27:72 119:27:67 146:27:72 173:27:67 200:27:72 227:27:67 254:27:72 281:27:67 308:27:72 335:27:67 362:27:72 389:27:67 416:27:72 443:27:67 470:27:72 497:27:67 524:27:72 551:27:67 578:27:72 605:27:67 632:27:72 659:27:67 686:27:72 713:27:67 740:27:72 767:27:67 794:27:72 821:27:67 848:27:72 875:27:67 902:27:72 929:27:67 956:27:72 983:27:67 1010:27:72 1037:27:67 1064:27:72 1091:27:67 1118:27:72 1145:27:67 1172:27:72 1199:27:67 1226:27:72 1253:27:67 1280:27:72 1307:27:67 1334:27:72 1361:27:67 1388:27:72 1415:27:67 1442:27:72 1469:27:66 1496:27:72 1523:27:66 1550:27:72 1577:27:66 1604:27:72 1631:27:66 1658:27:72 1685:27:66 1712:27:71 1739:27:66 1766:27:71 1793:27:66 1820:27:71 1847:27:66 1874:27:71 1901:27:66 1928:27:71 1955:1:0 
+	Initial seek latency (1946 sectors): 56ms
+	Average read latency: 2.57ms/sector (raw speed: 5.2x)
+	Read latency standard deviation: 0.11ms/sector
+	Old mean=2.57ms/sec, New mean=2.56ms/sec
+
+		2 >>> 10:8:105 sleep=1118028us seek=289:1:39
+	Testing background readahead past read cursor... 265
+		0 >>> 10:8:71 sleep=816942us seek=282:1:54
+		1 >>> 10:8:67 sleep=953098us seek=282:1:52
+	Retiming drive...                               
+10:1:51 11:27:67 38:27:72 65:27:67 92:27:72 119:27:67 146:27:72 173:27:67 200:27:72 227:27:67 254:27:72 281:27:67 308:27:72 335:27:67 362:27:72 389:27:67 416:27:72 443:27:67 470:27:72 497:27:67 524:27:72 551:27:67 578:27:72 605:27:67 632:27:72 659:27:67 686:27:72 713:27:67 740:27:72 767:27:67 794:27:72 821:27:67 848:27:72 875:27:67 902:27:72 929:27:67 956:27:72 983:27:67 1010:27:72 1037:27:67 1064:27:72 1091:27:67 1118:27:72 1145:27:67 1172:27:72 1199:27:67 1226:27:72 1253:27:67 1280:27:72 1307:27:67 1334:27:72 1361:27:67 1388:27:72 1415:27:67 1442:27:71 1469:27:67 1496:27:72 1523:27:66 1550:27:72 1577:27:67 1604:27:71 1631:27:66 1658:27:72 1685:27:66 1712:27:72 1739:27:67 1766:27:71 1793:27:66 1820:27:71 1847:27:66 1874:27:71 1901:27:67 1928:27:71 1955:1:0 
+	Initial seek latency (1946 sectors): 51ms
+	Average read latency: 2.57ms/sector (raw speed: 5.2x)
+	Read latency standard deviation: 0.11ms/sector
+	Old mean=2.57ms/sec, New mean=2.57ms/sec
+
+		2 >>> 10:8:106 sleep=1089256us seek=282:1:50
+		3 >>> 10:8:67 sleep=1225413us seek=282:1:48
+		4 >>> 10:8:67 sleep=1361569us seek=282:1:46
+	Retiming drive...                               
+10:1:52 11:27:67 38:27:72 65:27:67 92:27:72 119:27:67 146:27:72 173:27:67 200:27:72 227:27:67 254:27:72 281:27:67 308:27:72 335:27:67 362:27:72 389:27:67 416:27:72 443:27:67 470:27:72 497:27:67 524:27:72 551:27:67 578:27:72 605:27:67 632:27:72 659:27:67 686:27:72 713:27:67 740:27:72 767:27:67 794:27:72 821:27:67 848:27:72 875:27:67 902:27:72 929:27:67 956:27:72 983:27:67 1010:27:72 1037:27:67 1064:27:72 1091:27:67 1118:27:72 1145:27:67 1172:27:72 1199:27:67 1226:27:72 1253:27:67 1280:27:72 1307:27:67 1334:27:72 1361:27:67 1388:27:72 1415:27:66 1442:27:72 1469:27:66 1496:27:72 1523:27:67 1550:27:72 1577:27:66 1604:27:72 1631:27:66 1658:27:72 1685:27:66 1712:27:71 1739:27:67 1766:27:71 1793:27:66 1820:27:71 1847:27:66 1874:27:71 1901:27:66 1928:27:71 1955:1:0 
+	Initial seek latency (1946 sectors): 52ms
+	Average read latency: 2.57ms/sector (raw speed: 5.2x)
+	Read latency standard deviation: 0.11ms/sector
+	Old mean=2.57ms/sec, New mean=2.56ms/sec
+
+		5 >>> 10:8:106 sleep=1497727us seek=282:1:44
+		6 >>> 10:8:90 sleep=1633884us seek=282:1:42
+		7 >>> 10:8:67 sleep=1770041us seek=282:1:40
+	Retiming drive...                               
+10:1:52 11:27:67 38:27:72 65:27:67 92:27:72 119:27:67 146:27:72 173:27:67 200:27:72 227:27:67 254:27:72 281:27:67 308:27:72 335:27:67 362:27:72 389:27:67 416:27:72 443:27:67 470:27:72 497:27:67 524:27:72 551:27:67 578:27:72 605:27:67 632:27:72 659:27:67 686:27:72 713:27:67 740:27:72 767:27:67 794:27:72 821:27:67 848:27:72 875:27:67 902:27:72 929:27:67 956:27:72 983:27:67 1010:27:72 1037:27:67 1064:27:72 1091:27:67 1118:27:72 1145:27:67 1172:27:72 1199:27:67 1226:27:72 1253:27:67 1280:27:72 1307:27:66 1334:27:72 1361:27:67 1388:27:72 1415:27:67 1442:27:72 1469:27:66 1496:27:72 1523:27:66 1550:27:72 1577:27:67 1604:27:72 1631:27:66 1658:27:72 1685:27:66 1712:27:71 1739:27:66 1766:27:72 1793:27:66 1820:27:71 1847:27:66 1874:27:71 1901:27:66 1928:27:71 1955:1:0 
+	Initial seek latency (1946 sectors): 52ms
+	Average read latency: 2.57ms/sector (raw speed: 5.2x)
+	Read latency standard deviation: 0.11ms/sector
+	Old mean=2.57ms/sec, New mean=2.56ms/sec
+
+		8 >>> 10:8:106 sleep=1906197us seek=282:1:60
+		9 >>> 10:8:67 sleep=2042354us seek=282:1:58
+	Drive readahead past read cursor: 264 sector(s)                
+	Testing cache tail cursor...
+		>>> 10:8:67 
+		sleeping 1017324 microseconds
+		<<< 7:1:0 6:1:55 
+		>>> 10:8:66 
+		sleeping 1017324 microseconds
+		<<< 6:1:0 5:1:52 
+		>>> 10:8:69 
+		sleeping 1017324 microseconds
+		<<< 5:1:0 4:1:49 
+		>>> 10:8:72 
+		sleeping 1017324 microseconds
+		<<< 4:1:0 3:1:69 
+		>>> 10:8:74 
+		sleeping 1017324 microseconds
+		<<< 3:1:0 2:1:67 
+		>>> 10:8:77 
+		sleeping 1017324 microseconds
+		<<< 2:1:0 1:1:64 
+		>>> 10:8:79 
+		sleeping 1017324 microseconds
+		<<< 1:1:0 0:1:61 
+		>>> 10:8:15 
+		sleeping 1017324 microseconds
+		<<< 0:1:0 
+	Retiming drive...                               
+10:1:0 11:27:1 38:27:1 65:27:1 92:27:1 119:27:1 146:27:3 173:27:3 200:27:3 227:27:3 254:27:3 281:27:91 308:27:72 335:27:67 362:27:72 389:27:67 416:27:72 443:27:67 470:27:72 497:27:67 524:27:72 551:27:67 578:27:72 605:27:67 632:27:72 659:27:67 686:27:72 713:27:67 740:27:72 767:27:67 794:27:72 821:27:67 848:27:72 875:27:67 902:27:72 929:27:67 956:27:72 983:27:67 1010:27:72 1037:27:67 1064:27:72 1091:27:67 1118:27:72 1145:27:67 1172:27:72 1199:27:67 1226:27:72 1253:27:67 1280:27:72 1307:27:67 1334:27:72 1361:27:67 1388:27:72 1415:27:66 1442:27:71 1469:27:67 1496:27:72 1523:27:66 1550:27:71 1577:27:67 1604:27:71 1631:27:66 1658:27:72 1685:27:66 1712:27:71 1739:27:66 1766:27:71 1793:27:66 1820:27:71 1847:27:66 1874:27:71 1901:27:66 1928:27:71 1955:1:0 
+	Initial seek latency (1946 sectors): 0ms
+	Average read latency: 2.23ms/sector (raw speed: 6.0x)
+	Read latency standard deviation: 0.88ms/sector
+	Old mean=2.57ms/sec, New mean=2.23ms/sec
+
+	Cache tail cursor tied to read cursor                      
+	Testing granularity of cache tail
+		>>> 10:9:112 
+		sleeping 1017324 microseconds
+		<<< 18:1:0 17:1:52 
+		>>> 10:9:69 
+		sleeping 1017324 microseconds
+		<<< 17:1:0 16:1:72 
+		>>> 10:9:80 
+		sleeping 1017324 microseconds
+		<<< 16:1:0 15:1:69 
+		>>> 10:9:74 
+		sleeping 1017324 microseconds
+		<<< 15:1:0 14:1:67 
+		>>> 10:9:77 
+		sleeping 1017324 microseconds
+		<<< 14:1:0 13:1:64 
+		>>> 10:9:79 
+		sleeping 1017324 microseconds
+		<<< 13:1:0 12:1:61 
+		>>> 10:9:82 
+		sleeping 1017324 microseconds
+		<<< 12:1:0 11:1:59 
+		>>> 10:9:85 
+		sleeping 1017324 microseconds
+		<<< 11:1:0 10:1:56 
+		>>> 10:9:20 
+		sleeping 1017324 microseconds
+		<<< 10:1:57 
+		>>> 10:9:20 
+		sleeping 1017324 microseconds
+		<<< 10:1:57 
+		>>> 10:9:20 
+		sleeping 1017324 microseconds
+		<<< 10:1:57 
+		>>> 10:9:20 
+		sleeping 1017324 microseconds
+		<<< 10:1:57 
+		>>> 10:9:20 
+		sleeping 1017324 microseconds
+		<<< 10:1:57 
+		>>> 10:9:20 
+		sleeping 1017324 microseconds
+		<<< 10:1:57 
+		>>> 10:9:20 
+		sleeping 1017324 microseconds
+		<<< 10:1:57 
+		>>> 10:9:20 
+		sleeping 1017324 microseconds
+		<<< 10:1:57 
+		>>> 10:9:20 
+		sleeping 1017324 microseconds
+		<<< 10:1:57 
+		>>> 10:9:20 
+		sleeping 1017324 microseconds
+		<<< 10:1:57 
+	Retiming drive...                               
+10:1:0 11:27:66 38:27:72 65:27:67 92:27:72 119:27:67 146:27:72 173:27:67 200:27:72 227:27:67 254:27:72 281:27:67 308:27:72 335:27:67 362:27:72 389:27:67 416:27:72 443:27:67 470:27:72 497:27:67 524:27:72 551:27:67 578:27:72 605:27:67 632:27:72 659:27:67 686:27:72 713:27:67 740:27:72 767:27:67 794:27:72 821:27:67 848:27:72 875:27:67 902:27:72 929:27:67 956:27:72 983:27:67 1010:27:72 1037:27:67 1064:27:72 1091:27:67 1118:27:72 1145:27:67 1172:27:72 1199:27:67 1226:27:72 1253:27:67 1280:27:72 1307:27:67 1334:27:71 1361:27:67 1388:27:72 1415:27:67 1442:27:72 1469:27:66 1496:27:72 1523:27:66 1550:27:72 1577:27:66 1604:27:71 1631:27:66 1658:27:72 1685:27:66 1712:27:71 1739:27:66 1766:27:71 1793:27:67 1820:27:71 1847:27:66 1874:27:71 1901:27:66 1928:27:71 1955:1:0 
+	Initial seek latency (1946 sectors): 0ms
+	Average read latency: 2.56ms/sector (raw speed: 5.2x)
+	Read latency standard deviation: 0.11ms/sector
+	Old mean=2.57ms/sec, New mean=2.56ms/sec
+
+	Cache tail granularity: 1 sector(s)                      
+	Cache size (considering rollbehind) too small to test cache speed.
+
+Drive tests OK with Paranoia.
+

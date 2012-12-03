@@ -1,0 +1,111 @@
+cdparanoia III release 10.2 (September 11, 2008)
+
+Using cdda library version: 10.2
+Using paranoia library version: 10.2
+Checking /dev/cdrom for cdrom...
+	Could not stat /dev/cdrom: No such file or directory
+
+Checking /dev/cdroms/cdrom0 for cdrom...
+	Could not stat /dev/cdroms/cdrom0: No such file or directory
+
+Checking /dev/cdroms/cdroma for cdrom...
+	Could not stat /dev/cdroms/cdroma: No such file or directory
+
+Checking /dev/cdroms/cdrom1 for cdrom...
+	Could not stat /dev/cdroms/cdrom1: No such file or directory
+
+Checking /dev/cdroms/cdromb for cdrom...
+	Could not stat /dev/cdroms/cdromb: No such file or directory
+
+Checking /dev/cdroms/cdrom2 for cdrom...
+	Could not stat /dev/cdroms/cdrom2: No such file or directory
+
+Checking /dev/cdroms/cdromc for cdrom...
+	Could not stat /dev/cdroms/cdromc: No such file or directory
+
+Checking /dev/cdroms/cdrom3 for cdrom...
+	Could not stat /dev/cdroms/cdrom3: No such file or directory
+
+Checking /dev/cdroms/cdromd for cdrom...
+	Could not stat /dev/cdroms/cdromd: No such file or directory
+
+Checking /dev/hd0 for cdrom...
+	Could not stat /dev/hd0: No such file or directory
+
+Checking /dev/hda for cdrom...
+	Could not stat /dev/hda: No such file or directory
+
+Checking /dev/hd1 for cdrom...
+	Could not stat /dev/hd1: No such file or directory
+
+Checking /dev/hdb for cdrom...
+	Could not stat /dev/hdb: No such file or directory
+
+Checking /dev/hd2 for cdrom...
+	Could not stat /dev/hd2: No such file or directory
+
+Checking /dev/hdc for cdrom...
+	Could not stat /dev/hdc: No such file or directory
+
+Checking /dev/hd3 for cdrom...
+	Could not stat /dev/hd3: No such file or directory
+
+Checking /dev/hdd for cdrom...
+	Could not stat /dev/hdd: No such file or directory
+
+Checking /dev/sg0 for cdrom...
+	Testing /dev/sg0 for SCSI/MMC interface
+		Could not access device /dev/sg0 to test for SG_IO support: Permission denied
+		no SG_IO support for device: /dev/sg0
+		Could not access device /dev/sg0: Permission denied
+		generic device: /dev/sg0
+		ioctl device: not found
+		Could not open generic SCSI device /dev/sg0: Permission denied
+	Testing /dev/sg0 for cooked ioctl() interface
+		/dev/sg0 is not a cooked ioctl CDROM.
+
+Checking /dev/sga for cdrom...
+	Could not stat /dev/sga: No such file or directory
+
+Checking /dev/sg1 for cdrom...
+	Testing /dev/sg1 for SCSI/MMC interface
+		SG_IO device: /dev/sg1
+
+CDROM model sensed sensed: MATSHITA DVD-RAM UJ8A0A SB02 
+
+Checking for SCSI emulation...
+	Drive is ATAPI (using SG_IO host adaptor emulation)
+
+Checking for MMC style command set...
+	Drive is MMC style
+	DMA scatter/gather table entries: 167
+	table entry size: 524288 bytes
+	maximum theoretical transfer: 37074 sectors
+	Setting default read size to 27 sectors (63504 bytes).
+
+Verifying CDDA command set...
+	Expected command set reads OK.
+
+Attempting to set cdrom to full speed... 
+	drive returned OK.
+
+=================== Checking drive cache/timing behavior ===================
+
+Seek/read timing:
+	[45:24.28]:   46ms seek, 1.26ms/sec read [10.6x] spinning up...  	[45:24.27]:   45ms seek, 1.25ms/sec read [10.6x] spinning up...  	[45:24.26]:   45ms seek, 1.26ms/sec read [10.6x] spinning up...  	[45:24.25]:   44ms seek, 1.26ms/sec read [10.6x] spinning up...  	[45:24.24]:   45ms seek, 1.26ms/sec read [10.6x]                 
+	[40:00.00]:   50ms seek, 1.31ms/sec read [10.2x]                 
+	[30:00.00]:   64ms seek, 1.46ms/sec read [9.1x]                 
+	[20:00.00]:   63ms seek, 1.65ms/sec read [8.1x]                 
+	[10:00.00]:   61ms seek, 1.96ms/sec read [6.8x]                 
+	[00:00.00]:   84ms seek, 2.57ms/sec read [5.2x]                 
+
+Analyzing cache behavior...
+	Fast search for approximate cache size... 0 sectors            	Fast search for approximate cache size... 1 sectors            	Fast search for approximate cache size... 2 sectors            	Fast search for approximate cache size... 3 sectors            	Fast search for approximate cache size... 4 sectors            	Slow verify for approximate cache size... 4 sectors.	Fast search for approximate cache size... 5 sectors            	Slow verify for approximate cache size... 5 sectors.	Fast search for approximate cache size... 6 sectors            	Slow verify for approximate cache size... 6 sectors.	Fast search for approximate cache size... 7 sectors            	Slow verify for approximate cache size... 7 sectors.	Fast search for approximate cache size... 8 sectors            	Slow verify for approximate cache size... 8 sectors..........	Approximate random access cache size: 8 sector(s)               
+	Verifying that cache is contiguous.......................	Drive cache tests as contiguous                           
+	Testing background readahead past read cursor... 64           .	Testing background readahead past read cursor... 128           .	Testing background readahead past read cursor... 192           .	Testing background readahead past read cursor... 256           .	Testing background readahead past read cursor... 320           ..o.	Testing background readahead past read cursor... 264           .	Testing background readahead past read cursor... 272           ..o.	Testing background readahead past read cursor... 265           ..o...o...o..	Drive readahead past read cursor: 264 sector(s)                
+	Testing cache tail cursor...........o	Cache tail cursor tied to read cursor                      
+	Testing granularity of cache tail..................o	Cache tail granularity: 1 sector(s)                      
+	Cache size (considering rollbehind) too small to test cache speed.
+
+Drive tests OK with Paranoia.
+
