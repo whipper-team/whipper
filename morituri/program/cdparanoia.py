@@ -30,6 +30,7 @@ import subprocess
 import tempfile
 
 from morituri.common import log, common
+from morituri.common import task as ctask
 
 from morituri.extern import asyncsub
 from morituri.extern.task import task
@@ -562,3 +563,45 @@ def getCdParanoiaVersion():
         raise
 
     return version
+
+
+_OK_RE = re.compile(r'Drive tests OK with Paranoia.')
+
+
+class AnalyzeTask(ctask.PopenTask):
+
+    logCategory = 'AnalyzeTask'
+    description = 'Analyzing drive caching behaviour'
+
+    defeatsCache = None
+
+    cwd = None
+
+    _output = []
+
+    def __init__(self, device=None):
+        # cdparanoia -A *always* writes cdparanoia.log
+        self.cwd = tempfile.mkdtemp(suffix='.morituri.cache')
+        self.command = ['cdparanoia', '-A']
+        if device:
+            self.command += ['-d', device]
+        
+    def commandMissing(self):
+        raise common.MissingDependencyException('cdparanoia')
+
+    def readbyteserr(self, bytes):
+        self._output.append(bytes)
+
+    def done(self):
+        if self.cwd:
+            shutil.rmtree(self.cwd)
+        output = "".join(self._output)
+        m = _OK_RE.search(output)
+        if m:
+            self.defeatsCache = True
+        else:
+            self.defeatsCache = False
+
+    def failed(self):
+        if self.cwd:
+            shutil.rmtree(self.cwd)

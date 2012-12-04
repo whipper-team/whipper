@@ -103,6 +103,7 @@ class RipResult:
 
     cdrdaoVersion = None
     cdparanoiaVersion = None
+    cdparanoiaDefeatsCache = None
 
     gstreamerVersion = None
     gstPythonVersion = None

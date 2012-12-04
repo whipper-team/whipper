@@ -1,5 +1,19 @@
 2012-12-04  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/program/cdparanoia.py:
+	* morituri/test/test_program_cdparanoia.py:
+	  Add a task that can analyze the drive for whether it defeats
+	  the audio cache.
+	* morituri/result/result.py:
+	* morituri/rip/cd.py:
+	  Make it possible to store whether a drive defeats audio cache
+	  in the result.
+	* morituri/rip/drive.py:
+	  Add rip drive analyze command to analyze caching of a drive,
+	  and store it in the config.
+
+2012-12-04  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/task.py:
 	  Failed and done can stay unimplemented.
 	  If we read stdout or stderr, reschedule immediately to process

@@ -20,7 +20,61 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
+
+from morituri.extern.task import task
+
 from morituri.common import logcommand, drive
+from morituri.program import cdparanoia
+
+
+class Analyze(logcommand.LogCommand):
+
+    summary = "analyze caching behaviour of drive"
+
+    def addOptions(self):
+        self.parser.add_option('-d', '--device',
+            action="store", dest="device",
+            help="CD-DA device")
+
+    def handleOptions(self, options):
+        if not options.device:
+            drives = drive.getAllDevicePaths()
+            if not drives:
+                self.error('No CD-DA drives found!')
+                return 3
+
+            # pick the first
+            self.options.device = drives[0]
+
+        # this can be a symlink to another device
+        self.options.device = os.path.realpath(self.options.device)
+
+    def do(self, args):
+        runner = task.SyncRunner()
+        t = cdparanoia.AnalyzeTask(self.options.device)
+        runner.run(t)
+
+        if t.defeatsCache is None:
+            self.stdout.write(
+                'Cannot analyze the drive.  Is there a CD in it?\n')
+            return
+        if not t.defeatsCache:
+            self.stdout.write(
+                'cdparanoia cannot defeat the audio cache on this drive.\n')
+        else:
+            self.stdout.write(
+                'cdparanoia can defeat the audio cache on this drive.\n')
+
+        info = drive.getDeviceInfo(self.options.device)
+        if not info:
+            return
+        
+        self.stdout.write(
+            'Adding drive cache behaviour to configuration file.\n')
+
+        self.getRootCommand().config.setDefeatsCache(info[0], info[1], info[2],
+            t.defeatsCache)
 
 
 class List(logcommand.LogCommand):
@@ -66,4 +120,4 @@ class Drive(logcommand.LogCommand):
 
     summary = "handle drives"
 
-    subCommandClasses = [List, ]
+    subCommandClasses = [Analyze, List, ]

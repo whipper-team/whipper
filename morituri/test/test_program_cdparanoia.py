@@ -2,12 +2,15 @@
 # vi:si:et:sw=4:sts=4:ts=4
 
 import os
-import unittest
+
+from morituri.extern.task import task
 
 from morituri.program import cdparanoia
 
+from morituri.test import common
 
-class ParseTestCase(unittest.TestCase):
+
+class ParseTestCase(common.TestCase):
 
     def setUp(self):
         # report from Afghan Whigs - Sweet Son Of A Bitch
@@ -25,7 +28,7 @@ class ParseTestCase(unittest.TestCase):
         self.assertEquals(q, '99.7 %')
 
 
-class ErrorTestCase(unittest.TestCase):
+class ErrorTestCase(common.TestCase):
 
     def setUp(self):
         # report from a rip with offset -1164 causing scsi errors
@@ -43,7 +46,29 @@ class ErrorTestCase(unittest.TestCase):
         self.assertEquals(q, '79.6 %')
 
 
-class VersionTestCase(unittest.TestCase):
+class VersionTestCase(common.TestCase):
 
     def testGetVersion(self):
-        self.failUnless(cdparanoia.getCdparanoiaVersion())
+        self.failUnless(cdparanoia.getCdParanoiaVersion())
+
+
+class AnalyzeFileTask(cdparanoia.AnalyzeTask):
+
+    def __init__(self, path):
+        self.command = ['cat', path]
+
+    def readbytesout(self, bytes):
+        self.readbyteserr(bytes)
+
+
+class CacheTestCase(common.TestCase):
+
+    def testDefeatsCache(self):
+        self.runner = task.SyncRunner(verbose=False)
+
+        path = os.path.join(os.path.dirname(__file__),
+            'cdparanoia', 'PX-L890SA.cdparanoia-A.stderr')
+        t = AnalyzeFileTask(path)
+        self.runner.run(t)
+        self.failUnless(t.defeatsCache)
+

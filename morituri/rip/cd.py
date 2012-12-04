@@ -214,6 +214,13 @@ Log files will log the path to tracks relative to this directory.
 
         prog.result.cdrdaoVersion = version
         prog.result.cdparanoiaVersion = cdparanoia.getCdParanoiaVersion()
+        info = drive.getDeviceInfo(self.parentCommand.options.device)
+        if info:
+            try:
+                prog.result.cdparanoiaDefeatsCache = self.getRootCommand(
+                    ).config.getDefeatsCache(*info)
+            except KeyError:
+                pass
         prog.result.offset = int(self.options.offset)
         prog.result.artist = prog.metadata and prog.metadata.artist \
             or 'Unknown Artist'
