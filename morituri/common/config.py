@@ -71,17 +71,8 @@ class Config(log.Loggable):
 
         Strips the given strings of leading and trailing whitespace.
         """
-        try:
-            section = self._findDriveSection(vendor, model, release)
-        except KeyError:
-            section = 'drive:' + urllib.quote('%s:%s:%s' % (
-                vendor, model, release))
-            self._parser.add_section(section)
-            __pychecker__ = 'no-local'
-            read_offset = str(offset)
-            for key in ['vendor', 'model', 'release', 'read_offset']:
-                self._parser.set(section, key, locals()[key].strip())
-
+        section = self._findOrCreateDriveSection(vendor, model, release)
+        self._parser.set(section, 'read_offset', str(offset))
         self.write()
 
     def getReadOffset(self, vendor, model, release):
@@ -91,6 +82,28 @@ class Config(log.Loggable):
         section = self._findDriveSection(vendor, model, release)
 
         return int(self._parser.get(section, 'read_offset'))
+
+    def setDefeatsCache(self, vendor, model, release, defeat):
+        """
+        Set whether the drive defeats the cache.
+
+        Strips the given strings of leading and trailing whitespace.
+        """
+        section = self._findOrCreateDriveSection(vendor, model, release)
+        self._parser.set(section, 'defeats_cache', str(defeat))
+        self.write()
+
+    def getDefeatsCache(self, vendor, model, release):
+        section = self._findDriveSection(vendor, model, release)
+
+        return bool(self._parser.get(section, 'defeats_cache'))
+
+    def write(self):
+        fd, path = tempfile.mkstemp(suffix=u'.moriturirc')
+        handle = os.fdopen(fd, 'w')
+        self._parser.write(handle)
+        handle.close()
+        shutil.move(path, self._path)
 
     def _findDriveSection(self, vendor, model, release):
         for name in self._parser.sections():
@@ -115,9 +128,19 @@ class Config(log.Loggable):
 
         raise KeyError
 
-    def write(self):
-        fd, path = tempfile.mkstemp(suffix=u'.moriturirc')
-        handle = os.fdopen(fd, 'w')
-        self._parser.write(handle)
-        handle.close()
-        shutil.move(path, self._path)
+    def _findOrCreateDriveSection(self, vendor, model, release):
+        try:
+            section = self._findDriveSection(vendor, model, release)
+        except KeyError:
+            section = 'drive:' + urllib.quote('%s:%s:%s' % (
+                vendor, model, release))
+            self._parser.add_section(section)
+            __pychecker__ = 'no-local'
+            for key in ['vendor', 'model', 'release']:
+                self._parser.set(section, key, locals()[key].strip())
+
+        self.write()
+
+        return self._findDriveSection(vendor, model, release)
+
+
