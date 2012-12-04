@@ -28,6 +28,7 @@ class PopenTask(log.Loggable, task.Task):
     logCategory = 'PopenTask'
     bufsize = 1024
     command = None
+    cwd = None
 
     def start(self, runner):
         task.Task.start(self, runner)
@@ -36,7 +37,7 @@ class PopenTask(log.Loggable, task.Task):
             self._popen = asyncsub.Popen(self.command,
                 bufsize=self.bufsize,
                 stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE, close_fds=True)
+                stderr=subprocess.PIPE, close_fds=True, cwd=self.cwd)
         except OSError, e:
             import errno
             if e.errno == errno.ENOENT:
@@ -51,18 +52,30 @@ class PopenTask(log.Loggable, task.Task):
 
     def _read(self, runner):
         try:
+            read = False
+
             ret = self._popen.recv()
 
             if ret:
                 self.log("read from stdout: %s", ret)
                 self.readbytesout(ret)
+                read = True
 
             ret = self._popen.recv_err()
 
             if ret:
                 self.log("read from stderr: %s", ret)
                 self.readbyteserr(ret)
+                read = True
 
+            # if we read anything, we might have more to read, so
+            # reschedule immediately
+            if read and self.runner:
+                self.schedule(0.0, self._read, runner)
+                return
+
+            # if we didn't read anything, give the command more time to
+            # produce output
             if self._popen.poll() is None and self.runner:
                 # not finished yet
                 self.schedule(1.0, self._read, runner)
@@ -115,13 +128,13 @@ class PopenTask(log.Loggable, task.Task):
         """
         Called when the command completed successfully.
         """
-        raise NotImplementedError
+        pass
 
     def failed(self):
         """
         Called when the command failed.
         """
-        raise NotImplementedError
+        pass
 
 
     def commandMissing(self):
