@@ -155,6 +155,28 @@ class Encode(logcommand.LogCommand):
 
         runner.run(encodetask)
 
+class Tag(logcommand.LogCommand):
+
+    summary = "run a tag reading task"
+
+    def do(self, args):
+        try:
+            path = unicode(args[0])
+        except IndexError:
+            self.stdout.write('Please specify an input file.\n')
+            return 3
+
+        runner = task.SyncRunner()
+
+        from morituri.common import encode
+        self.debug('Reading tags from %s' % path.encode('utf-8'))
+        tagtask = encode.TagReadTask(path)
+
+        runner.run(tagtask)
+
+        for key in tagtask.taglist.keys():
+            self.stdout.write('%s: %r\n' % (key, tagtask.taglist[key]))
+
 
 class MusicBrainzNGS(logcommand.LogCommand):
 
@@ -187,4 +209,4 @@ class Debug(logcommand.LogCommand):
 
     summary = "debug internals"
 
-    subCommandClasses = [Checksum, Encode, MusicBrainzNGS, ResultCache]
+    subCommandClasses = [Checksum, Encode, Tag, MusicBrainzNGS, ResultCache]
