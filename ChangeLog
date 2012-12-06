@@ -1,5 +1,13 @@
 2012-12-06  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/common.py:
+	  Strip bitrate tags too for comparison of dicts.
+	  Add a way to show us the different keys between dicts.
+	* morituri/common/encode.py:
+	  Debug different keys.
+
+2012-12-06  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/encode.py:
 	  Collect all tags by replacing from newer tag messages.
 	  Gets more than bitrate from flacs now.

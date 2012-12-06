@@ -491,6 +491,9 @@ class SafeRetagTask(ctask.LoggableMultiSeparateTask):
                 else:
                     self.debug('failed to update tags, only have %r',
                         common.tagListToDict(self.tasks[4].taglist))
+                    self.debug('difference: %r',
+                        common.tagListDifference(self.tasks[4].taglist,
+                            self._taglist))
                     os.unlink(self._tmppath)
                     e = TypeError("Tags not written")
                     self.setAndRaiseException(e)

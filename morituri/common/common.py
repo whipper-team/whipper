@@ -121,7 +121,8 @@ def formatTime(seconds, fractional=3):
 
 def tagListToDict(tl):
     """
-    Removes audio-codec and video-codec since we never set them ourselves.
+    Converts gst.TagList to dict.
+    Also strips it of tags that are not writable.
     """
     import gst
 
@@ -130,7 +131,13 @@ def tagListToDict(tl):
         if key == gst.TAG_DATE:
             date = tl[key]
             d[key] = "%4d-%2d-%2d" % (date.year, date.month, date.day)
-        elif key in [gst.TAG_AUDIO_CODEC, gst.TAG_VIDEO_CODEC]:
+        elif key in [
+            gst.TAG_AUDIO_CODEC,
+            gst.TAG_VIDEO_CODEC,
+            gst.TAG_MINIMUM_BITRATE,
+            gst.TAG_BITRATE,
+            gst.TAG_MAXIMUM_BITRATE,
+            ]:
             pass
         else:
             d[key] = tl[key]
@@ -140,6 +147,14 @@ def tagListToDict(tl):
 def tagListEquals(tl1, tl2):
     d1 = tagListToDict(tl1)
     d2 = tagListToDict(tl2)
+
+    return d1 == d2
+
+
+def tagListDifference(tl1, tl2):
+    d1 = tagListToDict(tl1)
+    d2 = tagListToDict(tl2)
+    return set(d1.keys()) - set(d2.keys())
 
     return d1 == d2
 
