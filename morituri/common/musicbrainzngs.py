@@ -72,6 +72,7 @@ class DiscMetadata(object):
 
     mbid = None
     mbidArtist = None
+    url = None
 
     def __init__(self):
         self.tracks = []
