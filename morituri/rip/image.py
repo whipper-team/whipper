@@ -114,12 +114,13 @@ class Retag(logcommand.LogCommand):
         runner = task.SyncRunner()
 
         for arg in args:
-            print 'Retagging image %r' % arg
+            self.stdout.write('Retagging image %r\n' % arg)
             arg = arg.decode('utf-8')
             cueImage = image.Image(arg)
             cueImage.setup(runner)
 
             mbdiscid = cueImage.table.getMusicBrainzDiscId()
+            self.stdout.write('MusicBrainz disc id is %s\n' % mbdiscid)
             prog.metadata = prog.getMusicBrainz(cueImage.table, mbdiscid,
                 release=self.options.release_id)
 
