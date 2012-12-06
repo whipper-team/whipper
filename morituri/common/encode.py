@@ -331,7 +331,12 @@ class TagReadTask(ctask.GstPipelineTask):
 
     def bus_tag_cb(self, bus, message):
         taglist = message.parse_tag()
-        self.taglist = taglist
+        self.debug('tag_cb, %d tags' % len(taglist.keys()))
+        if not self.taglist:
+            self.taglist = taglist
+        else:
+            import gst
+            self.taglist = self.taglist.merge(taglist, gst.TAG_MERGE_REPLACE)
 
 
 class TagWriteTask(ctask.LoggableTask):
