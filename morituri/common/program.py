@@ -241,10 +241,11 @@ class Program(log.Loggable):
             self._stdout.write('Continuing without metadata\n')
 
         if metadatas:
-            self._stdout.write('\nMatching releases:\n')
             deltas = {}
-            for metadata in metadatas:
 
+            self._stdout.write('\nMatching releases:\n')
+
+            for metadata in metadatas:
                 self._stdout.write('Artist  : %s\n' %
                     metadata.artist.encode('utf-8'))
                 self._stdout.write('Title   : %s\n' %
@@ -252,6 +253,7 @@ class Program(log.Loggable):
                 self._stdout.write('Duration: %s\n' %
                     common.formatTime(metadata.duration / 1000.0))
                 self._stdout.write('URL     : %s\n' % metadata.url)
+                self._stdout.write('Release : %s\n' % metadata.mbid)
 
                 delta = abs(metadata.duration - ittoc.duration())
                 if not delta in deltas:

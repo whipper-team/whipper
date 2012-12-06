@@ -103,6 +103,12 @@ class Retag(logcommand.LogCommand):
 
     summary = "retag image files"
 
+    def addOptions(self):
+        self.parser.add_option('-R', '--release-id',
+            action="store", dest="release_id",
+            help="MusicBrainz release id to match to (if there are multiple)")
+
+
     def do(self, args):
         prog = program.Program(stdout=self.stdout)
         runner = task.SyncRunner()
@@ -114,7 +120,8 @@ class Retag(logcommand.LogCommand):
             cueImage.setup(runner)
 
             mbdiscid = cueImage.table.getMusicBrainzDiscId()
-            prog.metadata = prog.getMusicBrainz(cueImage.table, mbdiscid)
+            prog.metadata = prog.getMusicBrainz(cueImage.table, mbdiscid,
+                release=self.options.release_id)
 
             if not prog.metadata:
                 print 'Not in MusicBrainz database, skipping'
