@@ -97,7 +97,7 @@ Log files will log the path to tracks relative to this directory.
             help="template for disc file naming (default %default)",
             default=DEFAULT_DISC_TEMPLATE)
         self.parser.add_option('-R', '--release-id',
-            action="store", dest="release",
+            action="store", dest="release_id",
             help="MusicBrainz release id to match to (if there are multiple)")
 
         default = 'flac'
@@ -178,7 +178,7 @@ Log files will log the path to tracks relative to this directory.
             ittoc.getMusicBrainzSubmitURL())
 
         prog.metadata = prog.getMusicBrainz(ittoc, mbdiscid,
-            self.options.release)
+            self.options.release_id)
 
         if not prog.metadata:
             # fall back to FreeDB for lookup
