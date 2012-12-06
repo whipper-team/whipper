@@ -124,10 +124,12 @@ class Retag(logcommand.LogCommand):
             prog.cuePath = arg
             prog.result = result.RipResult()
             for track in cueImage.table.tracks:
-                path = track.indexes[1].path
+                path = cueImage.getRealPath(track.indexes[1].path)
+
                 taglist = prog.getTagList(track.number)
-                self.debug('possibly retagging %r with taglist %r',
-                    path, taglist)
+                self.debug(
+                    'possibly retagging %r from cue path %r with taglist %r',
+                    path, arg, taglist)
                 t = encode.SafeRetagTask(path, taglist)
                 runner.run(t)
                 path = os.path.basename(path)
