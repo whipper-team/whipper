@@ -16,6 +16,12 @@ class SyncRunner(log.Loggable, task.SyncRunner):
     pass
 
 
+class LoggableTask(log.Loggable, task.Task):
+    pass
+
+class LoggableMultiSeparateTask(log.Loggable, task.MultiSeparateTask):
+    pass
+
 class GstPipelineTask(log.Loggable, gstreamer.GstPipelineTask):
     pass
 

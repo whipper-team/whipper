@@ -297,7 +297,7 @@ class EncodeTask(ctask.GstPipelineTask):
             # self.peak = 0.0
 
 
-class TagReadTask(gstreamer.GstPipelineTask):
+class TagReadTask(ctask.GstPipelineTask):
     """
     I am a task that reads tags.
 
@@ -334,7 +334,7 @@ class TagReadTask(gstreamer.GstPipelineTask):
         self.taglist = taglist
 
 
-class TagWriteTask(task.Task):
+class TagWriteTask(ctask.LoggableTask):
     """
     I am a task that retags an encoded file.
     """
@@ -411,7 +411,7 @@ class TagWriteTask(task.Task):
         task.Task.stop(self)
 
 
-class SafeRetagTask(task.MultiSeparateTask):
+class SafeRetagTask(ctask.LoggableMultiSeparateTask):
     """
     I am a task that retags an encoded file safely in place.
     First of all, if the new tags are the same as the old ones, it doesn't
