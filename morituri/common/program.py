@@ -25,6 +25,7 @@ Common functionality and class for all programs using morituri.
 """
 
 import os
+import sys
 import time
 
 from morituri.common import common, log, musicbrainzngs, cache
@@ -53,12 +54,15 @@ class Program(log.Loggable):
     outdir = None
     result = None
 
-    def __init__(self, record=False):
+    _stdout = None
+
+    def __init__(self, record=False, stdout=sys.stdout):
         """
         @param record: whether to record results of API calls for playback.
         """
         self._record = record
         self._cache = cache.ResultCache()
+        self._stdout = stdout
 
     def _getTableCachePath(self):
         path = os.path.join(os.path.expanduser('~'), '.morituri', 'cache',
@@ -211,8 +215,8 @@ class Program(log.Loggable):
 
     def getMusicBrainz(self, ittoc, mbdiscid, release=None):
         # look up disc on musicbrainz
-        print 'Disc duration: %s' % common.formatTime(
-            ittoc.duration() / 1000.0)
+        self._stdout.write('Disc duration: %s\n' % common.formatTime(
+            ittoc.duration() / 1000.0))
         self.debug('MusicBrainz submit url: %r',
             ittoc.getMusicBrainzSubmitURL())
         ret = None
@@ -227,26 +231,27 @@ class Program(log.Loggable):
             except musicbrainzngs.NotFoundException, e:
                 break
             except musicbrainzngs.MusicBrainzException, e:
-                print "Warning:", e
+                self._stdout.write("Warning: %r\n" % (e, ))
                 time.sleep(5)
                 continue
 
         if not metadatas:
             if e:
-                print "Error:", e
-            print 'Continuing without metadata'
+                self._stdout.write("Error: %r\n" % (e, ))
+            self._stdout.write('Continuing without metadata\n')
 
         if metadatas:
-            print
-            print 'Matching releases:'
+            self._stdout.write('\nMatching releases:\n')
             deltas = {}
             for metadata in metadatas:
 
-                print 'Artist  : %s' % metadata.artist.encode('utf-8')
-                print 'Title   : %s' % metadata.title.encode('utf-8')
-                print 'Duration: %s' % common.formatTime(
-                    metadata.duration / 1000.0)
-                print 'URL     : %s' % metadata.url
+                self._stdout.write('Artist  : %s\n' %
+                    metadata.artist.encode('utf-8'))
+                self._stdout.write('Title   : %s\n' %
+                    metadata.title.encode('utf-8'))
+                self._stdout.write('Duration: %s\n' %
+                    common.formatTime(metadata.duration / 1000.0))
+                self._stdout.write('URL     : %s\n' % metadata.url)
 
                 delta = abs(metadata.duration - ittoc.duration())
                 if not delta in deltas:
@@ -258,12 +263,16 @@ class Program(log.Loggable):
                 self.debug('Asked for release %r, only kept %r',
                     release, metadatas)
                 if len(metadatas) == 1:
-                    print
-                    print 'Picked requested release id %s' % release
-                    print 'Artist : %s' % metadatas[0].artist.encode('utf-8')
-                    print 'Title :  %s' % metadatas[0].title.encode('utf-8')
+                    self._stdout.write('\n')
+                    self._stdout.write('Picked requested release id %s\n' %
+                        release)
+                    self._stdout.write('Artist : %s\n' %
+                        metadatas[0].artist.encode('utf-8'))
+                    self._stdout.write('Title :  %s\n' %
+                        metadatas[0].title.encode('utf-8'))
                 elif not metadatas:
-                    print 'Requested release id %s but none match' % release
+                    self._stdout.write(
+                        'Requested release id %s but none match' % release)
                     return
             else:
                 # Select the release that most closely matches the duration.
@@ -286,19 +295,23 @@ class Program(log.Loggable):
                                 releaseTitle, i, metadata.releaseTitle))
 
                 if (not release and len(deltas.keys()) > 1):
-                    print
-                    print 'Picked closest match in duration.'
-                    print 'Others may be wrong in musicbrainz, please correct.'
-                    print 'Artist : %s' % artist.encode('utf-8')
-                    print 'Title :  %s' % metadatas[0].title.encode('utf-8')
+                    self._stdout.write('\n')
+                    self._stdout.write('Picked closest match in duration.\n')
+                    self._stdout.write('Others may be wrong in musicbrainz, '
+                        'please correct.\n')
+                    self._stdout.write('Artist : %s\n' %
+                        artist.encode('utf-8'))
+                    self._stdout.write('Title :  %s\n' %
+                        metadatas[0].title.encode('utf-8'))
 
             # Select one of the returned releases. We just pick the first one.
             ret = metadatas[0]
         else:
-            print 'Submit this disc to MusicBrainz at the above URL.'
+            self._stdout.write(
+                'Submit this disc to MusicBrainz at the above URL.\n')
             ret = None
 
-        print
+        self._stdout.write('\n')
         return ret
 
     def getTagList(self, number):

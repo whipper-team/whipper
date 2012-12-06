@@ -1,3 +1,10 @@
+2012-12-06  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/program.py:
+	* morituri/rip/cd.py:
+	* morituri/rip/image.py:
+	  Add stdout to program.  Use it for getting musicbrainz info.
+
 2012-12-04  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/program/cdparanoia.py:

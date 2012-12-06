@@ -104,7 +104,7 @@ class Retag(logcommand.LogCommand):
     summary = "retag image files"
 
     def do(self, args):
-        prog = program.Program()
+        prog = program.Program(stdout=self.stdout)
         runner = task.SyncRunner()
 
         for arg in args:

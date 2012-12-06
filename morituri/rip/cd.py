@@ -136,7 +136,8 @@ Log files will log the path to tracks relative to this directory.
                         options.offset)
 
     def do(self, args):
-        prog = program.Program(record=self.getRootCommand().record)
+        prog = program.Program(record=self.getRootCommand().record,
+            stdout=self.stdout)
         runner = task.SyncRunner()
 
         def function(r, t):
@@ -178,7 +179,7 @@ Log files will log the path to tracks relative to this directory.
             ittoc.getMusicBrainzSubmitURL())
 
         prog.metadata = prog.getMusicBrainz(ittoc, mbdiscid,
-            self.options.release_id)
+            release=self.options.release_id)
 
         if not prog.metadata:
             # fall back to FreeDB for lookup
