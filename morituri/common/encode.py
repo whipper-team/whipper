@@ -364,6 +364,8 @@ class TagWriteTask(ctask.LoggableTask):
         # here to avoid import gst eating our options
         import gst
 
+        # FIXME: this hardcodes flac; we should be using the correct
+        #        tag element instead
         self._pipeline = gst.parse_launch('''
             filesrc location="%s" !
             flactag name=tagger !
