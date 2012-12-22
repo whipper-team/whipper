@@ -1,8 +1,9 @@
 2012-12-22  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/program.py:
-	* morituri/rip/image.py:
 	  feature: add %r/%R for release type to track/disc template.
+	* morituri/rip/image.py:
+	  feature: add rip image rename to rename files based on metadata.
 
 2012-12-22  Thomas Vander Stichele  <thomas at apestaart dot org>
 
