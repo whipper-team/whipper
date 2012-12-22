@@ -69,6 +69,7 @@ class DiscMetadata(object):
     release = None
 
     releaseTitle = None
+    releaseType = None
 
     mbid = None
     mbidArtist = None
@@ -89,7 +90,7 @@ def _record(record, which, name, what):
         log.info('musicbrainzngs', 'Wrote %s %s to %s', which, name, filename)
 
 
-def _getMetadata(release, discid):
+def _getMetadata(releaseShort, release, discid):
     """
     @type  release: C{dict}
     @param release: a release dict as returned in the value for key release
@@ -107,6 +108,7 @@ def _getMetadata(release, discid):
 
     metadata = DiscMetadata()
 
+    metadata.releaseType = releaseShort['release-group'].get('type')
     credit = release['artist-credit']
 
     artist = credit[0]['artist']
@@ -246,9 +248,11 @@ def musicbrainz(discid, record=False):
 
     # Display the returned results to the user.
 
+    import json
     for release in result['disc']['release-list']:
-        log.debug('program', 'result %r: artist %r, title %r' % (
-            release, release['artist-credit-phrase'], release['title']))
+        formatted = json.dumps(release, sort_keys=False, indent=4)
+        log.debug('program', 'result %s: artist %r, title %r' % (
+            formatted, release['artist-credit-phrase'], release['title']))
 
         # to get titles of recordings, we need to query the release with
         # artist-credits
@@ -256,9 +260,11 @@ def musicbrainz(discid, record=False):
         res = musicbrainz.get_release_by_id(release['id'],
             includes=["artists", "artist-credits", "recordings", "discids"])
         _record(record, 'release', release['id'], res)
-        release = res['release']
+        releaseDetail = res['release']
+        formatted = json.dumps(releaseDetail, sort_keys=False, indent=4)
+        log.debug('program', 'release %s' % formatted)
 
-        md = _getMetadata(release, discid)
+        md = _getMetadata(release, releaseDetail, discid)
         if md:
             log.debug('program', 'duration %r', md.duration)
             ret.append(md)

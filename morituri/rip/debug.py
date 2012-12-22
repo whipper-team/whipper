@@ -180,7 +180,11 @@ class Tag(logcommand.LogCommand):
 
 class MusicBrainzNGS(logcommand.LogCommand):
 
+    usage = "[MusicBrainz disc id]"
     summary = "examine MusicBrainz NGS info"
+    description = """Look up a MusicBrainz disc id and output information.
+
+Example disc id: KnpGsLhvH.lPrNc1PBL21lb9Bg4-"""
 
     def do(self, args):
         try:
@@ -197,6 +201,7 @@ class MusicBrainzNGS(logcommand.LogCommand):
             self.stdout.write('- Release %d:\n' % (i + 1, ))
             self.stdout.write('    Artist: %s\n' % md.artist.encode('utf-8'))
             self.stdout.write('    Title:  %s\n' % md.title.encode('utf-8'))
+            self.stdout.write('    Type:   %s\n' % md.releaseType.encode('utf-8'))
             self.stdout.write('    URL: %s\n' % md.url)
             self.stdout.write('    Tracks: %d\n' % len(md.tracks))
             for j, track in enumerate(md.tracks):
