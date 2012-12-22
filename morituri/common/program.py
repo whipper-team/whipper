@@ -154,7 +154,7 @@ class Program(log.Loggable):
         assert type(outdir) is unicode, "%r is not unicode" % outdir
         assert type(template) is unicode, "%r is not unicode" % template
 
-        # the template is similar to grip, except for %s/%S
+        # the template is similar to grip, except for %s/%S/%r/%R
         # see #gripswitches
 
         # returns without extension
@@ -165,7 +165,9 @@ class Program(log.Loggable):
 
         # default values
         v['A'] = 'Unknown Artist'
-        v['d'] = mbdiscid
+        v['d'] = mbdiscid # fallback for title
+        v['r'] = 'unknown'
+        v['R'] = 'Unknown'
 
         v['a'] = v['A']
         if i == 0:
@@ -180,6 +182,8 @@ class Program(log.Loggable):
             v['A'] = filterForPath(self.metadata.artist)
             v['S'] = filterForPath(self.metadata.sortName)
             v['d'] = filterForPath(self.metadata.title)
+            v['R'] = self.metadata.releaseType
+            v['r'] = self.metadata.releaseType.lower()
             if i > 0:
                 try:
                     v['a'] = filterForPath(self.metadata.tracks[i - 1].artist)

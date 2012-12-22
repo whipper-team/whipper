@@ -1,5 +1,11 @@
 2012-12-22  Thomas Vander Stichele  <thomas at apestaart dot org>
 
+	* morituri/common/program.py:
+	* morituri/rip/image.py:
+	  feature: add %r/%R for release type to track/disc template.
+
+2012-12-22  Thomas Vander Stichele  <thomas at apestaart dot org>
+
 	* morituri/common/musicbrainzngs.py:
 	* morituri/rip/debug.py:
 	  Also store releaseType for disc metadata.
