@@ -136,7 +136,7 @@ class Program(log.Loggable):
     def saveRipResult(self):
         self._presult.persist()
 
-    def getPath(self, outdir, template, mbdiscid, i):
+    def getPath(self, outdir, template, mbdiscid, i, profile=None):
         """
         Based on the template, get a complete path for the given track,
         minus extension.
@@ -148,6 +148,7 @@ class Program(log.Loggable):
         @type  template: unicode
         @param i:        track number (0 for HTOA, or for disc)
         @type  i:        int
+        @type  profile:  L{morituri.common.encode.Profile}
 
         @rtype: unicode
         """
@@ -168,6 +169,7 @@ class Program(log.Loggable):
         v['d'] = mbdiscid # fallback for title
         v['r'] = 'unknown'
         v['R'] = 'Unknown'
+        v['x'] = profile and profile.extension or 'unknown'
 
         v['a'] = v['A']
         if i == 0:
@@ -182,8 +184,9 @@ class Program(log.Loggable):
             v['A'] = filterForPath(self.metadata.artist)
             v['S'] = filterForPath(self.metadata.sortName)
             v['d'] = filterForPath(self.metadata.title)
-            v['R'] = self.metadata.releaseType
-            v['r'] = self.metadata.releaseType.lower()
+            if self.metadata.releaseType:
+                v['R'] = self.metadata.releaseType
+                v['r'] = self.metadata.releaseType.lower()
             if i > 0:
                 try:
                     v['a'] = filterForPath(self.metadata.tracks[i - 1].artist)

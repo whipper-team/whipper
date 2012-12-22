@@ -42,22 +42,27 @@ MAX_TRIES = 5
 class Rip(logcommand.LogCommand):
     summary = "rip CD"
 
+    # see morituri.common.program.Program.getPath for expansion
     description = """
 Rips a CD.
 
 Tracks are named according to the track template, filling in the variables
-and expanding the file extension.  Variables are:
+and adding the file extension.  Variables exclusive to the track template are:
  - %t: track number
  - %a: track artist
  - %n: track title
  - %s: track sort name
 
 Disc files (.cue, .log, .m3u) are named according to the disc template,
-filling in the variables and expanding the file extension. Variables are:
+filling in the variables and adding the file extension. Variables for both
+disc and track template are:
  - %A: album artist
  - %S: album sort name
  - %d: disc title
  - %y: release year
+ - %r: release type, lowercase
+ - %r: Release type, normal case
+ - %x: audio extension
 
 Paths to track files referenced in .cue and .m3u files will be made
 relative to the directory of the disc files.
@@ -261,7 +266,7 @@ Log files will log the path to tracks relative to this directory.
                     trackResult.filename)
 
             path = prog.getPath(prog.outdir, self.options.track_template,
-                mbdiscid, number) + '.' + profile.extension
+                mbdiscid, number, profile=profile) + '.' + profile.extension
             self.debug('ripIfNotRipped: path %r' % path)
             trackResult.number = number
 
@@ -368,7 +373,7 @@ Log files will log the path to tracks relative to this directory.
 
         ### write disc files
         discName = prog.getPath(prog.outdir, self.options.disc_template,
-            mbdiscid, 0)
+            mbdiscid, 0, profile=profile)
         dirname = os.path.dirname(discName)
         if not os.path.exists(dirname):
             os.makedirs(dirname)
@@ -399,7 +404,7 @@ Log files will log the path to tracks relative to this directory.
                 continue
 
             path = prog.getPath(prog.outdir, self.options.track_template,
-                mbdiscid, i + 1) + '.' + profile.extension
+                mbdiscid, i + 1, profile=profile) + '.' + profile.extension
             writeFile(handle, path,
                 itable.getTrackLength(i + 1) / common.FRAMES_PER_SECOND)
 

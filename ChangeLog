@@ -1,3 +1,9 @@
+2012-12-23  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/program.py:
+	* morituri/rip/cd.py:
+	  feature: add %x for extension to track/disc template.
+
 2012-12-22  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/program.py:
