@@ -108,7 +108,7 @@ def _getMetadata(releaseShort, release, discid):
 
     metadata = DiscMetadata()
 
-    metadata.releaseType = releaseShort['release-group'].get('type')
+    metadata.releaseType = releaseShort.get('release-group', {}).get('type')
     credit = release['artist-credit']
 
     artist = credit[0]['artist']

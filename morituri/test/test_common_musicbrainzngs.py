@@ -19,6 +19,6 @@ class MetadataTestCase(unittest.TestCase):
         handle.close()
         discid = "wbjbST2jUHRZaB1inCyxxsL7Eqc-"
 
-        metadata = musicbrainzngs._getMetadata(response['release'], discid)
+        metadata = musicbrainzngs._getMetadata({}, response['release'], discid)
 
         self.failIf(metadata.release)
