@@ -22,6 +22,7 @@
 
 import os
 import math
+import ConfigParser
 
 import gobject
 gobject.threads_init()
@@ -225,7 +226,7 @@ Log files will log the path to tracks relative to this directory.
             try:
                 prog.result.cdparanoiaDefeatsCache = self.getRootCommand(
                     ).config.getDefeatsCache(*info)
-            except KeyError:
+            except (KeyError, ConfigParser.NoOptionError):
                 pass
         prog.result.offset = int(self.options.offset)
         prog.result.artist = prog.metadata and prog.metadata.artist \

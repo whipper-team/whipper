@@ -1,3 +1,10 @@
+2013-01-02  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/config.py:
+	* morituri/rip/cd.py:
+	* morituri/test/test_common_config.py:
+	  strip model/release too.
+
 2012-12-23  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/program.py:

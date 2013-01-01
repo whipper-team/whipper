@@ -34,3 +34,19 @@ class OffsetTestCase(tcommon.TestCase):
         offset = self._config.getReadOffset('PLEXTOR ', 'DVDR   PX-L890SA',
             '1.05')
         self.assertEquals(offset, 6)
+
+    def testAddReadOffsetSpaced(self):
+        self.assertRaises(KeyError,
+            self._config.getReadOffset, 'Slimtype', 'eSAU208   2     ', 'ML03')
+        self._config.setReadOffset('Slimtype', 'eSAU208   2     ', 'ML03', 6)
+
+        # getting it from memory should work
+        offset = self._config.getReadOffset(
+            'Slimtype', 'eSAU208   2     ', 'ML03')
+        self.assertEquals(offset, 6)
+
+        # and so should getting it after reading it again
+        self._config.open()
+        offset = self._config.getReadOffset(
+            'Slimtype', 'eSAU208   2     ', 'ML03')
+        self.assertEquals(offset, 6)

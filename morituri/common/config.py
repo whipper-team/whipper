@@ -119,9 +119,9 @@ class Config(log.Loggable):
                     key, locals()[key], conf[key]))
             if vendor.strip() != conf['vendor']:
                 continue
-            if model != conf['model']:
+            if model.strip() != conf['model']:
                 continue
-            if release != conf['release']:
+            if release.strip() != conf['release']:
                 continue
 
             return name
