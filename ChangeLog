@@ -1,3 +1,11 @@
+2013-01-06  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* morituri/common/config.py:
+	* morituri/rip/cd.py:
+	* morituri/rip/drive.py:
+	  Handle missing config better.
+	  Fixes #111.
+
 2013-01-02  Thomas Vander Stichele  <thomas at apestaart dot org>
 
 	* morituri/common/config.py:

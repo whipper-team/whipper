@@ -81,7 +81,12 @@ class Config(log.Loggable):
         """
         section = self._findDriveSection(vendor, model, release)
 
-        return int(self._parser.get(section, 'read_offset'))
+        try:
+            return int(self._parser.get(section, 'read_offset'))
+        except ConfigParser.NoOptionError:
+            raise KeyError("Could not find read_offset for %s/%s/%s" % (
+                vendor, model, release))
+
 
     def setDefeatsCache(self, vendor, model, release, defeat):
         """
@@ -96,7 +101,11 @@ class Config(log.Loggable):
     def getDefeatsCache(self, vendor, model, release):
         section = self._findDriveSection(vendor, model, release)
 
-        return bool(self._parser.get(section, 'defeats_cache'))
+        try:
+            return bool(self._parser.get(section, 'defeats_cache'))
+        except ConfigParser.NoOptionError:
+            raise KeyError("Could not find defeats_cache for %s/%s/%s" % (
+                vendor, model, release))
 
     def write(self):
         fd, path = tempfile.mkstemp(suffix=u'.moriturirc')
@@ -126,7 +135,8 @@ class Config(log.Loggable):
 
             return name
 
-        raise KeyError
+        raise KeyError("Could not find configuration section for %s/%s/%s" % (
+                vendor, model, release))
 
     def _findOrCreateDriveSection(self, vendor, model, release):
         try:

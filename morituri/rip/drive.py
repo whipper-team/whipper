@@ -110,7 +110,8 @@ class List(logcommand.LogCommand):
                 self.stdout.write(
                     "       Configured read offset: %d\n" % offset)
             except KeyError:
-                pass
+                self.stdout.write(
+                    "No read offset found.  Run 'rip offset find'\n")
 
         if not paths:
             self.stdout.write('No drives found.\n')

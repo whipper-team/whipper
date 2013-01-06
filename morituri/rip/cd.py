@@ -226,8 +226,8 @@ Log files will log the path to tracks relative to this directory.
             try:
                 prog.result.cdparanoiaDefeatsCache = self.getRootCommand(
                     ).config.getDefeatsCache(*info)
-            except (KeyError, ConfigParser.NoOptionError):
-                pass
+            except KeyError, e:
+                self.debug('Got key error: %r' % (e, ))
         prog.result.offset = int(self.options.offset)
         prog.result.artist = prog.metadata and prog.metadata.artist \
             or 'Unknown Artist'
