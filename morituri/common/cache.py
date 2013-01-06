@@ -134,11 +134,12 @@ class PersistedCache(object):
         Returns the persister for the given key.
         """
         persister = Persister(self._getPath(key))
-        if persister.object:
-            if hasattr(persister.object, 'instanceVersion'):
-                o = persister.object
-                # if o.instanceVersion < o.__class__.classVersion:
-                #     persister.delete()
+        # FIXME: don't delete old objects atm
+        # if persister.object:
+        #     if hasattr(persister.object, 'instanceVersion'):
+        #         o = persister.object
+        #         if o.instanceVersion < o.__class__.classVersion:
+        #             persister.delete()
 
         return persister
 

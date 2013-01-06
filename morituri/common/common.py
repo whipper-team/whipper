@@ -20,11 +20,11 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
+
 import os
 import os.path
 import math
-import tempfile
-import shutil
+
 
 from morituri.extern.log import log
 
