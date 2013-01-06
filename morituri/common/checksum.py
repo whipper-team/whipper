@@ -163,8 +163,8 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
             self.debug("checksum: %08X", self._checksum)
             self.debug("bytes: %d", self._bytes)
             if self._frameEnd != last:
-                print 'ERROR: did not get all frames, %d missing' % (
-                    self._frameEnd - last)
+                print 'ERROR: did not get all frames, %d of %d missing' % (
+                    self._frameEnd - last, self._frameEnd)
 
         self.checksum = self._checksum
 
