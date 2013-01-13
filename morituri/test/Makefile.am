@@ -20,7 +20,6 @@ EXTRA_DIST = \
 	test_image_toc.py \
 	test_program_cdparanoia.py \
 	test_program_cdrdao.py \
-	test_result_logger.py \
 	bloc.cue \
 	bloc.toc \
 	breeders.cue \

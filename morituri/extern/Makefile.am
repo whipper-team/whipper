@@ -34,20 +34,6 @@ musicbrainzngs_PYTHON = \
 	musicbrainzngs/mbxml.py
 
 
-EXTRA_DIST = log/test_log.py python-command/scripts/help2man
+EXTRA_DIST = python-command/scripts/help2man
 
 musicbrainzngs/musicbrainz.py: all
-
-python-musicbrainz-ngs:
-	git clone git://github.com/thomasvs/python-musicbrainz-ngs.git
-
-python-musicbrainz-ngs-check:
-	if test ! -e $(top_srcdir)/morituri/extern/musicbrainzngs/musicbrainz.py; then echo cloning python-musicbrainz-ngs; make python-musicbrainz-ngs; fi
-
-python-command:
-	git clone git://github.com/thomasvs/python-command.git
-
-python-command-check:
-	if test ! -e $(top_srcdir)/morituri/extern/command/command.py; then echo cloning python-command; make python-command; fi
-
-all: python-musicbrainz-ngs-check python-command-check
