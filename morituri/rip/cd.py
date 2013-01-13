@@ -33,8 +33,8 @@ from morituri.program import cdrdao, cdparanoia
 
 from morituri.extern.task import task
 
-DEFAULT_TRACK_TEMPLATE = u'%A - %d/%t. %a - %n'
-DEFAULT_DISC_TEMPLATE = u'%A - %d/%A - %d'
+DEFAULT_TRACK_TEMPLATE = u'%r/%A - %d/%t. %a - %n'
+DEFAULT_DISC_TEMPLATE = u'%r/%A - %d/%A - %d'
 
 MAX_TRIES = 5
 
@@ -61,7 +61,7 @@ disc and track template are:
  - %d: disc title
  - %y: release year
  - %r: release type, lowercase
- - %r: Release type, normal case
+ - %R: Release type, normal case
  - %x: audio extension
 
 Paths to track files referenced in .cue and .m3u files will be made
@@ -86,7 +86,8 @@ Log files will log the path to tracks relative to this directory.
             help="sample read offset (defaults to configured value, or 0)")
         self.parser.add_option('-O', '--output-directory',
             action="store", dest="output_directory",
-            help="output directory "
+            help="output directory; will be included in file paths in result "
+                "files "
                 "(defaults to absolute path to current directory) ")
         # FIXME: have a cache of these pickles somewhere
         self.parser.add_option('-T', '--toc-pickle',
