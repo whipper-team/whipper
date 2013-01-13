@@ -88,7 +88,12 @@ Log files will log the path to tracks relative to this directory.
             action="store", dest="output_directory",
             help="output directory; will be included in file paths in result "
                 "files "
-                "(defaults to absolute path to current directory) ")
+                "(defaults to absolute path to current directory; set to "
+                "empty if you want paths to be relative instead) ")
+        self.parser.add_option('-W', '--working-directory',
+            action="store", dest="working_directory",
+            help="working directory; morituri will change to this directory "
+                "and files will be created relative to it when not absolute ")
         # FIXME: have a cache of these pickles somewhere
         self.parser.add_option('-T', '--toc-pickle',
             action="store", dest="toc_pickle",
@@ -140,6 +145,8 @@ Log files will log the path to tracks relative to this directory.
             options.offset = 0
             self.stdout.write("Using fallback read offset %d\n" %
                         options.offset)
+        if self.options.output_directory is None:
+            self.options.output_directory = os.getcwd()
 
     def do(self, args):
         prog = program.Program(record=self.getRootCommand().record,
@@ -153,6 +160,7 @@ Log files will log the path to tracks relative to this directory.
         device = self.parentCommand.options.device
         self.stdout.write('Checking device %s\n' % device)
 
+        prog.setWorkingDirectory(self.options.working_directory)
         prog.loadDevice(device)
         prog.unmountDevice(device)
 
@@ -211,7 +219,7 @@ Log files will log the path to tracks relative to this directory.
             "full table's AR URL %s differs from toc AR URL %s" % (
             itable.getAccurateRipURL(), ittoc.getAccurateRipURL())
 
-        prog.outdir = (self.options.output_directory or os.getcwd())
+        prog.outdir = self.options.output_directory
         prog.outdir = prog.outdir.decode('utf-8')
         # here to avoid import gst eating our options
         from morituri.common import encode

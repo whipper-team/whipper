@@ -69,6 +69,11 @@ class Program(log.Loggable):
             'table')
         return path
 
+    def setWorkingDirectory(self, workingDirectory):
+        if workingDirectory:
+            self.info('Changing to working directory %s' % workingDirectory)
+            os.chdir(workingDirectory)
+
     def loadDevice(self, device):
         """
         Load the given device.
