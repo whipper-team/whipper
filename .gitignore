@@ -8,7 +8,8 @@ autom4te.cache
 autoregen.sh
 config.log
 config.status
-./configure
+configure
+!*/configure
 install-sh
 missing
 morituri.spec
