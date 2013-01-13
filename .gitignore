@@ -1,1 +1,15 @@
 *.pyc
+COPYING
+INSTALL
+Makefile
+Makefile.in
+aclocal.m4
+autom4te.cache
+autoregen.sh
+config.log
+config.status
+./configure
+install-sh
+missing
+morituri.spec
+py-compile
