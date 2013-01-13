@@ -22,7 +22,6 @@
 
 import os
 import math
-import ConfigParser
 
 import gobject
 gobject.threads_init()
