@@ -57,3 +57,7 @@ TODO:
   let user continue by choosing one
 - artist-credit-phrase fabricated by musicbrainzngs only looks at name, not at artist-credit->name (see e.g. Gorky)
 - getting cache results should depend on same drive/offset
+- do some character mangling so trail of dead is not in a hidden dir
+- fix %r for normal case release name
+- decide whether output-dir should be part of the relative filenames of things;
+  right now it is; maybe split in to base and output ?
