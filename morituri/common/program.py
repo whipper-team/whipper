@@ -266,6 +266,7 @@ class Program(log.Loggable):
                     common.formatTime(metadata.duration / 1000.0))
                 self._stdout.write('URL     : %s\n' % metadata.url)
                 self._stdout.write('Release : %s\n' % metadata.mbid)
+                self._stdout.write('Type    : %s\n' % metadata.releaseType)
 
                 delta = abs(metadata.duration - ittoc.duration())
                 if not delta in deltas:
