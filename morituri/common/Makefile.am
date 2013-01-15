@@ -9,6 +9,7 @@ morituri_PYTHON = \
 	cache.py \
 	common.py \
 	config.py \
+	directory.py \
 	drive.py \
 	encode.py \
 	gstreamer.py \

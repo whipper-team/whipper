@@ -27,7 +27,7 @@ import codecs
 import tempfile
 import ConfigParser
 
-from morituri.common import log
+from morituri.common import directory, log
 
 
 class Config(log.Loggable):
@@ -43,18 +43,7 @@ class Config(log.Loggable):
         self.open()
 
     def getDefaultPath(self):
-        try:
-            from xdg import BaseDirectory
-            directory = os.path.join(BaseDirectory.xdg_config_home, 'morituri')
-            if not os.path.isdir(directory):
-                os.mkdir(directory)
-            path = os.path.join(directory, 'morituri.conf')
-            self.info('Using XDG, configuration file is %s' % path)
-            return path
-        except ImportError:
-            path = os.path.expanduser('~/.moriturirc')
-            self.info('Not using XDG, configuration file is %s' % path)
-            return path
+        return directory.Directory().getConfig()
 
     def open(self):
         # Open the file with the correct encoding
