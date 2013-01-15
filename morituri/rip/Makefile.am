@@ -6,6 +6,7 @@ morituri_PYTHON = \
 	__init__.py \
 	accurip.py \
 	cd.py \
+	common.py \
 	debug.py \
 	drive.py \
 	image.py \

@@ -30,11 +30,10 @@ from morituri.common import logcommand, common, accurip, gstreamer
 from morituri.common import drive, program, cache
 from morituri.result import result
 from morituri.program import cdrdao, cdparanoia
+from morituri.rip import common as rcommon
 
 from morituri.extern.task import task
 
-DEFAULT_TRACK_TEMPLATE = u'%r/%A - %d/%t. %a - %n'
-DEFAULT_DISC_TEMPLATE = u'%r/%A - %d/%A - %d'
 
 MAX_TRIES = 5
 
@@ -46,30 +45,14 @@ class Rip(logcommand.LogCommand):
     description = """
 Rips a CD.
 
-Tracks are named according to the track template, filling in the variables
-and adding the file extension.  Variables exclusive to the track template are:
- - %t: track number
- - %a: track artist
- - %n: track title
- - %s: track sort name
-
-Disc files (.cue, .log, .m3u) are named according to the disc template,
-filling in the variables and adding the file extension. Variables for both
-disc and track template are:
- - %A: album artist
- - %S: album sort name
- - %d: disc title
- - %y: release year
- - %r: release type, lowercase
- - %R: Release type, normal case
- - %x: audio extension
+%s
 
 Paths to track files referenced in .cue and .m3u files will be made
 relative to the directory of the disc files.
 
 All files will be created relative to the given output directory.
 Log files will log the path to tracks relative to this directory.
-"""
+""" % rcommon.TEMPLATE_DESCRIPTION
 
     def addOptions(self):
         loggers = result.getLoggers().keys()
@@ -98,15 +81,9 @@ Log files will log the path to tracks relative to this directory.
         self.parser.add_option('-T', '--toc-pickle',
             action="store", dest="toc_pickle",
             help="pickle to use for reading and writing the TOC")
-        # FIXME: get from config
-        self.parser.add_option('', '--track-template',
-            action="store", dest="track_template",
-            help="template for track file naming (default %default)",
-            default=DEFAULT_TRACK_TEMPLATE)
-        self.parser.add_option('', '--disc-template',
-            action="store", dest="disc_template",
-            help="template for disc file naming (default %default)",
-            default=DEFAULT_DISC_TEMPLATE)
+
+        rcommon.addTemplate(self)
+
         self.parser.add_option('-R', '--release-id',
             action="store", dest="release_id",
             help="MusicBrainz release id to match to (if there are multiple)")
