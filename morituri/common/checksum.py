@@ -153,6 +153,7 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
             self.debug(
                 'not a single buffer gotten, setting exception EmptyError')
             self.setException(common.EmptyError('not a single buffer gotten'))
+            return
         else:
             self._checksum = self._checksum % 2 ** 32
             self.debug("last offset %r", self._last.offset)
