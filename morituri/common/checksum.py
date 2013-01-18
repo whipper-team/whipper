@@ -63,7 +63,7 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
         self.logName = "ChecksumTask 0x%x" % id(self)
 
         # use repr/%r because path can be unicode
-        self.debug('Creating checksum task on %r from %d to %d',
+        self.debug('Creating checksum task on %r from frame %d to frame %d',
             path, frameStart, frameLength)
         if not os.path.exists(path):
             raise IndexError('%r does not exist' % path)
