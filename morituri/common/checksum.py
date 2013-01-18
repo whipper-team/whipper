@@ -48,30 +48,30 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
     # this object needs a main loop to stop
     description = 'Calculating checksum'
 
-    def __init__(self, path, frameStart=0, frameLength=-1):
+    def __init__(self, path, sampleStart=0, sampleLength=-1):
         """
-        A frame is considered a set of samples for each channel;
-        ie 16 bit stereo is 4 bytes per frame.
-        If frameLength < 0 it is treated as 'unknown' and calculated.
+        A sample is considered a set of samples for each channel;
+        ie 16 bit stereo is 4 bytes per sample.
+        If sampleLength < 0 it is treated as 'unknown' and calculated.
 
         @type  path:       unicode
-        @type  frameStart: int
-        @param frameStart: the frame to start at
+        @type  sampleStart: int
+        @param sampleStart: the sample to start at
         """
         assert type(path) is unicode, "%r is not unicode" % path
 
         self.logName = "ChecksumTask 0x%x" % id(self)
 
         # use repr/%r because path can be unicode
-        self.debug('Creating checksum task on %r from frame %d to frame %d',
-            path, frameStart, frameLength)
+        self.debug('Creating checksum task on %r from sample %d to sample %d',
+            path, sampleStart, sampleLength)
         if not os.path.exists(path):
             raise IndexError('%r does not exist' % path)
 
         self._path = path
-        self._frameStart = frameStart
-        self._frameLength = frameLength
-        self._frameEnd = None
+        self._sampleStart = sampleStart
+        self._sampleLength = sampleLength
+        self._sampleEnd = None
         self._checksum = 0
         self._bytes = 0 # number of bytes received
         self._first = None
@@ -94,7 +94,7 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
     def paused(self):
         sink = self.pipeline.get_by_name('sink')
 
-        if self._frameLength < 0:
+        if self._sampleLength < 0:
             self.debug('query duration')
             try:
                 length, qformat = sink.query_duration(gst.FORMAT_DEFAULT)
@@ -107,11 +107,11 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
                 self.debug('query returned in BYTES format')
                 length /= 4
             self.debug('total length: %r', length)
-            self._frameLength = length - self._frameStart
-            self.debug('audio frame length is %r', self._frameLength)
+            self._sampleLength = length - self._sampleStart
+            self.debug('audio sample length is %r', self._sampleLength)
         else:
-            self.debug('frameLength known, is %d' % self._frameLength)
-        self._frameEnd = self._frameStart + self._frameLength - 1
+            self.debug('sampleLength known, is %d' % self._sampleLength)
+        self._sampleEnd = self._sampleStart + self._sampleLength - 1
 
         self.debug('event')
 
@@ -119,13 +119,13 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
         # the segment end only is respected since -good 0.10.14.1
         event = gst.event_new_seek(1.0, gst.FORMAT_DEFAULT,
             gst.SEEK_FLAG_FLUSH,
-            gst.SEEK_TYPE_SET, self._frameStart,
-            gst.SEEK_TYPE_SET, self._frameEnd + 1) # half-inclusive interval
+            gst.SEEK_TYPE_SET, self._sampleStart,
+            gst.SEEK_TYPE_SET, self._sampleEnd + 1) # half-inclusive interval
         self.debug('CRCing %r from sector %d to sector %d' % (
             self._path,
-            self._frameStart / common.SAMPLES_PER_FRAME,
-            (self._frameEnd + 1) / common.SAMPLES_PER_FRAME))
-        # FIXME: sending it with frameEnd set screws up the seek, we don't get
+            self._sampleStart / common.SAMPLES_PER_FRAME,
+            (self._sampleEnd + 1) / common.SAMPLES_PER_FRAME))
+        # FIXME: sending it with sampleEnd set screws up the seek, we don't get
         # everything for flac; fixed in recent -good
         result = sink.send_event(event)
         self.debug('event sent, result %r', result)
@@ -159,13 +159,13 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
             self.debug("last offset %r", self._last.offset)
             last = self._last.offset + len(self._last) / 4 - 1
             self.debug("last sample: %r", last)
-            self.debug("frame end: %r", self._frameEnd)
-            self.debug("frame length: %r", self._frameLength)
+            self.debug("sample end: %r", self._sampleEnd)
+            self.debug("sample length: %r", self._sampleLength)
             self.debug("checksum: %08X", self._checksum)
             self.debug("bytes: %d", self._bytes)
-            if self._frameEnd != last:
-                msg = 'did not get all frames, %d of %d missing' % (
-                    self._frameEnd - last, self._frameEnd)
+            if self._sampleEnd != last:
+                msg = 'did not get all samples, %d of %d missing' % (
+                    self._sampleEnd - last, self._sampleEnd)
                 self.warning(msg)
                 self.setException(common.MissingFrames(msg))
                 return
@@ -205,9 +205,9 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
             self._bytes += len(buf)
 
             # update progress
-            frame = self._first + self._bytes / 4
-            framesDone = frame - self._frameStart
-            progress = float(framesDone) / float((self._frameLength))
+            sample = self._first + self._bytes / 4
+            samplesDone = sample - self._sampleStart
+            progress = float(samplesDone) / float((self._sampleLength))
             # marshall to the main thread
             self.schedule(0, self.setProgress, progress)
 
@@ -238,9 +238,9 @@ class AccurateRipChecksumTask(ChecksumTask):
 
     description = 'Calculating AccurateRip checksum'
 
-    def __init__(self, path, trackNumber, trackCount, frameStart=0,
-            frameLength=-1):
-        ChecksumTask.__init__(self, path, frameStart, frameLength)
+    def __init__(self, path, trackNumber, trackCount, sampleStart=0,
+            sampleLength=-1):
+        ChecksumTask.__init__(self, path, sampleStart, sampleLength)
         self._trackNumber = trackNumber
         self._trackCount = trackCount
         self._discFrameCounter = 0 # 1-based
@@ -267,7 +267,7 @@ class AccurateRipChecksumTask(ChecksumTask):
 
         # on last track, skip last 5 CD frames
         if self._trackNumber == self._trackCount:
-            discFrameLength = self._frameLength / common.SAMPLES_PER_FRAME
+            discFrameLength = self._sampleLength / common.SAMPLES_PER_FRAME
             if self._discFrameCounter > discFrameLength - 5:
                 self.debug('skipping frame %d', self._discFrameCounter)
                 return checksum

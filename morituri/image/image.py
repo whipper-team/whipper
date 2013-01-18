@@ -120,7 +120,7 @@ class AccurateRipChecksumTask(log.Loggable, task.MultiSeparateTask):
         for trackIndex, track in enumerate(cue.table.tracks):
             index = track.indexes[1]
             length = cue.getTrackLength(track)
-            self.debug('track %d is %d frames long' % (
+            self.debug('track %d is %d samples long' % (
                 trackIndex + 1, length))
 
             path = image.getRealPath(index.path)
@@ -130,8 +130,8 @@ class AccurateRipChecksumTask(log.Loggable, task.MultiSeparateTask):
 
             checksumTask = checksum.AccurateRipChecksumTask(path,
                 trackNumber=trackIndex + 1, trackCount=len(cue.table.tracks),
-                frameStart=index.relative * common.SAMPLES_PER_FRAME,
-                frameLength=length * common.SAMPLES_PER_FRAME)
+                sampleStart=index.relative * common.SAMPLES_PER_FRAME,
+                sampleLength=length * common.SAMPLES_PER_FRAME)
             self.addTask(checksumTask)
 
     def stop(self):
@@ -141,9 +141,9 @@ class AccurateRipChecksumTask(log.Loggable, task.MultiSeparateTask):
 
 class AudioLengthTask(log.Loggable, gstreamer.GstPipelineTask):
     """
-    I calculate the length of a track in audio frames.
+    I calculate the length of a track in audio samples.
 
-    @ivar  length: length of the decoded audio file, in audio frames.
+    @ivar  length: length of the decoded audio file, in audio samples.
     """
     logCategory = 'AudioLengthTask'
     description = 'Getting length of audio track'
