@@ -120,8 +120,11 @@ class AccurateRipChecksumTask(log.Loggable, task.MultiSeparateTask):
         for trackIndex, track in enumerate(cue.table.tracks):
             index = track.indexes[1]
             length = cue.getTrackLength(track)
-            self.debug('track %d is %d samples long' % (
-                trackIndex + 1, length))
+            if length < 0:
+                self.debug('track %d has unknown length' % (trackIndex + 1, ))
+            else:
+                self.debug('track %d is %d samples long' % (
+                    trackIndex + 1, length))
 
             path = image.getRealPath(index.path)
 

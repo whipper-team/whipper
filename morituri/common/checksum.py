@@ -58,13 +58,23 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
         @type  sampleStart: int
         @param sampleStart: the sample to start at
         """
+
+        # sampleLength can be e.g. -588 when it is -1 * SAMPLES_PER_FRAME
+
         assert type(path) is unicode, "%r is not unicode" % path
 
         self.logName = "ChecksumTask 0x%x" % id(self)
 
         # use repr/%r because path can be unicode
-        self.debug('Creating checksum task on %r from sample %d to sample %d',
-            path, sampleStart, sampleLength)
+        if sampleLength < 0:
+            self.debug(
+                'Creating checksum task on %r from sample %d until the end',
+                path, sampleStart)
+        else:
+            self.debug(
+                'Creating checksum task on %r from sample %d for %d samples',
+                path, sampleStart, sampleLength)
+
         if not os.path.exists(path):
             raise IndexError('%r does not exist' % path)
 
@@ -106,7 +116,7 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
             if qformat == gst.FORMAT_BYTES:
                 self.debug('query returned in BYTES format')
                 length /= 4
-            self.debug('total length: %r', length)
+            self.debug('total sample length of file: %r', length)
             self._sampleLength = length - self._sampleStart
             self.debug('audio sample length is %r', self._sampleLength)
         else:
