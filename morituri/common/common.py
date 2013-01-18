@@ -28,11 +28,11 @@ import math
 
 from morituri.extern.log import log
 
+FRAMES_PER_SECOND = 75
 
 SAMPLES_PER_FRAME = 588
 WORDS_PER_FRAME = SAMPLES_PER_FRAME * 2
 BYTES_PER_FRAME = SAMPLES_PER_FRAME * 4
-FRAMES_PER_SECOND = 75
 
 
 def msfToFrames(msf):
