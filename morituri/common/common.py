@@ -170,6 +170,12 @@ class MissingDependencyException(Exception):
 class EmptyError(Exception):
     pass
 
+class MissingFrames(Exception):
+    """
+    Less frames decoded than expected.
+    """
+    pass
+
 
 def shrinkPath(path):
     """
