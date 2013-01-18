@@ -61,3 +61,6 @@ TODO:
 - fix %r for normal case release name
 - decide whether output-dir should be part of the relative filenames of things;
   right now it is; maybe split in to base and output ?
+- rip task should abort on task 4 if checksums don't match
+- retry cdrdao a few times when it had to load the tray
+- when it detects the target dir is already there, but the files would be different names, complain or customize the name with further info (see GLB - mockingbirds singles)
