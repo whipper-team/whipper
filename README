@@ -39,7 +39,7 @@ use morituri installed or uninstalled.
     (For example, $HOME/dev/ext or $HOME/prefix/src)
   - source: download tarball, unpack, and change to its directory
   - checkout:
-    svn co https://thomas.apestaart.org/morituri/svn/trunk morituri
+    git clone git://github.com/thomasvs/morituri.git
     cd morituri
     ./autogen.sh
 
@@ -51,8 +51,8 @@ use morituri installed or uninstalled.
   - installing:
     make install
   - running uninstalled:
-    ln -sf `pwd`/misc/morituri-uninstalled $HOME/bin/morituri-trunk
-    morituri-trunk
+    ln -sf `pwd`/misc/morituri-uninstalled $HOME/bin/morituri-git
+    morituri-git
     (this drops you in a shell where everything is set up to use morituri)
 
 RUNNING MORITURI
