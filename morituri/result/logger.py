@@ -30,6 +30,9 @@ from morituri.result import result
 class MorituriLogger(result.Logger):
 
     def log(self, ripResult, epoch=time.time()):
+        """
+        @type  ripResult: L{morituri.result.result.RipResult}
+        """
         lines = self.logRip(ripResult, epoch=epoch)
         return '\n'.join(lines)
 

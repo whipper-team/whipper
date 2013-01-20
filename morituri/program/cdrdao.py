@@ -290,6 +290,7 @@ class DiscInfoTask(CDRDAOTask):
         @param device:  the device to rip from
         @type  device:  str
         """
+        self.debug('creating DiscInfoTask')
         CDRDAOTask.__init__(self)
 
         self.options = ['disk-info', ]
