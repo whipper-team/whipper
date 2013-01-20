@@ -27,6 +27,8 @@ release
 - Pick a release name
 - Update .doap file
 - verify the update with moap doap show
+- Run coverage
+  make coverage
 - Add coverage data to NEWS
   Coverage: 64 %   (1575 / 2440)
 - Add list of new features to NEWS
@@ -44,6 +46,8 @@ release
   rpm --addsign /var/tmp/mach/fedora-*/morituri-$VERSION-*/*.rpm
 - install it
 - rip a test cd
+- sync from website:
+  tao-get
 - copy files to website and upload
   cp morituri-$VERSION.tar* /home/thomas/www/thomas.apestaart.org/data/download/morituri
   cp /var/tmp/mach/fedora-*/morituri-$VERSION-*/*.rpm /home/thomas/www/thomas.apestaart.org/data/download/morituri

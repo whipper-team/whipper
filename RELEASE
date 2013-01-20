@@ -1,41 +1,41 @@
 morituri is a CD ripper aiming for accuracy over speed.
 Its features are modeled to compare with Exact Audio Copy on Windows.
 
-This is morituri 0.1.3 "cranes".
+This is morituri 0.2.0 "ears".
 
 This is intended as a release for daring and curious people who've had enough
 of the fact that Windows has a more accurate CD ripper than Linux.
 
+Coverage in 0.2.0: 67 %   (1890 / 2807), 95 python tests
 
-Coverage in 0.1.3: 60 %   (1716 / 2825), 85 python tests
+Features added in 0.2.0:
 
-Features added in 0.1.3:
+- added plugins system for logger
+- added rip cd rip --logger to specify logger
+- added reading speed, cdparanoia and cdrdao version to logger
+- added rip drive analyze to detect whether we can defeat audio cache behaviour
+- store drive offsets and cache defeating in config file
+- rip drive list shows configured offset and audio cache defeating
+- added rip image retag --release-id to specify the release id to tag with
+- added %r/%R for release type to use in track/disc template
+- added %x for extension to release template
 
-- shorten really long file names if needed
-- support multi-disc ripping
-- add %y for release year in templates
-- added rip cd rip --release-id option to select the exact release
-- allow track and disc templates to create files in different directories
-- work out relative paths from cue/m3u files to audio files
+Bugs fixed in 0.2.0:
 
-Bugs fixed in 0.1.3:
+-  89: Fails to rip track with \ in its name
+- 105: Backslash in track names causes "Cannot find file" during rip
+- 108: Unable to find offset / rip
+- 109: KeyError when running "rip offset find"
+- 111: Python traceback when config has no read offset for CD
+-  76: morituri should allow for a configuration file
+-  96: rip image retag: allow specification of release ID
+- 107: Backslash in track name confuses AR step
+- 112: add MusicBrainz lookup URL to generated logfile
 
--  77: Unable to find solution to UTF-8 problem
--  93: Unable to choose if there are more than one matching CD
--  67: unable to rip multi-cd-sets correctly
--  73: rip image breaks with "query failed"
--  78: Could not create encoded file
--  84: Error when checksumming extremely short tracks
--  91: --release-id does not work for Pink Floyd - The Wall (Experience Edition) (Disc 1)
--  94: mp3vbr uses quality=0 instead of vbr-quality=0
--  95: Discs with multiple media not correctly identified.
--  99: rip offset find fails with "UnboundLocalError: local variable 'archecksum' referenced before assignment"
-- 102: Unable to run without -d option
--  98: Year of release in templates
-
-morituri 0.1.3 is brought to you by:
+morituri 0.2.0 is brought to you by:
 
 Loïc Minier
 Ross Burton
 Christophe Fergeau
 Thomas Vander Stichele
+mustbenice

@@ -1,4 +1,30 @@
-This is morituri 0.1.3, "cranes"
+This is morituri 0.2.0, "ears"
+
+Coverage in 0.2.0: 67 %   (1890 / 2807), 95 python tests
+
+Features added in 0.2.0:
+
+- added plugins system for logger
+- added rip cd rip --logger to specify logger
+- added reading speed, cdparanoia and cdrdao version to logger
+- added rip drive analyze to detect whether we can defeat audio cache behaviour
+- store drive offsets and cache defeating in config file
+- rip drive list shows configured offset and audio cache defeating
+- added rip image retag --release-id to specify the release id to tag with
+- added %r/%R for release type to use in track/disc template
+- added %x for extension to release template
+
+Bugs fixed in 0.2.0:
+
+-  89: Fails to rip track with \ in its name
+- 105: Backslash in track names causes "Cannot find file" during rip
+- 108: Unable to find offset / rip
+- 109: KeyError when running "rip offset find"
+- 111: Python traceback when config has no read offset for CD
+-  76: morituri should allow for a configuration file
+-  96: rip image retag: allow specification of release ID
+- 107: Backslash in track name confuses AR step
+- 112: add MusicBrainz lookup URL to generated logfile
 
 Coverage in 0.1.3: 60 %   (1716 / 2825), 85 python tests
 

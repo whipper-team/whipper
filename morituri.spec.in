@@ -15,6 +15,7 @@ BuildArch:      noarch
 
 BuildRequires:  pygobject2
 BuildRequires:  gstreamer-python
+BuildRequires:  python-setuptools
 
 Requires:       cdparanoia
 Requires:       cdrdao > 1.2.3-0.rc2.2
@@ -56,6 +57,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/bash_completion.d/
 
 %changelog
+* Sun Jan 20 2013 Thomas Vander Stichele <thomas at apestaart dot org>
+- Added python-setuptools now that we use it for plugins
+
 * Sun Dec 02 2012 Thomas Vander Stichele <thomas at apestaart dot org>
 - Require pyxdg for XDG config file.
 

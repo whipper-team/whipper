@@ -11,13 +11,14 @@ FEATURES
 --------
 * support for MusicBrainz for metadata lookup
 * support for AccurateRip verification
-* detects sample read offset of drives
+* detects sample read offset and ability to defeat cache of drives
 * performs test and copy rip
 * detects and rips Hidden Track One Audio
 * templates for file and directory naming
 * support for lossless encoding and lossy encoding or re-encoding of images
 * tagging using GStreamer, including embedding MusicBrainz id's
 * retagging of images
+* plugins for logging
 * for now, only a command line client (rip) is shipped
 
 REQUIREMENTS
