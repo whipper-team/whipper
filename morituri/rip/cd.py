@@ -146,8 +146,18 @@ Log files will log the path to tracks relative to this directory.
         # first, read the normal TOC, which is fast
         ptoc = cache.Persister(self.options.toc_pickle or None)
         if not ptoc.object:
-            t = cdrdao.ReadTOCTask(device=device)
-            function(runner, t)
+            tries = 0
+            while True:
+                tries += 1
+                t = cdrdao.ReadTOCTask(device=device)
+                try:
+                    function(runner, t)
+                    break
+                except:
+                    if tries > 3:
+                        raise
+                    self.debug('failed to read TOC after %d tries, retrying' % tries)
+
             version = t.tasks[1].parser.version
             from pkg_resources import parse_version as V
             # we've built a cdrdao 1.2.3rc2 modified package with the patch
