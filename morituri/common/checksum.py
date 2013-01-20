@@ -118,10 +118,13 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
                 length /= 4
             self.debug('total sample length of file: %r', length)
             self._sampleLength = length - self._sampleStart
-            self.debug('audio sample length is %r', self._sampleLength)
+            self.debug('sampleLength is queried as %d samples',
+                self._sampleLength)
         else:
-            self.debug('sampleLength known, is %d' % self._sampleLength)
+            self.debug('sampleLength is known, and is %d samples' %
+                self._sampleLength)
         self._sampleEnd = self._sampleStart + self._sampleLength - 1
+        self.debug('sampleEnd is sample %d' % self._sampleEnd)
 
         self.debug('event')
 
@@ -139,6 +142,8 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
         # everything for flac; fixed in recent -good
         result = sink.send_event(event)
         self.debug('event sent, result %r', result)
+        if not result:
+            self.error('Failed to select samples with GStreamer seek event')
         sink.connect('new-buffer', self._new_buffer_cb)
         sink.connect('eos', self._eos_cb)
 
@@ -166,11 +171,12 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
             return
         else:
             self._checksum = self._checksum % 2 ** 32
-            self.debug("last offset %r", self._last.offset)
+            self.debug("last buffer's sample offset %r", self._last.offset)
+            self.debug("last buffer's sample size %r", len(self._last) / 4)
             last = self._last.offset + len(self._last) / 4 - 1
-            self.debug("last sample: %r", last)
-            self.debug("sample end: %r", self._sampleEnd)
-            self.debug("sample length: %r", self._sampleLength)
+            self.debug("last sample offset in buffer: %r", last)
+            self.debug("requested sample end: %r", self._sampleEnd)
+            self.debug("requested sample length: %r", self._sampleLength)
             self.debug("checksum: %08X", self._checksum)
             self.debug("bytes: %d", self._bytes)
             if self._sampleEnd != last:
@@ -198,7 +204,7 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
             buf.offset, buf.size))
         if self._first is None:
             self._first = buf.offset
-            self.debug('first sample is %r', self._first)
+            self.debug('first sample is sample offset %r', self._first)
         self._last = buf
 
         assert len(buf) % 4 == 0, "buffer is not a multiple of 4 bytes"
