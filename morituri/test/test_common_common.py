@@ -2,6 +2,7 @@
 # vi:si:et:sw=4:sts=4:ts=4
 
 import os
+import tempfile
 
 from morituri.common import common
 
@@ -46,3 +47,13 @@ class GetRelativePathTestCase(tcommon.TestCase):
 
         self.assertEquals(common.getRelativePath(track, cue),
             '01. Placebo - Taste in Men.flac')
+
+
+class GetRealPathTestCase(tcommon.TestCase):
+
+    def testRealWithBackslash(self):
+        fd, path = tempfile.mkstemp(suffix=u'back\\slash.flac')
+        refPath = os.path.join(os.path.dirname(path), 'fake.cue')
+
+        os.close(fd)
+        os.unlink(path)

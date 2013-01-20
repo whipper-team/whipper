@@ -211,9 +211,14 @@ def shrinkPath(path):
 
 def getRealPath(refPath, filePath):
     """
-    Translate a .cue or .toc's FILE to an existing path.
+    Translate a .cue or .toc's FILE argument to an existing path.
+    Does Windows path translation.
+    Will look for the given file name, but with .flac and .wav as extensions.
 
-    @type  refPath: unicode
+    @param refPath:  path to the file from which the track is referenced;
+                     for example, path to the .cue file in the same directory
+    @type  refPath:  unicode
+
     @type  filePath: unicode
     """
     assert type(filePath) is unicode, "%r is not unicode" % filePath
@@ -221,24 +226,34 @@ def getRealPath(refPath, filePath):
     if os.path.exists(filePath):
         return filePath
 
-    # .cue FILE statements have Windows-style path separators, so convert
+    candidatePaths = []
+
+    # .cue FILE statements can have Windows-style path separators, so convert
+    # them as one possible candidate
+    # on the other hand, the file may indeed contain a backslash in the name
+    # on linux
+    # FIXME: I guess we might do all possible combinations of splitting or
+    #        keeping the slash, but let's just assume it's either Windows
+    #        or linux
+    # See https://thomas.apestaart.org/morituri/trac/ticket/107
     parts = filePath.split('\\')
     if parts[0] == '':
         parts[0] = os.path.sep
     tpath = os.path.join(*parts)
-    candidatePaths = []
 
-    if tpath == os.path.abspath(tpath):
-        candidatePaths.append(tpath)
-    else:
-        # if the path is relative:
-        # - check relatively to the cue file
-        # - check only the filename part relative to the cue file
-        candidatePaths.append(os.path.join(
-            os.path.dirname(refPath), tpath))
-        candidatePaths.append(os.path.join(
-            os.path.dirname(refPath), os.path.basename(tpath)))
+    for path in [filePath, tpath]:
+        if path == os.path.abspath(path):
+            candidatePaths.append(path)
+        else:
+            # if the path is relative:
+            # - check relatively to the cue file
+            # - check only the filename part relative to the cue file
+            candidatePaths.append(os.path.join(
+                os.path.dirname(refPath), path))
+            candidatePaths.append(os.path.join(
+                os.path.dirname(refPath), os.path.basename(path)))
 
+    # Now look for .wav and .flac files, as .flac files are often named .wav
     for candidate in candidatePaths:
         noext, _ = os.path.splitext(candidate)
         for ext in ['wav', 'flac']:
