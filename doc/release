@@ -52,12 +52,10 @@ release
   cp morituri-$VERSION.tar* /home/thomas/www/thomas.apestaart.org/data/download/morituri
   cp /var/tmp/mach/fedora-*/morituri-$VERSION-*/*.rpm /home/thomas/www/thomas.apestaart.org/data/download/morituri
   tao-put
-- commit to TRUNK
+- commit to master
 - create release tag:
-  SERVER_PATH=`svn info | grep URL | cut -c 16-53`; echo $SERVER_PATH
-  cd ..
-  svn cp svn+ssh://$SERVER_PATH/trunk svn+ssh://$SERVER_PATH/tags/$VERSION
-  cd trunk
+  git tag -a v$VERSION
+  git push origin v$VERSION
 - announce to freshmeat:
   moap doap -v $VERSION freshmeat
 - send out release mails:
