@@ -111,7 +111,18 @@ class List(logcommand.LogCommand):
                     "       Configured read offset: %d\n" % offset)
             except KeyError:
                 self.stdout.write(
-                    "No read offset found.  Run 'rip offset find'\n")
+                    "       No read offset found.  Run 'rip offset find'\n")
+
+            try:
+                defeats = self.getRootCommand().config.getDefeatsCache(
+                    vendor, model, release)
+                self.stdout.write(
+                    "       Can defeat audio cache: %s\n" % defeats)
+            except KeyError:
+                self.stdout.write(
+                    "       Unknown whether audio cache can be defeated. "
+                    "Run 'rip drive analyze'\n")
+
 
         if not paths:
             self.stdout.write('No drives found.\n')
