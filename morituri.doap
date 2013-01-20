@@ -28,10 +28,10 @@ Morituri is a CD ripper aiming for maximum quality.
  <download-page rdf:resource="http://thomas.apestaart.org/projects/morituri/" />
 
  <repository>
-   <SVNRepository>
-     <location rdf:resource="http://thomas.apestaart.org/morituri/svn/trunk/" />
-     <browse rdf:resource="http://thomas.apestaart.org/morituri/trac/browser/trunk" />
-   </SVNRepository>
+   <GitRepository>
+     <location rdf:resource="git://github.com/thomasvs/morituri.git" />
+     <browse rdf:resource="http://github.com/thomasvs/morituri" />
+   </GitRepository>
  </repository>
 
  <maintainer>
