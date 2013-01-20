@@ -83,6 +83,8 @@ The simplest way to get started making accurate rips is:
   rip offset find
 - wait for it to complete; this might take a while
 - optionally, confirm this offset with two more discs
+- analyze the drive's caching behaviour
+  rip drive analyze
 - rip the disc by running
   rip cd rip --offset (the number you got before)
 
