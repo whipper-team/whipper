@@ -18,10 +18,10 @@ _trial_temp/coverage: $(top_srcdir)/morituri/*.py $(top_srcdir)/morituri/*/*.py
 	trial --coverage morituri.test
 
 coverage: _trial_temp/coverage
-	python misc/show-coverage.py `ls _trial_temp/coverage/morituri* | grep -v morituri.test | grep -v morituri.extern`
+	$(PYTHON) misc/show-coverage.py `ls _trial_temp/coverage/morituri* | grep -v morituri.test | grep -v morituri.extern`
 
 pep8:
-	for file in $(SOURCES); do python misc/pep8.py --repeat $$file; done
+	for file in $(SOURCES); do $(PYTHON) misc/pep8.py --repeat $$file; done
 
 clean-local:
 	@rm -rf _trial_temp
