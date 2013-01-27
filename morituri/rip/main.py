@@ -28,6 +28,9 @@ def main(argv):
     log.debug('mapping distributions %r', distributions)
     map(pkg_resources.working_set.add, distributions)
 
+    from morituri.common import deps
+    h = deps.DepsHandler()
+
     c = Rip()
     try:
         ret = c.parse(argv)
@@ -35,12 +38,12 @@ def main(argv):
         sys.stderr.write('rip: error: %s\n' % e.args)
         return 255
     except ImportError, e:
-        # FIXME: decide how to handle
-        raise
-        # deps.handleImportError(e)
-        # ret = -1
+        h.handleImportError(e)
     except task.TaskException, e:
-        if isinstance(e.exception, common.MissingDependencyException):
+        if isinstance(e.exception, ImportError):
+            h.handleImportError(e.exception)
+            return 255
+        elif isinstance(e.exception, common.MissingDependencyException):
             sys.stderr.write('rip: error: missing dependency "%s"\n' %
                 e.exception.dependency)
             return 255

@@ -27,7 +27,6 @@ from morituri.extern.task import task
 from morituri.common import logcommand, drive
 from morituri.program import cdparanoia
 
-
 class Analyze(logcommand.LogCommand):
 
     summary = "analyze caching behaviour of drive"

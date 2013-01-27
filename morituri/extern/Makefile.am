@@ -18,6 +18,14 @@ command_PYTHON = \
 	command/__init__.py \
 	command/command.py
 
+depsdir = $(PYTHONLIBDIR)/morituri/extern/deps
+
+deps_PYTHON = \
+	deps/__init__.py \
+	deps/deps.py \
+	deps/distro.py
+
+
 taskdir = $(PYTHONLIBDIR)/morituri/extern/task
 
 task_PYTHON = \
