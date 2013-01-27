@@ -13,6 +13,7 @@ class DepsHandler(deps.DepsHandler):
         deps.DepsHandler.__init__(self, name)
 
         self.add(GStPython())
+        self.add(CDDB())
 
     def report(self, summary):
         reporter = os.environ.get('EMAIL_ADDRESS', None)
@@ -32,3 +33,12 @@ class GStPython(deps.Dependency):
 
     #def Ubuntu_install(self, distro):
     #    pass
+
+
+class CDDB(deps.Dependency):
+    module = 'CDDB'
+    name = "python-CDDB"
+    homepage = "http://cddb-py.sourceforge.net/"
+
+    def Fedora_install(self, distro):
+        return self.Fedora_yum('python-CDDB')
