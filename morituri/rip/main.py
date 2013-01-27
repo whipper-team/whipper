@@ -39,6 +39,7 @@ def main(argv):
         return 255
     except ImportError, e:
         h.handleImportError(e)
+        return 255
     except task.TaskException, e:
         if isinstance(e.exception, ImportError):
             h.handleImportError(e.exception)
