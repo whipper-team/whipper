@@ -3,6 +3,9 @@ Release procedure for morituri
 
 pre-release checklist
 ---------------------
+- Check downstream bug queues for patches:
+  http://packages.qa.debian.org/m/morituri.html
+  http://patch-tracker.debian.org/package/morituri
 - Verify that all tests run.
 - Verify that test run doesn't leave anything around in /tmp:
   ls /tmp/*morituri*
