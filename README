@@ -28,6 +28,7 @@ REQUIREMENTS
 - GStreamer and its python bindings, for encoding
   - gst-plugins-base >= 0.10.22 for appsink
 - python musicbrainz2, for metadata lookup
+- python-cddb, for showing but not using disc info if not in musicbrainz
 - pycdio, for drive identification (optional)
 
 GETTING MORITURI

@@ -42,3 +42,8 @@ class CDDB(deps.Dependency):
 
     def Fedora_install(self, distro):
         return self.Fedora_yum('python-CDDB')
+
+    def Ubuntu_install(self, distro):
+        return self.Ubuntu_apt('python-cddb')
+
+
