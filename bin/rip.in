@@ -34,6 +34,7 @@ try:
     from morituri.rip import main
     sys.exit(main.main(sys.argv[1:]))
 except ImportError, e:
-    raise
-    from morituri.util import deps
-    deps.handleImportError(e)
+    from morituri.common import deps
+    h = deps.DepsHandler()
+    h.handleImportError(e)
+    sys.exit(1)

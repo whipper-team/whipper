@@ -14,6 +14,7 @@ class DepsHandler(deps.DepsHandler):
 
         self.add(GStPython())
         self.add(CDDB())
+        self.add(SetupTools())
 
     def report(self, summary):
         reporter = os.environ.get('EMAIL_ADDRESS', None)
@@ -47,3 +48,10 @@ class CDDB(deps.Dependency):
         return self.Ubuntu_apt('python-cddb')
 
 
+class SetupTools(deps.Dependency):
+    module = 'pkg_resources'
+    name = "python-setuptools"
+    homepage = "http://pypi.python.org/pypi/setuptools"
+
+    def Fedora_install(self, distro):
+        return self.Fedora_yum('python-setuptools')
