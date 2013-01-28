@@ -15,6 +15,7 @@ class DepsHandler(deps.DepsHandler):
         self.add(GStPython())
         self.add(CDDB())
         self.add(SetupTools())
+        self.add(PyCDIO())
 
     def report(self, summary):
         reporter = os.environ.get('EMAIL_ADDRESS', None)
@@ -55,3 +56,20 @@ class SetupTools(deps.Dependency):
 
     def Fedora_install(self, distro):
         return self.Fedora_yum('python-setuptools')
+
+
+class PyCDIO(deps.Dependency):
+
+    module = 'pycdio'
+    name = "pycdio"
+    homepage = "http://www.gnu.org/software/libcdio/"
+    egg = 'pycdio'
+
+    def Fedora_install(self, distro):
+        return self.Fedora_yum('pycdio')
+
+    def validate(self):
+        version = self.version()
+        if version == '0.18':
+            return '''pycdio 0.18 does not work.
+See http://savannah.gnu.org/bugs/?38185'''

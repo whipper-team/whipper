@@ -30,6 +30,7 @@ def main(argv):
 
     from morituri.common import deps
     h = deps.DepsHandler()
+    h.validate()
 
     c = Rip()
     try:
