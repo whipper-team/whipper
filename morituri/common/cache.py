@@ -30,7 +30,7 @@ from morituri.result import result
 from morituri.extern.log import log
 
 
-class Persister(object):
+class Persister(log.Loggable):
     """
     I wrap an optional pickle to persist an object to disk.
 
@@ -86,6 +86,7 @@ class Persister(object):
         handle.close()
         # do an atomic move
         shutil.move(path, self._path)
+        self.debug('saved persisted object to %r' % self._path)
 
     def _unpickle(self, default=None):
         self.object = default
@@ -101,6 +102,7 @@ class Persister(object):
 
         try:
             self.object = pickle.load(handle)
+            self.debug('loaded persisted object from %r' % self._path)
         except:
             # can fail for various reasons; in that case, pretend we didn't
             # load it
