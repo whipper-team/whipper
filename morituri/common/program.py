@@ -112,14 +112,20 @@ class Program(log.Loggable):
         ptable = pcache.get(cddbdiscid)
 
         if not ptable.object:
+            self.debug('getTable: cddbdiscid %s not in cache, reading table' %
+                cddbdiscid)
             t = cdrdao.ReadTableTask(device=device)
             runner.run(t)
             ptable.persist(t.table)
+        else:
+            self.debug('getTable: cddbdiscid %s in cache' % cddbdiscid)
         itable = ptable.object
         assert itable.hasTOC()
 
         self.result.table = itable
 
+        self.debug('getTable: returning table with mb id %s' %
+            itable.getMusicBrainzDiscId())
         return itable
 
     # FIXME: the cache should be model/offset specific
