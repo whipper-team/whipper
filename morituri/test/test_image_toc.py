@@ -1,4 +1,4 @@
-# -*- Mode: Python; test-case-name: morituri.test.test_image_cue -*-
+# -*- Mode: Python; test-case-name: morituri.test.test_image_toc -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
 import os
@@ -300,3 +300,21 @@ class UnicodeTestCase(common.TestCase, common.UnicodeTestMixin):
     def testGetTrackPerformer(self):
         t = self.toc.table.tracks[0]
         self.assertEquals(t.cdtext['PERFORMER'], self._performer)
+
+
+# Interpol - Turn of the Bright Lights has same cddb disc id as
+# Afghan Whigs - Gentlemen
+
+
+class TOTBLTestCase(common.TestCase):
+
+    def setUp(self):
+        self.path = os.path.join(os.path.dirname(__file__),
+            u'totbl.fast.toc')
+        self.toc = toc.TocFile(self.path)
+        self.toc.parse()
+        self.assertEquals(len(self.toc.table.tracks), 11)
+
+    def testCDDBId(self):
+        self.toc.table.absolutize()
+        self.assertEquals(self.toc.table.getCDDBDiscId(), '810b7b0b')

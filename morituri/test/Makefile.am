@@ -46,6 +46,7 @@ EXTRA_DIST = \
 	cdparanoia.progress.error \
 	cdrdao.readtoc.progress \
 	silentalarm.result.pickle \
+	totbl.fast.toc \
 	track.flac \
 	cache/result/fe105a11.pickle \
 	cdparanoia/MATSHITA.cdparanoia-A.log \
