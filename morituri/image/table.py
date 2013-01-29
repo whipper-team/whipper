@@ -368,6 +368,7 @@ class Table(object, log.Loggable):
         assert len(result) == 28, \
             "Result should be 28 characters, not %d" % len(result)
 
+        self.debug('getMusicBrainzDiscId: returning %r' % result)
         return result
 
     def getMusicBrainzSubmitURL(self):
