@@ -175,6 +175,7 @@ class Program(log.Loggable):
         v['r'] = 'unknown'
         v['R'] = 'Unknown'
         v['x'] = profile and profile.extension or 'unknown'
+        v['X'] = v['x'].upper()
 
         v['a'] = v['A']
         if i == 0:
