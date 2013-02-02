@@ -38,7 +38,138 @@ from morituri.extern.task import task
 MAX_TRIES = 5
 
 
-class Rip(logcommand.LogCommand):
+class _CD(logcommand.LogCommand):
+
+    def addOptions(self):
+        # FIXME: have a cache of these pickles somewhere
+        self.parser.add_option('-T', '--toc-pickle',
+            action="store", dest="toc_pickle",
+            help="pickle to use for reading and writing the TOC")
+        self.parser.add_option('-R', '--release-id',
+            action="store", dest="release_id",
+            help="MusicBrainz release id to match to (if there are multiple)")
+
+
+    def do(self, args):
+        self.program = program.Program(record=self.getRootCommand().record,
+            stdout=self.stdout)
+        self.runner = task.SyncRunner()
+
+        def function(r, t):
+            r.run(t)
+
+        # if the device is mounted (data session), unmount it
+        self.device = self.parentCommand.options.device
+        self.stdout.write('Checking device %s\n' % self.device)
+
+        self.program.loadDevice(self.device)
+        self.program.unmountDevice(self.device)
+
+        version = None
+
+        # first, read the normal TOC, which is fast
+        ptoc = cache.Persister(self.options.toc_pickle or None)
+        if not ptoc.object:
+            tries = 0
+            while True:
+                tries += 1
+                t = cdrdao.ReadTOCTask(device=self.device)
+                try:
+                    function(self.runner, t)
+                    break
+                except:
+                    if tries > 3:
+                        raise
+                    self.debug('failed to read TOC after %d tries, retrying' % tries)
+
+            version = t.tasks[1].parser.version
+            from pkg_resources import parse_version as V
+            # we've built a cdrdao 1.2.3rc2 modified package with the patch
+            if V(version) < V('1.2.3rc2p1'):
+                self.stdout.write('Warning: cdrdao older than 1.2.3 has a '
+                    'pre-gap length bug.\n'
+                    'See http://sourceforge.net/tracker/?func=detail'
+                    '&aid=604751&group_id=2171&atid=102171\n')
+            ptoc.persist(t.table)
+        self.ittoc = ptoc.object
+        assert self.ittoc.hasTOC()
+
+        # already show us some info based on this
+        self.program.getRipResult(self.ittoc.getCDDBDiscId())
+        self.stdout.write("CDDB disc id: %s\n" % self.ittoc.getCDDBDiscId())
+        self.mbdiscid = self.ittoc.getMusicBrainzDiscId()
+        self.stdout.write("MusicBrainz disc id %s\n" % self.mbdiscid)
+
+        self.stdout.write("MusicBrainz lookup URL %s\n" %
+            self.ittoc.getMusicBrainzSubmitURL())
+
+        self.program.metadata = self.program.getMusicBrainz(self.ittoc, self.mbdiscid,
+            release=self.options.release_id)
+
+        if not self.program.metadata:
+            # fall back to FreeDB for lookup
+            cddbid = self.ittoc.getCDDBValues()
+            cddbmd = self.program.getCDDB(cddbid)
+            if cddbmd:
+                self.stdout.write('FreeDB identifies disc as %s\n' % cddbmd)
+
+            if not self.options.unknown:
+                self.program.ejectDevice(self.device)
+                return -1
+
+        # now, read the complete index table, which is slower
+        self.itable = self.program.getTable(self.runner, self.ittoc.getCDDBDiscId(), self.device)
+
+        assert self.itable.getCDDBDiscId() == self.ittoc.getCDDBDiscId(), \
+            "full table's id %s differs from toc id %s" % (
+                self.itable.getCDDBDiscId(), self.ittoc.getCDDBDiscId())
+        assert self.itable.getMusicBrainzDiscId() == self.ittoc.getMusicBrainzDiscId(), \
+            "full table's mb id %s differs from toc id mb %s" % (
+            self.itable.getMusicBrainzDiscId(), self.ittoc.getMusicBrainzDiscId())
+        assert self.itable.getAccurateRipURL() == self.ittoc.getAccurateRipURL(), \
+            "full table's AR URL %s differs from toc AR URL %s" % (
+            self.itable.getAccurateRipURL(), self.ittoc.getAccurateRipURL())
+
+        # result
+
+        self.program.result.cdrdaoVersion = version
+        self.program.result.cdparanoiaVersion = cdparanoia.getCdParanoiaVersion()
+        info = drive.getDeviceInfo(self.parentCommand.options.device)
+        if info:
+            try:
+                self.program.result.cdparanoiaDefeatsCache = self.getRootCommand(
+                    ).config.getDefeatsCache(*info)
+            except KeyError, e:
+                self.debug('Got key error: %r' % (e, ))
+        self.program.result.artist = self.program.metadata and self.program.metadata.artist \
+            or 'Unknown Artist'
+        self.program.result.title = self.program.metadata and self.program.metadata.title \
+            or 'Unknown Title'
+        # cdio is optional for now
+        try:
+            import cdio
+            _, self.program.result.vendor, self.program.result.model, self.program.result.release = \
+                cdio.Device(self.device).get_hwinfo()
+        except ImportError:
+            self.stdout.write(
+                'WARNING: pycdio not installed, cannot identify drive\n')
+            self.program.result.vendor = 'Unknown'
+            self.program.result.model = 'Unknown'
+            self.program.result.release = 'Unknown'
+
+        self.doCommand()
+
+        self.program.ejectDevice(self.device)
+
+    def doCommand(self):
+        pass
+
+
+class Info(_CD):
+    pass
+
+
+class Rip(_CD):
     summary = "rip CD"
 
     # see morituri.common.program.Program.getPath for expansion
@@ -55,6 +186,8 @@ Log files will log the path to tracks relative to this directory.
 """ % rcommon.TEMPLATE_DESCRIPTION
 
     def addOptions(self):
+        _CD.addOptions(self)
+
         loggers = result.getLoggers().keys()
 
         self.parser.add_option('-L', '--logger',
@@ -77,16 +210,8 @@ Log files will log the path to tracks relative to this directory.
             action="store", dest="working_directory",
             help="working directory; morituri will change to this directory "
                 "and files will be created relative to it when not absolute ")
-        # FIXME: have a cache of these pickles somewhere
-        self.parser.add_option('-T', '--toc-pickle',
-            action="store", dest="toc_pickle",
-            help="pickle to use for reading and writing the TOC")
 
         rcommon.addTemplate(self)
-
-        self.parser.add_option('-R', '--release-id',
-            action="store", dest="release_id",
-            help="MusicBrainz release id to match to (if there are multiple)")
 
         default = 'flac'
 
@@ -125,151 +250,55 @@ Log files will log the path to tracks relative to this directory.
         if self.options.output_directory is None:
             self.options.output_directory = os.getcwd()
 
-    def do(self, args):
-        prog = program.Program(record=self.getRootCommand().record,
-            stdout=self.stdout)
-        runner = task.SyncRunner()
-
-        def function(r, t):
-            r.run(t)
-
-        # if the device is mounted (data session), unmount it
-        device = self.parentCommand.options.device
-        self.stdout.write('Checking device %s\n' % device)
-
-        prog.setWorkingDirectory(self.options.working_directory)
-        prog.loadDevice(device)
-        prog.unmountDevice(device)
-
-        version = None
-
-        # first, read the normal TOC, which is fast
-        ptoc = cache.Persister(self.options.toc_pickle or None)
-        if not ptoc.object:
-            tries = 0
-            while True:
-                tries += 1
-                t = cdrdao.ReadTOCTask(device=device)
-                try:
-                    function(runner, t)
-                    break
-                except:
-                    if tries > 3:
-                        raise
-                    self.debug('failed to read TOC after %d tries, retrying' % tries)
-
-            version = t.tasks[1].parser.version
-            from pkg_resources import parse_version as V
-            # we've built a cdrdao 1.2.3rc2 modified package with the patch
-            if V(version) < V('1.2.3rc2p1'):
-                self.stdout.write('Warning: cdrdao older than 1.2.3 has a '
-                    'pre-gap length bug.\n'
-                    'See http://sourceforge.net/tracker/?func=detail'
-                    '&aid=604751&group_id=2171&atid=102171\n')
-            ptoc.persist(t.table)
-        ittoc = ptoc.object
-        assert ittoc.hasTOC()
-
-        # already show us some info based on this
-        prog.getRipResult(ittoc.getCDDBDiscId())
-        self.stdout.write("CDDB disc id: %s\n" % ittoc.getCDDBDiscId())
-        mbdiscid = ittoc.getMusicBrainzDiscId()
-        self.stdout.write("MusicBrainz disc id %s\n" % mbdiscid)
-
-        self.stdout.write("MusicBrainz lookup URL %s\n" %
-            ittoc.getMusicBrainzSubmitURL())
-
-        prog.metadata = prog.getMusicBrainz(ittoc, mbdiscid,
-            release=self.options.release_id)
-
-        if not prog.metadata:
-            # fall back to FreeDB for lookup
-            cddbid = ittoc.getCDDBValues()
-            cddbmd = prog.getCDDB(cddbid)
-            if cddbmd:
-                self.stdout.write('FreeDB identifies disc as %s\n' % cddbmd)
-
-            if not self.options.unknown:
-                prog.ejectDevice(device)
-                return -1
-
-        # now, read the complete index table, which is slower
-        itable = prog.getTable(runner, ittoc.getCDDBDiscId(), device)
-
-        assert itable.getCDDBDiscId() == ittoc.getCDDBDiscId(), \
-            "full table's id %s differs from toc id %s" % (
-                itable.getCDDBDiscId(), ittoc.getCDDBDiscId())
-        assert itable.getMusicBrainzDiscId() == ittoc.getMusicBrainzDiscId(), \
-            "full table's mb id %s differs from toc id mb %s" % (
-            itable.getMusicBrainzDiscId(), ittoc.getMusicBrainzDiscId())
-        assert itable.getAccurateRipURL() == ittoc.getAccurateRipURL(), \
-            "full table's AR URL %s differs from toc AR URL %s" % (
-            itable.getAccurateRipURL(), ittoc.getAccurateRipURL())
-
-        prog.outdir = self.options.output_directory
-        prog.outdir = prog.outdir.decode('utf-8')
+    def doCommand(self):
         # here to avoid import gst eating our options
         from morituri.common import encode
         profile = encode.PROFILES[self.options.profile]()
-
-        # result
-
-        prog.result.cdrdaoVersion = version
-        prog.result.cdparanoiaVersion = cdparanoia.getCdParanoiaVersion()
-        info = drive.getDeviceInfo(self.parentCommand.options.device)
-        if info:
-            try:
-                prog.result.cdparanoiaDefeatsCache = self.getRootCommand(
-                    ).config.getDefeatsCache(*info)
-            except KeyError, e:
-                self.debug('Got key error: %r' % (e, ))
-        prog.result.offset = int(self.options.offset)
-        prog.result.artist = prog.metadata and prog.metadata.artist \
-            or 'Unknown Artist'
-        prog.result.title = prog.metadata and prog.metadata.title \
-            or 'Unknown Title'
-        # cdio is optional for now
-        try:
-            import cdio
-            _, prog.result.vendor, prog.result.model, prog.result.release = \
-                cdio.Device(device).get_hwinfo()
-        except ImportError:
-            self.stdout.write(
-                'WARNING: pycdio not installed, cannot identify drive\n')
-            prog.result.vendor = 'Unknown'
-            prog.result.model = 'Unknown'
-            prog.result.release = 'Unknown'
-
-        prog.result.profileName = profile.name
-        prog.result.profilePipeline = profile.pipeline
+        self.program.result.profileName = profile.name
+        self.program.result.profilePipeline = profile.pipeline
         elementFactory = profile.pipeline.split(' ')[0]
-        prog.result.gstreamerVersion = gstreamer.gstreamerVersion()
-        prog.result.gstPythonVersion = gstreamer.gstPythonVersion()
-        prog.result.encoderVersion = gstreamer.elementFactoryVersion(
+        self.program.result.gstreamerVersion = gstreamer.gstreamerVersion()
+        self.program.result.gstPythonVersion = gstreamer.gstPythonVersion()
+        self.program.result.encoderVersion = gstreamer.elementFactoryVersion(
             elementFactory)
+
+        self.program.setWorkingDirectory(self.options.working_directory)
+        self.program.outdir = self.options.output_directory.decode('utf-8')
+        self.program.result.offset = int(self.options.offset)
+
+    ### write disc files
+        discName = self.program.getPath(self.program.outdir, self.options.disc_template,
+            self.mbdiscid, 0, profile=profile)
+        dirname = os.path.dirname(discName)
+        if not os.path.exists(dirname):
+            self.stdout.write("Creating output directory %s\n" % dirname)
+            os.makedirs(dirname)
+        # FIXME: say when we're continuing a rip
+        # FIXME: disambiguate if the pre-existing rip is different
+
 
         # FIXME: turn this into a method
 
         def ripIfNotRipped(number):
             self.debug('ripIfNotRipped for track %d' % number)
             # we can have a previous result
-            trackResult = prog.result.getTrackResult(number)
+            trackResult = self.program.result.getTrackResult(number)
             if not trackResult:
                 trackResult = result.TrackResult()
-                prog.result.tracks.append(trackResult)
+                self.program.result.tracks.append(trackResult)
             else:
                 self.debug('ripIfNotRipped have trackresult, path %r' %
                     trackResult.filename)
 
-            path = prog.getPath(prog.outdir, self.options.track_template,
-                mbdiscid, number, profile=profile) + '.' + profile.extension
+            path = self.program.getPath(self.program.outdir, self.options.track_template,
+                self.mbdiscid, number, profile=profile) + '.' + profile.extension
             self.debug('ripIfNotRipped: path %r' % path)
             trackResult.number = number
 
             assert type(path) is unicode, "%r is not unicode" % path
             trackResult.filename = path
             if number > 0:
-                trackResult.pregap = itable.tracks[number - 1].getPregap()
+                trackResult.pregap = self.itable.tracks[number - 1].getPregap()
 
             # FIXME: optionally allow overriding reripping
             if os.path.exists(path):
@@ -280,9 +309,9 @@ Log files will log the path to tracks relative to this directory.
                         trackResult.filename, path))
 
                 self.stdout.write('Verifying track %d of %d: %s\n' % (
-                    number, len(itable.tracks),
+                    number, len(self.itable.tracks),
                     os.path.basename(path).encode('utf-8')))
-                if not prog.verifyTrack(runner, trackResult):
+                if not self.program.verifyTrack(self.runner, trackResult):
                     self.stdout.write('Verification failed, reripping...\n')
                     os.unlink(path)
 
@@ -293,20 +322,20 @@ Log files will log the path to tracks relative to this directory.
                 trackResult.testduration = 0.0
                 trackResult.copyduration = 0.0
                 self.stdout.write('Ripping track %d of %d: %s\n' % (
-                    number, len(itable.tracks),
+                    number, len(self.itable.tracks),
                     os.path.basename(path).encode('utf-8')))
                 while tries < MAX_TRIES:
                     tries += 1
                     try:
                         self.debug('ripIfNotRipped: track %d, try %d',
                             number, tries)
-                        prog.ripTrack(runner, trackResult,
+                        self.program.ripTrack(self.runner, trackResult,
                             offset=int(self.options.offset),
                             device=self.parentCommand.options.device,
                             profile=profile,
-                            taglist=prog.getTagList(number),
+                            taglist=self.program.getTagList(number),
                             what='track %d of %d' % (
-                                number, len(itable.tracks)))
+                                number, len(self.itable.tracks)))
                         break
                     except Exception, e:
                         self.debug('Got exception %r on try %d',
@@ -333,18 +362,18 @@ Log files will log the path to tracks relative to this directory.
             # overlay this rip onto the Table
             if number == 0:
                 # HTOA goes on index 0 of track 1
-                itable.setFile(1, 0, trackResult.filename,
-                    ittoc.getTrackStart(1), number)
+                self.itable.setFile(1, 0, trackResult.filename,
+                    self.ittoc.getTrackStart(1), number)
             else:
-                itable.setFile(number, 1, trackResult.filename,
-                    ittoc.getTrackLength(number), number)
+                self.itable.setFile(number, 1, trackResult.filename,
+                    self.ittoc.getTrackLength(number), number)
 
-            prog.saveRipResult()
+            self.program.saveRipResult()
 
 
         # check for hidden track one audio
         htoapath = None
-        htoa = prog.getHTOA()
+        htoa = self.program.getHTOA()
         if htoa:
             start, stop = htoa
             self.stdout.write(
@@ -353,9 +382,9 @@ Log files will log the path to tracks relative to this directory.
 
             # rip it
             ripIfNotRipped(0)
-            htoapath = prog.result.tracks[0].filename
+            htoapath = self.program.result.tracks[0].filename
 
-        for i, track in enumerate(itable.tracks):
+        for i, track in enumerate(self.itable.tracks):
             # FIXME: rip data tracks differently
             if not track.audio:
                 self.stdout.write(
@@ -368,14 +397,14 @@ Log files will log the path to tracks relative to this directory.
             ripIfNotRipped(i + 1)
 
         ### write disc files
-        discName = prog.getPath(prog.outdir, self.options.disc_template,
-            mbdiscid, 0, profile=profile)
+        discName = self.program.getPath(self.program.outdir, self.options.disc_template,
+            self.mbdiscid, 0, profile=profile)
         dirname = os.path.dirname(discName)
         if not os.path.exists(dirname):
             os.makedirs(dirname)
 
         self.debug('writing cue file for %r', discName)
-        prog.writeCue(discName)
+        self.program.writeCue(discName)
 
         # write .m3u file
         self.debug('writing m3u file for %r', discName)
@@ -393,21 +422,21 @@ Log files will log the path to tracks relative to this directory.
 
         if htoapath:
             writeFile(handle, htoapath,
-                itable.getTrackStart(1) / common.FRAMES_PER_SECOND)
+                self.itable.getTrackStart(1) / common.FRAMES_PER_SECOND)
 
-        for i, track in enumerate(itable.tracks):
+        for i, track in enumerate(self.itable.tracks):
             if not track.audio:
                 continue
 
-            path = prog.getPath(prog.outdir, self.options.track_template,
-                mbdiscid, i + 1, profile=profile) + '.' + profile.extension
+            path = self.program.getPath(self.program.outdir, self.options.track_template,
+                self.mbdiscid, i + 1, profile=profile) + '.' + profile.extension
             writeFile(handle, path,
-                itable.getTrackLength(i + 1) / common.FRAMES_PER_SECOND)
+                self.itable.getTrackLength(i + 1) / common.FRAMES_PER_SECOND)
 
         handle.close()
 
         # verify using accuraterip
-        url = ittoc.getAccurateRipURL()
+        url = self.ittoc.getAccurateRipURL()
         self.stdout.write("AccurateRip URL %s\n" % url)
 
         accucache = accurip.AccuCache()
@@ -420,34 +449,34 @@ Log files will log the path to tracks relative to this directory.
             self.stdout.write('%d AccurateRip reponses found\n' %
                 len(responses))
 
-            if responses[0].cddbDiscId != itable.getCDDBDiscId():
+            if responses[0].cddbDiscId != self.itable.getCDDBDiscId():
                 self.stdout.write(
                     "AccurateRip response discid different: %s\n" %
                     responses[0].cddbDiscId)
 
 
-        prog.verifyImage(runner, responses)
+        self.program.verifyImage(self.runner, responses)
 
-        self.stdout.write("\n".join(prog.getAccurateRipResults()) + "\n")
+        self.stdout.write("\n".join(self.program.getAccurateRipResults()) + "\n")
 
-        prog.saveRipResult()
+        self.program.saveRipResult()
 
         # write log file
         try:
             klazz = result.getLoggers()[self.options.logger]
-            prog.writeLog(discName, klazz())
+            self.program.writeLog(discName, klazz())
         except KeyError:
             self.stderr.write("No logger named %s found!\n" % (
                 self.options.logger))
 
-        prog.ejectDevice(device)
+        self.program.ejectDevice(self.device)
 
 
 class CD(logcommand.LogCommand):
 
     summary = "handle CD's"
 
-    subCommandClasses = [Rip, ]
+    subCommandClasses = [Info, Rip, ]
 
     def addOptions(self):
         self.parser.add_option('-d', '--device',
