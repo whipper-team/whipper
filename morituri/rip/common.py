@@ -23,7 +23,8 @@ disc and track template are:
  - %y: release year
  - %r: release type, lowercase
  - %R: Release type, normal case
- - %x: audio extension
+ - %x: audio extension, lowercase
+ - %X: audio extension, uppercase
 
 '''
 
@@ -37,5 +38,3 @@ def addTemplate(self):
         action="store", dest="disc_template",
         help="template for disc file naming (default %default)",
         default=DEFAULT_DISC_TEMPLATE)
-
-
