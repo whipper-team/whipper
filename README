@@ -78,6 +78,17 @@ is not, because the -d argument applies to the rip command.
 
 Check the man page (rip(1)) for more information.
 
+
+RUNNING UNINSTALLED
+-------------------
+
+To make it easier for developers, you can run morituri straight from the
+source checkout:
+
+./autogen.sh
+make
+misc/morituri-uninstalled
+
 GETTING STARTED
 ---------------
 The simplest way to get started making accurate rips is:
