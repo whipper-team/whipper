@@ -68,7 +68,7 @@ class Analyze(logcommand.LogCommand):
         info = drive.getDeviceInfo(self.options.device)
         if not info:
             return
-        
+
         self.stdout.write(
             'Adding drive cache behaviour to configuration file.\n')
 

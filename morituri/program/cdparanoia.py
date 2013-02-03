@@ -586,7 +586,7 @@ class AnalyzeTask(ctask.PopenTask):
         self.command = ['cdparanoia', '-A']
         if device:
             self.command += ['-d', device]
-        
+
     def commandMissing(self):
         raise common.MissingDependencyException('cdparanoia')
 
