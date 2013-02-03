@@ -75,6 +75,9 @@ class DiscMetadata(object):
     mbidArtist = None
     url = None
 
+    catalogNumber = None
+    barcode = None
+
     def __init__(self):
         self.tracks = []
 
@@ -141,6 +144,10 @@ def _getMetadata(releaseShort, release, discid):
     metadata.mbidArtist = artist['id']
     metadata.url = 'http://musicbrainz.org/release/' + release['id']
 
+    metadata.barcode = release.get('barcode', None)
+    lil = release.get('label-info-list', [{}])
+    if lil:
+        metadata.catalogNumber = lil[0].get('catalog-number')
     tainted = False
     duration = 0
 
@@ -258,7 +265,8 @@ def musicbrainz(discid, record=False):
         # artist-credits
 
         res = musicbrainz.get_release_by_id(release['id'],
-            includes=["artists", "artist-credits", "recordings", "discids"])
+            includes=["artists", "artist-credits", "recordings", "discids",
+                "labels"])
         _record(record, 'release', release['id'], res)
         releaseDetail = res['release']
         formatted = json.dumps(releaseDetail, sort_keys=False, indent=4)

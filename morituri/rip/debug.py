@@ -204,6 +204,11 @@ Example disc id: KnpGsLhvH.lPrNc1PBL21lb9Bg4-"""
             self.stdout.write('    Type:   %s\n' % md.releaseType.encode('utf-8'))
             self.stdout.write('    URL: %s\n' % md.url)
             self.stdout.write('    Tracks: %d\n' % len(md.tracks))
+            if md.catalogNumber:
+                self.stdout.write('    Cat no: %s\n' % md.catalogNumber)
+            if md.barcode:
+                self.stdout.write('   Barcode: %s\n' % md.barcode)
+
             for j, track in enumerate(md.tracks):
                 self.stdout.write('      Track %2d: %s - %s\n' % (
                     j + 1, track.artist.encode('utf-8'),
