@@ -140,8 +140,6 @@ class Program(log.Loggable):
 
         @rtype: L{table.Table}
         """
-        path = self._getTableCachePath()
-
         tcache = cache.TableCache()
         ptable = tcache.get(cddbdiscid, mbdiscid)
 
