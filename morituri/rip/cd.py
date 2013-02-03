@@ -167,7 +167,7 @@ class _CD(logcommand.LogCommand):
 
 
 class Info(_CD):
-    pass
+    summary = "retrieve information about the currently inserted CD"
 
 
 class Rip(_CD):
