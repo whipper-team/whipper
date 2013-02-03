@@ -33,6 +33,7 @@ from morituri.program import cdrdao, cdparanoia
 from morituri.rip import common as rcommon
 
 from morituri.extern.task import task
+from morituri.extern.command import command
 
 
 MAX_TRIES = 5
@@ -250,6 +251,17 @@ Log files will log the path to tracks relative to this directory.
         if self.options.output_directory is None:
             self.options.output_directory = os.getcwd()
 
+        if self.options.logger:
+            try:
+                klazz = result.getLoggers()[self.options.logger]
+            except KeyError:
+                self.stderr.write("No logger named %s found!\n" % (
+                    self.options.logger))
+                raise command.CommandError("No logger named %s" %
+                    self.options.logger)
+
+            self.logger = klazz()
+
     def doCommand(self):
         # here to avoid import gst eating our options
         from morituri.common import encode
@@ -462,12 +474,7 @@ Log files will log the path to tracks relative to this directory.
         self.program.saveRipResult()
 
         # write log file
-        try:
-            klazz = result.getLoggers()[self.options.logger]
-            self.program.writeLog(discName, klazz())
-        except KeyError:
-            self.stderr.write("No logger named %s found!\n" % (
-                self.options.logger))
+        self.program.writeLog(discName, self.logger)
 
         self.program.ejectDevice(self.device)
 
