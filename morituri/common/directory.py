@@ -39,7 +39,7 @@ class Directory(log.Loggable):
         return path
 
 
-    def getCache(self):
+    def getCache(self, name=None):
         try:
             from xdg import BaseDirectory
             path = BaseDirectory.save_cache_path('morituri')
@@ -49,6 +49,33 @@ class Directory(log.Loggable):
             if not os.path.exists(path):
                 os.makedirs(path)
             self.info('Not using XDG, cache directory is %s' % path)
+
+        if name:
+            path = os.path.join(path, name)
+            if not os.path.exists(path):
+                os.makedirs(path)
+
         return path
+
+    def getReadCaches(self, name=None):
+        paths = []
+
+        try:
+            from xdg import BaseDirectory
+            path = BaseDirectory.save_cache_path('morituri')
+            self.info('For XDG, read cache directory is %s' % path)
+            paths.append(path)
+        except ImportError:
+            pass
+
+        path = os.path.expanduser('~/.morituri/cache')
+        if os.path.exists(path):
+            self.info('From before XDG, read cache directory is %s' % path)
+            paths.append(path)
+
+        if name:
+            paths = [os.path.join(p, name) for p in paths]
+
+        return paths
 
 
