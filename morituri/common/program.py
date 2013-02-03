@@ -263,6 +263,7 @@ class Program(log.Loggable):
             self._stdout.write('\nMatching releases:\n')
 
             for metadata in metadatas:
+                self._stdout.write('\n')
                 self._stdout.write('Artist  : %s\n' %
                     metadata.artist.encode('utf-8'))
                 self._stdout.write('Title   : %s\n' %
