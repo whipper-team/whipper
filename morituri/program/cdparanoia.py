@@ -603,5 +603,8 @@ class AnalyzeTask(ctask.PopenTask):
             self.defeatsCache = False
 
     def failed(self):
+        # cdparanoia exits with return code 1 if it can't determine
+        # whether it can defeat the audio cache
+        self.defeatsCache = False
         if self.cwd:
             shutil.rmtree(self.cwd)
