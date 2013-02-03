@@ -48,6 +48,8 @@ AM_CONDITIONAL(HAVE_PYCHECKER, test "x$PYCHECKER" = "xyes")
 
 dnl output stuff
 AC_CONFIG_FILES([bin/rip], [chmod +x bin/rip])
+AC_CONFIG_FILES([etc/bash_completion.d/bash-compgen],
+                [chmod +x etc/bash_completion.d/bash-compgen])
 
 AC_OUTPUT(
 Makefile

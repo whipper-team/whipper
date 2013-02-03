@@ -4,7 +4,7 @@ completion_DATA = rip
 BUILT_SOURCES = rip
 CLEANFILES = rip
 
-EXTRA_DIST = bash-compgen
+EXTRA_DIST = bash-compgen.in bash-compgen
 
 ENTRY = morituri.rip.main.Rip
 
