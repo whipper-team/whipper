@@ -227,9 +227,13 @@ class Program(log.Loggable):
         return None
 
     def getMusicBrainz(self, ittoc, mbdiscid, release=None):
+        """
+        @type  ittoc: L{morituri.image.table.Table}
+        """
         # look up disc on musicbrainz
-        self._stdout.write('Disc duration: %s\n' % common.formatTime(
-            ittoc.duration() / 1000.0))
+        self._stdout.write('Disc duration: %s, %d audio tracks\n' % (
+            common.formatTime(ittoc.duration() / 1000.0),
+            ittoc.getAudioTracks()))
         self.debug('MusicBrainz submit url: %r',
             ittoc.getMusicBrainzSubmitURL())
         ret = None
