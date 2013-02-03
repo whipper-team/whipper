@@ -67,11 +67,6 @@ class Program(log.Loggable):
         self._cache = cache.ResultCache()
         self._stdout = stdout
 
-    def _getTableCachePath(self):
-        path = os.path.join(os.path.expanduser('~'), '.morituri', 'cache',
-            'table')
-        return path
-
     def setWorkingDirectory(self, workingDirectory):
         if workingDirectory:
             self.info('Changing to working directory %s' % workingDirectory)
@@ -139,7 +134,7 @@ class Program(log.Loggable):
         assert toc.hasTOC()
         return toc
 
-    def getTable(self, runner, cddbdiscid, device):
+    def getTable(self, runner, cddbdiscid, mbdiscid, device):
         """
         Retrieve the Table either from the cache or the drive.
 
@@ -147,12 +142,13 @@ class Program(log.Loggable):
         """
         path = self._getTableCachePath()
 
-        pcache = cache.PersistedCache(path)
-        ptable = pcache.get(cddbdiscid)
+        tcache = cache.TableCache()
+        ptable = tcache.get(cddbdiscid, mbdiscid)
 
         if not ptable.object:
-            self.debug('getTable: cddbdiscid %s not in cache, reading table' %
-                cddbdiscid)
+            self.debug('getTable: cddbdiscid %s, mbdiscid %s not in cache, '
+                'reading table' % (
+                cddbdiscid, mbdiscid))
             t = cdrdao.ReadTableTask(device=device)
             runner.run(t)
             ptable.persist(t.table)

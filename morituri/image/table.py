@@ -368,7 +368,7 @@ class Table(object, log.Loggable):
         assert len(result) == 28, \
             "Result should be 28 characters, not %d" % len(result)
 
-        self.debug('getMusicBrainzDiscId: returning %r' % result)
+        self.log('getMusicBrainzDiscId: returning %r' % result)
         return result
 
     def getMusicBrainzSubmitURL(self):
@@ -455,7 +455,7 @@ class Table(object, log.Loggable):
                 pass
 
 
-        self.debug('Musicbrainz values: %r', result)
+        self.log('Musicbrainz values: %r', result)
         return result
 
     def getAccurateRipIds(self):

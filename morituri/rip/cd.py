@@ -94,7 +94,10 @@ class _CD(logcommand.LogCommand):
                 return -1
 
         # now, read the complete index table, which is slower
-        self.itable = self.program.getTable(self.runner, self.ittoc.getCDDBDiscId(), self.device)
+
+        self.itable = self.program.getTable(self.runner,
+            self.ittoc.getCDDBDiscId(),
+            self.ittoc.getMusicBrainzDiscId(), self.device)
 
         assert self.itable.getCDDBDiscId() == self.ittoc.getCDDBDiscId(), \
             "full table's id %s differs from toc id %s" % (
