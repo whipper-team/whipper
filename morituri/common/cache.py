@@ -27,6 +27,8 @@ import tempfile
 import shutil
 
 from morituri.result import result
+from morituri.common import directory
+
 from morituri.extern.log import log
 
 
@@ -188,4 +190,49 @@ class ResultCache(log.Loggable):
         paths = glob.glob(os.path.join(self._path, '*.pickle'))
 
         return [os.path.splitext(os.path.basename(path))[0] for path in paths]
-        
+
+
+class TableCache(log.Loggable):
+
+    """
+    I read and write entries to and from the cache of tables.
+
+    If no path is specified, the cache will write to the current cache
+    directory and read from all possible cache directories (to allow for
+    pre-0.2.1 cddbdiscid-keyed entries).
+    """
+
+    def __init__(self, path=None):
+        if not path:
+            d = directory.Directory()
+            self._path = d.getCache('table')
+            self._readPaths = d.getReadCaches('table')
+        else:
+            self._path = path
+            self._readPaths = [path, ]
+
+        self._pcache = PersistedCache(self._path)
+        self._readPCaches = [PersistedCache(p) for p in self._readPaths]
+
+    def get(self, cddbdiscid, mbdiscid):
+        # Before 0.2.1, we only saved by cddbdiscid, and had collisions
+        # mbdiscid collisions are a lot less likely
+        for pcache in self._readPCaches:
+            ptable = pcache.get('mbdiscid.' + mbdiscid)
+            if ptable.object:
+                break
+
+        if not ptable.object:
+            for pcache in self._readPCaches:
+                ptable = pcache.get(cddbdiscid)
+                if ptable.object:
+                    if ptable.object.getMusicBrainzDiscId() != mbdiscid:
+                        self.debug('cached table is for different mb id %r' % (
+                            ptable.object.getMusicBrainzDiscId()))
+                    ptable.object = None
+
+        if not ptable.object:
+            # get an empty persistable from the writable location
+            ptable = self._pcache.get('mbdiscid.' + mbdiscid)
+
+        return ptable
