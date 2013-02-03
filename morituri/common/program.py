@@ -37,6 +37,9 @@ def filterForPath(text):
     return "-".join(text.split("/"))
 
 
+# FIXME: should Program have a runner ?
+
+
 class Program(log.Loggable):
     """
     I maintain program state and functionality.
@@ -99,6 +102,42 @@ class Program(log.Loggable):
         if device in proc:
             print 'Device %s is mounted, unmounting' % device
             os.system('umount %s' % device)
+
+    def getFastToc(self, runner, toc_pickle, device):
+        """
+        Retrieve the normal TOC table from a toc pickle or the drive.
+
+        @rtype: L{table.Table}
+        """
+        def function(r, t):
+            r.run(t)
+
+        ptoc = cache.Persister(toc_pickle or None)
+        if not ptoc.object:
+            tries = 0
+            while True:
+                tries += 1
+                t = cdrdao.ReadTOCTask(device=device)
+                try:
+                    function(runner, t)
+                    break
+                except:
+                    if tries > 3:
+                        raise
+                    self.debug('failed to read TOC after %d tries, retrying' % tries)
+
+            version = t.tasks[1].parser.version
+            from pkg_resources import parse_version as V
+            # we've built a cdrdao 1.2.3rc2 modified package with the patch
+            if V(version) < V('1.2.3rc2p1'):
+                self.stdout.write('Warning: cdrdao older than 1.2.3 has a '
+                    'pre-gap length bug.\n'
+                    'See http://sourceforge.net/tracker/?func=detail'
+                    '&aid=604751&group_id=2171&atid=102171\n')
+            ptoc.persist(t.table)
+        toc = ptoc.object
+        assert toc.hasTOC()
+        return toc
 
     def getTable(self, runner, cddbdiscid, device):
         """

@@ -56,9 +56,6 @@ class _CD(logcommand.LogCommand):
             stdout=self.stdout)
         self.runner = task.SyncRunner()
 
-        def function(r, t):
-            r.run(t)
-
         # if the device is mounted (data session), unmount it
         self.device = self.parentCommand.options.device
         self.stdout.write('Checking device %s\n' % self.device)
@@ -69,31 +66,9 @@ class _CD(logcommand.LogCommand):
         version = None
 
         # first, read the normal TOC, which is fast
-        ptoc = cache.Persister(self.options.toc_pickle or None)
-        if not ptoc.object:
-            tries = 0
-            while True:
-                tries += 1
-                t = cdrdao.ReadTOCTask(device=self.device)
-                try:
-                    function(self.runner, t)
-                    break
-                except:
-                    if tries > 3:
-                        raise
-                    self.debug('failed to read TOC after %d tries, retrying' % tries)
-
-            version = t.tasks[1].parser.version
-            from pkg_resources import parse_version as V
-            # we've built a cdrdao 1.2.3rc2 modified package with the patch
-            if V(version) < V('1.2.3rc2p1'):
-                self.stdout.write('Warning: cdrdao older than 1.2.3 has a '
-                    'pre-gap length bug.\n'
-                    'See http://sourceforge.net/tracker/?func=detail'
-                    '&aid=604751&group_id=2171&atid=102171\n')
-            ptoc.persist(t.table)
-        self.ittoc = ptoc.object
-        assert self.ittoc.hasTOC()
+        self.ittoc = self.program.getFastToc(self.runner,
+            self.options.toc_pickle,
+            self.device)
 
         # already show us some info based on this
         self.program.getRipResult(self.ittoc.getCDDBDiscId())
