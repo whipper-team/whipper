@@ -180,7 +180,8 @@ class Program(log.Loggable):
     def saveRipResult(self):
         self._presult.persist()
 
-    def getPath(self, outdir, template, mbdiscid, i, profile=None):
+    def getPath(self, outdir, template, mbdiscid, i, profile=None,
+        disambiguate=False):
         """
         Based on the template, get a complete path for the given track,
         minus extension.
@@ -213,6 +214,8 @@ class Program(log.Loggable):
         v['d'] = mbdiscid # fallback for title
         v['r'] = 'unknown'
         v['R'] = 'Unknown'
+        v['B'] = '' # barcode
+        v['C'] = '' # catalog number
         v['x'] = profile and profile.extension or 'unknown'
         v['X'] = v['x'].upper()
 
@@ -229,6 +232,8 @@ class Program(log.Loggable):
             v['A'] = filterForPath(self.metadata.artist)
             v['S'] = filterForPath(self.metadata.sortName)
             v['d'] = filterForPath(self.metadata.title)
+            v['B'] = self.metadata.barcode
+            v['C'] = self.metadata.catalogNumber
             if self.metadata.releaseType:
                 v['R'] = self.metadata.releaseType
                 v['r'] = self.metadata.releaseType.lower()
@@ -245,10 +250,24 @@ class Program(log.Loggable):
                 # htoa defaults to disc's artist
                 v['a'] = filterForPath(self.metadata.artist)
 
+        # when disambiguating, use catalogNumber then barcode
+        if disambiguate:
+            templateParts = list(os.path.split(template))
+            if self.metadata.catalogNumber:
+                templateParts[-2] += ' (%s)' % self.metadata.catalogNumber
+            elif self.metadata.barcode:
+                templateParts[-2] += ' (%s)' % self.metadata.barcode
+            template = os.path.join(*templateParts)
+            self.debug('Disambiguated template to %r' % template)
+
         import re
         template = re.sub(r'%(\w)', r'%(\1)s', template)
 
-        return os.path.join(outdir, template % v)
+        ret = os.path.join(outdir, template % v)
+
+
+
+        return ret
 
     def getCDDB(self, cddbdiscid):
         """

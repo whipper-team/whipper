@@ -22,6 +22,7 @@
 
 import os
 import math
+import glob
 
 import gobject
 gobject.threads_init()
@@ -256,13 +257,31 @@ Log files will log the path to tracks relative to this directory.
         self.program.outdir = self.options.output_directory.decode('utf-8')
         self.program.result.offset = int(self.options.offset)
 
-    ### write disc files
-        discName = self.program.getPath(self.program.outdir, self.options.disc_template,
-            self.mbdiscid, 0, profile=profile)
-        dirname = os.path.dirname(discName)
-        if not os.path.exists(dirname):
-            self.stdout.write("Creating output directory %s\n" % dirname)
-            os.makedirs(dirname)
+        ### write disc files
+        disambiguate = False
+        while True:
+            discName = self.program.getPath(self.program.outdir, self.options.disc_template,
+                self.mbdiscid, 0, profile=profile, disambiguate=disambiguate)
+            dirname = os.path.dirname(discName)
+            if os.path.exists(dirname):
+                self.stdout.write("Output directory %s already exists\n" %
+                    dirname)
+                logs = glob.glob(os.path.join(dirname, '*.log'))
+                if logs:
+                    self.stdout.write("Output directory %s is a finished rip\n" %
+                        dirname)
+                    if not disambiguate:
+                        disambiguate = True
+                        continue
+                    return
+                else:
+                    break
+
+            else:
+                self.stdout.write("Creating output directory %s\n" % dirname)
+                os.makedirs(dirname)
+                break
+
         # FIXME: say when we're continuing a rip
         # FIXME: disambiguate if the pre-existing rip is different
 
@@ -281,7 +300,7 @@ Log files will log the path to tracks relative to this directory.
                     trackResult.filename)
 
             path = self.program.getPath(self.program.outdir, self.options.track_template,
-                self.mbdiscid, number, profile=profile) + '.' + profile.extension
+                self.mbdiscid, number, profile=profile, disambiguate=disambiguate) + '.' + profile.extension
             self.debug('ripIfNotRipped: path %r' % path)
             trackResult.number = number
 
@@ -388,7 +407,7 @@ Log files will log the path to tracks relative to this directory.
 
         ### write disc files
         discName = self.program.getPath(self.program.outdir, self.options.disc_template,
-            self.mbdiscid, 0, profile=profile)
+            self.mbdiscid, 0, profile=profile, disambiguate=disambiguate)
         dirname = os.path.dirname(discName)
         if not os.path.exists(dirname):
             os.makedirs(dirname)
@@ -419,7 +438,7 @@ Log files will log the path to tracks relative to this directory.
                 continue
 
             path = self.program.getPath(self.program.outdir, self.options.track_template,
-                self.mbdiscid, i + 1, profile=profile) + '.' + profile.extension
+                self.mbdiscid, i + 1, profile=profile, disambiguate=disambiguate) + '.' + profile.extension
             writeFile(handle, path,
                 self.itable.getTrackLength(i + 1) / common.FRAMES_PER_SECOND)
 
