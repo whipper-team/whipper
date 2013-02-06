@@ -1,1 +1,0 @@
-../python-musicbrainz-ngs/mbxml.py
