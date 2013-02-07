@@ -6,6 +6,7 @@ import sys
 import pkg_resources
 
 from morituri.common import log, logcommand, common, config
+from morituri.configure import configure
 
 from morituri.rip import cd, offset, drive, image, accurip, debug
 
@@ -28,9 +29,16 @@ def main(argv):
     log.debug('mapping distributions %r', distributions)
     map(pkg_resources.working_set.add, distributions)
 
+    # validate dependencies
     from morituri.common import deps
     h = deps.DepsHandler()
     h.validate()
+
+    # set user agent
+    from morituri.extern.musicbrainzngs import musicbrainz
+    musicbrainz.set_useragent("morituri", configure.version,
+        'https://thomas.apestaart.org/morituri/trac')
+
 
     c = Rip()
     try:
@@ -103,7 +111,6 @@ You can get help on subcommands by using the -h option to the subcommand.
 
     def handleOptions(self, options):
         if options.version:
-            from morituri.configure import configure
             print "rip %s" % configure.version
             sys.exit(0)
 
