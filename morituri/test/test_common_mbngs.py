@@ -1,4 +1,4 @@
-# -*- Mode: Python; test-case-name: morituri.test.test_common_musicbrainzngs -*-
+# -*- Mode: Python; test-case-name: morituri.test.test_common_mbngs -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
 import os
@@ -6,7 +6,7 @@ import json
 
 import unittest
 
-from morituri.common import musicbrainzngs
+from morituri.common import mbngs
 
 
 class MetadataTestCase(unittest.TestCase):
@@ -19,6 +19,6 @@ class MetadataTestCase(unittest.TestCase):
         handle.close()
         discid = "wbjbST2jUHRZaB1inCyxxsL7Eqc-"
 
-        metadata = musicbrainzngs._getMetadata({}, response['release'], discid)
+        metadata = mbngs._getMetadata({}, response['release'], discid)
 
         self.failIf(metadata.release)

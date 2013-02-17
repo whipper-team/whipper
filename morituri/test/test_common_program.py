@@ -7,7 +7,7 @@ import pickle
 import unittest
 
 from morituri.result import result
-from morituri.common import program, accurip, musicbrainzngs
+from morituri.common import program, accurip, mbngs
 from morituri.rip import common as rcommon
 
 
@@ -95,7 +95,7 @@ class PathTestCase(unittest.TestCase):
 
     def testStandardTemplateFilled(self):
         prog = program.Program()
-        md = musicbrainzngs.DiscMetadata()
+        md = mbngs.DiscMetadata()
         md.artist = md.sortName = 'Jeff Buckley'
         md.title = 'Grace'
         prog.metadata = md
@@ -107,7 +107,7 @@ class PathTestCase(unittest.TestCase):
 
     def testIssue66TemplateFilled(self):
         prog = program.Program()
-        md = musicbrainzngs.DiscMetadata()
+        md = mbngs.DiscMetadata()
         md.artist = md.sortName = 'Jeff Buckley'
         md.title = 'Grace'
         prog.metadata = md

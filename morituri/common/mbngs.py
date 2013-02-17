@@ -1,4 +1,4 @@
-# -*- Mode: Python; test-case-name: morituri.test.test_common_musicbrainzngs -*-
+# -*- Mode: Python; test-case-name: morituri.test.test_common_mbngs -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
 # Morituri - for those about to RIP
@@ -90,7 +90,7 @@ def _record(record, which, name, what):
         handle = open(filename, 'w')
         handle.write(json.dumps(what))
         handle.close()
-        log.info('musicbrainzngs', 'Wrote %s %s to %s', which, name, filename)
+        log.info('mbngs', 'Wrote %s %s to %s', which, name, filename)
 
 
 def _getMetadata(releaseShort, release, discid):
@@ -117,7 +117,7 @@ def _getMetadata(releaseShort, release, discid):
     artist = credit[0]['artist']
 
     if len(credit) > 1:
-        log.debug('musicbrainzngs', 'artist-credit more than 1: %r', credit)
+        log.debug('mbngs', 'artist-credit more than 1: %r', credit)
 
     for i, c in enumerate(credit):
         if isinstance(c, dict):
@@ -136,7 +136,7 @@ def _getMetadata(releaseShort, release, discid):
     metadata.sortName = artist['sort-name']
     # FIXME: is format str ?
     if not 'date' in release:
-        log.warning('musicbrainzngs', 'Release %r does not have date', release)
+        log.warning('mbngs', 'Release %r does not have date', release)
     else:
         metadata.release = release['date']
 
@@ -170,7 +170,7 @@ def _getMetadata(releaseShort, release, discid):
                     track = TrackMetadata()
                     credit = t['recording']['artist-credit']
                     if len(credit) > 1:
-                        log.debug('musicbrainzngs',
+                        log.debug('mbngs',
                             'artist-credit more than 1: %r', credit)
                         # credit is of the form [dict, str, dict, ... ]
                     for i, c in enumerate(credit):

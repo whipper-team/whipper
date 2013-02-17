@@ -28,7 +28,7 @@ import os
 import sys
 import time
 
-from morituri.common import common, log, musicbrainzngs, cache
+from morituri.common import common, log, mbngs, cache
 from morituri.program import cdrdao, cdparanoia
 from morituri.image import image
 
@@ -301,11 +301,11 @@ class Program(log.Loggable):
 
         for _ in range(0, 4):
             try:
-                metadatas = musicbrainzngs.musicbrainz(mbdiscid,
+                metadatas = mbngs.musicbrainz(mbdiscid,
                     record=self._record)
-            except musicbrainzngs.NotFoundException, e:
+            except mbngs.NotFoundException, e:
                 break
-            except musicbrainzngs.MusicBrainzException, e:
+            except mbngs.MusicBrainzException, e:
                 self._stdout.write("Warning: %r\n" % (e, ))
                 time.sleep(5)
                 continue
