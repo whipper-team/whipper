@@ -49,7 +49,7 @@ class RCList(logcommand.LogCommand):
 
             self.stdout.write('%s: %s - %s\n' % (
                 cddbid, artist.encode('utf-8'), title.encode('utf-8')))
-        
+
 
 class RCLog(logcommand.LogCommand):
 
@@ -154,6 +154,9 @@ class Encode(logcommand.LogCommand):
         encodetask = encode.EncodeTask(fromPath, toPath, profile)
 
         runner.run(encodetask)
+
+        self.stdout.write('Peak level: %r\n' % encodetask.peak)
+        self.stdout.write('Encoded to %s\n' % toPath.encode('utf-8'))
 
 class Tag(logcommand.LogCommand):
 

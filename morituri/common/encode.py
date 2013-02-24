@@ -242,6 +242,8 @@ class EncodeTask(ctask.GstPipelineTask):
         interval = self.gst.SECOND
         if interval > duration:
             interval = duration / 2
+        self.debug('Setting level interval to %s, duration %s',
+            self.gst.TIME_ARGS(interval), self.gst.TIME_ARGS(duration))
         self._level.set_property('interval', interval)
         # add a probe so we can track progress
         # we connect to level because this gives us offset in samples
@@ -291,10 +293,14 @@ class EncodeTask(ctask.GstPipelineTask):
         if self._peakdB is not None:
             self.debug('peakdB %r', self._peakdB)
             self.peak = math.sqrt(math.pow(10, self._peakdB / 10.0))
-        else:
-            self.warning('No peak found, something went wrong!')
-            # workaround for when the file is too short to have volume ?
-            # self.peak = 0.0
+            return
+
+        self.warning('No peak found.')
+
+        if self._duration:
+            self.warning('GStreamer level element did not send messages.')
+        # workaround for when the file is too short to have volume ?
+        # self.peak = 0.0
 
 
 class TagReadTask(ctask.GstPipelineTask):
