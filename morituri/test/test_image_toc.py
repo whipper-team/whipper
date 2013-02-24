@@ -318,3 +318,21 @@ class TOTBLTestCase(common.TestCase):
     def testCDDBId(self):
         self.toc.table.absolutize()
         self.assertEquals(self.toc.table.getCDDBDiscId(), '810b7b0b')
+
+
+# The Strokes - Someday has a 1 frame SILENCE marked as such in toc
+
+
+class StrokesTestCase(common.TestCase):
+
+    def setUp(self):
+        self.path = os.path.join(os.path.dirname(__file__),
+            u'strokes-someday.toc')
+        self.toc = toc.TocFile(self.path)
+        self.toc.parse()
+        self.assertEquals(len(self.toc.table.tracks), 1)
+
+    def testIndexes(self):
+        t = self.toc.table.tracks[0]
+        self.assertEquals(t.getIndex(0).relative, 0)
+        self.assertEquals(t.getIndex(1).relative, 1)

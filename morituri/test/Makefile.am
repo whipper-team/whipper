@@ -44,8 +44,10 @@ EXTRA_DIST = \
 	track-single.cue \
 	cdparanoia.progress \
 	cdparanoia.progress.error \
+	cdparanoia.progress.strokes \
 	cdrdao.readtoc.progress \
 	silentalarm.result.pickle \
+	strokes-someday.toc \
 	totbl.fast.toc \
 	track.flac \
 	cache/result/fe105a11.pickle \

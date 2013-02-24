@@ -64,19 +64,21 @@ class ChecksumException(Exception):
     pass
 
 
+# example:
+# ##: 0 [read] @ 24696
 _PROGRESS_RE = re.compile(r"""
-    ^\#\#: (?P<code>.+)\s      # function code
-    \[(?P<function>.*)\]\s@\s     # function name
-    (?P<offset>\d+)        # offset
+    ^\#\#: (?P<code>.+)\s         # function code
+    \[(?P<function>.*)\]\s@\s     # [function name] @
+    (?P<offset>\d+)               # offset in words (2-byte one channel value)
 """, re.VERBOSE)
 
 _ERROR_RE = re.compile("^scsi_read error:")
 
 # from reading cdparanoia source code, it looks like offset is reported in
-# number of single-channel samples, ie. 2 bytes per unit, and absolute
+# number of single-channel samples, ie. 2 bytes (word) per unit, and absolute
 
 
-class ProgressParser(object):
+class ProgressParser(log.Loggable):
     read = 0 # last [read] frame
     wrote = 0 # last [wrote] frame
     errors = 0 # count of number of scsi errors
@@ -128,13 +130,15 @@ class ProgressParser(object):
         # set nframes if not yet set
         if self._nframes is None and self.read != 0:
             self._nframes = frameOffset - self.read
+            self.debug('set nframes to %r', self._nframes)
 
         # set firstFrames if not yet set
         if self._firstFrames is None:
             self._firstFrames = frameOffset - self.start
+            self.debug('set firstFrames to %r', self._firstFrames)
 
         markStart = None
-        markEnd = None
+        markEnd = None # the next unread frame (half-inclusive)
 
         # verify it either read nframes more or went back for verify
         if frameOffset > self.read:
@@ -165,10 +169,11 @@ class ProgressParser(object):
 
         # cdparanoia reads quite a bit beyond the current track before it
         # goes back to verify; don't count those
-        if markEnd > self.stop:
-            markEnd = self.stop
-        if markStart > self.stop:
-            markStart = self.stop
+        # markStart, markEnd of 0, 21 with stop 0 should give 1 read
+        if markEnd > self.stop + 1:
+            markEnd = self.stop + 1
+        if markStart > self.stop + 1:
+            markStart = self.stop + 1
 
         self.reads += markEnd - markStart
 
@@ -185,8 +190,9 @@ class ProgressParser(object):
         Each frame gets read twice.
         More than two reads for a frame reduce track quality.
         """
-        frames = self.stop - self.start + 1
+        frames = self.stop - self.start + 1 # + 1 since stop is inclusive
         reads = self.reads
+        self.debug('getTrackQuality: frames %d, reads %d' % (frames, reads))
 
         # don't go over a 100%; we know cdparanoia reads each frame at least
         # twice
