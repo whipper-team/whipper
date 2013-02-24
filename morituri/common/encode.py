@@ -239,8 +239,8 @@ class EncodeTask(ctask.GstPipelineTask):
         # set an interval that is smaller than the duration
         # FIXME: check level and make sure it emits level up to the last
         # sample, even if input is small
-        interval = 1000000000L
-        if interval < duration:
+        interval = self.gst.SECOND
+        if interval > duration:
             interval = duration / 2
         self._level.set_property('interval', interval)
         # add a probe so we can track progress
