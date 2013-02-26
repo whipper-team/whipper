@@ -167,6 +167,7 @@ class EncodeTask(ctask.GstPipelineTask):
         self._inpath = inpath
         self._outpath = outpath
         self._taglist = taglist
+        self._length = 0 # in samples
 
         self._level = None
         self._peakdB = None
@@ -299,8 +300,10 @@ class EncodeTask(ctask.GstPipelineTask):
 
         if self._duration:
             self.warning('GStreamer level element did not send messages.')
-        # workaround for when the file is too short to have volume ?
-        # self.peak = 0.0
+            # workaround for when the file is too short to have volume ?
+            if self._length == common.SAMPLES_PER_FRAME:
+                self.warning('only one frame of audio, setting peak to 0.0')
+                self.peak = 0.0
 
 
 class TagReadTask(ctask.GstPipelineTask):

@@ -101,49 +101,65 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
             appsink name=sink sync=False emit-signals=True
             ''' % gstreamer.quoteParse(self._path).encode('utf-8')
 
+    def _getSampleLength(self):
+        # get length in samples of file
+        sink = self.pipeline.get_by_name('sink')
+
+        self.debug('query duration')
+        try:
+            length, qformat = sink.query_duration(gst.FORMAT_DEFAULT)
+        except gst.QueryError, e:
+            self.setException(e)
+            return None
+
+        # wavparse 0.10.14 returns in bytes
+        if qformat == gst.FORMAT_BYTES:
+            self.debug('query returned in BYTES format')
+            length /= 4
+        self.debug('total sample length of file: %r', length)
+
+        return length
+
+
     def paused(self):
         sink = self.pipeline.get_by_name('sink')
 
-        if self._sampleLength < 0:
-            self.debug('query duration')
-            try:
-                length, qformat = sink.query_duration(gst.FORMAT_DEFAULT)
-            except gst.QueryError, e:
-                self.setException(e)
-                return
+        length = self._getSampleLength()
+        if length is None:
+            return
 
-            # wavparse 0.10.14 returns in bytes
-            if qformat == gst.FORMAT_BYTES:
-                self.debug('query returned in BYTES format')
-                length /= 4
-            self.debug('total sample length of file: %r', length)
+        if self._sampleLength < 0:
             self._sampleLength = length - self._sampleStart
             self.debug('sampleLength is queried as %d samples',
                 self._sampleLength)
         else:
             self.debug('sampleLength is known, and is %d samples' %
                 self._sampleLength)
+
         self._sampleEnd = self._sampleStart + self._sampleLength - 1
         self.debug('sampleEnd is sample %d' % self._sampleEnd)
 
         self.debug('event')
 
 
-        # the segment end only is respected since -good 0.10.14.1
-        event = gst.event_new_seek(1.0, gst.FORMAT_DEFAULT,
-            gst.SEEK_FLAG_FLUSH,
-            gst.SEEK_TYPE_SET, self._sampleStart,
-            gst.SEEK_TYPE_SET, self._sampleEnd + 1) # half-inclusive interval
-        self.debug('CRCing %r from sector %d to sector %d' % (
-            self._path,
-            self._sampleStart / common.SAMPLES_PER_FRAME,
-            (self._sampleEnd + 1) / common.SAMPLES_PER_FRAME))
-        # FIXME: sending it with sampleEnd set screws up the seek, we don't get
-        # everything for flac; fixed in recent -good
-        result = sink.send_event(event)
-        self.debug('event sent, result %r', result)
-        if not result:
-            self.error('Failed to select samples with GStreamer seek event')
+        if self._sampleStart == 0 and self._sampleEnd + 1 == length:
+            self.debug('No need to seek, crcing full file')
+        else:
+            # the segment end only is respected since -good 0.10.14.1
+            event = gst.event_new_seek(1.0, gst.FORMAT_DEFAULT,
+                gst.SEEK_FLAG_FLUSH,
+                gst.SEEK_TYPE_SET, self._sampleStart,
+                gst.SEEK_TYPE_SET, self._sampleEnd + 1) # half-inclusive
+            self.debug('CRCing %r from frame %d to frame %d (excluded)' % (
+                self._path,
+                self._sampleStart / common.SAMPLES_PER_FRAME,
+                (self._sampleEnd + 1) / common.SAMPLES_PER_FRAME))
+            # FIXME: sending it with sampleEnd set screws up the seek, we
+            # don't get # everything for flac; fixed in recent -good
+            result = sink.send_event(event)
+            self.debug('event sent, result %r', result)
+            if not result:
+                self.error('Failed to select samples with GStreamer seek event')
         sink.connect('new-buffer', self._new_buffer_cb)
         sink.connect('eos', self._eos_cb)
 
