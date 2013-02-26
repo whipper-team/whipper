@@ -42,7 +42,7 @@ def removeAudioParsers():
 
     plugin = registry.find_plugin("audioparsers")
     if plugin:
-        log.debug('gstreamer', 'Found audioparsers plugin from %s %s',
+        log.debug('gstreamer', 'removing audioparsers plugin from %s %s',
             plugin.get_source(), plugin.get_version())
 
         # the query bug was fixed after 0.10.30 and before 0.10.31
