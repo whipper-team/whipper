@@ -200,7 +200,12 @@ class Rename(logcommand.LogCommand):
 
 class Verify(logcommand.LogCommand):
 
+    usage = '[CUEFILE]...'
     summary = "verify image"
+
+    description = '''
+Verifies the image from the given .cue files against the AccurateRip database.
+'''
 
     def do(self, args):
         prog = program.Program()
