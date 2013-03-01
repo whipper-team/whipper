@@ -698,7 +698,8 @@ class Program(log.Loggable):
     def writeLog(self, discName, logger):
         logPath = '%s.log' % discName
         handle = open(logPath, 'w')
-        handle.write(logger.log(self.result).encode('utf-8'))
+        log = logger.log(self.result)
+        handle.write(log.encode('utf-8'))
         handle.close()
 
         self.logPath = logPath
