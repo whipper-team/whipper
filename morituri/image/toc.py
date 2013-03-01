@@ -22,6 +22,8 @@
 
 """
 Reading .toc files
+
+The .toc file format is described in the man page of cdrdao
 """
 
 import re
@@ -62,7 +64,7 @@ _FILE_RE = re.compile(r"""
     ^FILE                 # FILE
     \s+"(?P<name>.*)"     # 'file name' in quotes
     \s+(?P<start>.+)      # start offset
-    \s(?P<length>.+)$     # stop offset
+    \s(?P<length>.+)$     # length in frames of section
 """, re.VERBOSE)
 
 _DATAFILE_RE = re.compile(r"""
@@ -106,14 +108,16 @@ class TocFile(object, log.Loggable):
         currentTrack = None
 
         state = 'HEADER'
-        counter = 0
+        counter = 0 # counts sources for audio data; SILENCE/ZERO/FILE
         trackNumber = 0
         indexNumber = 0
         absoluteOffset = 0 # running absolute offset of where each track starts
         relativeOffset = 0 # running relative offset, relative to counter src
-        currentLength = 0 # accrued during TRACK record parsing, current track
+        currentLength = 0 # accrued during TRACK record parsing;
+                          # length of current track as parsed so far;
+                          # reset on each TRACK statement
         totalLength = 0 # accrued during TRACK record parsing, total disc
-        pregapLength = 0 # length of the pre-gap, current track
+        pregapLength = 0 # length of the pre-gap, current track in for loop
 
 
         # the first track's INDEX 1 can only be gotten from the .toc
@@ -165,20 +169,26 @@ class TocFile(object, log.Loggable):
                         absolute=absoluteOffset + pregapLength,
                         relative=relativeOffset + pregapLength,
                         counter=counter)
-                    self.debug('track %d, added index %r',
-                        currentTrack.number, currentTrack.getIndex(1))
+                    self.debug(
+                        '[track %2d index 01] pregapLength %r, added %r',
+                            currentTrack.number, pregapLength,
+                            currentTrack.getIndex(1))
 
+                # update running totals
                 trackNumber += 1
                 absoluteOffset += currentLength
                 relativeOffset += currentLength
                 totalLength += currentLength
+                trackMode = m.group('mode')
+
+                # reset counters
                 currentLength = 0
                 indexNumber = 1
-                trackMode = m.group('mode')
                 pregapLength = 0
 
                 # FIXME: track mode
-                self.debug('found track %d, mode %s', trackNumber, trackMode)
+                self.debug('found track %d, mode %s, at absoluteOffset %d',
+                    trackNumber, trackMode, absoluteOffset)
                 audio = trackMode == 'AUDIO'
                 currentTrack = table.Track(trackNumber, audio=audio)
                 self.table.tracks.append(currentTrack)
@@ -281,15 +291,16 @@ class TocFile(object, log.Loggable):
                 offset = common.msfToFrames(m.group('offset'))
                 currentTrack.index(indexNumber, path=currentFile.path,
                     relative=offset, counter=counter)
-                self.debug('track %d, added index %r',
-                    currentTrack.number, currentTrack.getIndex(indexNumber))
+                self.debug('[track %2d index %2d] added %r',
+                    currentTrack.number, indexNumber,
+                    currentTrack.getIndex(indexNumber))
 
         # handle index 1 of final track, if any
         if currentTrack:
             currentTrack.index(1, path=currentFile.path,
                 absolute=absoluteOffset + pregapLength,
                 relative=relativeOffset + pregapLength, counter=counter)
-            self.debug('track %d, added index %r',
+            self.debug('[track %2d index 01] last track, added %r',
                 currentTrack.number, currentTrack.getIndex(1))
 
         # totalLength was added up to the penultimate track

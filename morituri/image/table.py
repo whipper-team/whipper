@@ -95,6 +95,12 @@ class Track:
         return self.indexes[number]
 
     def getFirstIndex(self):
+        """
+        Get the first chronological index for this track.
+
+        Typically this is INDEX 01; but it could be INDEX 00 if there's
+        a pre-gap.
+        """
         indexes = self.indexes.keys()
         indexes.sort()
         return self.indexes[indexes[0]]
@@ -510,6 +516,8 @@ class Table(object, log.Loggable):
 
 
         Dump our internal representation to a .cue file content.
+
+        @rtype: C{unicode}
         """
         lines = []
 
