@@ -353,6 +353,37 @@ class StrokesTestCase(common.TestCase):
         self.assertEquals(i1.counter, 1)
         self.assertEquals(i1.path, u'data.wav')
 
+        cue = self._filterCue(self.toc.table.cue())
+        ref = self._filterCue(open(os.path.join(os.path.dirname(__file__),
+            'strokes-someday.eac.cue')).read())
+        # FIXME: this diff should match
+        # common.diffStrings(cue, ref)
+        self.assertRaises(AssertionError, common.diffStrings, cue, ref)
+
+    def _filterCue(self, output):
+        # helper to be able to compare our generated .cue with the
+        # EAC-extracted one
+        discard = [ 'TITLE', 'PERFORMER', 'FLAGS', 'REM' ]
+        lines = output.split('\n')
+
+        res = []
+
+        for line in lines:
+            found = False
+            for needle in discard:
+                if line.find(needle) > -1:
+                    found = True
+
+            if line.find('FILE') > -1:
+                line = 'FILE "data.wav" WAVE'
+
+            if not found:
+                res.append(line)
+
+        return '\n'.join(res)
+
+
+
 
 # Surfer Rosa has
 # track 00 consisting of 32 frames of SILENCE
