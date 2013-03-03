@@ -239,7 +239,7 @@ class TocFile(object, log.Loggable):
                     self.debug('track %d, switched to new FILE, '
                                'increased counter to %d',
                         trackNumber, counter)
-                currentFile = File(filePath, start, length)
+                currentFile = File(filePath, common.msfToFrames(start), common.msfToFrames(length))
                 #absoluteOffset += common.msfToFrames(start)
                 currentLength += common.msfToFrames(length)
 
@@ -258,7 +258,7 @@ class TocFile(object, log.Loggable):
                         'increased counter to %d',
                         trackNumber, counter)
                 # FIXME: assume that a MODE2_FORM_MIX track always starts at 0
-                currentFile = File(filePath, 0, length)
+                currentFile = File(filePath, 0, common.msfToFrames(length))
                 #absoluteOffset += common.msfToFrames(start)
                 currentLength += common.msfToFrames(length)
 
@@ -358,8 +358,8 @@ class File:
         assert type(path) is unicode, "%r is not unicode" % path
 
         self.path = path
-        #self.start = start
-        #self.length = length
+        self.start = start
+        self.length = length
 
     def __repr__(self):
         return '<File %r>' % (self.path, )
