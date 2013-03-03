@@ -334,8 +334,17 @@ class StrokesTestCase(common.TestCase):
 
     def testIndexes(self):
         t = self.toc.table.tracks[0]
-        self.assertEquals(t.getIndex(0).relative, 0)
-        self.assertEquals(t.getIndex(1).relative, 1)
+        i0 = t.getIndex(0)
+        self.assertEquals(i0.relative, 0)
+        self.assertEquals(i0.absolute, 0)
+        self.assertEquals(i0.counter, 0)
+        self.assertEquals(i0.path, None)
+
+        i1 = t.getIndex(1)
+        self.assertEquals(i1.relative, 1)
+        self.assertEquals(i1.absolute, 1)
+        self.assertEquals(i1.counter, 1)
+        self.assertEquals(i1.path, u'data.wav')
 
 
 # Surfer Rosa has
