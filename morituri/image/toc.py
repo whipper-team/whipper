@@ -209,6 +209,7 @@ class TocFile(object, log.Loggable):
                 if currentFile is not None:
                     self.debug('SILENCE after FILE, increasing counter')
                     counter += 1
+                    relativeOffset = 0
                     currentFile = None
                 currentLength += common.msfToFrames(length)
 
@@ -218,6 +219,7 @@ class TocFile(object, log.Loggable):
                 if currentFile is not None:
                     self.debug('ZERO after FILE, increasing counter')
                     counter += 1
+                    relativeOffset = 0
                     currentFile = None
                 length = m.group('length')
                 currentLength += common.msfToFrames(length)
