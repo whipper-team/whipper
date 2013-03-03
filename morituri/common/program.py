@@ -101,8 +101,9 @@ class Program(log.Loggable):
     def getFastToc(self, runner, toc_pickle, device):
         """
         Retrieve the normal TOC table from a toc pickle or the drive.
+        Also retrieves the cdrdao version
 
-        @rtype: L{table.Table}
+        @rtype: tuple of L{table.Table}, str
         """
         def function(r, t):
             r.run(t)
@@ -132,7 +133,7 @@ class Program(log.Loggable):
             ptoc.persist(t.table)
         toc = ptoc.object
         assert toc.hasTOC()
-        return toc
+        return (toc, version) 
 
     def getTable(self, runner, cddbdiscid, mbdiscid, device):
         """
