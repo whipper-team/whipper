@@ -336,3 +336,44 @@ class StrokesTestCase(common.TestCase):
         t = self.toc.table.tracks[0]
         self.assertEquals(t.getIndex(0).relative, 0)
         self.assertEquals(t.getIndex(1).relative, 1)
+
+
+# Surfer Rosa has
+# track 00 consisting of 32 frames of SILENCE
+# track 11 Vamos with an INDEX 02
+
+
+class SurferRosaTestCase(common.TestCase):
+
+    def setUp(self):
+        self.path = os.path.join(os.path.dirname(__file__),
+            u'surferrosa.toc')
+        self.toc = toc.TocFile(self.path)
+        self.toc.parse()
+        self.assertEquals(len(self.toc.table.tracks), 21)
+
+    def testIndexes(self):
+        # HTOA
+        t = self.toc.table.tracks[0]
+        self.assertEquals(len(t.indexes), 2)
+        self.assertEquals(t.getIndex(0).relative, 0)
+        self.assertEquals(t.getIndex(0).absolute, 0)
+        self.assertEquals(t.getIndex(1).relative, 32)
+        self.assertEquals(t.getIndex(1).absolute, 32)
+
+        # track 11, Vamos
+
+        t = self.toc.table.tracks[10]
+        self.assertEquals(len(t.indexes), 2)
+
+        # 32 frames of silence, and 1483 seconds of data.wav
+        self.assertEquals(t.getIndex(1).relative, 111257)
+        self.assertEquals(t.getIndex(1).absolute, 111257)
+        self.assertEquals(t.getIndex(2).relative, 3370)
+        self.assertEquals(t.getIndex(2).absolute, None)
+
+        self.toc.table.absolutize()
+        self.assertEquals(t.getIndex(2).absolute, 3370)
+
+#        print self.toc.table.cue()
+
