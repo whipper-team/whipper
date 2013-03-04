@@ -188,7 +188,7 @@ CD in the AccurateRip database."""
                             track, i))
                         count += 1
 
-                if count == len(table.tracks):
+                if count == len(table.tracks) - 1:
                     self._foundOffset(device, offset)
                     return 0
                 else:
