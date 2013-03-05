@@ -150,8 +150,12 @@ class Program(log.Loggable):
             t = cdrdao.ReadTableTask(device=device)
             runner.run(t)
             ptable.persist(t.table)
+            self.debug('getTable: read table %r' % t.table)
         else:
-            self.debug('getTable: cddbdiscid %s in cache' % cddbdiscid)
+            self.debug('getTable: cddbdiscid %s, mbdiscid %s in cache' % (
+                cddbdiscid, mbdiscid))
+            ptable.object.unpickled()
+            self.debug('getTable: loaded table %r' % ptable.object)
         itable = ptable.object
         assert itable.hasTOC()
 

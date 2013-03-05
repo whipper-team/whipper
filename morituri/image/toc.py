@@ -305,7 +305,7 @@ class TocFile(object, log.Loggable):
 
         # totalLength was added up to the penultimate track
         self.table.leadout = totalLength + currentLength
-        self.debug('leadout: %r', self.table.leadout)
+        self.debug('parse: leadout: %r', self.table.leadout)
 
     def message(self, number, message):
         """

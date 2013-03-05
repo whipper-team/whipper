@@ -168,7 +168,7 @@ class Table(object, log.Loggable):
     catalog = None # catalog number; FIXME: is this UPC ?
     cdtext = None
 
-    classVersion = 2
+    classVersion = 3
 
     def __init__(self, tracks=None):
         if not tracks:
@@ -176,10 +176,14 @@ class Table(object, log.Loggable):
 
         self.tracks = tracks
         self.cdtext = {}
-        self.logName = "Table 0x%08X" % id(self)
         # done this way because just having a class-defined instance var
         # gets overridden when unpickling
         self.instanceVersion = self.classVersion
+        self.unpickled()
+
+    def unpickled(self):
+        self.logName = "Table 0x%08x v%d" % (id(self), self.instanceVersion)
+        self.debug('set logName')
 
     def getTrackStart(self, number):
         """
