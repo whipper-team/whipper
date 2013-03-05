@@ -170,7 +170,7 @@ class TocFile(object, log.Loggable):
                         relative=relativeOffset + pregapLength,
                         counter=counter)
                     self.debug(
-                        '[track %2d index 01] pregapLength %r, added %r',
+                        '[track %02d index 01] pregapLength %r, added %r',
                             currentTrack.number, pregapLength,
                             currentTrack.getIndex(1))
 
@@ -291,7 +291,7 @@ class TocFile(object, log.Loggable):
                 offset = common.msfToFrames(m.group('offset'))
                 currentTrack.index(indexNumber, path=currentFile.path,
                     relative=offset, counter=counter)
-                self.debug('[track %2d index %2d] added %r',
+                self.debug('[track %02d index %02d] added %r',
                     currentTrack.number, indexNumber,
                     currentTrack.getIndex(indexNumber))
 
@@ -300,7 +300,7 @@ class TocFile(object, log.Loggable):
             currentTrack.index(1, path=currentFile.path,
                 absolute=absoluteOffset + pregapLength,
                 relative=relativeOffset + pregapLength, counter=counter)
-            self.debug('[track %2d index 01] last track, added %r',
+            self.debug('[track %02d index 01] last track, added %r',
                 currentTrack.number, currentTrack.getIndex(1))
 
         # totalLength was added up to the penultimate track
