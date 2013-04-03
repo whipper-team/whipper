@@ -23,7 +23,10 @@ class CureTestCase(common.TestCase):
     def testGetTrackLength(self):
         t = self.toc.table.tracks[0]
         # first track has known length because the .toc is a single file
-        self.assertEquals(self.toc.getTrackLength(t), 28324)
+        # its length is all of track 1 from .toc, plus the INDEX 00 length
+        # of track 2
+        self.assertEquals(self.toc.getTrackLength(t),
+            (((6 * 60) + 16) * 75 + 45) + ((1 * 75) + 4))
         # last track has unknown length
         t = self.toc.table.tracks[-1]
         self.assertEquals(self.toc.getTrackLength(t), -1)
@@ -59,7 +62,7 @@ class CureTestCase(common.TestCase):
         self._assertAbsolute(2, 1, 28324)
         self._assertPath(1, 1, "data.wav")
 
-        self.toc.table.absolutize()
+        # self.toc.table.absolutize()
         self.toc.table.clearFiles()
 
         self._assertAbsolute(1, 1, 0)
@@ -83,7 +86,7 @@ class CureTestCase(common.TestCase):
         self._assertRelative(2, 1, None)
 
     def testConvertCue(self):
-        self.toc.table.absolutize()
+        # self.toc.table.absolutize()
         cue = self.toc.table.cue()
         ref = open(os.path.join(os.path.dirname(__file__), 'cure.cue')).read()
         common.diffStrings(cue, ref)
@@ -141,7 +144,7 @@ class BlocTestCase(common.TestCase):
         self.assertEquals(cue, ref)
 
     def testCDDBId(self):
-        self.toc.table.absolutize()
+        # self.toc.table.absolutize()
         # cd-discid output:
         # ad0be00d 13 15370 35019 51532 69190 84292 96826 112527 132448
         # 148595 168072 185539 203331 222103 3244
@@ -150,7 +153,7 @@ class BlocTestCase(common.TestCase):
 
     def testAccurateRip(self):
         # we verify it because it has failed in readdisc in the past
-        self.toc.table.absolutize()
+        # self.toc.table.absolutize()
         self.assertEquals(self.toc.table.getAccurateRipURL(),
             'http://www.accuraterip.com/accuraterip/'
             'e/d/2/dBAR-013-001af2de-0105994e-ad0be00d.bin')
@@ -178,7 +181,7 @@ class BreedersTestCase(common.TestCase):
         self.assertEquals(cdt['TITLE'], 'OVERGLAZED')
 
     def testConvertCue(self):
-        self.toc.table.absolutize()
+        # self.toc.table.absolutize()
         self.failUnless(self.toc.table.hasTOC())
         cue = self.toc.table.cue()
         ref = open(os.path.join(os.path.dirname(__file__),
@@ -200,7 +203,7 @@ class LadyhawkeTestCase(common.TestCase):
         self.failIf(self.toc.table.tracks[-1].audio)
 
     def testCDDBId(self):
-        self.toc.table.absolutize()
+        #self.toc.table.absolutize()
         self.assertEquals(self.toc.table.getCDDBDiscId(), 'c60af50d')
         # output from cd-discid:
         # c60af50d 13 150 15687 31841 51016 66616 81352 99559 116070 133243
@@ -249,7 +252,7 @@ class CapitalMergeTestCase(common.TestCase):
         self.table.merge(self.toc2.table)
 
     def testCDDBId(self):
-        self.table.absolutize()
+        #self.table.absolutize()
         self.assertEquals(self.table.getCDDBDiscId(), 'b910140c')
         # output from cd-discid:
         # b910140c 12 24320 44855 64090 77885 88095 104020 118245 129255 141765
@@ -316,7 +319,7 @@ class TOTBLTestCase(common.TestCase):
         self.assertEquals(len(self.toc.table.tracks), 11)
 
     def testCDDBId(self):
-        self.toc.table.absolutize()
+        #self.toc.table.absolutize()
         self.assertEquals(self.toc.table.getCDDBDiscId(), '810b7b0b')
 
 
@@ -341,7 +344,7 @@ class StrokesTestCase(common.TestCase):
         self.assertEquals(i0.path, None)
 
         i1 = t.getIndex(1)
-        self.assertEquals(i1.relative, 1)
+        self.assertEquals(i1.relative, 0)
         self.assertEquals(i1.absolute, 1)
         self.assertEquals(i1.counter, 1)
         self.assertEquals(i1.path, u'data.wav')
@@ -394,10 +397,18 @@ class SurferRosaTestCase(common.TestCase):
         # HTOA
         t = self.toc.table.tracks[0]
         self.assertEquals(len(t.indexes), 2)
-        self.assertEquals(t.getIndex(0).relative, 0)
-        self.assertEquals(t.getIndex(0).absolute, 0)
-        self.assertEquals(t.getIndex(1).relative, 32)
-        self.assertEquals(t.getIndex(1).absolute, 32)
+
+        i0 = t.getIndex(0)
+        self.assertEquals(i0.relative, 0)
+        self.assertEquals(i0.absolute, 0)
+        self.assertEquals(i0.path, None)
+        self.assertEquals(i0.counter, 0)
+
+        i1 = t.getIndex(1)
+        self.assertEquals(i1.relative, 32)
+        self.assertEquals(i1.absolute, 32)
+        self.assertEquals(i1.path, 'data.wav')
+        self.assertEquals(i1.counter, 1)
 
         # track 11, Vamos
 
@@ -410,7 +421,7 @@ class SurferRosaTestCase(common.TestCase):
         self.assertEquals(t.getIndex(2).relative, 3370)
         self.assertEquals(t.getIndex(2).absolute, None)
 
-        self.toc.table.absolutize()
+        # self.toc.table.absolutize()
         self.assertEquals(t.getIndex(2).absolute, 3370)
 
 #        print self.toc.table.cue()
