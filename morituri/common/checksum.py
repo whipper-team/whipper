@@ -387,3 +387,20 @@ class TRMTask(task.GstPipelineTask):
 
     def stopped(self):
         self.trm = self._trm
+
+class MaxSampleTask(ChecksumTask):
+    """
+    I check for the biggest sample value.
+    """
+
+    description = 'Finding highest sample value'
+
+    def do_checksum_buffer(self, buf, checksum):
+        values = struct.unpack("<%dh" % (len(buf) / 2), buf)
+        absvalues = [abs(v) for v in values]
+        m = max(absvalues)
+        if checksum < m:
+            checksum = m
+
+        return checksum
+

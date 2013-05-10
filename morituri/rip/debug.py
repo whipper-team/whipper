@@ -159,6 +159,32 @@ class Encode(logcommand.LogCommand):
         self.stdout.write('Peak level: %r\n' % encodetask.peak)
         self.stdout.write('Encoded to %s\n' % toPath.encode('utf-8'))
 
+
+class MaxSample(logcommand.LogCommand):
+
+    summary = "run a max sample task"
+
+    def do(self, args):
+        if not args:
+            self.stdout.write('Please specify one or more input files.\n')
+            return 3
+
+        runner = task.SyncRunner()
+        # here to avoid import gst eating our options
+        from morituri.common import checksum
+
+        for arg in args:
+            fromPath = unicode(arg.decode('utf-8'))
+
+            checksumtask = checksum.MaxSampleTask(fromPath)
+
+            runner.run(checksumtask)
+
+            self.stdout.write('%s\n' % arg)
+            self.stdout.write('Biggest absolute sample: %04x\n' %
+                checksumtask.checksum)
+
+
 class Tag(logcommand.LogCommand):
 
     summary = "run a tag reading task"
@@ -223,4 +249,4 @@ class Debug(logcommand.LogCommand):
 
     summary = "debug internals"
 
-    subCommandClasses = [Checksum, Encode, Tag, MusicBrainzNGS, ResultCache]
+    subCommandClasses = [Checksum, Encode, MaxSample, Tag, MusicBrainzNGS, ResultCache]
