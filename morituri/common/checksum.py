@@ -209,6 +209,13 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
     def do_checksum_buffer(self, buf, checksum):
         """
         Subclasses should implement this.
+
+        @param buf:      a byte buffer containing two 16-bit samples per
+                         channel.
+        @type  buf:      C{str}
+        @param checksum: the checksum so far, as returned by the
+                         previous call.
+        @type  checksum: C{int}
         """
         raise NotImplementedError
 
@@ -240,7 +247,7 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
             sample = self._first + self._bytes / 4
             samplesDone = sample - self._sampleStart
             progress = float(samplesDone) / float((self._sampleLength))
-            # marshall to the main thread
+            # marshal to the main thread
             self.schedule(0, self.setProgress, progress)
 
     def _eos_cb(self, sink):
