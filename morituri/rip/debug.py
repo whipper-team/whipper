@@ -100,21 +100,22 @@ class Checksum(logcommand.LogCommand):
     summary = "run a checksum task"
 
     def do(self, args):
-        try:
-            fromPath = unicode(args[0])
-        except IndexError:
-            self.stdout.write('Please specify an input file.\n')
+        if not args:
+            self.stdout.write('Please specify one or more input files.\n')
             return 3
 
         runner = task.SyncRunner()
-
         # here to avoid import gst eating our options
         from morituri.common import checksum
-        checksumtask = checksum.CRC32Task(fromPath)
 
-        runner.run(checksumtask)
+        for arg in args:
+            fromPath = unicode(args[0])
 
-        self.stdout.write('Checksum: %08x\n' % checksumtask.checksum)
+            checksumtask = checksum.CRC32Task(fromPath)
+
+            runner.run(checksumtask)
+
+            self.stdout.write('Checksum: %08x\n' % checksumtask.checksum)
 
 
 class Encode(logcommand.LogCommand):
