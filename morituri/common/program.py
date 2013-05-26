@@ -355,7 +355,8 @@ class Program(log.Loggable):
                         metadatas[0].title.encode('utf-8'))
                 elif not metadatas:
                     self._stdout.write(
-                        'Requested release id %s but none match' % release)
+                        "Requested release id '%s', "
+                        "but none of the found releases match\n" % release)
                     return
             else:
                 # Select the release that most closely matches the duration.
