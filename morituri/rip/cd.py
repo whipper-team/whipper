@@ -90,7 +90,8 @@ class _CD(logcommand.LogCommand):
             if cddbmd:
                 self.stdout.write('FreeDB identifies disc as %s\n' % cddbmd)
 
-            if not self.options.unknown:
+            # also used by rip cd info
+            if not self.options.get('unknown:', False):
                 self.program.ejectDevice(self.device)
                 return -1
 
