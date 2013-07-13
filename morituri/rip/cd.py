@@ -28,7 +28,7 @@ import gobject
 gobject.threads_init()
 
 from morituri.common import logcommand, common, accurip, gstreamer
-from morituri.common import drive, program, cache
+from morituri.common import drive, program
 from morituri.result import result
 from morituri.program import cdrdao, cdparanoia
 from morituri.rip import common as rcommon
