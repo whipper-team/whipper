@@ -126,6 +126,28 @@ GOALS
 - support offline ripping (doing metadata lookup and log rewriting later)
   - separate the info/result about the rip from the metadata/file generation/...
 
+CONFIGURATION FILE
+------------------
+
+The configuration file is stored according to
+http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
+when possible.
+
+It lives in $XDG_CONFIG_HOME/morituri/morituri.conf
+
+The configuration file follows python's ConfigParser syntax.
+There is a "main" section and zero or more sections starting with "drive:"
+
+- main section:
+  - path_filter_fat: whether to filter path components for FAT file systems
+  - path_filter_special: whether to filter path components for special
+                         characters
+
+- drive section:
+  All these values are probed by morituri and should not be edited by hand.
+  - defeats_cache: whether this drive can defeat the audio cache
+  - read_offset: the read offset of the drive
+
 
 rip command tree
 ----------------
@@ -155,3 +177,4 @@ rip
       encode to a different codec
     retag
       retag the image with current MusicBrainz data
+
