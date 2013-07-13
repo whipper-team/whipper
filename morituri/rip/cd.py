@@ -42,6 +42,10 @@ MAX_TRIES = 5
 
 class _CD(logcommand.LogCommand):
 
+    """
+    @type program: L{program.Program}
+    """
+
     def addOptions(self):
         # FIXME: have a cache of these pickles somewhere
         self.parser.add_option('-T', '--toc-pickle',
@@ -300,8 +304,11 @@ Log files will log the path to tracks relative to this directory.
                 self.debug('ripIfNotRipped have trackresult, path %r' %
                     trackResult.filename)
 
-            path = self.program.getPath(self.program.outdir, self.options.track_template,
-                self.mbdiscid, number, profile=profile, disambiguate=disambiguate) + '.' + profile.extension
+            path = self.program.getPath(self.program.outdir,
+                self.options.track_template,
+                self.mbdiscid, number,
+                profile=profile, disambiguate=disambiguate) \
+                + '.' + profile.extension
             self.debug('ripIfNotRipped: path %r' % path)
             trackResult.number = number
 
