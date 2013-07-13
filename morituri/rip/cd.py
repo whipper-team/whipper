@@ -84,7 +84,8 @@ class _CD(logcommand.LogCommand):
         self.stdout.write("MusicBrainz lookup URL %s\n" %
             self.ittoc.getMusicBrainzSubmitURL())
 
-        self.program.metadata = self.program.getMusicBrainz(self.ittoc, self.mbdiscid,
+        self.program.metadata = self.program.getMusicBrainz(self.ittoc,
+            self.mbdiscid,
             release=self.options.release_id)
 
         if not self.program.metadata:
@@ -108,10 +109,13 @@ class _CD(logcommand.LogCommand):
         assert self.itable.getCDDBDiscId() == self.ittoc.getCDDBDiscId(), \
             "full table's id %s differs from toc id %s" % (
                 self.itable.getCDDBDiscId(), self.ittoc.getCDDBDiscId())
-        assert self.itable.getMusicBrainzDiscId() == self.ittoc.getMusicBrainzDiscId(), \
+        assert self.itable.getMusicBrainzDiscId() == \
+            self.ittoc.getMusicBrainzDiscId(), \
             "full table's mb id %s differs from toc id mb %s" % (
-            self.itable.getMusicBrainzDiscId(), self.ittoc.getMusicBrainzDiscId())
-        assert self.itable.getAccurateRipURL() == self.ittoc.getAccurateRipURL(), \
+            self.itable.getMusicBrainzDiscId(),
+            self.ittoc.getMusicBrainzDiscId())
+        assert self.itable.getAccurateRipURL() == \
+            self.ittoc.getAccurateRipURL(), \
             "full table's AR URL %s differs from toc AR URL %s" % (
             self.itable.getAccurateRipURL(), self.ittoc.getAccurateRipURL())
 
@@ -123,18 +127,21 @@ class _CD(logcommand.LogCommand):
         info = drive.getDeviceInfo(self.parentCommand.options.device)
         if info:
             try:
-                self.program.result.cdparanoiaDefeatsCache = self.getRootCommand(
-                    ).config.getDefeatsCache(*info)
+                self.program.result.cdparanoiaDefeatsCache = \
+                    self.getRootCommand().config.getDefeatsCache(*info)
             except KeyError, e:
                 self.debug('Got key error: %r' % (e, ))
-        self.program.result.artist = self.program.metadata and self.program.metadata.artist \
+        self.program.result.artist = self.program.metadata \
+            and self.program.metadata.artist \
             or 'Unknown Artist'
-        self.program.result.title = self.program.metadata and self.program.metadata.title \
+        self.program.result.title = self.program.metadata \
+            and self.program.metadata.title \
             or 'Unknown Title'
         # cdio is optional for now
         try:
             import cdio
-            _, self.program.result.vendor, self.program.result.model, self.program.result.release = \
+            _, self.program.result.vendor, self.program.result.model, \
+                self.program.result.release = \
                 cdio.Device(self.device).get_hwinfo()
         except ImportError:
             self.stdout.write(
@@ -266,8 +273,9 @@ Log files will log the path to tracks relative to this directory.
         ### write disc files
         disambiguate = False
         while True:
-            discName = self.program.getPath(self.program.outdir, self.options.disc_template,
-                self.mbdiscid, 0, profile=profile, disambiguate=disambiguate)
+            discName = self.program.getPath(self.program.outdir,
+                self.options.disc_template, self.mbdiscid, 0,
+                profile=profile, disambiguate=disambiguate)
             dirname = os.path.dirname(discName)
             if os.path.exists(dirname):
                 self.stdout.write("Output directory %s already exists\n" %
@@ -415,8 +423,9 @@ Log files will log the path to tracks relative to this directory.
             ripIfNotRipped(i + 1)
 
         ### write disc files
-        discName = self.program.getPath(self.program.outdir, self.options.disc_template,
-            self.mbdiscid, 0, profile=profile, disambiguate=disambiguate)
+        discName = self.program.getPath(self.program.outdir,
+            self.options.disc_template, self.mbdiscid, 0,
+            profile=profile, disambiguate=disambiguate)
         dirname = os.path.dirname(discName)
         if not os.path.exists(dirname):
             os.makedirs(dirname)
@@ -446,8 +455,10 @@ Log files will log the path to tracks relative to this directory.
             if not track.audio:
                 continue
 
-            path = self.program.getPath(self.program.outdir, self.options.track_template,
-                self.mbdiscid, i + 1, profile=profile, disambiguate=disambiguate) + '.' + profile.extension
+            path = self.program.getPath(self.program.outdir,
+                self.options.track_template, self.mbdiscid, i + 1,
+                profile=profile,
+                disambiguate=disambiguate) + '.' + profile.extension
             writeFile(handle, path,
                 self.itable.getTrackLength(i + 1) / common.FRAMES_PER_SECOND)
 
@@ -475,7 +486,8 @@ Log files will log the path to tracks relative to this directory.
 
         self.program.verifyImage(self.runner, responses)
 
-        self.stdout.write("\n".join(self.program.getAccurateRipResults()) + "\n")
+        self.stdout.write("\n".join(
+            self.program.getAccurateRipResults()) + "\n")
 
         self.program.saveRipResult()
 
