@@ -12,6 +12,7 @@ EXTRA_DIST = \
 	test_common_encode.py \
 	test_common_gstreamer.py \
 	test_common_mbngs.py \
+	test_common_path.py \
 	test_common_program.py \
 	test_common_renamer.py \
 	test_image_cue.py \
