@@ -44,15 +44,24 @@ class PathFilter(object):
         if self._slashes:
             path = re.sub(r'[/\\]', '-', path, re.UNICODE)
 
-        if self._quotes:
-            path = re.sub(ur'[\u2019]', "'", path, re.UNICODE)
-
-        if self._special:
+        def separators(path):
             # replace separators with a hyphen
             path = re.sub(r'[:\|]', '-', path, re.UNICODE)
+            return path
+
+        # change all fancy single/double quotes to normal quotes
+        if self._quotes:
+            path = re.sub(ur'[\xc2\xb4\u2018\u2019\u201b]', "'", path,
+                re.UNICODE)
+            path = re.sub(ur'[\u201c\u201d\u201f]', '"', path, re.UNICODE)
+
+        if self._special:
+            path = separators(path)
             path = re.sub(r'[\*\?&!\'\"\$\(\)`{}\[\]<>]', '_', path, re.UNICODE)
 
         if self._fat:
+            path = separators(path)
+            # : and | already gone, but leave them here for reference
             path = re.sub(r'[:\*\?"<>|"]', '_', path, re.UNICODE)
 
         return path
