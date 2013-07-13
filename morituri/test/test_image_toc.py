@@ -85,7 +85,8 @@ class CureTestCase(common.TestCase):
     def testConvertCue(self):
         self.toc.table.absolutize()
         cue = self.toc.table.cue()
-        ref = open(os.path.join(os.path.dirname(__file__), 'cure.cue')).read()
+        ref = open(os.path.join(os.path.dirname(__file__), 'cure.cue')).read(
+            ).decode('utf-8')
         common.diffStrings(cue, ref)
 
         # we verify it because it has failed in readdisc in the past
