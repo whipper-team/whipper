@@ -69,7 +69,7 @@ class VersionTestCase(common.TestCase):
         self.failUnless(v)
         # of the form III 10.2
         # make sure it ends with a digit
-        self.failUnless(int(v[-1]))
+        self.failUnless(int(v[-1]), v)
 
 
 class AnalyzeFileTask(cdparanoia.AnalyzeTask):

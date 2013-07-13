@@ -67,11 +67,14 @@ class Program(log.Loggable):
 
         d = {}
 
-        for key in ['fat', 'special']:
+        for key, default in {
+            'fat': True,
+            'special': False
+        }.items():
             value = None
             value = self._config.getboolean('main', 'path_filter_'+ key)
             if value is None:
-                value = True
+                value = default
 
             d[key] = value
 

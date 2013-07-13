@@ -9,8 +9,17 @@ from morituri.test import common
 class FilterTestCase(common.TestCase):
 
     def setUp(self):
-        self._filter = path.PathFilter()
+        self._filter = path.PathFilter(special=True)
 
     def testSlash(self):
         part = u'A Charm/A Blade'
         self.assertEquals(self._filter.filter(part), u'A Charm-A Blade')
+
+    def testFat(self):
+        part = u'A Word: F**k you?'
+        self.assertEquals(self._filter.filter(part), u'A Word- F__k you_')
+
+    def testSpecial(self):
+        part = u'<<< $&*!\' "()`{}[]spaceship>>>'
+        self.assertEquals(self._filter.filter(part),
+               u'___ _____ ________spaceship___')
