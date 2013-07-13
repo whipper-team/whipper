@@ -51,7 +51,7 @@ class Encode(logcommand.LogCommand):
             default=default)
 
     def do(self, args):
-        prog = program.Program()
+        prog = program.Program(self.getRootCommand().config)
         prog.outdir = (self.options.output_directory or os.getcwd())
         prog.outdir = prog.outdir.decode('utf-8')
 
@@ -110,7 +110,7 @@ class Retag(logcommand.LogCommand):
 
 
     def do(self, args):
-        prog = program.Program(stdout=self.stdout)
+        prog = program.Program(self.getRootCommand().config, stdout=self.stdout)
         runner = task.SyncRunner()
 
         for arg in args:
@@ -158,7 +158,7 @@ class Rename(logcommand.LogCommand):
 
 
     def do(self, args):
-        prog = program.Program(stdout=self.stdout)
+        prog = program.Program(self.getRootCommand.config(), stdout=self.stdout)
         runner = task.SyncRunner()
 
         for arg in args:
@@ -208,7 +208,7 @@ Verifies the image from the given .cue files against the AccurateRip database.
 '''
 
     def do(self, args):
-        prog = program.Program()
+        prog = program.Program(self.getRootCommand.config())
         runner = task.SyncRunner()
         cache = accurip.AccuCache()
 

@@ -49,6 +49,7 @@ class Program(log.Loggable):
     @ivar result:   the rip's result
     @type result:   L{result.RipResult}
     @type outdir:   unicode
+    @type config:   L{morituri.common.config.Config}
     """
 
     cuePath = None
@@ -59,13 +60,14 @@ class Program(log.Loggable):
 
     _stdout = None
 
-    def __init__(self, record=False, stdout=sys.stdout):
+    def __init__(self, config, record=False, stdout=sys.stdout):
         """
         @param record: whether to record results of API calls for playback.
         """
         self._record = record
         self._cache = cache.ResultCache()
         self._stdout = stdout
+        self._config = config
 
     def setWorkingDirectory(self, workingDirectory):
         if workingDirectory:

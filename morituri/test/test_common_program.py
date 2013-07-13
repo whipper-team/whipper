@@ -1,13 +1,14 @@
 # -*- Mode: Python; test-case-name: morituri.test.test_common_program -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
+
 import os
 import pickle
 
 import unittest
 
 from morituri.result import result
-from morituri.common import program, accurip, mbngs
+from morituri.common import program, accurip, mbngs, config
 from morituri.rip import common as rcommon
 
 
@@ -28,7 +29,7 @@ class TrackImageVerifyTestCase(unittest.TestCase):
         1842579359, 2850056507, 1329730252, 2526965856, 2525886806, 209743350,
         3184062337, 2099956663, 2943874164, 2321637196]
 
-        prog = program.Program()
+        prog = program.Program(config.Config())
         prog.result = result.RipResult()
         # fill it with empty trackresults
         for i, c in enumerate(checksums):
@@ -76,7 +77,7 @@ class HTOATestCase(unittest.TestCase):
         self._tracks = pickle.load(open(path, 'rb'))
 
     def testGetAccurateRipResults(self):
-        prog = program.Program()
+        prog = program.Program(config.Config())
         prog.result = result.RipResult()
         prog.result.tracks = self._tracks
 
@@ -86,7 +87,7 @@ class HTOATestCase(unittest.TestCase):
 class PathTestCase(unittest.TestCase):
 
     def testStandardTemplateEmpty(self):
-        prog = program.Program()
+        prog = program.Program(config.Config())
 
         path = prog.getPath(u'/tmp', rcommon.DEFAULT_DISC_TEMPLATE,
             'mbdiscid', 0)
@@ -94,7 +95,7 @@ class PathTestCase(unittest.TestCase):
             u'/tmp/unknown/Unknown Artist - mbdiscid/Unknown Artist - mbdiscid')
 
     def testStandardTemplateFilled(self):
-        prog = program.Program()
+        prog = program.Program(config.Config())
         md = mbngs.DiscMetadata()
         md.artist = md.sortName = 'Jeff Buckley'
         md.title = 'Grace'
@@ -106,7 +107,7 @@ class PathTestCase(unittest.TestCase):
             u'/tmp/unknown/Jeff Buckley - Grace/Jeff Buckley - Grace')
 
     def testIssue66TemplateFilled(self):
-        prog = program.Program()
+        prog = program.Program(config.Config())
         md = mbngs.DiscMetadata()
         md.artist = md.sortName = 'Jeff Buckley'
         md.title = 'Grace'

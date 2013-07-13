@@ -57,7 +57,8 @@ class _CD(logcommand.LogCommand):
 
 
     def do(self, args):
-        self.program = program.Program(record=self.getRootCommand().record,
+        self.program = program.Program(self.getRootCommand().config,
+            record=self.getRootCommand().record,
             stdout=self.stdout)
         self.runner = task.SyncRunner()
 
