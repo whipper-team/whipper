@@ -28,13 +28,9 @@ import os
 import sys
 import time
 
-from morituri.common import common, log, mbngs, cache
+from morituri.common import common, log, mbngs, cache, path
 from morituri.program import cdrdao, cdparanoia
 from morituri.image import image
-
-
-def filterForPath(text):
-    return "-".join(text.split("/"))
 
 
 # FIXME: should Program have a runner ?
@@ -68,6 +64,18 @@ class Program(log.Loggable):
         self._cache = cache.ResultCache()
         self._stdout = stdout
         self._config = config
+
+        d = {}
+
+        for key in ['fat', 'special']:
+            value = None
+            value = self._config.getboolean('main', 'path_filter_'+ key)
+            if value is None:
+                value = True
+
+            d[key] = value
+
+        self._filter = path.PathFilter(**d)
 
     def setWorkingDirectory(self, workingDirectory):
         if workingDirectory:
@@ -236,9 +244,9 @@ class Program(log.Loggable):
         if self.metadata:
             release = self.metadata.release or '0000'
             v['y'] = release[:4]
-            v['A'] = filterForPath(self.metadata.artist)
-            v['S'] = filterForPath(self.metadata.sortName)
-            v['d'] = filterForPath(self.metadata.title)
+            v['A'] = self._filter.filter(self.metadata.artist)
+            v['S'] = self._filter.filter(self.metadata.sortName)
+            v['d'] = self._filter.filter(self.metadata.title)
             v['B'] = self.metadata.barcode
             v['C'] = self.metadata.catalogNumber
             if self.metadata.releaseType:
@@ -246,16 +254,16 @@ class Program(log.Loggable):
                 v['r'] = self.metadata.releaseType.lower()
             if i > 0:
                 try:
-                    v['a'] = filterForPath(self.metadata.tracks[i - 1].artist)
-                    v['s'] = filterForPath(
+                    v['a'] = self._filter.filter(self.metadata.tracks[i - 1].artist)
+                    v['s'] = self._filter.filter(
                         self.metadata.tracks[i - 1].sortName)
-                    v['n'] = filterForPath(self.metadata.tracks[i - 1].title)
+                    v['n'] = self._filter.filter(self.metadata.tracks[i - 1].title)
                 except IndexError, e:
                     print 'ERROR: no track %d found, %r' % (i, e)
                     raise
             else:
                 # htoa defaults to disc's artist
-                v['a'] = filterForPath(self.metadata.artist)
+                v['a'] = self._filter.filter(self.metadata.artist)
 
         # when disambiguating, use catalogNumber then barcode
         if disambiguate:
