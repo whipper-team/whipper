@@ -133,7 +133,7 @@ class Program(log.Loggable):
             ptoc.persist(t.table)
         toc = ptoc.object
         assert toc.hasTOC()
-        return (toc, version) 
+        return toc
 
     def getTable(self, runner, cddbdiscid, mbdiscid, device):
         """
