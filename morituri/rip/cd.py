@@ -68,10 +68,8 @@ class _CD(logcommand.LogCommand):
         self.program.loadDevice(self.device)
         self.program.unmountDevice(self.device)
 
-        version = None
-
         # first, read the normal TOC, which is fast
-        self.ittoc = self.program.getFastToc(self.runner,
+        self.ittoc, version = self.program.getFastToc(self.runner,
             self.options.toc_pickle,
             self.device)
 
