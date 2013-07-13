@@ -65,7 +65,11 @@ class ErrorTestCase(common.TestCase):
 class VersionTestCase(common.TestCase):
 
     def testGetVersion(self):
-        self.failUnless(cdparanoia.getCdParanoiaVersion())
+        v = cdparanoia.getCdParanoiaVersion()
+        self.failUnless(v)
+        # of the form III 10.2
+        # make sure it ends with a digit
+        self.failUnless(int(v[-1]))
 
 
 class AnalyzeFileTask(cdparanoia.AnalyzeTask):

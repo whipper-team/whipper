@@ -117,8 +117,9 @@ class _CD(logcommand.LogCommand):
 
         # result
 
-        self.program.result.cdrdaoVersion = version
-        self.program.result.cdparanoiaVersion = cdparanoia.getCdParanoiaVersion()
+        self.program.result.cdrdaoVersion = cdrdao.getCDRDAOVersion()
+        self.program.result.cdparanoiaVersion = \
+            cdparanoia.getCdParanoiaVersion()
         info = drive.getDeviceInfo(self.parentCommand.options.device)
         if info:
             try:

@@ -550,25 +550,12 @@ _VERSION_RE = re.compile(
 
 
 def getCdParanoiaVersion():
-    version = "(Unknown)"
+    getter = common.VersionGetter('cdparanoia',
+        ["cdparanoia", "-V"],
+        _VERSION_RE,
+        "%(version)s %(release)s")
 
-    try:
-        p = asyncsub.Popen(["cdparanoia", "-V"],
-                stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE, close_fds=True)
-        version = asyncsub.recv_some(p, e=0, stderr=1)
-        vre = _VERSION_RE.search(version)
-        if vre and len(vre.groups()) == 2:
-            version = "%s %s" % (
-                vre.groupdict().get('version'),
-                vre.groupdict().get('release'))
-    except OSError, e:
-        import errno
-        if e.errno == errno.ENOENT:
-            raise common.MissingDependencyException('cdparanoia')
-        raise
-
-    return version
+    return getter.get()
 
 
 _OK_RE = re.compile(r'Drive tests OK with Paranoia.')

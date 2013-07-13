@@ -2,9 +2,10 @@
 # vi:si:et:sw=4:sts=4:ts=4
 
 import os
-import unittest
 
 from morituri.program import cdrdao
+
+from morituri.test import common
 
 
 class FakeTask:
@@ -13,7 +14,7 @@ class FakeTask:
         pass
 
 
-class ParseTestCase(unittest.TestCase):
+class ParseTestCase(common.TestCase):
 
     def setUp(self):
         path = os.path.join(os.path.dirname(__file__),
@@ -34,3 +35,12 @@ class ParseTestCase(unittest.TestCase):
             self.assertEquals(track.getIndex(1).absolute, offset)
 
         self.assertEquals(self._parser.version, '1.2.2')
+
+
+class VersionTestCase(common.TestCase):
+
+    def testGetVersion(self):
+        v = cdrdao.getCDRDAOVersion()
+        self.failUnless(v)
+        # make sure it starts with a digit
+        self.failUnless(int(v[0]))

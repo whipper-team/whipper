@@ -507,3 +507,16 @@ class ProgramFailedException(Exception):
     def __init__(self, code):
         self.code = code
         self.args = (code, )
+
+
+_VERSION_RE = re.compile(
+    "^Cdrdao version (?P<version>.+) -")
+
+
+def getCDRDAOVersion():
+    getter = common.VersionGetter('cdrdao',
+        ["cdrdao"],
+        _VERSION_RE,
+        "%(version)s")
+
+    return getter.get()

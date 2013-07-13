@@ -24,8 +24,9 @@
 import os
 import os.path
 import math
+import subprocess
 
-
+from morituri.extern import asyncsub
 from morituri.extern.log import log
 
 FRAMES_PER_SECOND = 75
@@ -288,3 +289,44 @@ def getRelativePath(targetPath, collectionPath):
             'getRelativePath: target and collection in different dir, %r' %
                 rel)
         return os.path.join(rel, os.path.basename(targetPath))
+
+
+class VersionGetter(object):
+    """
+    I get the version of a program by looking for it in command output
+    according to a regexp.
+    """
+
+    def __init__(self, dependency, args, regexp, expander):
+        """
+        @param dependency: name of the dependency providing the program
+        @param args:       the arguments to invoke to show the version
+        @type  args:       list of str
+        @param regexp:     the regular expression to get the version
+        @param expander:   the expansion string for the version using the
+                           regexp group dict
+        """
+
+        self._dep = dependency
+        self._args = args
+        self._regexp = regexp
+        self._expander = expander
+
+    def get(self):
+        version = "(Unknown)"
+
+        try:
+            p = asyncsub.Popen(self._args,
+                    stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE, close_fds=True)
+            output = asyncsub.recv_some(p, e=0, stderr=1)
+            vre = self._regexp.search(output)
+            if vre:
+                version = self._expander % vre.groupdict()
+        except OSError, e:
+            import errno
+            if e.errno == errno.ENOENT:
+                raise MissingDependencyException(self._dep)
+            raise
+
+        return version

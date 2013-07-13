@@ -245,8 +245,32 @@ Example disc id: KnpGsLhvH.lPrNc1PBL21lb9Bg4-"""
                     track.title.encode('utf-8')))
 
 
+class CDParanoia(logcommand.LogCommand):
+
+    def do(self, args):
+        from morituri.program import cdparanoia
+        version = cdparanoia.getCdParanoiaVersion()
+        self.stdout.write("cdparanoia version: %s\n" % version)
+
+
+class CDRDAO(logcommand.LogCommand):
+
+    def do(self, args):
+        from morituri.program import cdrdao
+        version = cdrdao.getCDRDAOVersion()
+        self.stdout.write("cdrdao version: %s\n" % version)
+
+
+class Version(logcommand.LogCommand):
+
+    summary = "debug version getting"
+
+    subCommandClasses = [CDParanoia, CDRDAO]
+
+
 class Debug(logcommand.LogCommand):
 
     summary = "debug internals"
 
-    subCommandClasses = [Checksum, Encode, MaxSample, Tag, MusicBrainzNGS, ResultCache]
+    subCommandClasses = [Checksum, Encode, MaxSample, Tag, MusicBrainzNGS,
+                         ResultCache, Version]
