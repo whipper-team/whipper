@@ -237,7 +237,9 @@ Log files will log the path to tracks relative to this directory.
 
         if options.offset is None:
             options.offset = 0
-            self.stdout.write("Using fallback read offset %d\n" %
+            self.stdout.write("""WARNING: using default offset %d.
+Install pycdio and run 'rip offset find' to detect your drive's offset.
+""" %
                         options.offset)
         if self.options.output_directory is None:
             self.options.output_directory = os.getcwd()
