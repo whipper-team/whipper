@@ -319,6 +319,7 @@ class VersionGetter(object):
             p = asyncsub.Popen(self._args,
                     stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE, close_fds=True)
+            p.wait()
             output = asyncsub.recv_some(p, e=0, stderr=1)
             vre = self._regexp.search(output)
             if vre:
