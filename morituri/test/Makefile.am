@@ -8,6 +8,7 @@ EXTRA_DIST = \
 	test_common_checksum.py \
 	test_common_common.py \
 	test_common_config.py \
+	test_common_directory.py \
 	test_common_drive.py \
 	test_common_encode.py \
 	test_common_gstreamer.py \
