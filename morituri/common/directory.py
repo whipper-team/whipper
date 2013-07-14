@@ -44,7 +44,8 @@ class Directory(log.Loggable):
             from xdg import BaseDirectory
             path = BaseDirectory.save_cache_path('morituri')
             self.info('Using XDG, cache directory is %s' % path)
-        except ImportError:
+        except (ImportError, AttributeError):
+            # save_cache_path was added in pyxdg 0.25
             path = os.path.join(os.path.expanduser('~'), '.morituri', 'cache')
             if not os.path.exists(path):
                 os.makedirs(path)
@@ -65,7 +66,8 @@ class Directory(log.Loggable):
             path = BaseDirectory.save_cache_path('morituri')
             self.info('For XDG, read cache directory is %s' % path)
             paths.append(path)
-        except ImportError:
+        except (ImportError, AttributeError):
+            # save_cache_path was added in pyxdg 0.21
             pass
 
         path = os.path.join(os.path.expanduser('~'), '.morituri', 'cache')
