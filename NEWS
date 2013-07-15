@@ -1,6 +1,50 @@
-This is morituri 0.2.0, "ears"
+This is morituri 0.2.1, "married"
 
-Coverage in 0.2.0: 67 %   (1890 / 2807), 95 python tests
+Coverage in 0.2.1: 67 %   (1957 / 2889), 101 python tests
+
+Features added in 0.2.1:
+
+- added "%X" template variable for uppercase filename extension
+- added rip cd info
+- added storing catalog number and barcode
+- disambiguate releases with same name but different catno/barcode
+- use all but last track to find offset
+- add support to filter path names for better file system support
+- add config options for path filtering
+- fixes for older pyxdg and some versions of pycdio
+
+Bugs fixed in 0.2.1:
+
+in trac:
+-  44: Optionally strip special characters from file names
+- 121: ImportError: No module named CDDB
+- 126: pycdio is no more optional : pkg_resources.DistributionNotFound: pycdio
+- 135: rip drive analyze report "Cannot analyze the drive.  Is there a CD in it?" when not able to defeat audio cache
+- 137: pycdio returns an error when analyzing drive
+- 138: Error when trying to rip with pycdio .19
+- 124: Checking of runtime dependencies
+
+in github:
+- 31: Cryptic error message if xdg module is too old
+- 30: AttributeError: Values instance has no attribute 'unknown'
+- 26: Convert values returned from pycdio to str (workaround for upstream bug)
+- 24: Filenames from musicbrainz may contain invalid characters for windows filesystems
+- 23: Convert drive path from unicode to str when calling cdio.Device (pycdio 0.19 / Arch Linux)
+- 22: Compare AccurateRip to num tracks -1, as last track not being checked
+- 21: break up logger line
+- 18: Crash if no path specified for '-O' option
+- 17: Use XDG cache directory
+- 16: Work with older versions of python-xdg
+- 14: Use with statement to open files
+- 13: Use os.path.join instead of hardcoded paths.
+- 11: Ignore bash-compgen, to clean up git-status.
+- 9: Ask which release to use if DiscID returns several matches
+- 8: abort if invalid logger specified
+- 7: Warn if no offset specified and no stored offset found/pycdio not available
+- 6: Add "%X" template variable for uppercase filename extension.
+- 3: (Optional) dependency on cddb should be documented
+- 2: No module named moap.util -- dependency shoud be documented
+- 1: No module named log -- use of submodules should be documented
 
 Features added in 0.2.0:
 
