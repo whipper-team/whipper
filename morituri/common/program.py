@@ -32,6 +32,8 @@ from morituri.common import common, log, mbngs, cache, path
 from morituri.program import cdrdao, cdparanoia
 from morituri.image import image
 
+from morituri.extern.task import task, gstreamer
+
 
 # FIXME: should Program have a runner ?
 
@@ -522,7 +524,17 @@ class Program(log.Loggable):
 
         t = checksum.CRC32Task(trackResult.filename)
 
-        runner.run(t)
+        try:
+            runner.run(t)
+        except task.TaskException, e:
+            if isinstance(e.exception, common.MissingFrames):
+                self.warning('missing frames for %r' % trackResult.filename)
+                return False
+            elif isinstance(e.exception, gstreamer.GstException):
+                self.warning('GstException %r' % (e.exception, ))
+                return False
+            else:
+                raise
 
         ret = trackResult.testcrc == t.checksum
         log.debug('program',
