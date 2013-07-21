@@ -199,7 +199,7 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
                 msg = 'did not get all samples, %d of %d missing' % (
                     self._sampleEnd - last, self._sampleEnd)
                 self.warning(msg)
-                self.setException(common.MissingFrames(msg))
+                self.setExceptionAndTraceback(common.MissingFrames(msg))
                 return
 
         self.checksum = self._checksum
