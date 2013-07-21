@@ -348,11 +348,14 @@ Install pycdio and run 'rip offset find' to detect your drive's offset.
                 # we reset durations for test and copy here
                 trackResult.testduration = 0.0
                 trackResult.copyduration = 0.0
-                self.stdout.write('Ripping track %d of %d: %s\n' % (
-                    number, len(self.itable.tracks),
-                    os.path.basename(path).encode('utf-8')))
+                extra = ""
                 while tries < MAX_TRIES:
                     tries += 1
+                    if tries > 1:
+                        extra = " (try %d)" % tries
+                    self.stdout.write('Ripping track %d of %d%s: %s\n' % (
+                        number, len(self.itable.tracks), extra,
+                        os.path.basename(path).encode('utf-8')))
                     try:
                         self.debug('ripIfNotRipped: track %d, try %d',
                             number, tries)
@@ -361,8 +364,8 @@ Install pycdio and run 'rip offset find' to detect your drive's offset.
                             device=self.parentCommand.options.device,
                             profile=profile,
                             taglist=self.program.getTagList(number),
-                            what='track %d of %d' % (
-                                number, len(self.itable.tracks)))
+                            what='track %d of %d%s' % (
+                                number, len(self.itable.tracks), extra))
                         break
                     except Exception, e:
                         self.debug('Got exception %r on try %d',
