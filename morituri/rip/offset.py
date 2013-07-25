@@ -87,7 +87,7 @@ CD in the AccurateRip database."""
         # this can be a symlink to another device
 
     def do(self, args):
-        prog = program.Program()
+        prog = program.Program(self.getRootCommand().config)
         runner = task.SyncRunner()
 
         device = self.options.device
