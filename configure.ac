@@ -38,6 +38,10 @@ AC_SUBST(PYTHONLIBDIR)
 AS_AC_EXPAND(PLUGINSDIR, "\${libdir}/morituri/plugins")
 AC_MSG_NOTICE(Setting plugins directory to $PLUGINSDIR)
 
+dnl get git revision for installed.py.in
+AC_SUBST(REVISION, `python -c 'from morituri.configure import configure; print configure.revision'`)
+AC_MSG_NOTICE(Setting revision to $REVISION)
+
 dnl check for epydoc
 AC_CHECK_PROG(EPYDOC, epydoc, yes, no)
 AM_CONDITIONAL(HAVE_EPYDOC, test "x$EPYDOC" = "xyes")

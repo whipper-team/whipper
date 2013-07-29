@@ -1,7 +1,9 @@
 # -*- Mode: Python -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
-import os
+import os.path
+
+from morituri.common import common
 
 
 __thisdir = os.path.dirname(os.path.abspath(__file__))
@@ -13,4 +15,5 @@ def get():
         'pluginsdir': os.path.abspath(os.path.join(
             __thisdir, '..', '..', 'plugins')),
         'version': '@VERSION@',
+        'revision': common.getRevision(),
     }

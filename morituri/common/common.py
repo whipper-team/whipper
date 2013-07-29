@@ -23,6 +23,7 @@
 
 import os
 import os.path
+import commands
 import math
 import subprocess
 
@@ -331,3 +332,17 @@ class VersionGetter(object):
             raise
 
         return version
+
+
+def getRevision():
+    """
+    Get a revision tag for the current git source tree.
+
+    Appends -modified in case there are local modifications.
+    """
+    describe = commands.getoutput('git describe')
+
+    if commands.getoutput('git diff-index --name-only HEAD --'):
+        describe += '-modified'
+
+    return describe

@@ -7,4 +7,5 @@ def get():
         'isinstalled': True,
         'pluginsdir': '@PLUGINSDIR@',
         'version': '@VERSION@',
+        'revision', '@REVISION@',
     }
