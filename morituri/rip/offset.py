@@ -27,6 +27,7 @@ import gobject
 gobject.threads_init()
 
 from morituri.common import logcommand, accurip, drive, program
+from morituri.common import task as ctask
 from morituri.program import cdrdao, cdparanoia
 
 from morituri.extern.task import task
@@ -88,7 +89,7 @@ CD in the AccurateRip database."""
 
     def do(self, args):
         prog = program.Program(self.getRootCommand().config)
-        runner = task.SyncRunner()
+        runner = ctask.SyncRunner()
 
         device = self.options.device
 

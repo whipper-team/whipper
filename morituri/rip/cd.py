@@ -28,12 +28,11 @@ import gobject
 gobject.threads_init()
 
 from morituri.common import logcommand, common, accurip, gstreamer
-from morituri.common import drive, program
+from morituri.common import drive, program, task
 from morituri.result import result
 from morituri.program import cdrdao, cdparanoia
 from morituri.rip import common as rcommon
 
-from morituri.extern.task import task
 from morituri.extern.command import command
 
 
