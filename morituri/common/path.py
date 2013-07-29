@@ -45,8 +45,9 @@ class PathFilter(object):
             path = re.sub(r'[/\\]', '-', path, re.UNICODE)
 
         def separators(path):
-            # replace separators with a hyphen
-            path = re.sub(r'[:\|]', '-', path, re.UNICODE)
+            # replace separators with a space-hyphen or hyphen
+            path = re.sub(r'[:]', ' -', path, re.UNICODE)
+            path = re.sub(r'[\|]', '-', path, re.UNICODE)
             return path
 
         # change all fancy single/double quotes to normal quotes

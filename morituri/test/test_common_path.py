@@ -17,9 +17,14 @@ class FilterTestCase(common.TestCase):
 
     def testFat(self):
         part = u'A Word: F**k you?'
-        self.assertEquals(self._filter.filter(part), u'A Word- F__k you_')
+        self.assertEquals(self._filter.filter(part), u'A Word - F__k you_')
 
     def testSpecial(self):
         part = u'<<< $&*!\' "()`{}[]spaceship>>>'
         self.assertEquals(self._filter.filter(part),
                u'___ _____ ________spaceship___')
+
+    def testGreatest(self):
+        part = u'Greatest Ever! Soul: The Definitive Collection'
+        self.assertEquals(self._filter.filter(part),
+               u'Greatest Ever_ Soul - The Definitive Collection')
