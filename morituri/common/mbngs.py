@@ -56,6 +56,8 @@ class TrackMetadata(object):
 
 class DiscMetadata(object):
     """
+    @param artist:       artist(s) name
+    @param sortName:     album artist sort name
     @param release:      earliest release date, in YYYY-MM-DD
     @type  release:      unicode
     @param title:        title of the disc (with disambiguation)
