@@ -26,7 +26,7 @@ import tempfile
 import gobject
 gobject.threads_init()
 
-from morituri.common import logcommand, accurip, drive, program
+from morituri.common import logcommand, accurip, drive, program, common
 from morituri.common import task as ctask
 from morituri.program import cdrdao, cdparanoia
 
@@ -151,11 +151,18 @@ CD in the AccurateRip database."""
             try:
                 archecksum = self._arcs(runner, table, 1, offset)
             except task.TaskException, e:
+
+                # let MissingDependency fall through
+                if isinstance(e.exception,
+                    common.MissingDependencyException):
+                    raise e
+
                 if isinstance(e.exception, cdparanoia.FileSizeError):
                     self.stdout.write(
                         'WARNING: cannot rip with offset %d...\n' % offset)
                     continue
-                self.warning("Unknown exception for offset %d: %r" % (
+
+                self.warning("Unknown task exception for offset %d: %r" % (
                     offset, e))
                 self.stdout.write(
                     'WARNING: cannot rip with offset %d...\n' % offset)
