@@ -106,6 +106,10 @@ def _record(record, which, name, what):
 #     'sort-name': 'Blackie and the Oohoos',
 #     'id': '028a9dc7-f5ef-43c2-866b-08d69ffff363',
 #     'name': 'Blackie & the Oohoos'}}]
+# or
+# [{'artist':
+#    {'sort-name': 'Pixies',
+#     'id': 'b6b2bb8d-54a9-491f-9607-7b546023b433', 'name': 'Pixies'}}]
 
 
 class _Credit(list):
@@ -160,24 +164,17 @@ def _getMetadata(releaseShort, release, discid):
 
     discMD.releaseType = releaseShort.get('release-group', {}).get('type')
     discCredit = _Credit(release['artist-credit'])
-    # example:
-    # [{'artist':
-    #    {'sort-name': 'Pixies',
-    #     'id': 'b6b2bb8d-54a9-491f-9607-7b546023b433', 'name': 'Pixies'}}]
 
-    # FIXME: we should only use discArtist for determining VA; remove other
-    # uses
-    discArtist = discCredit[0]['artist']
+    # FIXME: is there a better way to check for VA ?
+    discMD.various = False
+    if discCredit[0]['artist']['id'] == VA_ID:
+        discMD.various = True
+
 
     if len(discCredit) > 1:
         log.debug('mbngs', 'artist-credit more than 1: %r', discCredit)
 
     albumArtistName = discCredit.getName()
-
-    # FIXME: is there a better way to check for VA ?
-    discMD.various = False
-    if discArtist['id'] == VA_ID:
-        discMD.various = True
 
     # getUniqueName gets disambiguating names like Muse (UK rock band)
     discMD.artist = albumArtistName
