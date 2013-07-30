@@ -43,7 +43,7 @@ class Program(log.Loggable):
     I maintain program state and functionality.
 
     @ivar metadata:
-    @type metadata: L{musicbrainz.DiscMetadata}
+    @type metadata: L{mbngs.DiscMetadata}
     @ivar result:   the rip's result
     @type result:   L{result.RipResult}
     @type outdir:   unicode

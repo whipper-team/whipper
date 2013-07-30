@@ -60,6 +60,7 @@ class DiscMetadata(object):
     @type  release:      unicode
     @param title:        title of the disc (with disambiguation)
     @param releaseTitle: title of the release (without disambiguation)
+    @type  tracks:       C{list} of L{TrackMetadata}
     """
     artist = None
     sortName = None
@@ -109,9 +110,9 @@ def _getMetadata(releaseShort, release, discid):
 
     assert release['id'], 'Release does not have an id'
 
-    metadata = DiscMetadata()
+    discMD = DiscMetadata()
 
-    metadata.releaseType = releaseShort.get('release-group', {}).get('type')
+    discMD.releaseType = releaseShort.get('release-group', {}).get('type')
     credit = release['artist-credit']
 
     artist = credit[0]['artist']
@@ -127,27 +128,27 @@ def _getMetadata(releaseShort, release, discid):
     albumArtistName = "".join(credit)
 
     # FIXME: is there a better way to check for VA
-    metadata.various = False
+    discMD.various = False
     if artist['id'] == VA_ID:
-        metadata.various = True
+        discMD.various = True
 
     # getUniqueName gets disambiguating names like Muse (UK rock band)
-    metadata.artist = albumArtistName
-    metadata.sortName = artist['sort-name']
+    discMD.artist = albumArtistName
+    discMD.sortName = artist['sort-name']
     # FIXME: is format str ?
     if not 'date' in release:
         log.warning('mbngs', 'Release %r does not have date', release)
     else:
-        metadata.release = release['date']
+        discMD.release = release['date']
 
-    metadata.mbid = release['id']
-    metadata.mbidArtist = artist['id']
-    metadata.url = 'http://musicbrainz.org/release/' + release['id']
+    discMD.mbid = release['id']
+    discMD.mbidArtist = artist['id']
+    discMD.url = 'http://musicbrainz.org/release/' + release['id']
 
-    metadata.barcode = release.get('barcode', None)
+    discMD.barcode = release.get('barcode', None)
     lil = release.get('label-info-list', [{}])
     if lil:
-        metadata.catalogNumber = lil[0].get('catalog-number')
+        discMD.catalogNumber = lil[0].get('catalog-number')
     tainted = False
     duration = 0
 
@@ -156,7 +157,7 @@ def _getMetadata(releaseShort, release, discid):
         for disc in medium['disc-list']:
             if disc['id'] == discid:
                 title = release['title']
-                metadata.releaseTitle = title
+                discMD.releaseTitle = title
                 if 'disambiguation' in release:
                     title += " (%s)" % release['disambiguation']
                 count = len(release['medium-list'])
@@ -165,7 +166,7 @@ def _getMetadata(releaseShort, release, discid):
                         int(medium['position']), count)
                 if 'title' in medium:
                     title += ": %s" % medium['title']
-                metadata.title = title
+                discMD.title = title
                 for t in medium['track-list']:
                     track = TrackMetadata()
                     credit = t['recording']['artist-credit']
@@ -182,9 +183,9 @@ def _getMetadata(releaseShort, release, discid):
                     trackArtistName = "".join(credit)
 
                     if not artist:
-                        track.artist = metadata.artist
-                        track.sortName = metadata.sortName
-                        track.mbidArtist = metadata.mbidArtist
+                        track.artist = discMD.artist
+                        track.sortName = discMD.sortName
+                        track.mbidArtist = discMD.mbidArtist
                     else:
                         # various artists discs can have tracks with no artist
                         track.artist = trackArtistName
@@ -204,14 +205,14 @@ def _getMetadata(releaseShort, release, discid):
                     else:
                         duration += track.duration
 
-                    metadata.tracks.append(track)
+                    discMD.tracks.append(track)
 
                 if not tainted:
-                    metadata.duration = duration
+                    discMD.duration = duration
                 else:
-                    metadata.duration = 0
+                    discMD.duration = 0
 
-    return metadata
+    return discMD
 
 
 # see http://bugs.musicbrainz.org/browser/python-musicbrainz2/trunk/examples/
