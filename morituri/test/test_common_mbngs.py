@@ -11,6 +11,7 @@ from morituri.common import mbngs
 
 class MetadataTestCase(unittest.TestCase):
 
+    # Generated with rip -R cd info
     def testJeffEverybodySingle(self):
         path = os.path.join(os.path.dirname(__file__),
             'morituri.release.3451f29c-9bb8-4cc5-bfcc-bd50104b94f8.json')
@@ -22,3 +23,29 @@ class MetadataTestCase(unittest.TestCase):
         metadata = mbngs._getMetadata({}, response['release'], discid)
 
         self.failIf(metadata.release)
+
+    def test2MeterSessies10(self):
+        # various artists, multiple artists per track
+        path = os.path.join(os.path.dirname(__file__),
+            'morituri.release.a76714e0-32b1-4ed4-b28e-f86d99642193.json')
+        handle = open(path, "rb")
+        response = json.loads(handle.read())
+        handle.close()
+        discid = "f7XO36a7n1LCCskkCiulReWbwZA-"
+
+        metadata = mbngs._getMetadata({}, response['release'], discid)
+
+        self.assertEquals(metadata.artist, u'Various Artists')
+        self.assertEquals(metadata.release, u'2001-10-15')
+        self.assertEquals(metadata.mbidArtist,
+            u'89ad4ac3-39f7-470e-963a-56509c546377')
+
+        self.assertEquals(len(metadata.tracks), 18)
+
+        track16 = metadata.tracks[15]
+
+        self.assertEquals(track16.artist, 'Tom Jones & Stereophonics')
+        # FIXME: this is the disc artist id, and it should be the combo
+        #        of track artist id's
+        self.assertEquals(track16.mbidArtist,
+            u'89ad4ac3-39f7-470e-963a-56509c546377')
