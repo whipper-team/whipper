@@ -49,6 +49,9 @@ class MetadataTestCase(unittest.TestCase):
         #        of track artist id's
         self.assertEquals(track16.mbidArtist,
             u'89ad4ac3-39f7-470e-963a-56509c546377')
+        # FIXME: should not be various artists
+        self.assertEquals(track16.sortName,
+            u'Various Artists')
 
     def testBalladOfTheBrokenSeas(self):
         # various artists disc
@@ -74,6 +77,11 @@ class MetadataTestCase(unittest.TestCase):
         track12 = metadata.tracks[11]
 
         self.assertEquals(track12.artist, u'Isobel Campbell & Mark Lanegan')
+        # FIXME: should include Mark Lanegan
+        self.assertEquals(track12.sortName,
+            u'Campbell, Isobel'
+            # ' & Lanegan, Mark'
+            )
         # FIXME: this is only Isobel
         self.assertEquals(track12.mbidArtist,
             u'd51f3a15-12a2-41a0-acfa-33b5eae71164')
