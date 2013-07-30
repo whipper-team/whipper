@@ -148,6 +148,12 @@ There is a "main" section and zero or more sections starting with "drive:"
   - defeats_cache: whether this drive can defeat the audio cache
   - read_offset: the read offset of the drive
 
+CONTRIBUTING
+------------
+- Please send pull requests through github.
+- You can always flattr morituri to donate:
+  https://flattr.com/submit/auto?%20%20user_id=thomasvs&url=https://thomas.apestaart.org/morituri/trac/&%20%20title=morituri&%20%20description=morituri&%20%20language=en_GB&tags=flattr,morituri,software&category=software
+
 
 rip command tree
 ----------------
