@@ -43,7 +43,10 @@ class _CD(logcommand.LogCommand):
 
     """
     @type program: L{program.Program}
+    @ivar eject:   whether to eject the drive after completing
     """
+
+    eject = True
 
     def addOptions(self):
         # FIXME: have a cache of these pickles somewhere
@@ -94,7 +97,7 @@ class _CD(logcommand.LogCommand):
                 self.stdout.write('FreeDB identifies disc as %s\n' % cddbmd)
 
             # also used by rip cd info
-            if not getattr(self.options, 'unknown', False):
+            if not getattr(self.options, 'unknown', False) and self.eject:
                 self.program.ejectDevice(self.device)
                 return -1
 
@@ -150,7 +153,8 @@ class _CD(logcommand.LogCommand):
 
         self.doCommand()
 
-        self.program.ejectDevice(self.device)
+        if self.eject:
+            self.program.ejectDevice(self.device)
 
     def doCommand(self):
         pass
@@ -158,6 +162,8 @@ class _CD(logcommand.LogCommand):
 
 class Info(_CD):
     summary = "retrieve information about the currently inserted CD"
+
+    eject = False
 
 
 class Rip(_CD):
