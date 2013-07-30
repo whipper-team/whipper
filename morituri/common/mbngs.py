@@ -127,7 +127,7 @@ class _Credit(list):
 
 
     def getSortName(self):
-        return self.joiner(lambda i: i.get('sort-name'))
+        return self.joiner(lambda i: i.get('artist').get('sort-name', None))
 
     def getName(self):
         return self.joiner(lambda i: i.get('artist').get('name', None))
@@ -172,7 +172,7 @@ def _getMetadata(releaseShort, release, discid):
 
     # getUniqueName gets disambiguating names like Muse (UK rock band)
     discMD.artist = albumArtistName
-    discMD.sortName = discArtist['sort-name']
+    discMD.sortName = credit.getSortName()
     # FIXME: is format str ?
     if not 'date' in release:
         log.warning('mbngs', 'Release %r does not have date', release)
