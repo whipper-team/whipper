@@ -114,14 +114,17 @@ class _Credit(list):
     or track.
     """
 
-    def joiner(self, attributeGetter):
+    def joiner(self, attributeGetter, joinString=None):
         res = []
 
         for item in self:
             if isinstance(item, dict):
                 res.append(attributeGetter(item))
             else:
-                res.append(item)
+                if not joinString:
+                    res.append(item)
+                else:
+                    res.append(joinString)
 
         return "".join(res)
 
@@ -131,6 +134,10 @@ class _Credit(list):
 
     def getName(self):
         return self.joiner(lambda i: i.get('artist').get('name', None))
+
+    def getIds(self):
+        return self.joiner(lambda i: i.get('artist').get('id', None),
+            joinString=";")
 
 
 def _getMetadata(releaseShort, release, discid):
@@ -165,7 +172,7 @@ def _getMetadata(releaseShort, release, discid):
 
     albumArtistName = credit.getName()
 
-    # FIXME: is there a better way to check for VA
+    # FIXME: is there a better way to check for VA ?
     discMD.various = False
     if discArtist['id'] == VA_ID:
         discMD.various = True
@@ -180,7 +187,7 @@ def _getMetadata(releaseShort, release, discid):
         discMD.release = release['date']
 
     discMD.mbid = release['id']
-    discMD.mbidArtist = discArtist['id']
+    discMD.mbidArtist = credit.getIds()
     discMD.url = 'http://musicbrainz.org/release/' + release['id']
 
     discMD.barcode = release.get('barcode', None)

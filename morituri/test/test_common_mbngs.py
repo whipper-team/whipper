@@ -65,9 +65,9 @@ class MetadataTestCase(unittest.TestCase):
         self.assertEquals(metadata.sortName,
             u'Campbell, Isobel & Lanegan, Mark')
         self.assertEquals(metadata.release, u'2006-01-30')
-        # FIXME: this is only Isobel
         self.assertEquals(metadata.mbidArtist,
-            u'd51f3a15-12a2-41a0-acfa-33b5eae71164')
+            u'd51f3a15-12a2-41a0-acfa-33b5eae71164;'
+            'a9126556-f555-4920-9617-6e013f8228a7')
 
         self.assertEquals(len(metadata.tracks), 12)
 
