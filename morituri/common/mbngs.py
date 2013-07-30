@@ -114,8 +114,12 @@ def _getMetadata(releaseShort, release, discid):
 
     discMD.releaseType = releaseShort.get('release-group', {}).get('type')
     credit = release['artist-credit']
+    # example:
+    # [{'artist':
+    #    {'sort-name': 'Pixies',
+    #     'id': 'b6b2bb8d-54a9-491f-9607-7b546023b433', 'name': 'Pixies'}}]
 
-    artist = credit[0]['artist']
+    discArtist = credit[0]['artist']
 
     if len(credit) > 1:
         log.debug('mbngs', 'artist-credit more than 1: %r', credit)
@@ -129,12 +133,12 @@ def _getMetadata(releaseShort, release, discid):
 
     # FIXME: is there a better way to check for VA
     discMD.various = False
-    if artist['id'] == VA_ID:
+    if discArtist['id'] == VA_ID:
         discMD.various = True
 
     # getUniqueName gets disambiguating names like Muse (UK rock band)
     discMD.artist = albumArtistName
-    discMD.sortName = artist['sort-name']
+    discMD.sortName = discArtist['sort-name']
     # FIXME: is format str ?
     if not 'date' in release:
         log.warning('mbngs', 'Release %r does not have date', release)
@@ -142,7 +146,7 @@ def _getMetadata(releaseShort, release, discid):
         discMD.release = release['date']
 
     discMD.mbid = release['id']
-    discMD.mbidArtist = artist['id']
+    discMD.mbidArtist = discArtist['id']
     discMD.url = 'http://musicbrainz.org/release/' + release['id']
 
     discMD.barcode = release.get('barcode', None)
@@ -174,7 +178,18 @@ def _getMetadata(releaseShort, release, discid):
                         log.debug('mbngs',
                             'artist-credit more than 1: %r', credit)
                         # credit is of the form [dict, str, dict, ... ]
+                        # e.g. [
+                        #   {'artist': {
+                        #     'sort-name': 'Sukilove',
+                        #     'id': '5f4af6cf-a1b8-4e51-a811-befed399a1c6',
+                        #     'name': 'Sukilove'
+                        #   }}, ' & ', {
+                        #   'artist': {
+                        #     'sort-name': 'Blackie and the Oohoos',
+                        #     'id': '028a9dc7-f5ef-43c2-866b-08d69ffff363',
+                        #     'name': 'Blackie & the Oohoos'}}]
                     for i, c in enumerate(credit):
+                        # replace dict with the artist name
                         if isinstance(c, dict):
                             credit[i] = c.get(
                                 'name', c['artist'].get('name', None))
@@ -182,15 +197,15 @@ def _getMetadata(releaseShort, release, discid):
 
                     trackArtistName = "".join(credit)
 
-                    if not artist:
+                    if not discArtist:
                         track.artist = discMD.artist
                         track.sortName = discMD.sortName
                         track.mbidArtist = discMD.mbidArtist
                     else:
                         # various artists discs can have tracks with no artist
                         track.artist = trackArtistName
-                        track.sortName = artist['sort-name']
-                        track.mbidArtist = artist['id']
+                        track.sortName = discArtist['sort-name']
+                        track.mbidArtist = discArtist['id']
 
                     track.title = t['recording']['title']
                     track.mbid = t['recording']['id']
