@@ -214,6 +214,8 @@ class MusicBrainzNGS(logcommand.LogCommand):
     summary = "examine MusicBrainz NGS info"
     description = """Look up a MusicBrainz disc id and output information.
 
+You can get the MusicBrainz disc id with rip cd info.
+
 Example disc id: KnpGsLhvH.lPrNc1PBL21lb9Bg4-"""
 
     def do(self, args):
@@ -224,7 +226,8 @@ Example disc id: KnpGsLhvH.lPrNc1PBL21lb9Bg4-"""
             return 3
 
         from morituri.common import mbngs
-        metadatas = mbngs.musicbrainz(discId)
+        metadatas = mbngs.musicbrainz(discId,
+            record=self.getRootCommand().record)
 
         self.stdout.write('%d releases\n' % len(metadatas))
         for i, md in enumerate(metadatas):
