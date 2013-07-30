@@ -51,6 +51,9 @@ release
   git commit -a -m "Releasing $VERSION"
 - tag the release:
   git tag -a v$VERSION -m "Releasing $VERSION"
+- make sure we build installed.py with the correct tag
+  autoregen.sh
+  cat morituri/configure/installed.py
 - make distcheck
 - make release
 - build rpm using rpmbuild and mach
@@ -64,9 +67,8 @@ release
   cp morituri-$VERSION.tar* /home/thomas/www/thomas.apestaart.org/data/download/morituri
   cp /var/tmp/mach/fedora-*/morituri-$VERSION-*/*.rpm /home/thomas/www/thomas.apestaart.org/data/download/morituri
   tao-put
-- commit to master
-- create release tag:
-  git tag -a v$VERSION
+- push to master
+  git push
   git push origin v$VERSION
 - announce to freshmeat:
   moap doap -v $VERSION freshmeat
