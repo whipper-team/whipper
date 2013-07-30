@@ -221,17 +221,11 @@ def _getMetadata(releaseShort, release, discid):
                         log.debug('mbngs',
                             'artist-credit more than 1: %r', trackCredit)
 
-                    trackArtistName = trackCredit.getName()
-
-                    if not discArtist:
-                        track.artist = discMD.artist
-                        track.sortName = discMD.sortName
-                        track.mbidArtist = discMD.mbidArtist
-                    else:
-                        # various artists discs can have tracks with no artist
-                        track.artist = trackArtistName
-                        track.sortName = trackCredit.getSortName()
-                        track.mbidArtist = trackCredit.getIds()
+                    # FIXME: leftover comment, need an example
+                    # various artists discs can have tracks with no artist
+                    track.artist = trackCredit.getName()
+                    track.sortName = trackCredit.getSortName()
+                    track.mbidArtist = trackCredit.getIds()
 
                     track.title = t['recording']['title']
                     track.mbid = t['recording']['id']
