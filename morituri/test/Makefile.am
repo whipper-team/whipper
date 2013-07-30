@@ -39,6 +39,7 @@ EXTRA_DIST = \
 	release.c7d919f4-3ea0-4c4b-a230-b3605f069440.xml \
 	morituri.release.a76714e0-32b1-4ed4-b28e-f86d99642193.json \
 	morituri.release.3451f29c-9bb8-4cc5-bfcc-bd50104b94f8.json \
+	morituri.release.e32ae79a-336e-4d33-945c-8c5e8206dbd3.json \
 	kanye.cue \
 	kings-separate.cue \
 	kings-single.cue \
