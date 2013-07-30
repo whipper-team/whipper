@@ -62,6 +62,8 @@ class MetadataTestCase(unittest.TestCase):
         metadata = mbngs._getMetadata({}, response['release'], discid)
 
         self.assertEquals(metadata.artist, u'Isobel Campbell & Mark Lanegan')
+        # FIXME: this should include Mark
+        self.assertEquals(metadata.sortName, u'Campbell, Isobel')
         self.assertEquals(metadata.release, u'2006-01-30')
         # FIXME: this is only Isobel
         self.assertEquals(metadata.mbidArtist,

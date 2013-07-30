@@ -95,6 +95,43 @@ def _record(record, which, name, what):
         handle.close()
         log.info('mbngs', 'Wrote %s %s to %s', which, name, filename)
 
+# credit is of the form [dict, str, dict, ... ]
+# e.g. [
+#   {'artist': {
+#     'sort-name': 'Sukilove',
+#     'id': '5f4af6cf-a1b8-4e51-a811-befed399a1c6',
+#     'name': 'Sukilove'
+#   }}, ' & ', {
+#   'artist': {
+#     'sort-name': 'Blackie and the Oohoos',
+#     'id': '028a9dc7-f5ef-43c2-866b-08d69ffff363',
+#     'name': 'Blackie & the Oohoos'}}]
+
+
+class _Credit(list):
+    """
+    I am a representation of an artist-credit in musicbrainz for a disc
+    or track.
+    """
+
+    def joiner(self, attributeGetter):
+        res = []
+
+        for item in self:
+            if isinstance(item, dict):
+                res.append(attributeGetter(item))
+            else:
+                res.append(item)
+
+        return "".join(res)
+
+
+    def getSortName(self):
+        return self.joiner(lambda i: i.get('sort-name'))
+
+    def getName(self):
+        return self.joiner(lambda i: i.get('artist').get('name', None))
+
 
 def _getMetadata(releaseShort, release, discid):
     """
@@ -115,7 +152,7 @@ def _getMetadata(releaseShort, release, discid):
     discMD = DiscMetadata()
 
     discMD.releaseType = releaseShort.get('release-group', {}).get('type')
-    credit = release['artist-credit']
+    credit = _Credit(release['artist-credit'])
     # example:
     # [{'artist':
     #    {'sort-name': 'Pixies',
@@ -126,12 +163,7 @@ def _getMetadata(releaseShort, release, discid):
     if len(credit) > 1:
         log.debug('mbngs', 'artist-credit more than 1: %r', credit)
 
-    for i, c in enumerate(credit):
-        if isinstance(c, dict):
-            credit[i] = c.get(
-                'name', c['artist'].get('name', None))
-
-    albumArtistName = "".join(credit)
+    albumArtistName = credit.getName()
 
     # FIXME: is there a better way to check for VA
     discMD.various = False
@@ -175,29 +207,12 @@ def _getMetadata(releaseShort, release, discid):
                 discMD.title = title
                 for t in medium['track-list']:
                     track = TrackMetadata()
-                    credit = t['recording']['artist-credit']
+                    credit = _Credit(t['recording']['artist-credit'])
                     if len(credit) > 1:
                         log.debug('mbngs',
                             'artist-credit more than 1: %r', credit)
-                        # credit is of the form [dict, str, dict, ... ]
-                        # e.g. [
-                        #   {'artist': {
-                        #     'sort-name': 'Sukilove',
-                        #     'id': '5f4af6cf-a1b8-4e51-a811-befed399a1c6',
-                        #     'name': 'Sukilove'
-                        #   }}, ' & ', {
-                        #   'artist': {
-                        #     'sort-name': 'Blackie and the Oohoos',
-                        #     'id': '028a9dc7-f5ef-43c2-866b-08d69ffff363',
-                        #     'name': 'Blackie & the Oohoos'}}]
-                    for i, c in enumerate(credit):
-                        # replace dict with the artist name
-                        if isinstance(c, dict):
-                            credit[i] = c.get(
-                                'name', c['artist'].get('name', None))
 
-
-                    trackArtistName = "".join(credit)
+                    trackArtistName = credit.getName()
 
                     if not discArtist:
                         track.artist = discMD.artist
