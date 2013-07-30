@@ -16,6 +16,7 @@ pre-release checklist
 - Verify the program runs:
   - normal run
   - --unknown run
+  - rip offset find
 - add new milestone to trac and make it the default
 - verify with ticket query that all fixed tickets for this milestone are
   correct:
