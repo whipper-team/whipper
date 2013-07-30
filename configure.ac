@@ -39,7 +39,7 @@ AS_AC_EXPAND(PLUGINSDIR, "\${libdir}/morituri/plugins")
 AC_MSG_NOTICE(Setting plugins directory to $PLUGINSDIR)
 
 dnl get git revision for installed.py.in
-AC_SUBST(REVISION, `python -c 'from morituri.configure import configure; print configure.revision'`)
+AC_SUBST(REVISION, `$PYTHON -c 'from morituri.configure import configure; print configure.revision'`)
 AC_MSG_NOTICE(Setting revision to $REVISION)
 
 dnl check for epydoc
