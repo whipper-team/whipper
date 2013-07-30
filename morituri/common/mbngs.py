@@ -159,18 +159,18 @@ def _getMetadata(releaseShort, release, discid):
     discMD = DiscMetadata()
 
     discMD.releaseType = releaseShort.get('release-group', {}).get('type')
-    credit = _Credit(release['artist-credit'])
+    discCredit = _Credit(release['artist-credit'])
     # example:
     # [{'artist':
     #    {'sort-name': 'Pixies',
     #     'id': 'b6b2bb8d-54a9-491f-9607-7b546023b433', 'name': 'Pixies'}}]
 
-    discArtist = credit[0]['artist']
+    discArtist = discCredit[0]['artist']
 
-    if len(credit) > 1:
-        log.debug('mbngs', 'artist-credit more than 1: %r', credit)
+    if len(discCredit) > 1:
+        log.debug('mbngs', 'artist-credit more than 1: %r', discCredit)
 
-    albumArtistName = credit.getName()
+    albumArtistName = discCredit.getName()
 
     # FIXME: is there a better way to check for VA ?
     discMD.various = False
@@ -179,7 +179,7 @@ def _getMetadata(releaseShort, release, discid):
 
     # getUniqueName gets disambiguating names like Muse (UK rock band)
     discMD.artist = albumArtistName
-    discMD.sortName = credit.getSortName()
+    discMD.sortName = discCredit.getSortName()
     # FIXME: is format str ?
     if not 'date' in release:
         log.warning('mbngs', 'Release %r does not have date', release)
@@ -187,7 +187,7 @@ def _getMetadata(releaseShort, release, discid):
         discMD.release = release['date']
 
     discMD.mbid = release['id']
-    discMD.mbidArtist = credit.getIds()
+    discMD.mbidArtist = discCredit.getIds()
     discMD.url = 'http://musicbrainz.org/release/' + release['id']
 
     discMD.barcode = release.get('barcode', None)
@@ -214,12 +214,12 @@ def _getMetadata(releaseShort, release, discid):
                 discMD.title = title
                 for t in medium['track-list']:
                     track = TrackMetadata()
-                    credit = _Credit(t['recording']['artist-credit'])
-                    if len(credit) > 1:
+                    trackCredit = _Credit(t['recording']['artist-credit'])
+                    if len(trackCredit) > 1:
                         log.debug('mbngs',
-                            'artist-credit more than 1: %r', credit)
+                            'artist-credit more than 1: %r', trackCredit)
 
-                    trackArtistName = credit.getName()
+                    trackArtistName = trackCredit.getName()
 
                     if not discArtist:
                         track.artist = discMD.artist
