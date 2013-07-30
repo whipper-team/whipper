@@ -42,6 +42,22 @@ Morituri is a CD ripper aiming for maximum quality.
 
  <release>
   <Version>
+   <revision>0.2.2</revision>
+   <branch>master</branch>
+   <name>my bad</name>
+   <created>2013-07-30</created>
+   <file-release rdf:resource="http://thomas.apestaart.org/download/morituri/morituri-0.2.2.tar.bz2" />
+   <file-release rdf:resource="http://thomas.apestaart.org/download/morituri/morituri-0.2.2-1.noarch.rpm" />
+   <dc:description>
+- fixed rip offset find
+- set album and track artist id's properly
+- rip cd info no longer ejects
+   </dc:description>
+  </Version>
+ </release>
+
+ <release>
+  <Version>
    <revision>0.2.1</revision>
    <branch>master</branch>
    <name>married</name>

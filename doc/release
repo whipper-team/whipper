@@ -22,6 +22,7 @@ pre-release checklist
   correct:
   https://thomas.apestaart.org/morituri/trac/query?order=priority&col=id&col=summary&col=status&col=type&col=priority&col=milestone&col=component&milestone=0.1.1
 - remilestone still open tickets to next release
+- FIXME: same on github
 
 release
 -------
@@ -38,11 +39,18 @@ release
 - Add list of new features to NEWS
 - Update bugs fixed in NEWS:
   moap doap bug query -f "- %(id)3s: %(summary)s" "milestone=$VERSION"
+  FIXME: same on github
 - Update README and home page with relevant new features, as well as version
 - Update RELEASE, copying sections from NEWS, and adding contributors with
   moap cl cont
+  or from git:
+  git log --format='%aN' | sort -u
 - Run moap cl prep and add comment about release
 - Update ChangeLog; add === release x.y.z === line
+- commit locally
+  git commit -a -m "Releasing $VERSION"
+- tag the release:
+  git tag -a v$VERSION -m "Releasing $VERSION"
 - make distcheck
 - make release
 - build rpm using rpmbuild and mach

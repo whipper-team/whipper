@@ -1,6 +1,15 @@
-This is morituri 0.2.1, "married"
+This is morituri 0.2.2, "my bad"
 
-Coverage in 0.2.1: 67 %   (1957 / 2889), 101 python tests
+Coverage in 0.2.2: 67 %   (1972 / 2904), 109 python tests
+
+Bugs fixed in 0.2.2:
+
+in github:
+- 38: No matching offset found
+- 35: 'rip cd info' should not eject the disc
+- 34: Use track instead of the release artist MBID for the 'Musicbrainz artist ID'
+- 33: "rip offset find" fails to initialise program.Program
+- 19: Set album artist tag
 
 Features added in 0.2.1:
 
