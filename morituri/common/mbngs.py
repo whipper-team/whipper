@@ -165,6 +165,8 @@ def _getMetadata(releaseShort, release, discid):
     #    {'sort-name': 'Pixies',
     #     'id': 'b6b2bb8d-54a9-491f-9607-7b546023b433', 'name': 'Pixies'}}]
 
+    # FIXME: we should only use discArtist for determining VA; remove other
+    # uses
     discArtist = discCredit[0]['artist']
 
     if len(discCredit) > 1:
@@ -228,8 +230,8 @@ def _getMetadata(releaseShort, release, discid):
                     else:
                         # various artists discs can have tracks with no artist
                         track.artist = trackArtistName
-                        track.sortName = discArtist['sort-name']
-                        track.mbidArtist = discArtist['id']
+                        track.sortName = trackCredit.getSortName()
+                        track.mbidArtist = trackCredit.getIds()
 
                     track.title = t['recording']['title']
                     track.mbid = t['recording']['id']
