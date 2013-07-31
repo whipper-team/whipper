@@ -5,7 +5,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = morituri bin etc doc m4 misc
 
-EXTRA_DIST = morituri.spec morituri.doap RELEASE README HACKING
+EXTRA_DIST = morituri.spec morituri.doap RELEASE README HACKING REVISION
 
 SOURCES = $(top_srcdir)/morituri/*.py $(top_srcdir)/morituri/*/*.py
 
@@ -37,6 +37,9 @@ PYCHECKER_BLACKLIST = \
 
 release: dist
 	make $(PACKAGE)-$(VERSION).tar.bz2.md5
+
+REVISION: $(top_srcdir)/.git
+	$(PYTHON) -c 'from morituri.configure import configure; print configure.revision' > REVISION
 
 # generate md5 sum files
 %.md5: %
