@@ -33,6 +33,7 @@ from morituri.program import cdrdao, cdparanoia
 from morituri.image import image
 
 from morituri.extern.task import task, gstreamer
+from morituri.extern.musicbrainzngs import musicbrainz
 
 
 # FIXME: should Program have a runner ?
@@ -297,10 +298,18 @@ class Program(log.Loggable):
         """
         # FIXME: convert to nonblocking?
         import CDDB
-        code, md = CDDB.query(cddbdiscid)
-        self.debug('CDDB query result: %r, %r', code, md)
-        if code == 200:
-            return md['title']
+        try:
+            code, md = CDDB.query(cddbdiscid)
+            self.debug('CDDB query result: %r, %r', code, md)
+            if code == 200:
+                return md['title']
+
+        except IOError, e:
+            # FIXME: for some reason errno is a str ?
+            if e.errno == 'socket error':
+                self._stdout.write("Warning: network error: %r\n" % (e, ))
+            else:
+                raise
 
         return None
 
@@ -324,6 +333,9 @@ class Program(log.Loggable):
                 metadatas = mbngs.musicbrainz(mbdiscid,
                     record=self._record)
             except mbngs.NotFoundException, e:
+                break
+            except musicbrainz.NetworkError, e:
+                self._stdout.write("Warning: network error: %r\n" % (e, ))
                 break
             except mbngs.MusicBrainzException, e:
                 self._stdout.write("Warning: %r\n" % (e, ))

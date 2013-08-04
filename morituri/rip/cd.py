@@ -23,6 +23,8 @@
 import os
 import math
 import glob
+import urllib2
+import socket
 
 import gobject
 gobject.threads_init()
@@ -97,8 +99,9 @@ class _CD(logcommand.LogCommand):
                 self.stdout.write('FreeDB identifies disc as %s\n' % cddbmd)
 
             # also used by rip cd info
-            if not getattr(self.options, 'unknown', False) and self.eject:
-                self.program.ejectDevice(self.device)
+            if not getattr(self.options, 'unknown', False):
+                if self.eject:
+                    self.program.ejectDevice(self.device)
                 return -1
 
         # now, read the complete index table, which is slower
@@ -478,7 +481,18 @@ Install pycdio and run 'rip offset find' to detect your drive's offset.
         self.stdout.write("AccurateRip URL %s\n" % url)
 
         accucache = accurip.AccuCache()
-        responses = accucache.retrieve(url)
+        try:
+            responses = accucache.retrieve(url)
+        except urllib2.URLError, e:
+            if isinstance(e.args[0], socket.gaierror):
+                if e.args[0].errno == -2:
+                    self.stdout.write("Warning: network error: %r\n" % (
+                        e.args[0], ))
+                    responses = None
+                else:
+                    raise
+            else:
+                raise
 
         if not responses:
             self.stdout.write('Album not found in AccurateRip database\n')
