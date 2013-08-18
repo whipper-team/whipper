@@ -88,6 +88,38 @@ _INDEX_RE = re.compile(r"""
 """, re.VERBOSE)
 
 
+class Sources(log.Loggable):
+    """
+    I represent the list of sources used in the .toc file.
+    Each SILENCE and each FILE is a source.
+    If the filename for FILE doesn't change, the counter is not increased.
+    """
+
+    def __init__(self):
+        self._sources = []
+
+    def append(self, counter, offset, source):
+        """
+        @param counter: the source counter; updates for each different
+                        data source (silence or different file path)
+        @type  counter: int
+        @param offset:  the absolute disc offset where this source starts
+        """
+        self.debug('Appending source, counter %d, offset %d, source %r' % (
+            counter, offset, source))
+        self._sources.append((counter, offset, source))
+
+    def get(self, offset):
+        """
+        Retrieve the source used at the given offset.
+        """
+        for i, (c, o, s) in enumerate(self._sources):
+            if offset < o:
+                return self._sources[i - 1]
+
+        return self._sources[-1]
+
+
 class TocFile(object, log.Loggable):
 
     def __init__(self, path):
@@ -119,6 +151,7 @@ class TocFile(object, log.Loggable):
         totalLength = 0 # accrued during TRACK record parsing, total disc
         pregapLength = 0 # length of the pre-gap, current track in for loop
 
+        sources = Sources()
 
         # the first track's INDEX 1 can only be gotten from the .toc
         # file once the first pregap is calculated; so we add INDEX 1
@@ -206,6 +239,7 @@ class TocFile(object, log.Loggable):
             if m:
                 length = m.group('length')
                 self.debug('SILENCE of %r', length)
+                sources.append(counter, absoluteOffset, None)
                 if currentFile is not None:
                     self.debug('SILENCE after FILE, increasing counter')
                     counter += 1
@@ -241,6 +275,8 @@ class TocFile(object, log.Loggable):
                         trackNumber, counter)
                 currentFile = File(filePath, common.msfToFrames(start),
                     common.msfToFrames(length))
+                sources.append(counter, absoluteOffset + currentLength,
+                    currentFile)
                 #absoluteOffset += common.msfToFrames(start)
                 currentLength += common.msfToFrames(length)
 
