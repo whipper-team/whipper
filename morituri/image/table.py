@@ -547,10 +547,18 @@ class Table(object, log.Loggable):
             if key in self.cdtext:
                 lines.append('%s "%s"' % (key, self.cdtext[key]))
 
-        # add the first FILE line
-        path = self.tracks[0].getFirstIndex().path
-        counter = self.tracks[0].getFirstIndex().counter
+        # add the first FILE line; EAC always puts the first FILE
+        # statement before TRACK 01
+        firstTrack = self.tracks[0]
+        indexOne = firstTrack.getIndex(1)
+
+        firstIndex = firstTrack.getFirstIndex()
+        path = indexOne.path
+        counter = indexOne.counter
+
+        assert path, "No path on TRACK 01 INDEX 01"
         writeFile(path)
+
 
         for i, track in enumerate(self.tracks):
             # FIXME: skip data tracks for now
@@ -577,6 +585,14 @@ class Table(object, log.Loggable):
 
             for number in indexes:
                 index = track.indexes[number]
+                # handle TRACK 01 INDEX 00 specially
+                if i == 0 and number == 0:
+                    # if we have a silent pre-gap, output it
+                    if not index.path:
+                        length = indexOne.absolute - index.absolute
+                        lines.append("    PREGAP %s" % common.framesToMSF(length))
+                    continue
+
                 if index.counter != counter:
                     writeFile(index.path)
                     counter = index.counter
