@@ -139,7 +139,7 @@ class BlocTestCase(common.TestCase):
         cue = self.toc.table.cue()
         ref = open(os.path.join(os.path.dirname(__file__),
             'bloc.cue')).read()
-        self.assertEquals(cue, ref)
+        common.diffStrings(cue, ref)
 
     def testCDDBId(self):
         self.toc.table.absolutize()
