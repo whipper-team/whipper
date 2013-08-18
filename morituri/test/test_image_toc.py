@@ -129,9 +129,16 @@ class BlocTestCase(common.TestCase):
         self.assertEquals(self.toc.getTrackLength(t), -1)
 
     def testIndexes(self):
-        t = self.toc.table.tracks[0]
-        self.assertEquals(t.getIndex(0).relative, 0)
-        self.assertEquals(t.getIndex(1).relative, 15220)
+        firstTrack = self.toc.table.tracks[0]
+        index0 = firstTrack.getIndex(0)
+        self.assertEquals(index0.absolute, 0)
+        self.assertEquals(index0.relative, 0)
+        self.assertEquals(index0.counter, 0)
+
+        index1 = firstTrack.getIndex(1)
+        self.assertEquals(index1.absolute, 15220)
+        self.assertEquals(index1.relative, 0)
+        self.assertEquals(index1.counter, 1)
 
     # This disc has a pre-gap, so is a good test for .CUE writing
 

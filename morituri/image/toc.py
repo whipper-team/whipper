@@ -119,6 +119,16 @@ class Sources(log.Loggable):
 
         return self._sources[-1]
 
+    def getCounterStart(self, counter):
+        """
+        Retrieve the absolute offset of the first source for this counter
+        """
+        for i, (c, o, s) in enumerate(self._sources):
+            if c == counter:
+                return self._sources[i][1]
+
+        return self._sources[-1][1]
+
 
 class TocFile(object, log.Loggable):
 
@@ -197,7 +207,6 @@ class TocFile(object, log.Loggable):
                 # set index 1 of previous track if there was one, using
                 # pregapLength if applicable
                 if currentTrack:
-                    # FIXME: why not set absolute offsets too ?
                     currentTrack.index(1, path=currentFile.path,
                         absolute=absoluteOffset + pregapLength,
                         relative=currentFile.start + pregapLength,
@@ -310,6 +319,11 @@ class TocFile(object, log.Loggable):
 
                 length = common.msfToFrames(m.group('length'))
                 c, o, s = sources.get(absoluteOffset)
+                self.debug('at abs offset %d, we are in source %r' % (
+                    absoluteOffset, s))
+                counterStart = sources.getCounterStart(c)
+                relativeOffset = absoluteOffset - counterStart
+
                 currentTrack.index(0, path=s and s.path or None,
                     absolute=absoluteOffset,
                     relative=relativeOffset, counter=c)
