@@ -23,7 +23,10 @@ class CureTestCase(common.TestCase):
     def testGetTrackLength(self):
         t = self.toc.table.tracks[0]
         # first track has known length because the .toc is a single file
-        self.assertEquals(self.toc.getTrackLength(t), 28324)
+        # its length is all of track 1 from .toc, plus the INDEX 00 length
+        # of track 2
+        self.assertEquals(self.toc.getTrackLength(t),
+            (((6 * 60) + 16) * 75 + 45) + ((1 * 75) + 4))
         # last track has unknown length
         t = self.toc.table.tracks[-1]
         self.assertEquals(self.toc.getTrackLength(t), -1)
@@ -403,10 +406,18 @@ class SurferRosaTestCase(common.TestCase):
         # HTOA
         t = self.toc.table.tracks[0]
         self.assertEquals(len(t.indexes), 2)
-        self.assertEquals(t.getIndex(0).relative, 0)
-        self.assertEquals(t.getIndex(0).absolute, 0)
-        self.assertEquals(t.getIndex(1).relative, 32)
-        self.assertEquals(t.getIndex(1).absolute, 32)
+
+        i0 = t.getIndex(0)
+        self.assertEquals(i0.relative, 0)
+        self.assertEquals(i0.absolute, 0)
+        self.assertEquals(i0.path, None)
+        self.assertEquals(i0.counter, 0)
+
+        i1 = t.getIndex(1)
+        self.assertEquals(i1.relative, 32)
+        self.assertEquals(i1.absolute, 32)
+        self.assertEquals(i1.path, 'data.wav')
+        self.assertEquals(i1.counter, 1)
 
         # track 11, Vamos
 
