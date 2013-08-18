@@ -200,10 +200,10 @@ class TocFile(object, log.Loggable):
                     # FIXME: why not set absolute offsets too ?
                     currentTrack.index(1, path=currentFile.path,
                         absolute=absoluteOffset + pregapLength,
-                        relative=relativeOffset + pregapLength,
+                        relative=currentFile.start + pregapLength,
                         counter=counter)
                     self.debug(
-                        '[track %2d index 01] pregapLength %r, added %r',
+                        '[track %02d index 01] pregapLength %r, added %r',
                             currentTrack.number, pregapLength,
                             currentTrack.getIndex(1))
 
@@ -339,7 +339,7 @@ class TocFile(object, log.Loggable):
         if currentTrack:
             currentTrack.index(1, path=currentFile.path,
                 absolute=absoluteOffset + pregapLength,
-                relative=relativeOffset + pregapLength, counter=counter)
+                relative=currentFile.start, counter=counter)
             self.debug('[track %2d index 01] last track, added %r',
                 currentTrack.number, currentTrack.getIndex(1))
 
