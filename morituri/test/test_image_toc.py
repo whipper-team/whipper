@@ -62,7 +62,7 @@ class CureTestCase(common.TestCase):
         self._assertAbsolute(2, 1, 28324)
         self._assertPath(1, 1, "data.wav")
 
-        self.toc.table.absolutize()
+        # self.toc.table.absolutize()
         self.toc.table.clearFiles()
 
         self._assertAbsolute(1, 1, 0)
@@ -86,7 +86,7 @@ class CureTestCase(common.TestCase):
         self._assertRelative(2, 1, None)
 
     def testConvertCue(self):
-        self.toc.table.absolutize()
+        # self.toc.table.absolutize()
         cue = self.toc.table.cue()
         ref = open(os.path.join(os.path.dirname(__file__), 'cure.cue')).read(
             ).decode('utf-8')
@@ -152,7 +152,7 @@ class BlocTestCase(common.TestCase):
         common.diffStrings(cue, ref)
 
     def testCDDBId(self):
-        self.toc.table.absolutize()
+        # self.toc.table.absolutize()
         # cd-discid output:
         # ad0be00d 13 15370 35019 51532 69190 84292 96826 112527 132448
         # 148595 168072 185539 203331 222103 3244
@@ -161,7 +161,7 @@ class BlocTestCase(common.TestCase):
 
     def testAccurateRip(self):
         # we verify it because it has failed in readdisc in the past
-        self.toc.table.absolutize()
+        # self.toc.table.absolutize()
         self.assertEquals(self.toc.table.getAccurateRipURL(),
             'http://www.accuraterip.com/accuraterip/'
             'e/d/2/dBAR-013-001af2de-0105994e-ad0be00d.bin')
@@ -189,7 +189,7 @@ class BreedersTestCase(common.TestCase):
         self.assertEquals(cdt['TITLE'], 'OVERGLAZED')
 
     def testConvertCue(self):
-        self.toc.table.absolutize()
+        # self.toc.table.absolutize()
         self.failUnless(self.toc.table.hasTOC())
         cue = self.toc.table.cue()
         ref = open(os.path.join(os.path.dirname(__file__),
@@ -211,7 +211,7 @@ class LadyhawkeTestCase(common.TestCase):
         self.failIf(self.toc.table.tracks[-1].audio)
 
     def testCDDBId(self):
-        self.toc.table.absolutize()
+        #self.toc.table.absolutize()
         self.assertEquals(self.toc.table.getCDDBDiscId(), 'c60af50d')
         # output from cd-discid:
         # c60af50d 13 150 15687 31841 51016 66616 81352 99559 116070 133243
@@ -260,7 +260,7 @@ class CapitalMergeTestCase(common.TestCase):
         self.table.merge(self.toc2.table)
 
     def testCDDBId(self):
-        self.table.absolutize()
+        #self.table.absolutize()
         self.assertEquals(self.table.getCDDBDiscId(), 'b910140c')
         # output from cd-discid:
         # b910140c 12 24320 44855 64090 77885 88095 104020 118245 129255 141765
@@ -327,7 +327,7 @@ class TOTBLTestCase(common.TestCase):
         self.assertEquals(len(self.toc.table.tracks), 11)
 
     def testCDDBId(self):
-        self.toc.table.absolutize()
+        #self.toc.table.absolutize()
         self.assertEquals(self.toc.table.getCDDBDiscId(), '810b7b0b')
 
 
@@ -437,7 +437,7 @@ class SurferRosaTestCase(common.TestCase):
         self.assertEquals(t.getIndex(2).relative, 3370)
         self.assertEquals(t.getIndex(2).absolute, None)
 
-        self.toc.table.absolutize()
+        # self.toc.table.absolutize()
         self.assertEquals(t.getIndex(2).absolute, 3370)
 
 #        print self.toc.table.cue()
