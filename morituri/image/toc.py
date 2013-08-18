@@ -319,6 +319,10 @@ class TocFile(object, log.Loggable):
         self._messages.append((number + 1, message))
 
     def getTrackLength(self, track):
+        """
+        Returns the length of the given track, from its INDEX 01 to the next
+        track's INDEX 01
+        """
         # returns track length in frames, or -1 if can't be determined and
         # complete file should be assumed
         # FIXME: this assumes a track can only be in one file; is this true ?
