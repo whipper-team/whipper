@@ -309,10 +309,11 @@ class TocFile(object, log.Loggable):
                     continue
 
                 length = common.msfToFrames(m.group('length'))
-                currentTrack.index(0, path=currentFile.path,
+                c, o, s = sources.get(absoluteOffset)
+                currentTrack.index(0, path=s and s.path or None,
                     absolute=absoluteOffset,
-                    relative=relativeOffset, counter=counter)
-                self.debug('track %d, added index %r',
+                    relative=relativeOffset, counter=c)
+                self.debug('[track %2d index 00] added %r',
                     currentTrack.number, currentTrack.getIndex(0))
                 # store the pregapLength to add it when we index 1 for this
                 # track on the next iteration
