@@ -359,17 +359,11 @@ class StrokesTestCase(common.TestCase):
         i0 = t.getIndex(0)
         self.assertEquals(i0.relative, 0)
         self.assertEquals(i0.absolute, 0)
-        # FIXME: this is what we should have
-        # self.assertEquals(i0.counter, 0)
-        # self.assertEquals(i0.path, None)
-        # FIXME: this is what it is right now
-        self.assertEquals(i0.counter, 1)
-        self.assertEquals(i0.path, u'data.wav')
+        self.assertEquals(i0.counter, 0)
+        self.assertEquals(i0.path, None)
 
         i1 = t.getIndex(1)
-        # FIXME: relative should be 0, as it should point to the start
-        # of data.wav
-        self.assertEquals(i1.relative, 1)
+        self.assertEquals(i1.relative, 0)
         self.assertEquals(i1.absolute, 1)
         self.assertEquals(i1.counter, 1)
         self.assertEquals(i1.path, u'data.wav')
@@ -377,9 +371,7 @@ class StrokesTestCase(common.TestCase):
         cue = self._filterCue(self.toc.table.cue())
         ref = self._filterCue(open(os.path.join(os.path.dirname(__file__),
             'strokes-someday.eac.cue')).read())
-        # FIXME: this diff should match
-        # common.diffStrings(cue, ref)
-        self.assertRaises(AssertionError, common.diffStrings, cue, ref)
+        common.diffStrings(cue, ref)
 
     def _filterCue(self, output):
         # helper to be able to compare our generated .cue with the
