@@ -217,24 +217,27 @@ class TocFile(object, log.Loggable):
                             currentTrack.number, pregapLength,
                             currentTrack.getIndex(1))
 
-                # update running totals
+                # create a new track to be filled by later lines
                 trackNumber += 1
+                trackMode = m.group('mode')
+                audio = trackMode == 'AUDIO'
+                currentTrack = table.Track(trackNumber, audio=audio)
+                self.table.tracks.append(currentTrack)
+
+                # update running totals
                 absoluteOffset += currentLength
                 relativeOffset += currentLength
                 totalLength += currentLength
-                trackMode = m.group('mode')
-
-                # reset counters
-                currentLength = 0
-                indexNumber = 1
-                pregapLength = 0
 
                 # FIXME: track mode
                 self.debug('found track %d, mode %s, at absoluteOffset %d',
                     trackNumber, trackMode, absoluteOffset)
-                audio = trackMode == 'AUDIO'
-                currentTrack = table.Track(trackNumber, audio=audio)
-                self.table.tracks.append(currentTrack)
+
+                # reset counters relative to a track
+                currentLength = 0
+                indexNumber = 1
+                pregapLength = 0
+
                 continue
 
             # look for ISRC lines
