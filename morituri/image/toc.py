@@ -105,7 +105,7 @@ class Sources(log.Loggable):
         @type  counter: int
         @param offset:  the absolute disc offset where this source starts
         """
-        self.debug('Appending source, counter %d, offset %d, source %r' % (
+        self.debug('Appending source, counter %d, abs offset %d, source %r' % (
             counter, offset, source))
         self._sources.append((counter, offset, source))
 
