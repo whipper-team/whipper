@@ -327,7 +327,7 @@ class TocFile(object, log.Loggable):
                 currentTrack.index(0, path=s and s.path or None,
                     absolute=absoluteOffset,
                     relative=relativeOffset, counter=c)
-                self.debug('[track %2d index 00] added %r',
+                self.debug('[track %02d index 00] added %r',
                     currentTrack.number, currentTrack.getIndex(0))
                 # store the pregapLength to add it when we index 1 for this
                 # track on the next iteration
