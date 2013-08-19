@@ -306,6 +306,8 @@ class TocFile(object, log.Loggable):
                         trackNumber, counter)
                 # FIXME: assume that a MODE2_FORM_MIX track always starts at 0
                 currentFile = File(filePath, 0, common.msfToFrames(length))
+                self._sources.append(counter, absoluteOffset + currentLength,
+                    currentFile)
                 #absoluteOffset += common.msfToFrames(start)
                 currentLength += common.msfToFrames(length)
 
