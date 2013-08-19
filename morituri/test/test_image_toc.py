@@ -402,6 +402,9 @@ class StrokesTestCase(common.TestCase):
 # Surfer Rosa has
 # track 00 consisting of 32 frames of SILENCE
 # track 11 Vamos with an INDEX 02
+# compared to an EAC single .cue file, all our offsets are 32 frames off
+# because the toc uses silence for track 01 index 00 while EAC puts it in
+# Range.wav
 
 
 class SurferRosaTestCase(common.TestCase):
@@ -425,7 +428,7 @@ class SurferRosaTestCase(common.TestCase):
         self.assertEquals(i0.counter, 0)
 
         i1 = t.getIndex(1)
-        self.assertEquals(i1.relative, 32)
+        self.assertEquals(i1.relative, 0)
         self.assertEquals(i1.absolute, 32)
         self.assertEquals(i1.path, 'data.wav')
         self.assertEquals(i1.counter, 1)
@@ -436,13 +439,10 @@ class SurferRosaTestCase(common.TestCase):
         self.assertEquals(len(t.indexes), 2)
 
         # 32 frames of silence, and 1483 seconds of data.wav
-        self.assertEquals(t.getIndex(1).relative, 111257)
+        self.assertEquals(t.getIndex(1).relative, 111225)
         self.assertEquals(t.getIndex(1).absolute, 111257)
-        self.assertEquals(t.getIndex(2).relative, 3370)
-        self.assertEquals(t.getIndex(2).absolute, None)
-
-        # self.toc.table.absolutize()
-        self.assertEquals(t.getIndex(2).absolute, 3370)
+        self.assertEquals(t.getIndex(2).relative, 111225 + 3370)
+        self.assertEquals(t.getIndex(2).absolute, 111257 + 3370)
 
 #        print self.toc.table.cue()
 
