@@ -142,6 +142,9 @@ class TocFile(object, log.Loggable):
         self.table = table.Table()
         self.logName = '<TocFile %08x>' % id(self)
 
+        self._sources = Sources()
+
+
     def parse(self):
         # these two objects start as None then get set as real objects,
         # so no need to complain about them here
@@ -160,8 +163,6 @@ class TocFile(object, log.Loggable):
                           # reset on each TRACK statement
         totalLength = 0 # accrued during TRACK record parsing, total disc
         pregapLength = 0 # length of the pre-gap, current track in for loop
-
-        sources = Sources()
 
         # the first track's INDEX 1 can only be gotten from the .toc
         # file once the first pregap is calculated; so we add INDEX 1
@@ -248,7 +249,7 @@ class TocFile(object, log.Loggable):
             if m:
                 length = m.group('length')
                 self.debug('SILENCE of %r', length)
-                sources.append(counter, absoluteOffset, None)
+                self._sources.append(counter, absoluteOffset, None)
                 if currentFile is not None:
                     self.debug('SILENCE after FILE, increasing counter')
                     counter += 1
@@ -284,7 +285,7 @@ class TocFile(object, log.Loggable):
                         trackNumber, counter)
                 currentFile = File(filePath, common.msfToFrames(start),
                     common.msfToFrames(length))
-                sources.append(counter, absoluteOffset + currentLength,
+                self._sources.append(counter, absoluteOffset + currentLength,
                     currentFile)
                 #absoluteOffset += common.msfToFrames(start)
                 currentLength += common.msfToFrames(length)
@@ -318,10 +319,10 @@ class TocFile(object, log.Loggable):
                     continue
 
                 length = common.msfToFrames(m.group('length'))
-                c, o, s = sources.get(absoluteOffset)
+                c, o, s = self._sources.get(absoluteOffset)
                 self.debug('at abs offset %d, we are in source %r' % (
                     absoluteOffset, s))
-                counterStart = sources.getCounterStart(c)
+                counterStart = self._sources.getCounterStart(c)
                 relativeOffset = absoluteOffset - counterStart
 
                 currentTrack.index(0, path=s and s.path or None,
