@@ -144,6 +144,24 @@ class TocFile(object, log.Loggable):
 
         self._sources = Sources()
 
+    def _index(self, currentTrack, i, absoluteOffset, trackOffset):
+        absolute = absoluteOffset + trackOffset
+        # this may be in a new source, so calculate relative
+        c, o, s = self._sources.get(absolute)
+        self.debug('at abs offset %d, we are in source %r' % (
+            absolute, s))
+        counterStart = self._sources.getCounterStart(c)
+        relative = absolute - counterStart
+
+        currentTrack.index(i, path=s.path,
+            absolute=absolute,
+            relative=relative,
+            counter=c)
+        self.debug(
+            '[track %02d index %02d] trackOffset %r, added %r',
+                currentTrack.number, i, trackOffset,
+                currentTrack.getIndex(i))
+
 
     def parse(self):
         # these two objects start as None then get set as real objects,
@@ -208,14 +226,7 @@ class TocFile(object, log.Loggable):
                 # set index 1 of previous track if there was one, using
                 # pregapLength if applicable
                 if currentTrack:
-                    currentTrack.index(1, path=currentFile.path,
-                        absolute=absoluteOffset + pregapLength,
-                        relative=currentFile.start + pregapLength,
-                        counter=counter)
-                    self.debug(
-                        '[track %02d index 01] pregapLength %r, added %r',
-                            currentTrack.number, pregapLength,
-                            currentTrack.getIndex(1))
+                    self._index(currentTrack, 1, absoluteOffset, pregapLength)
 
                 # create a new track to be filled by later lines
                 trackNumber += 1
@@ -349,19 +360,11 @@ class TocFile(object, log.Loggable):
 
                 indexNumber += 1
                 offset = common.msfToFrames(m.group('offset'))
-                currentTrack.index(indexNumber, path=currentFile.path,
-                    relative=offset, counter=counter)
-                self.debug('[track %2d index %2d] added %r',
-                    currentTrack.number, indexNumber,
-                    currentTrack.getIndex(indexNumber))
+                self._index(currentTrack, indexNumber, absoluteOffset, offset)
 
         # handle index 1 of final track, if any
         if currentTrack:
-            currentTrack.index(1, path=currentFile.path,
-                absolute=absoluteOffset + pregapLength,
-                relative=currentFile.start, counter=counter)
-            self.debug('[track %2d index 01] last track, added %r',
-                currentTrack.number, currentTrack.getIndex(1))
+            self._index(currentTrack, 1, absoluteOffset, pregapLength)
 
         # totalLength was added up to the penultimate track
         self.table.leadout = totalLength + currentLength
