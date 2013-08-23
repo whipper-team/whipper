@@ -44,10 +44,15 @@ musicbrainzngs_PYTHON = \
 
 EXTRA_DIST = python-command/scripts/help2man
 
-flog/log.py: git-submodule
-musicbrainzngs/musicbrainz.py: git-submodule
+log:
+	make git-submodule
+musicbrainzngs:
+	make git-submodule
 
 git-submodule:
 	cd $(top_srcdir) && git submodule init && git submodule sync && git submodule update
 
-all-local: flog/log.py musicbrainzngs/musicbrainz.py
+.PHONY: git-submodule
+
+
+all-local: log musicbrainzngs
