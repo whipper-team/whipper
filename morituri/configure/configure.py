@@ -25,9 +25,15 @@ __thisdir = os.path.dirname(os.path.abspath(__file__))
 if os.path.exists(os.path.join(__thisdir, 'uninstalled.py')):
     from morituri.configure import uninstalled
     config_dict = uninstalled.get()
-else:
+elif os.path.exists(os.path.join(__thisdir, 'installed.py')):
     from morituri.configure import installed
     config_dict = installed.get()
+else:
+    # hack on fresh checkout, no make run yet, and configure needs revision
+    from morituri.common import common
+    config_dict = {
+        'revision': common.getRevision(),
+    }
 
 for key, value in config_dict.items():
     dictionary = locals()
