@@ -631,6 +631,9 @@ class Table(object, log.Loggable):
         to adjust the path.
 
         Assumes all indexes have an absolute offset and will raise if not.
+
+        @type  track: C{int}
+        @type  index: C{int}
         """
         self.debug('setFile: track %d, index %d, path %r, '
             'length %r, counter %r', track, index, path, length, counter)
