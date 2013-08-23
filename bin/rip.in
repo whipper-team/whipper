@@ -30,6 +30,8 @@ and assure it doesn't raise an exception.
     sys.exit(1)
 
 # now load the main function
+h = None
+
 try:
     from morituri.common import deps
     from morituri.extern.deps import deps as edeps
@@ -38,6 +40,9 @@ try:
     from morituri.rip import main
     sys.exit(main.main(sys.argv[1:]))
 except ImportError, e:
+    if not h:
+        # we couldn't even import deps, so reraise
+        raise
     h.handleImportError(e)
     sys.exit(1)
 except edeps.DependencyError:
