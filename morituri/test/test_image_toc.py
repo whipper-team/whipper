@@ -90,7 +90,7 @@ class CureTestCase(common.TestCase):
         cue = self.toc.table.cue()
         ref = open(os.path.join(os.path.dirname(__file__), 'cure.cue')).read(
             ).decode('utf-8')
-        common.diffStrings(cue, ref)
+        common.diffStrings(ref, cue)
 
         # we verify it because it has failed in readdisc in the past
         self.assertEquals(self.toc.table.getAccurateRipURL(),
@@ -160,8 +160,8 @@ class BlocTestCase(common.TestCase):
         self.failUnless(self.toc.table.hasTOC())
         cue = self.toc.table.cue()
         ref = open(os.path.join(os.path.dirname(__file__),
-            'bloc.cue')).read()
-        common.diffStrings(cue, ref)
+            'bloc.cue')).read().decode('utf-8')
+        common.diffStrings(ref, cue)
 
     def testCDDBId(self):
         # self.toc.table.absolutize()
@@ -371,8 +371,8 @@ class StrokesTestCase(common.TestCase):
 
         cue = self._filterCue(self.toc.table.cue())
         ref = self._filterCue(open(os.path.join(os.path.dirname(__file__),
-            'strokes-someday.eac.cue')).read())
-        common.diffStrings(cue, ref)
+            'strokes-someday.eac.cue')).read()).decode('utf-8')
+        common.diffStrings(ref, cue)
 
     def _filterCue(self, output):
         # helper to be able to compare our generated .cue with the

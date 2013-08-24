@@ -7,6 +7,8 @@ import unittest
 
 from morituri.image import table, cue
 
+from morituri.test import common
+
 
 class KingsSingleTestCase(unittest.TestCase):
 
@@ -73,7 +75,7 @@ class WriteCueFileTestCase(unittest.TestCase):
         it.absolutize()
         it.leadout = 3000
 
-        self.assertEquals(it.cue(), """REM DISCID 0C002802
+        common.diffStrings(u"""REM DISCID 0C002802
 REM COMMENT "Morituri"
 FILE "track01.wav" WAVE
   TRACK 01 AUDIO
@@ -82,5 +84,5 @@ FILE "track01.wav" WAVE
     INDEX 00 00:13:25
 FILE "track02.wav" WAVE
     INDEX 01 00:00:00
-""")
+""", it.cue())
         os.unlink(path)
