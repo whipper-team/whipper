@@ -25,6 +25,23 @@ from morituri.result import result
 
 from morituri.common import task, cache
 
+class RCCue(logcommand.LogCommand):
+
+    name = "cue"
+    summary = "write a cue file for the cached result"
+
+    def do(self, args):
+        self._cache = cache.ResultCache()
+
+        persisted = self._cache.getRipResult(args[0], create=False)
+
+        if not persisted:
+            self.stderr.write(
+                'Could not find a result for cddb disc id %s\n' % args[0])
+            return 3
+
+        self.stdout.write(persisted.object.table.cue().encode('utf-8'))
+
 
 class RCList(logcommand.LogCommand):
 
@@ -85,14 +102,14 @@ class RCLog(logcommand.LogCommand):
 
         logger = klazz()
         self.stdout.write(logger.log(persisted.object).encode('utf-8'))
- 
+
 
 class ResultCache(logcommand.LogCommand):
 
     summary = "debug result cache"
     aliases = ['rc', ]
 
-    subCommandClasses = [RCList, RCLog, ]
+    subCommandClasses = [RCCue, RCList, RCLog, ]
 
 
 class Checksum(logcommand.LogCommand):
