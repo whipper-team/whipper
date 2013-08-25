@@ -1,4 +1,7 @@
 TODO:
+- after fixing relative, pregaps, and index 02, check when htoa is 0,
+  and add a setSilence to table to set a counter 0 with no path, and test
+  that the cue file puts a SILENCE/PREGAP
 - store drive features in a database
 - try http://www.ime.usp.br/~pjssilva/secure-cdparanoia.py and see if it
   is better at handling some bad cd's
