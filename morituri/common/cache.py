@@ -115,7 +115,7 @@ class Persister(log.Loggable):
         os.unlink(self._path)
 
 
-class PersistedCache(object):
+class PersistedCache(log.Loggable):
     """
     I wrap a directory of persisted objects.
     """
@@ -138,11 +138,15 @@ class PersistedCache(object):
         Returns the persister for the given key.
         """
         persister = Persister(self._getPath(key))
+        if persister.object:
+            if hasattr(persister.object, 'instanceVersion'):
+                o = persister.object
+                if o.instanceVersion < o.__class__.classVersion:
+                    self.debug(
+                        'key %r persisted object version %d is outdated',
+                        key, o.instanceVersion)
+                    persister.object = None
         # FIXME: don't delete old objects atm
-        # if persister.object:
-        #     if hasattr(persister.object, 'instanceVersion'):
-        #         o = persister.object
-        #         if o.instanceVersion < o.__class__.classVersion:
         #             persister.delete()
 
         return persister
@@ -230,6 +234,9 @@ class TableCache(log.Loggable):
                         self.debug('cached table is for different mb id %r' % (
                             ptable.object.getMusicBrainzDiscId()))
                     ptable.object = None
+                else:
+                    self.debug('no valid cached table found for %r' %
+                        cddbdiscid)
 
         if not ptable.object:
             # get an empty persistable from the writable location
