@@ -179,14 +179,19 @@ class EncodeTask(ctask.GstPipelineTask):
         cgstreamer.removeAudioParsers()
 
     def getPipelineDesc(self):
+        # start with an emit interval of one frame, because we end up setting
+        # the final interval after paused and after processing some samples
+        # already, which is too late
+        interval = int(self.gst.SECOND / 75.0)
         return '''
             filesrc location="%s" !
             decodebin name=decoder !
             audio/x-raw-int,width=16,depth=16,channels=2 !
-            level name=level !
+            level name=level interval=%d !
             %s ! identity name=identity !
             filesink location="%s" name=sink''' % (
                 gstreamer.quoteParse(self._inpath).encode('utf-8'),
+                interval,
                 self._profile.pipeline,
                 gstreamer.quoteParse(self._outpath).encode('utf-8'))
 
