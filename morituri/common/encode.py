@@ -100,20 +100,45 @@ class WavpackProfile(Profile):
     lossless = True
 
 
-class MP3Profile(Profile):
+class _LameProfile(Profile):
+    extension = 'mp3'
+    lossless = False
+
+    def test(self):
+        version = cgstreamer.elementFactoryVersion('lamemp3enc')
+        self.debug('lamemp3enc version: %r', version)
+        if version:
+            t = tuple([int(s) for s in version.split('.')])
+            if t >= (0, 10, 19):
+                self.pipeline = self._lamemp3enc_pipeline
+                return True
+
+        version = cgstreamer.elementFactoryVersion('lame')
+        self.debug('lame version: %r', version)
+        if version:
+            self.pipeline = self._lame_pipeline
+            return True
+
+        return False
+
+
+class MP3Profile(_LameProfile):
     name = 'mp3'
-    extension = 'mp3'
-    pipeline = 'lame name=tagger quality=0 ! id3v2mux'
-    lossless = False
+
+    _lame_pipeline = 'lame name=tagger quality=0 ! id3v2mux'
+    _lamemp3enc_pipeline = \
+        'lamemp3enc name=tagger target=bitrate cbr=true bitrate=320 ! ' \
+         'xingmux ! id3v2mux'
 
 
-class MP3VBRProfile(Profile):
+class MP3VBRProfile(_LameProfile):
     name = 'mp3vbr'
-    extension = 'mp3'
-    pipeline = 'lame name=tagger ' \
-               'vbr-quality=0 vbr=new vbr-mean-bitrate=192 ! ' \
-               'id3v2mux'
-    lossless = False
+
+    _lame_pipeline = 'lame name=tagger ' \
+        'vbr-quality=0 vbr=new vbr-mean-bitrate=192 ! ' \
+        'id3v2mux'
+    _lamemp3enc_pipeline = 'lamemp3enc name=tagger quality=0 ' \
+        '! xingmux ! id3v2mux'
 
 
 class VorbisProfile(Profile):
