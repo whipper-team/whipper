@@ -32,7 +32,8 @@ from morituri.common import task as ctask
 from morituri.extern.task import task, gstreamer
 
 
-class Profile(object):
+class Profile(log.Loggable):
+
     name = None
     extension = None
     pipeline = None
