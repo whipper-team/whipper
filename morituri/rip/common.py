@@ -28,13 +28,13 @@ disc and track template are:
 
 '''
 
-def addTemplate(self):
+def addTemplate(obj):
     # FIXME: get from config
-    self.parser.add_option('', '--track-template',
+    obj.parser.add_option('', '--track-template',
         action="store", dest="track_template",
         help="template for track file naming (default %default)",
         default=DEFAULT_TRACK_TEMPLATE)
-    self.parser.add_option('', '--disc-template',
+    obj.parser.add_option('', '--disc-template',
         action="store", dest="disc_template",
         help="template for disc file naming (default %default)",
         default=DEFAULT_DISC_TEMPLATE)
