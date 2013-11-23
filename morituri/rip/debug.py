@@ -126,7 +126,7 @@ class Checksum(logcommand.LogCommand):
         from morituri.common import checksum
 
         for arg in args:
-            fromPath = unicode(args[0])
+            fromPath = unicode(arg)
 
             checksumtask = checksum.CRC32Task(fromPath)
 
