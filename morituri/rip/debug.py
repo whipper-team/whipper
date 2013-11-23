@@ -151,6 +151,9 @@ class Encode(logcommand.LogCommand):
             default=default)
 
     def do(self, args):
+        from morituri.common import encode
+        profile = encode.ALL_PROFILES[self.options.profile]()
+
         try:
             fromPath = unicode(args[0])
         except IndexError:
@@ -160,12 +163,10 @@ class Encode(logcommand.LogCommand):
         try:
             toPath = unicode(args[1])
         except IndexError:
-            toPath = fromPath + '.' + self.options.profile
+            toPath = fromPath + '.' + profile.extension
 
         runner = task.SyncRunner()
 
-        from morituri.common import encode
-        profile = encode.ALL_PROFILES[self.options.profile]()
         self.debug('Encoding %s to %s',
             fromPath.encode('utf-8'),
             toPath.encode('utf-8'))
