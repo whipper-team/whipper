@@ -147,7 +147,7 @@ class Encode(logcommand.LogCommand):
         self.parser.add_option('', '--profile',
             action="store", dest="profile",
             help="profile for encoding (default '%s', choices '%s')" % (
-                default, "', '".join(encode.PROFILES.keys())),
+                default, "', '".join(encode.ALL_PROFILES.keys())),
             default=default)
 
     def do(self, args):
@@ -165,7 +165,7 @@ class Encode(logcommand.LogCommand):
         runner = task.SyncRunner()
 
         from morituri.common import encode
-        profile = encode.PROFILES[self.options.profile]()
+        profile = encode.ALL_PROFILES[self.options.profile]()
         self.debug('Encoding %s to %s',
             fromPath.encode('utf-8'),
             toPath.encode('utf-8'))
