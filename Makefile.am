@@ -5,7 +5,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = morituri bin etc doc m4 misc
 
-EXTRA_DIST = morituri.spec morituri.doap RELEASE README HACKING REVISION
+EXTRA_DIST = morituri.spec morituri.doap RELEASE README.md HACKING REVISION
 
 SOURCES = $(top_srcdir)/morituri/*.py $(top_srcdir)/morituri/*/*.py
 

@@ -49,7 +49,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-%doc README morituri.doap NEWS RELEASE ChangeLog
+%doc README.md morituri.doap NEWS RELEASE ChangeLog
 %{_bindir}/rip
 %{_libdir}/morituri/plugins
 %{_mandir}/man1/rip.1*
