@@ -239,6 +239,7 @@ class Program(log.Loggable):
         v['C'] = '' # catalog number
         v['x'] = profile and profile.extension or 'unknown'
         v['X'] = v['x'].upper()
+        v['y'] = '0000'
 
         v['a'] = v['A']
         if i == 0:
