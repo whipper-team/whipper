@@ -288,11 +288,12 @@ Install pycdio and run 'rip offset find' to detect your drive's offset.
             dirname = os.path.dirname(discName)
             if os.path.exists(dirname):
                 self.stdout.write("Output directory %s already exists\n" %
-                    dirname)
+                    dirname.encode('utf-8'))
                 logs = glob.glob(os.path.join(dirname, '*.log'))
                 if logs:
-                    self.stdout.write("Output directory %s is a finished rip\n" %
-                        dirname)
+                    self.stdout.write(
+                        "Output directory %s is a finished rip\n" %
+                        dirname.encode('utf-8'))
                     if not disambiguate:
                         disambiguate = True
                         continue
@@ -301,7 +302,8 @@ Install pycdio and run 'rip offset find' to detect your drive's offset.
                     break
 
             else:
-                self.stdout.write("Creating output directory %s\n" % dirname)
+                self.stdout.write("Creating output directory %s\n" %
+                    dirname.encode('utf-8'))
                 os.makedirs(dirname)
                 break
 
