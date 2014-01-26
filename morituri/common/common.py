@@ -23,14 +23,16 @@
 
 import os
 import os.path
+import commands
 import math
+import subprocess
 
-
+from morituri.extern import asyncsub
 from morituri.extern.log import log
 
 FRAMES_PER_SECOND = 75
 
-SAMPLES_PER_FRAME = 588
+SAMPLES_PER_FRAME = 588 # a sample is 2 16-bit values, left and right channel
 WORDS_PER_FRAME = SAMPLES_PER_FRAME * 2
 BYTES_PER_FRAME = SAMPLES_PER_FRAME * 4
 
@@ -288,3 +290,78 @@ def getRelativePath(targetPath, collectionPath):
             'getRelativePath: target and collection in different dir, %r' %
                 rel)
         return os.path.join(rel, os.path.basename(targetPath))
+
+
+class VersionGetter(object):
+    """
+    I get the version of a program by looking for it in command output
+    according to a regexp.
+    """
+
+    def __init__(self, dependency, args, regexp, expander):
+        """
+        @param dependency: name of the dependency providing the program
+        @param args:       the arguments to invoke to show the version
+        @type  args:       list of str
+        @param regexp:     the regular expression to get the version
+        @param expander:   the expansion string for the version using the
+                           regexp group dict
+        """
+
+        self._dep = dependency
+        self._args = args
+        self._regexp = regexp
+        self._expander = expander
+
+    def get(self):
+        version = "(Unknown)"
+
+        try:
+            p = asyncsub.Popen(self._args,
+                    stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE, close_fds=True)
+            p.wait()
+            output = asyncsub.recv_some(p, e=0, stderr=1)
+            vre = self._regexp.search(output)
+            if vre:
+                version = self._expander % vre.groupdict()
+        except OSError, e:
+            import errno
+            if e.errno == errno.ENOENT:
+                raise MissingDependencyException(self._dep)
+            raise
+
+        return version
+
+
+def getRevision():
+    """
+    Get a revision tag for the current git source tree.
+
+    Appends -modified in case there are local modifications.
+
+    If this is not a git tree, return the top-level REVISION contents instead.
+
+    Finally, return unknown.
+    """
+    topsrcdir = os.path.join(os.path.dirname(__file__), '..', '..')
+
+    # only use git if our src directory looks like a git checkout
+    # if you run git regardless, it recurses up until it finds a .git,
+    # which may be higher than your current source tree
+    if os.path.exists(os.path.join(topsrcdir, '.git')):
+
+        status, describe = commands.getstatusoutput('git describe')
+        if status == 0:
+            if commands.getoutput('git diff-index --name-only HEAD --'):
+                describe += '-modified'
+
+            return describe
+
+    # check for a top-level REIVISION file
+    path = os.path.join(topsrcdir, 'REVISION')
+    if os.path.exists(path):
+        revision = open(path).read().strip()
+        return revision
+
+    return '(unknown)'

@@ -28,13 +28,12 @@ import os
 import sys
 import time
 
-from morituri.common import common, log, musicbrainzngs, cache
+from morituri.common import common, log, mbngs, cache, path
 from morituri.program import cdrdao, cdparanoia
 from morituri.image import image
 
-
-def filterForPath(text):
-    return "-".join(text.split("/"))
+from morituri.extern.task import task, gstreamer
+from morituri.extern.musicbrainzngs import musicbrainz
 
 
 # FIXME: should Program have a runner ?
@@ -45,10 +44,11 @@ class Program(log.Loggable):
     I maintain program state and functionality.
 
     @ivar metadata:
-    @type metadata: L{musicbrainz.DiscMetadata}
+    @type metadata: L{mbngs.DiscMetadata}
     @ivar result:   the rip's result
     @type result:   L{result.RipResult}
     @type outdir:   unicode
+    @type config:   L{morituri.common.config.Config}
     """
 
     cuePath = None
@@ -59,13 +59,29 @@ class Program(log.Loggable):
 
     _stdout = None
 
-    def __init__(self, record=False, stdout=sys.stdout):
+    def __init__(self, config, record=False, stdout=sys.stdout):
         """
         @param record: whether to record results of API calls for playback.
         """
         self._record = record
         self._cache = cache.ResultCache()
         self._stdout = stdout
+        self._config = config
+
+        d = {}
+
+        for key, default in {
+            'fat': True,
+            'special': False
+        }.items():
+            value = None
+            value = self._config.getboolean('main', 'path_filter_'+ key)
+            if value is None:
+                value = default
+
+            d[key] = value
+
+        self._filter = path.PathFilter(**d)
 
     def setWorkingDirectory(self, workingDirectory):
         if workingDirectory:
@@ -101,8 +117,9 @@ class Program(log.Loggable):
     def getFastToc(self, runner, toc_pickle, device):
         """
         Retrieve the normal TOC table from a toc pickle or the drive.
+        Also retrieves the cdrdao version
 
-        @rtype: L{table.Table}
+        @rtype: tuple of L{table.Table}, str
         """
         def function(r, t):
             r.run(t)
@@ -150,8 +167,12 @@ class Program(log.Loggable):
             t = cdrdao.ReadTableTask(device=device)
             runner.run(t)
             ptable.persist(t.table)
+            self.debug('getTable: read table %r' % t.table)
         else:
-            self.debug('getTable: cddbdiscid %s in cache' % cddbdiscid)
+            self.debug('getTable: cddbdiscid %s, mbdiscid %s in cache' % (
+                cddbdiscid, mbdiscid))
+            ptable.object.unpickled()
+            self.debug('getTable: loaded table %r' % ptable.object)
         itable = ptable.object
         assert itable.hasTOC()
 
@@ -218,6 +239,7 @@ class Program(log.Loggable):
         v['C'] = '' # catalog number
         v['x'] = profile and profile.extension or 'unknown'
         v['X'] = v['x'].upper()
+        v['y'] = '0000'
 
         v['a'] = v['A']
         if i == 0:
@@ -229,9 +251,9 @@ class Program(log.Loggable):
         if self.metadata:
             release = self.metadata.release or '0000'
             v['y'] = release[:4]
-            v['A'] = filterForPath(self.metadata.artist)
-            v['S'] = filterForPath(self.metadata.sortName)
-            v['d'] = filterForPath(self.metadata.title)
+            v['A'] = self._filter.filter(self.metadata.artist)
+            v['S'] = self._filter.filter(self.metadata.sortName)
+            v['d'] = self._filter.filter(self.metadata.title)
             v['B'] = self.metadata.barcode
             v['C'] = self.metadata.catalogNumber
             if self.metadata.releaseType:
@@ -239,16 +261,16 @@ class Program(log.Loggable):
                 v['r'] = self.metadata.releaseType.lower()
             if i > 0:
                 try:
-                    v['a'] = filterForPath(self.metadata.tracks[i - 1].artist)
-                    v['s'] = filterForPath(
+                    v['a'] = self._filter.filter(self.metadata.tracks[i - 1].artist)
+                    v['s'] = self._filter.filter(
                         self.metadata.tracks[i - 1].sortName)
-                    v['n'] = filterForPath(self.metadata.tracks[i - 1].title)
+                    v['n'] = self._filter.filter(self.metadata.tracks[i - 1].title)
                 except IndexError, e:
                     print 'ERROR: no track %d found, %r' % (i, e)
                     raise
             else:
                 # htoa defaults to disc's artist
-                v['a'] = filterForPath(self.metadata.artist)
+                v['a'] = self._filter.filter(self.metadata.artist)
 
         # when disambiguating, use catalogNumber then barcode
         if disambiguate:
@@ -277,10 +299,18 @@ class Program(log.Loggable):
         """
         # FIXME: convert to nonblocking?
         import CDDB
-        code, md = CDDB.query(cddbdiscid)
-        self.debug('CDDB query result: %r, %r', code, md)
-        if code == 200:
-            return md['title']
+        try:
+            code, md = CDDB.query(cddbdiscid)
+            self.debug('CDDB query result: %r, %r', code, md)
+            if code == 200:
+                return md['title']
+
+        except IOError, e:
+            # FIXME: for some reason errno is a str ?
+            if e.errno == 'socket error':
+                self._stdout.write("Warning: network error: %r\n" % (e, ))
+            else:
+                raise
 
         return None
 
@@ -301,11 +331,14 @@ class Program(log.Loggable):
 
         for _ in range(0, 4):
             try:
-                metadatas = musicbrainzngs.musicbrainz(mbdiscid,
+                metadatas = mbngs.musicbrainz(mbdiscid,
                     record=self._record)
-            except musicbrainzngs.NotFoundException, e:
+            except mbngs.NotFoundException, e:
                 break
-            except musicbrainzngs.MusicBrainzException, e:
+            except musicbrainz.NetworkError, e:
+                self._stdout.write("Warning: network error: %r\n" % (e, ))
+                break
+            except mbngs.MusicBrainzException, e:
                 self._stdout.write("Warning: %r\n" % (e, ))
                 time.sleep(5)
                 continue
@@ -351,7 +384,8 @@ class Program(log.Loggable):
                         metadatas[0].title.encode('utf-8'))
                 elif not metadatas:
                     self._stdout.write(
-                        'Requested release id %s but none match' % release)
+                        "Requested release id '%s', "
+                        "but none of the found releases match\n" % release)
                     return
             else:
                 # Select the release that most closely matches the duration.
@@ -503,7 +537,17 @@ class Program(log.Loggable):
 
         t = checksum.CRC32Task(trackResult.filename)
 
-        runner.run(t)
+        try:
+            runner.run(t)
+        except task.TaskException, e:
+            if isinstance(e.exception, common.MissingFrames):
+                self.warning('missing frames for %r' % trackResult.filename)
+                return False
+            elif isinstance(e.exception, gstreamer.GstException):
+                self.warning('GstException %r' % (e.exception, ))
+                return False
+            else:
+                raise
 
         ret = trackResult.testcrc == t.checksum
         log.debug('program',
@@ -698,7 +742,8 @@ class Program(log.Loggable):
     def writeLog(self, discName, logger):
         logPath = '%s.log' % discName
         handle = open(logPath, 'w')
-        handle.write(logger.log(self.result).encode('utf-8'))
+        log = logger.log(self.result)
+        handle.write(log.encode('utf-8'))
         handle.close()
 
         self.logPath = logPath

@@ -22,6 +22,8 @@
 
 """
 Reading .toc files
+
+The .toc file format is described in the man page of cdrdao
 """
 
 import re
@@ -62,7 +64,7 @@ _FILE_RE = re.compile(r"""
     ^FILE                 # FILE
     \s+"(?P<name>.*)"     # 'file name' in quotes
     \s+(?P<start>.+)      # start offset
-    \s(?P<length>.+)$     # stop offset
+    \s(?P<length>.+)$     # length in frames of section
 """, re.VERBOSE)
 
 _DATAFILE_RE = re.compile(r"""
@@ -86,6 +88,48 @@ _INDEX_RE = re.compile(r"""
 """, re.VERBOSE)
 
 
+class Sources(log.Loggable):
+    """
+    I represent the list of sources used in the .toc file.
+    Each SILENCE and each FILE is a source.
+    If the filename for FILE doesn't change, the counter is not increased.
+    """
+
+    def __init__(self):
+        self._sources = []
+
+    def append(self, counter, offset, source):
+        """
+        @param counter: the source counter; updates for each different
+                        data source (silence or different file path)
+        @type  counter: int
+        @param offset:  the absolute disc offset where this source starts
+        """
+        self.debug('Appending source, counter %d, abs offset %d, source %r' % (
+            counter, offset, source))
+        self._sources.append((counter, offset, source))
+
+    def get(self, offset):
+        """
+        Retrieve the source used at the given offset.
+        """
+        for i, (c, o, s) in enumerate(self._sources):
+            if offset < o:
+                return self._sources[i - 1]
+
+        return self._sources[-1]
+
+    def getCounterStart(self, counter):
+        """
+        Retrieve the absolute offset of the first source for this counter
+        """
+        for i, (c, o, s) in enumerate(self._sources):
+            if c == counter:
+                return self._sources[i][1]
+
+        return self._sources[-1][1]
+
+
 class TocFile(object, log.Loggable):
 
     def __init__(self, path):
@@ -98,6 +142,27 @@ class TocFile(object, log.Loggable):
         self.table = table.Table()
         self.logName = '<TocFile %08x>' % id(self)
 
+        self._sources = Sources()
+
+    def _index(self, currentTrack, i, absoluteOffset, trackOffset):
+        absolute = absoluteOffset + trackOffset
+        # this may be in a new source, so calculate relative
+        c, o, s = self._sources.get(absolute)
+        self.debug('at abs offset %d, we are in source %r' % (
+            absolute, s))
+        counterStart = self._sources.getCounterStart(c)
+        relative = absolute - counterStart
+
+        currentTrack.index(i, path=s.path,
+            absolute=absolute,
+            relative=relative,
+            counter=c)
+        self.debug(
+            '[track %02d index %02d] trackOffset %r, added %r',
+                currentTrack.number, i, trackOffset,
+                currentTrack.getIndex(i))
+
+
     def parse(self):
         # these two objects start as None then get set as real objects,
         # so no need to complain about them here
@@ -106,15 +171,16 @@ class TocFile(object, log.Loggable):
         currentTrack = None
 
         state = 'HEADER'
-        counter = 0
+        counter = 0 # counts sources for audio data; SILENCE/ZERO/FILE
         trackNumber = 0
         indexNumber = 0
         absoluteOffset = 0 # running absolute offset of where each track starts
         relativeOffset = 0 # running relative offset, relative to counter src
-        currentLength = 0 # accrued during TRACK record parsing, current track
+        currentLength = 0 # accrued during TRACK record parsing;
+                          # length of current track as parsed so far;
+                          # reset on each TRACK statement
         totalLength = 0 # accrued during TRACK record parsing, total disc
-        pregapLength = 0 # length of the pre-gap, current track
-
+        pregapLength = 0 # length of the pre-gap, current track in for loop
 
         # the first track's INDEX 1 can only be gotten from the .toc
         # file once the first pregap is calculated; so we add INDEX 1
@@ -160,28 +226,29 @@ class TocFile(object, log.Loggable):
                 # set index 1 of previous track if there was one, using
                 # pregapLength if applicable
                 if currentTrack:
-                    # FIXME: why not set absolute offsets too ?
-                    currentTrack.index(1, path=currentFile.path,
-                        absolute=absoluteOffset + pregapLength,
-                        relative=relativeOffset + pregapLength,
-                        counter=counter)
-                    self.debug('track %d, added index %r',
-                        currentTrack.number, currentTrack.getIndex(1))
+                    self._index(currentTrack, 1, absoluteOffset, pregapLength)
 
+                # create a new track to be filled by later lines
                 trackNumber += 1
-                absoluteOffset += currentLength
-                relativeOffset += currentLength
-                totalLength += currentLength
-                currentLength = 0
-                indexNumber = 1
                 trackMode = m.group('mode')
-                pregapLength = 0
-
-                # FIXME: track mode
-                self.debug('found track %d, mode %s', trackNumber, trackMode)
                 audio = trackMode == 'AUDIO'
                 currentTrack = table.Track(trackNumber, audio=audio)
                 self.table.tracks.append(currentTrack)
+
+                # update running totals
+                absoluteOffset += currentLength
+                relativeOffset += currentLength
+                totalLength += currentLength
+
+                # FIXME: track mode
+                self.debug('found track %d, mode %s, at absoluteOffset %d',
+                    trackNumber, trackMode, absoluteOffset)
+
+                # reset counters relative to a track
+                currentLength = 0
+                indexNumber = 1
+                pregapLength = 0
+
                 continue
 
             # look for ISRC lines
@@ -196,9 +263,11 @@ class TocFile(object, log.Loggable):
             if m:
                 length = m.group('length')
                 self.debug('SILENCE of %r', length)
+                self._sources.append(counter, absoluteOffset, None)
                 if currentFile is not None:
                     self.debug('SILENCE after FILE, increasing counter')
                     counter += 1
+                    relativeOffset = 0
                     currentFile = None
                 currentLength += common.msfToFrames(length)
 
@@ -208,6 +277,7 @@ class TocFile(object, log.Loggable):
                 if currentFile is not None:
                     self.debug('ZERO after FILE, increasing counter')
                     counter += 1
+                    relativeOffset = 0
                     currentFile = None
                 length = m.group('length')
                 currentLength += common.msfToFrames(length)
@@ -227,7 +297,10 @@ class TocFile(object, log.Loggable):
                     self.debug('track %d, switched to new FILE, '
                                'increased counter to %d',
                         trackNumber, counter)
-                currentFile = File(filePath, start, length)
+                currentFile = File(filePath, common.msfToFrames(start),
+                    common.msfToFrames(length))
+                self._sources.append(counter, absoluteOffset + currentLength,
+                    currentFile)
                 #absoluteOffset += common.msfToFrames(start)
                 currentLength += common.msfToFrames(length)
 
@@ -246,7 +319,9 @@ class TocFile(object, log.Loggable):
                         'increased counter to %d',
                         trackNumber, counter)
                 # FIXME: assume that a MODE2_FORM_MIX track always starts at 0
-                currentFile = File(filePath, 0, length)
+                currentFile = File(filePath, 0, common.msfToFrames(length))
+                self._sources.append(counter, absoluteOffset + currentLength,
+                    currentFile)
                 #absoluteOffset += common.msfToFrames(start)
                 currentLength += common.msfToFrames(length)
 
@@ -260,10 +335,16 @@ class TocFile(object, log.Loggable):
                     continue
 
                 length = common.msfToFrames(m.group('length'))
-                currentTrack.index(0, path=currentFile.path,
+                c, o, s = self._sources.get(absoluteOffset)
+                self.debug('at abs offset %d, we are in source %r' % (
+                    absoluteOffset, s))
+                counterStart = self._sources.getCounterStart(c)
+                relativeOffset = absoluteOffset - counterStart
+
+                currentTrack.index(0, path=s and s.path or None,
                     absolute=absoluteOffset,
-                    relative=relativeOffset, counter=counter)
-                self.debug('track %d, added index %r',
+                    relative=relativeOffset, counter=c)
+                self.debug('[track %02d index 00] added %r',
                     currentTrack.number, currentTrack.getIndex(0))
                 # store the pregapLength to add it when we index 1 for this
                 # track on the next iteration
@@ -279,22 +360,15 @@ class TocFile(object, log.Loggable):
 
                 indexNumber += 1
                 offset = common.msfToFrames(m.group('offset'))
-                currentTrack.index(indexNumber, path=currentFile.path,
-                    relative=offset, counter=counter)
-                self.debug('track %d, added index %r',
-                    currentTrack.number, currentTrack.getIndex(indexNumber))
+                self._index(currentTrack, indexNumber, absoluteOffset, offset)
 
         # handle index 1 of final track, if any
         if currentTrack:
-            currentTrack.index(1, path=currentFile.path,
-                absolute=absoluteOffset + pregapLength,
-                relative=relativeOffset + pregapLength, counter=counter)
-            self.debug('track %d, added index %r',
-                currentTrack.number, currentTrack.getIndex(1))
+            self._index(currentTrack, 1, absoluteOffset, pregapLength)
 
         # totalLength was added up to the penultimate track
         self.table.leadout = totalLength + currentLength
-        self.debug('leadout: %r', self.table.leadout)
+        self.debug('parse: leadout: %r', self.table.leadout)
 
     def message(self, number, message):
         """
@@ -305,6 +379,10 @@ class TocFile(object, log.Loggable):
         self._messages.append((number + 1, message))
 
     def getTrackLength(self, track):
+        """
+        Returns the length of the given track, from its INDEX 01 to the next
+        track's INDEX 01
+        """
         # returns track length in frames, or -1 if can't be determined and
         # complete file should be assumed
         # FIXME: this assumes a track can only be in one file; is this true ?
@@ -340,13 +418,16 @@ class File:
 
     def __init__(self, path, start, length):
         """
-        @type  path: unicode
+        @type  path:   C{unicode}
+        @type  start:  C{int}
+        @param start:  starting point for the track in this file, in frames
+        @param length: length for the track in this file, in frames
         """
         assert type(path) is unicode, "%r is not unicode" % path
 
         self.path = path
-        #self.start = start
-        #self.length = length
+        self.start = start
+        self.length = length
 
     def __repr__(self):
         return '<File %r>' % (self.path, )

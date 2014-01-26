@@ -49,24 +49,23 @@ class Operator(object):
         Verifies the state.
         """
         todo = os.path.join(self._statePath, self._key + '.todo')
-        handle = open(todo, 'r')
         lines = []
-        for line in handle.readlines():
-            lines.append(line)
-            name, data = line.split(' ', 1)
-            cls = globals()[name]
-            operation = cls.deserialize(data)
-            self._todo.append(operation)
+        with open(todo, 'r') as handle:
+            for line in handle.readlines():
+                lines.append(line)
+                name, data = line.split(' ', 1)
+                cls = globals()[name]
+                operation = cls.deserialize(data)
+                self._todo.append(operation)
 
 
         done = os.path.join(self._statePath, self._key + '.done')
-        i = 0
         if os.path.exists(done):
-            handle = open(done, 'r')
-            for i, line in enumerate(handle.readlines()):
-                assert line == lines[i], "line %s is different than %s" % (
-                    line, lines[i])
-                self._done.append(self._todo[i])
+            with open(done, 'r') as handle:
+                for i, line in enumerate(handle.readlines()):
+                    assert line == lines[i], "line %s is different than %s" % (
+                        line, lines[i])
+                    self._done.append(self._todo[i])
 
         # last task done is i; check if the next one might have gotten done.
         self._resuming = True
@@ -78,21 +77,19 @@ class Operator(object):
         # only save todo first time
         todo = os.path.join(self._statePath, self._key + '.todo')
         if not os.path.exists(todo):
-            handle = open(todo, 'w')
-            for o in self._todo:
-                name = o.__class__.__name__
-                data = o.serialize()
-                handle.write('%s %s\n' % (name, data))
-            handle.close()
+            with open(todo, 'w') as handle:
+                for o in self._todo:
+                    name = o.__class__.__name__
+                    data = o.serialize()
+                    handle.write('%s %s\n' % (name, data))
 
         # save done every time
         done = os.path.join(self._statePath, self._key + '.done')
-        handle = open(done, 'w')
-        for o in self._done:
-            name = o.__class__.__name__
-            data = o.serialize()
-            handle.write('%s %s\n' % (name, data))
-        handle.close()
+        with open(done, 'w') as handle:
+            for o in self._done:
+                name = o.__class__.__name__
+                data = o.serialize()
+                handle.write('%s %s\n' % (name, data))
 
     def start(self):
         """
@@ -203,15 +200,14 @@ class RenameInFile(Operation):
         # check if the source exists in the given file
 
     def do(self):
-        handle = open(self._path)
-        (fd, name) = tempfile.mkstemp(suffix='.morituri')
+        with open(self._path) as handle:
+            (fd, name) = tempfile.mkstemp(suffix='.morituri')
 
-        for s in handle:
-            os.write(fd, s.replace(self._source, self._destination))
+            for s in handle:
+                os.write(fd, s.replace(self._source, self._destination))
 
-        handle.close()
-        os.close(fd)
-        os.rename(name, self._path)
+            os.close(fd)
+            os.rename(name, self._path)
 
     def serialize(self):
         return '"%s" "%s" "%s"' % (self._path, self._source, self._destination)

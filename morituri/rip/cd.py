@@ -23,17 +23,18 @@
 import os
 import math
 import glob
+import urllib2
+import socket
 
 import gobject
 gobject.threads_init()
 
 from morituri.common import logcommand, common, accurip, gstreamer
-from morituri.common import drive, program, cache
+from morituri.common import drive, program, task
 from morituri.result import result
 from morituri.program import cdrdao, cdparanoia
 from morituri.rip import common as rcommon
 
-from morituri.extern.task import task
 from morituri.extern.command import command
 
 
@@ -41,6 +42,13 @@ MAX_TRIES = 5
 
 
 class _CD(logcommand.LogCommand):
+
+    """
+    @type program: L{program.Program}
+    @ivar eject:   whether to eject the drive after completing
+    """
+
+    eject = True
 
     def addOptions(self):
         # FIXME: have a cache of these pickles somewhere
@@ -53,7 +61,8 @@ class _CD(logcommand.LogCommand):
 
 
     def do(self, args):
-        self.program = program.Program(record=self.getRootCommand().record,
+        self.program = program.Program(self.getRootCommand().config,
+            record=self.getRootCommand().record,
             stdout=self.stdout)
         self.runner = task.SyncRunner()
 
@@ -63,8 +72,6 @@ class _CD(logcommand.LogCommand):
 
         self.program.loadDevice(self.device)
         self.program.unmountDevice(self.device)
-
-        version = None
 
         # first, read the normal TOC, which is fast
         self.ittoc = self.program.getFastToc(self.runner,
@@ -80,7 +87,8 @@ class _CD(logcommand.LogCommand):
         self.stdout.write("MusicBrainz lookup URL %s\n" %
             self.ittoc.getMusicBrainzSubmitURL())
 
-        self.program.metadata = self.program.getMusicBrainz(self.ittoc, self.mbdiscid,
+        self.program.metadata = self.program.getMusicBrainz(self.ittoc,
+            self.mbdiscid,
             release=self.options.release_id)
 
         if not self.program.metadata:
@@ -90,8 +98,10 @@ class _CD(logcommand.LogCommand):
             if cddbmd:
                 self.stdout.write('FreeDB identifies disc as %s\n' % cddbmd)
 
-            if not self.options.unknown:
-                self.program.ejectDevice(self.device)
+            # also used by rip cd info
+            if not getattr(self.options, 'unknown', False):
+                if self.eject:
+                    self.program.ejectDevice(self.device)
                 return -1
 
         # now, read the complete index table, which is slower
@@ -103,32 +113,39 @@ class _CD(logcommand.LogCommand):
         assert self.itable.getCDDBDiscId() == self.ittoc.getCDDBDiscId(), \
             "full table's id %s differs from toc id %s" % (
                 self.itable.getCDDBDiscId(), self.ittoc.getCDDBDiscId())
-        assert self.itable.getMusicBrainzDiscId() == self.ittoc.getMusicBrainzDiscId(), \
+        assert self.itable.getMusicBrainzDiscId() == \
+            self.ittoc.getMusicBrainzDiscId(), \
             "full table's mb id %s differs from toc id mb %s" % (
-            self.itable.getMusicBrainzDiscId(), self.ittoc.getMusicBrainzDiscId())
-        assert self.itable.getAccurateRipURL() == self.ittoc.getAccurateRipURL(), \
+            self.itable.getMusicBrainzDiscId(),
+            self.ittoc.getMusicBrainzDiscId())
+        assert self.itable.getAccurateRipURL() == \
+            self.ittoc.getAccurateRipURL(), \
             "full table's AR URL %s differs from toc AR URL %s" % (
             self.itable.getAccurateRipURL(), self.ittoc.getAccurateRipURL())
 
         # result
 
-        self.program.result.cdrdaoVersion = version
-        self.program.result.cdparanoiaVersion = cdparanoia.getCdParanoiaVersion()
+        self.program.result.cdrdaoVersion = cdrdao.getCDRDAOVersion()
+        self.program.result.cdparanoiaVersion = \
+            cdparanoia.getCdParanoiaVersion()
         info = drive.getDeviceInfo(self.parentCommand.options.device)
         if info:
             try:
-                self.program.result.cdparanoiaDefeatsCache = self.getRootCommand(
-                    ).config.getDefeatsCache(*info)
+                self.program.result.cdparanoiaDefeatsCache = \
+                    self.getRootCommand().config.getDefeatsCache(*info)
             except KeyError, e:
                 self.debug('Got key error: %r' % (e, ))
-        self.program.result.artist = self.program.metadata and self.program.metadata.artist \
+        self.program.result.artist = self.program.metadata \
+            and self.program.metadata.artist \
             or 'Unknown Artist'
-        self.program.result.title = self.program.metadata and self.program.metadata.title \
+        self.program.result.title = self.program.metadata \
+            and self.program.metadata.title \
             or 'Unknown Title'
         # cdio is optional for now
         try:
             import cdio
-            _, self.program.result.vendor, self.program.result.model, self.program.result.release = \
+            _, self.program.result.vendor, self.program.result.model, \
+                self.program.result.release = \
                 cdio.Device(self.device).get_hwinfo()
         except ImportError:
             self.stdout.write(
@@ -139,7 +156,8 @@ class _CD(logcommand.LogCommand):
 
         self.doCommand()
 
-        self.program.ejectDevice(self.device)
+        if self.eject:
+            self.program.ejectDevice(self.device)
 
     def doCommand(self):
         pass
@@ -147,6 +165,8 @@ class _CD(logcommand.LogCommand):
 
 class Info(_CD):
     summary = "retrieve information about the currently inserted CD"
+
+    eject = False
 
 
 class Rip(_CD):
@@ -225,7 +245,9 @@ Log files will log the path to tracks relative to this directory.
 
         if options.offset is None:
             options.offset = 0
-            self.stdout.write("Using fallback read offset %d\n" %
+            self.stdout.write("""WARNING: using default offset %d.
+Install pycdio and run 'rip offset find' to detect your drive's offset.
+""" %
                         options.offset)
         if self.options.output_directory is None:
             self.options.output_directory = os.getcwd()
@@ -260,16 +282,18 @@ Log files will log the path to tracks relative to this directory.
         ### write disc files
         disambiguate = False
         while True:
-            discName = self.program.getPath(self.program.outdir, self.options.disc_template,
-                self.mbdiscid, 0, profile=profile, disambiguate=disambiguate)
+            discName = self.program.getPath(self.program.outdir,
+                self.options.disc_template, self.mbdiscid, 0,
+                profile=profile, disambiguate=disambiguate)
             dirname = os.path.dirname(discName)
             if os.path.exists(dirname):
                 self.stdout.write("Output directory %s already exists\n" %
-                    dirname)
+                    dirname.encode('utf-8'))
                 logs = glob.glob(os.path.join(dirname, '*.log'))
                 if logs:
-                    self.stdout.write("Output directory %s is a finished rip\n" %
-                        dirname)
+                    self.stdout.write(
+                        "Output directory %s is a finished rip\n" %
+                        dirname.encode('utf-8'))
                     if not disambiguate:
                         disambiguate = True
                         continue
@@ -278,7 +302,8 @@ Log files will log the path to tracks relative to this directory.
                     break
 
             else:
-                self.stdout.write("Creating output directory %s\n" % dirname)
+                self.stdout.write("Creating output directory %s\n" %
+                    dirname.encode('utf-8'))
                 os.makedirs(dirname)
                 break
 
@@ -299,8 +324,11 @@ Log files will log the path to tracks relative to this directory.
                 self.debug('ripIfNotRipped have trackresult, path %r' %
                     trackResult.filename)
 
-            path = self.program.getPath(self.program.outdir, self.options.track_template,
-                self.mbdiscid, number, profile=profile, disambiguate=disambiguate) + '.' + profile.extension
+            path = self.program.getPath(self.program.outdir,
+                self.options.track_template,
+                self.mbdiscid, number,
+                profile=profile, disambiguate=disambiguate) \
+                + '.' + profile.extension
             self.debug('ripIfNotRipped: path %r' % path)
             trackResult.number = number
 
@@ -330,11 +358,14 @@ Log files will log the path to tracks relative to this directory.
                 # we reset durations for test and copy here
                 trackResult.testduration = 0.0
                 trackResult.copyduration = 0.0
-                self.stdout.write('Ripping track %d of %d: %s\n' % (
-                    number, len(self.itable.tracks),
-                    os.path.basename(path).encode('utf-8')))
+                extra = ""
                 while tries < MAX_TRIES:
                     tries += 1
+                    if tries > 1:
+                        extra = " (try %d)" % tries
+                    self.stdout.write('Ripping track %d of %d%s: %s\n' % (
+                        number, len(self.itable.tracks), extra,
+                        os.path.basename(path).encode('utf-8')))
                     try:
                         self.debug('ripIfNotRipped: track %d, try %d',
                             number, tries)
@@ -343,8 +374,8 @@ Log files will log the path to tracks relative to this directory.
                             device=self.parentCommand.options.device,
                             profile=profile,
                             taglist=self.program.getTagList(number),
-                            what='track %d of %d' % (
-                                number, len(self.itable.tracks)))
+                            what='track %d of %d%s' % (
+                                number, len(self.itable.tracks), extra))
                         break
                     except Exception, e:
                         self.debug('Got exception %r on try %d',
@@ -406,8 +437,9 @@ Log files will log the path to tracks relative to this directory.
             ripIfNotRipped(i + 1)
 
         ### write disc files
-        discName = self.program.getPath(self.program.outdir, self.options.disc_template,
-            self.mbdiscid, 0, profile=profile, disambiguate=disambiguate)
+        discName = self.program.getPath(self.program.outdir,
+            self.options.disc_template, self.mbdiscid, 0,
+            profile=profile, disambiguate=disambiguate)
         dirname = os.path.dirname(discName)
         if not os.path.exists(dirname):
             os.makedirs(dirname)
@@ -437,8 +469,10 @@ Log files will log the path to tracks relative to this directory.
             if not track.audio:
                 continue
 
-            path = self.program.getPath(self.program.outdir, self.options.track_template,
-                self.mbdiscid, i + 1, profile=profile, disambiguate=disambiguate) + '.' + profile.extension
+            path = self.program.getPath(self.program.outdir,
+                self.options.track_template, self.mbdiscid, i + 1,
+                profile=profile,
+                disambiguate=disambiguate) + '.' + profile.extension
             writeFile(handle, path,
                 self.itable.getTrackLength(i + 1) / common.FRAMES_PER_SECOND)
 
@@ -449,7 +483,18 @@ Log files will log the path to tracks relative to this directory.
         self.stdout.write("AccurateRip URL %s\n" % url)
 
         accucache = accurip.AccuCache()
-        responses = accucache.retrieve(url)
+        try:
+            responses = accucache.retrieve(url)
+        except urllib2.URLError, e:
+            if isinstance(e.args[0], socket.gaierror):
+                if e.args[0].errno == -2:
+                    self.stdout.write("Warning: network error: %r\n" % (
+                        e.args[0], ))
+                    responses = None
+                else:
+                    raise
+            else:
+                raise
 
         if not responses:
             self.stdout.write('Album not found in AccurateRip database\n')
@@ -466,7 +511,8 @@ Log files will log the path to tracks relative to this directory.
 
         self.program.verifyImage(self.runner, responses)
 
-        self.stdout.write("\n".join(self.program.getAccurateRipResults()) + "\n")
+        self.stdout.write("\n".join(
+            self.program.getAccurateRipResults()) + "\n")
 
         self.program.saveRipResult()
 

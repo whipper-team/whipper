@@ -25,7 +25,23 @@ class ParseTestCase(common.TestCase):
             self._parser.parse(line)
 
         q = '%.01f %%' % (self._parser.getTrackQuality() * 100.0, )
-        self.assertEquals(q, '99.7 %')
+        self.assertEquals(q, '99.6 %')
+
+class Parse1FrameTestCase(common.TestCase):
+
+    def setUp(self):
+        path = os.path.join(os.path.dirname(__file__),
+            'cdparanoia.progress.strokes')
+        self._parser = cdparanoia.ProgressParser(start=0, stop=0)
+
+        self._handle = open(path)
+
+    def testParse(self):
+        for line in self._handle.readlines():
+            self._parser.parse(line)
+
+        q = '%.01f %%' % (self._parser.getTrackQuality() * 100.0, )
+        self.assertEquals(q, '100.0 %')
 
 
 class ErrorTestCase(common.TestCase):
@@ -49,7 +65,11 @@ class ErrorTestCase(common.TestCase):
 class VersionTestCase(common.TestCase):
 
     def testGetVersion(self):
-        self.failUnless(cdparanoia.getCdParanoiaVersion())
+        v = cdparanoia.getCdParanoiaVersion()
+        self.failUnless(v)
+        # of the form III 10.2
+        # make sure it ends with a digit
+        self.failUnless(int(v[-1]), v)
 
 
 class AnalyzeFileTask(cdparanoia.AnalyzeTask):

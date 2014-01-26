@@ -34,7 +34,7 @@ class Directory(log.Loggable):
             path = os.path.join(directory, 'morituri.conf')
             self.info('Using XDG, configuration file is %s' % path)
         except ImportError:
-            path = os.path.expanduser('~/.moriturirc')
+            path = os.path.join(os.path.expanduser('~'), '.moriturirc')
             self.info('Not using XDG, configuration file is %s' % path)
         return path
 
@@ -44,8 +44,9 @@ class Directory(log.Loggable):
             from xdg import BaseDirectory
             path = BaseDirectory.save_cache_path('morituri')
             self.info('Using XDG, cache directory is %s' % path)
-        except ImportError:
-            path = os.path.expanduser('~/.morituri/cache')
+        except (ImportError, AttributeError):
+            # save_cache_path was added in pyxdg 0.25
+            path = os.path.join(os.path.expanduser('~'), '.morituri', 'cache')
             if not os.path.exists(path):
                 os.makedirs(path)
             self.info('Not using XDG, cache directory is %s' % path)
@@ -65,10 +66,11 @@ class Directory(log.Loggable):
             path = BaseDirectory.save_cache_path('morituri')
             self.info('For XDG, read cache directory is %s' % path)
             paths.append(path)
-        except ImportError:
+        except (ImportError, AttributeError):
+            # save_cache_path was added in pyxdg 0.21
             pass
 
-        path = os.path.expanduser('~/.morituri/cache')
+        path = os.path.join(os.path.expanduser('~'), '.morituri', 'cache')
         if os.path.exists(path):
             self.info('From before XDG, read cache directory is %s' % path)
             paths.append(path)

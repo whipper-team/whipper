@@ -1,4 +1,4 @@
-# -*- Mode: Python; test-case-name: morituri.test.test_common_musicbrainzngs -*-
+# -*- Mode: Python; test-case-name: morituri.test.test_common_mbngs -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
 # Morituri - for those about to RIP
@@ -56,10 +56,13 @@ class TrackMetadata(object):
 
 class DiscMetadata(object):
     """
+    @param artist:       artist(s) name
+    @param sortName:     album artist sort name
     @param release:      earliest release date, in YYYY-MM-DD
     @type  release:      unicode
     @param title:        title of the disc (with disambiguation)
     @param releaseTitle: title of the release (without disambiguation)
+    @type  tracks:       C{list} of L{TrackMetadata}
     """
     artist = None
     sortName = None
@@ -90,7 +93,55 @@ def _record(record, which, name, what):
         handle = open(filename, 'w')
         handle.write(json.dumps(what))
         handle.close()
-        log.info('musicbrainzngs', 'Wrote %s %s to %s', which, name, filename)
+        log.info('mbngs', 'Wrote %s %s to %s', which, name, filename)
+
+# credit is of the form [dict, str, dict, ... ]
+# e.g. [
+#   {'artist': {
+#     'sort-name': 'Sukilove',
+#     'id': '5f4af6cf-a1b8-4e51-a811-befed399a1c6',
+#     'name': 'Sukilove'
+#   }}, ' & ', {
+#   'artist': {
+#     'sort-name': 'Blackie and the Oohoos',
+#     'id': '028a9dc7-f5ef-43c2-866b-08d69ffff363',
+#     'name': 'Blackie & the Oohoos'}}]
+# or
+# [{'artist':
+#    {'sort-name': 'Pixies',
+#     'id': 'b6b2bb8d-54a9-491f-9607-7b546023b433', 'name': 'Pixies'}}]
+
+
+class _Credit(list):
+    """
+    I am a representation of an artist-credit in musicbrainz for a disc
+    or track.
+    """
+
+    def joiner(self, attributeGetter, joinString=None):
+        res = []
+
+        for item in self:
+            if isinstance(item, dict):
+                res.append(attributeGetter(item))
+            else:
+                if not joinString:
+                    res.append(item)
+                else:
+                    res.append(joinString)
+
+        return "".join(res)
+
+
+    def getSortName(self):
+        return self.joiner(lambda i: i.get('artist').get('sort-name', None))
+
+    def getName(self):
+        return self.joiner(lambda i: i.get('artist').get('name', None))
+
+    def getIds(self):
+        return self.joiner(lambda i: i.get('artist').get('id', None),
+            joinString=";")
 
 
 def _getMetadata(releaseShort, release, discid):
@@ -109,45 +160,39 @@ def _getMetadata(releaseShort, release, discid):
 
     assert release['id'], 'Release does not have an id'
 
-    metadata = DiscMetadata()
+    discMD = DiscMetadata()
 
-    metadata.releaseType = releaseShort.get('release-group', {}).get('type')
-    credit = release['artist-credit']
+    discMD.releaseType = releaseShort.get('release-group', {}).get('type')
+    discCredit = _Credit(release['artist-credit'])
 
-    artist = credit[0]['artist']
+    # FIXME: is there a better way to check for VA ?
+    discMD.various = False
+    if discCredit[0]['artist']['id'] == VA_ID:
+        discMD.various = True
 
-    if len(credit) > 1:
-        log.debug('musicbrainzngs', 'artist-credit more than 1: %r', credit)
 
-    for i, c in enumerate(credit):
-        if isinstance(c, dict):
-            credit[i] = c.get(
-                'name', c['artist'].get('name', None))
+    if len(discCredit) > 1:
+        log.debug('mbngs', 'artist-credit more than 1: %r', discCredit)
 
-    albumArtistName = "".join(credit)
-
-    # FIXME: is there a better way to check for VA
-    metadata.various = False
-    if artist['id'] == VA_ID:
-        metadata.various = True
+    albumArtistName = discCredit.getName()
 
     # getUniqueName gets disambiguating names like Muse (UK rock band)
-    metadata.artist = albumArtistName
-    metadata.sortName = artist['sort-name']
+    discMD.artist = albumArtistName
+    discMD.sortName = discCredit.getSortName()
     # FIXME: is format str ?
     if not 'date' in release:
-        log.warning('musicbrainzngs', 'Release %r does not have date', release)
+        log.warning('mbngs', 'Release %r does not have date', release)
     else:
-        metadata.release = release['date']
+        discMD.release = release['date']
 
-    metadata.mbid = release['id']
-    metadata.mbidArtist = artist['id']
-    metadata.url = 'http://musicbrainz.org/release/' + release['id']
+    discMD.mbid = release['id']
+    discMD.mbidArtist = discCredit.getIds()
+    discMD.url = 'http://musicbrainz.org/release/' + release['id']
 
-    metadata.barcode = release.get('barcode', None)
+    discMD.barcode = release.get('barcode', None)
     lil = release.get('label-info-list', [{}])
     if lil:
-        metadata.catalogNumber = lil[0].get('catalog-number')
+        discMD.catalogNumber = lil[0].get('catalog-number')
     tainted = False
     duration = 0
 
@@ -156,7 +201,7 @@ def _getMetadata(releaseShort, release, discid):
         for disc in medium['disc-list']:
             if disc['id'] == discid:
                 title = release['title']
-                metadata.releaseTitle = title
+                discMD.releaseTitle = title
                 if 'disambiguation' in release:
                     title += " (%s)" % release['disambiguation']
                 count = len(release['medium-list'])
@@ -165,31 +210,19 @@ def _getMetadata(releaseShort, release, discid):
                         int(medium['position']), count)
                 if 'title' in medium:
                     title += ": %s" % medium['title']
-                metadata.title = title
+                discMD.title = title
                 for t in medium['track-list']:
                     track = TrackMetadata()
-                    credit = t['recording']['artist-credit']
-                    if len(credit) > 1:
-                        log.debug('musicbrainzngs',
-                            'artist-credit more than 1: %r', credit)
-                        # credit is of the form [dict, str, dict, ... ]
-                    for i, c in enumerate(credit):
-                        if isinstance(c, dict):
-                            credit[i] = c.get(
-                                'name', c['artist'].get('name', None))
+                    trackCredit = _Credit(t['recording']['artist-credit'])
+                    if len(trackCredit) > 1:
+                        log.debug('mbngs',
+                            'artist-credit more than 1: %r', trackCredit)
 
-
-                    trackArtistName = "".join(credit)
-
-                    if not artist:
-                        track.artist = metadata.artist
-                        track.sortName = metadata.sortName
-                        track.mbidArtist = metadata.mbidArtist
-                    else:
-                        # various artists discs can have tracks with no artist
-                        track.artist = trackArtistName
-                        track.sortName = artist['sort-name']
-                        track.mbidArtist = artist['id']
+                    # FIXME: leftover comment, need an example
+                    # various artists discs can have tracks with no artist
+                    track.artist = trackCredit.getName()
+                    track.sortName = trackCredit.getSortName()
+                    track.mbidArtist = trackCredit.getIds()
 
                     track.title = t['recording']['title']
                     track.mbid = t['recording']['id']
@@ -204,14 +237,14 @@ def _getMetadata(releaseShort, release, discid):
                     else:
                         duration += track.duration
 
-                    metadata.tracks.append(track)
+                    discMD.tracks.append(track)
 
                 if not tainted:
-                    metadata.duration = duration
+                    discMD.duration = duration
                 else:
-                    metadata.duration = 0
+                    discMD.duration = 0
 
-    return metadata
+    return discMD
 
 
 # see http://bugs.musicbrainz.org/browser/python-musicbrainz2/trunk/examples/

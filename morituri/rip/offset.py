@@ -26,7 +26,8 @@ import tempfile
 import gobject
 gobject.threads_init()
 
-from morituri.common import logcommand, accurip, drive, program
+from morituri.common import logcommand, accurip, drive, program, common
+from morituri.common import task as ctask
 from morituri.program import cdrdao, cdparanoia
 
 from morituri.extern.task import task
@@ -87,8 +88,8 @@ CD in the AccurateRip database."""
         # this can be a symlink to another device
 
     def do(self, args):
-        prog = program.Program()
-        runner = task.SyncRunner()
+        prog = program.Program(self.getRootCommand().config)
+        runner = ctask.SyncRunner()
 
         device = self.options.device
 
@@ -150,11 +151,18 @@ CD in the AccurateRip database."""
             try:
                 archecksum = self._arcs(runner, table, 1, offset)
             except task.TaskException, e:
+
+                # let MissingDependency fall through
+                if isinstance(e.exception,
+                    common.MissingDependencyException):
+                    raise e
+
                 if isinstance(e.exception, cdparanoia.FileSizeError):
                     self.stdout.write(
                         'WARNING: cannot rip with offset %d...\n' % offset)
                     continue
-                self.warning("Unknown exception for offset %d: %r" % (
+
+                self.warning("Unknown task exception for offset %d: %r" % (
                     offset, e))
                 self.stdout.write(
                     'WARNING: cannot rip with offset %d...\n' % offset)
@@ -170,8 +178,9 @@ CD in the AccurateRip database."""
                     'Offset of device is likely %d, confirming ...\n' %
                         offset)
 
-                # now try and rip all other tracks as well
-                for track in range(2, len(table.tracks) + 1):
+                # now try and rip all other tracks as well, except for the
+                # last one (to avoid readers that can't do overread
+                for track in range(2, (len(table.tracks) + 1) - 1):
                     try:
                         archecksum = self._arcs(runner, table, track, offset)
                     except task.TaskException, e:
@@ -187,7 +196,7 @@ CD in the AccurateRip database."""
                             track, i))
                         count += 1
 
-                if count == len(table.tracks):
+                if count == len(table.tracks) - 1:
                     self._foundOffset(device, offset)
                     return 0
                 else:

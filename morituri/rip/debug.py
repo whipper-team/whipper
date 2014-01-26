@@ -25,6 +25,23 @@ from morituri.result import result
 
 from morituri.common import task, cache
 
+class RCCue(logcommand.LogCommand):
+
+    name = "cue"
+    summary = "write a cue file for the cached result"
+
+    def do(self, args):
+        self._cache = cache.ResultCache()
+
+        persisted = self._cache.getRipResult(args[0], create=False)
+
+        if not persisted:
+            self.stderr.write(
+                'Could not find a result for cddb disc id %s\n' % args[0])
+            return 3
+
+        self.stdout.write(persisted.object.table.cue().encode('utf-8'))
+
 
 class RCList(logcommand.LogCommand):
 
@@ -49,7 +66,7 @@ class RCList(logcommand.LogCommand):
 
             self.stdout.write('%s: %s - %s\n' % (
                 cddbid, artist.encode('utf-8'), title.encode('utf-8')))
-        
+
 
 class RCLog(logcommand.LogCommand):
 
@@ -85,14 +102,14 @@ class RCLog(logcommand.LogCommand):
 
         logger = klazz()
         self.stdout.write(logger.log(persisted.object).encode('utf-8'))
- 
+
 
 class ResultCache(logcommand.LogCommand):
 
     summary = "debug result cache"
     aliases = ['rc', ]
 
-    subCommandClasses = [RCList, RCLog, ]
+    subCommandClasses = [RCCue, RCList, RCLog, ]
 
 
 class Checksum(logcommand.LogCommand):
@@ -100,21 +117,22 @@ class Checksum(logcommand.LogCommand):
     summary = "run a checksum task"
 
     def do(self, args):
-        try:
-            fromPath = unicode(args[0])
-        except IndexError:
-            self.stdout.write('Please specify an input file.\n')
+        if not args:
+            self.stdout.write('Please specify one or more input files.\n')
             return 3
 
         runner = task.SyncRunner()
-
         # here to avoid import gst eating our options
         from morituri.common import checksum
-        checksumtask = checksum.CRC32Task(fromPath)
 
-        runner.run(checksumtask)
+        for arg in args:
+            fromPath = unicode(arg)
 
-        self.stdout.write('Checksum: %08x\n' % checksumtask.checksum)
+            checksumtask = checksum.CRC32Task(fromPath)
+
+            runner.run(checksumtask)
+
+            self.stdout.write('Checksum: %08x\n' % checksumtask.checksum)
 
 
 class Encode(logcommand.LogCommand):
@@ -129,10 +147,13 @@ class Encode(logcommand.LogCommand):
         self.parser.add_option('', '--profile',
             action="store", dest="profile",
             help="profile for encoding (default '%s', choices '%s')" % (
-                default, "', '".join(encode.PROFILES.keys())),
+                default, "', '".join(encode.ALL_PROFILES.keys())),
             default=default)
 
     def do(self, args):
+        from morituri.common import encode
+        profile = encode.ALL_PROFILES[self.options.profile]()
+
         try:
             fromPath = unicode(args[0])
         except IndexError:
@@ -142,18 +163,45 @@ class Encode(logcommand.LogCommand):
         try:
             toPath = unicode(args[1])
         except IndexError:
-            toPath = fromPath + '.' + self.options.profile
+            toPath = fromPath + '.' + profile.extension
 
         runner = task.SyncRunner()
 
-        from morituri.common import encode
-        profile = encode.PROFILES[self.options.profile]()
         self.debug('Encoding %s to %s',
             fromPath.encode('utf-8'),
             toPath.encode('utf-8'))
         encodetask = encode.EncodeTask(fromPath, toPath, profile)
 
         runner.run(encodetask)
+
+        self.stdout.write('Peak level: %r\n' % encodetask.peak)
+        self.stdout.write('Encoded to %s\n' % toPath.encode('utf-8'))
+
+
+class MaxSample(logcommand.LogCommand):
+
+    summary = "run a max sample task"
+
+    def do(self, args):
+        if not args:
+            self.stdout.write('Please specify one or more input files.\n')
+            return 3
+
+        runner = task.SyncRunner()
+        # here to avoid import gst eating our options
+        from morituri.common import checksum
+
+        for arg in args:
+            fromPath = unicode(arg.decode('utf-8'))
+
+            checksumtask = checksum.MaxSampleTask(fromPath)
+
+            runner.run(checksumtask)
+
+            self.stdout.write('%s\n' % arg)
+            self.stdout.write('Biggest absolute sample: %04x\n' %
+                checksumtask.checksum)
+
 
 class Tag(logcommand.LogCommand):
 
@@ -184,6 +232,8 @@ class MusicBrainzNGS(logcommand.LogCommand):
     summary = "examine MusicBrainz NGS info"
     description = """Look up a MusicBrainz disc id and output information.
 
+You can get the MusicBrainz disc id with rip cd info.
+
 Example disc id: KnpGsLhvH.lPrNc1PBL21lb9Bg4-"""
 
     def do(self, args):
@@ -193,8 +243,9 @@ Example disc id: KnpGsLhvH.lPrNc1PBL21lb9Bg4-"""
             self.stdout.write('Please specify a MusicBrainz disc id.\n')
             return 3
 
-        from morituri.common import musicbrainzngs
-        metadatas = musicbrainzngs.musicbrainz(discId)
+        from morituri.common import mbngs
+        metadatas = mbngs.musicbrainz(discId,
+            record=self.getRootCommand().record)
 
         self.stdout.write('%d releases\n' % len(metadatas))
         for i, md in enumerate(metadatas):
@@ -215,8 +266,32 @@ Example disc id: KnpGsLhvH.lPrNc1PBL21lb9Bg4-"""
                     track.title.encode('utf-8')))
 
 
+class CDParanoia(logcommand.LogCommand):
+
+    def do(self, args):
+        from morituri.program import cdparanoia
+        version = cdparanoia.getCdParanoiaVersion()
+        self.stdout.write("cdparanoia version: %s\n" % version)
+
+
+class CDRDAO(logcommand.LogCommand):
+
+    def do(self, args):
+        from morituri.program import cdrdao
+        version = cdrdao.getCDRDAOVersion()
+        self.stdout.write("cdrdao version: %s\n" % version)
+
+
+class Version(logcommand.LogCommand):
+
+    summary = "debug version getting"
+
+    subCommandClasses = [CDParanoia, CDRDAO]
+
+
 class Debug(logcommand.LogCommand):
 
     summary = "debug internals"
 
-    subCommandClasses = [Checksum, Encode, Tag, MusicBrainzNGS, ResultCache]
+    subCommandClasses = [Checksum, Encode, MaxSample, Tag, MusicBrainzNGS,
+                         ResultCache, Version]

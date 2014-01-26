@@ -32,7 +32,8 @@ from morituri.common import task as ctask
 from morituri.extern.task import task, gstreamer
 
 
-class Profile(object):
+class Profile(log.Loggable):
+
     name = None
     extension = None
     pipeline = None
@@ -99,20 +100,45 @@ class WavpackProfile(Profile):
     lossless = True
 
 
-class MP3Profile(Profile):
+class _LameProfile(Profile):
+    extension = 'mp3'
+    lossless = False
+
+    def test(self):
+        version = cgstreamer.elementFactoryVersion('lamemp3enc')
+        self.debug('lamemp3enc version: %r', version)
+        if version:
+            t = tuple([int(s) for s in version.split('.')])
+            if t >= (0, 10, 19):
+                self.pipeline = self._lamemp3enc_pipeline
+                return True
+
+        version = cgstreamer.elementFactoryVersion('lame')
+        self.debug('lame version: %r', version)
+        if version:
+            self.pipeline = self._lame_pipeline
+            return True
+
+        return False
+
+
+class MP3Profile(_LameProfile):
     name = 'mp3'
-    extension = 'mp3'
-    pipeline = 'lame name=tagger quality=0 ! id3v2mux'
-    lossless = False
+
+    _lame_pipeline = 'lame name=tagger quality=0 ! id3v2mux'
+    _lamemp3enc_pipeline = \
+        'lamemp3enc name=tagger target=bitrate cbr=true bitrate=320 ! ' \
+         'xingmux ! id3v2mux'
 
 
-class MP3VBRProfile(Profile):
+class MP3VBRProfile(_LameProfile):
     name = 'mp3vbr'
-    extension = 'mp3'
-    pipeline = 'lame name=tagger ' \
-               'vbr-quality=0 vbr=new vbr-mean-bitrate=192 ! ' \
-               'id3v2mux'
-    lossless = False
+
+    _lame_pipeline = 'lame name=tagger ' \
+        'vbr-quality=0 vbr=new vbr-mean-bitrate=192 ! ' \
+        'id3v2mux'
+    _lamemp3enc_pipeline = 'lamemp3enc name=tagger quality=0 ' \
+        '! xingmux ! id3v2mux'
 
 
 class VorbisProfile(Profile):
@@ -167,6 +193,7 @@ class EncodeTask(ctask.GstPipelineTask):
         self._inpath = inpath
         self._outpath = outpath
         self._taglist = taglist
+        self._length = 0 # in samples
 
         self._level = None
         self._peakdB = None
@@ -178,14 +205,19 @@ class EncodeTask(ctask.GstPipelineTask):
         cgstreamer.removeAudioParsers()
 
     def getPipelineDesc(self):
+        # start with an emit interval of one frame, because we end up setting
+        # the final interval after paused and after processing some samples
+        # already, which is too late
+        interval = int(self.gst.SECOND / 75.0)
         return '''
             filesrc location="%s" !
             decodebin name=decoder !
             audio/x-raw-int,width=16,depth=16,channels=2 !
-            level name=level !
+            level name=level interval=%d !
             %s ! identity name=identity !
             filesink location="%s" name=sink''' % (
                 gstreamer.quoteParse(self._inpath).encode('utf-8'),
+                interval,
                 self._profile.pipeline,
                 gstreamer.quoteParse(self._outpath).encode('utf-8'))
 
@@ -239,9 +271,11 @@ class EncodeTask(ctask.GstPipelineTask):
         # set an interval that is smaller than the duration
         # FIXME: check level and make sure it emits level up to the last
         # sample, even if input is small
-        interval = 1000000000L
-        if interval < duration:
+        interval = self.gst.SECOND
+        if interval > duration:
             interval = duration / 2
+        self.debug('Setting level interval to %s, duration %s',
+            self.gst.TIME_ARGS(interval), self.gst.TIME_ARGS(duration))
         self._level.set_property('interval', interval)
         # add a probe so we can track progress
         # we connect to level because this gives us offset in samples
@@ -291,10 +325,16 @@ class EncodeTask(ctask.GstPipelineTask):
         if self._peakdB is not None:
             self.debug('peakdB %r', self._peakdB)
             self.peak = math.sqrt(math.pow(10, self._peakdB / 10.0))
-        else:
-            self.warning('No peak found, something went wrong!')
+            return
+
+        self.warning('No peak found.')
+
+        if self._duration:
+            self.warning('GStreamer level element did not send messages.')
             # workaround for when the file is too short to have volume ?
-            # self.peak = 0.0
+            if self._length == common.SAMPLES_PER_FRAME:
+                self.warning('only one frame of audio, setting peak to 0.0')
+                self.peak = 0.0
 
 
 class TagReadTask(ctask.GstPipelineTask):

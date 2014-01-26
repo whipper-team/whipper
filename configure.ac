@@ -1,7 +1,7 @@
 dnl initialize autoconf
 dnl when going to/from release please remove/add the nano (fourth number)
 dnl releases only do Wall, trunk and prerelease does Werror too
-AC_INIT(morituri, 0.2.0.1,
+AC_INIT(morituri, 0.2.2.1,
    http://thomas.apestaart.org/morituri/trac/newticket,
    morituri)
 
@@ -37,6 +37,10 @@ AC_SUBST(PYTHONLIBDIR)
 
 AS_AC_EXPAND(PLUGINSDIR, "\${libdir}/morituri/plugins")
 AC_MSG_NOTICE(Setting plugins directory to $PLUGINSDIR)
+
+dnl get git revision for installed.py.in
+AC_SUBST(REVISION, `$PYTHON -c 'from morituri.configure import configure; print configure.revision'`)
+AC_MSG_NOTICE(Setting revision to $REVISION)
 
 dnl check for epydoc
 AC_CHECK_PROG(EPYDOC, epydoc, yes, no)

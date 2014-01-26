@@ -55,5 +55,13 @@ class GetRealPathTestCase(tcommon.TestCase):
         fd, path = tempfile.mkstemp(suffix=u'back\\slash.flac')
         refPath = os.path.join(os.path.dirname(path), 'fake.cue')
 
+        self.assertEquals(common.getRealPath(refPath, path),
+            path)
+
+        # same path, but with wav extension, will point to flac file
+        wavPath = path[:-4] + 'wav'
+        self.assertEquals(common.getRealPath(refPath, wavPath),
+            path)
+
         os.close(fd)
         os.unlink(path)

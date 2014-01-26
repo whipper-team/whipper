@@ -26,10 +26,13 @@ def _diff(old, new, desc):
 
     raise AssertionError(
         ("\nError while comparing strings:\n"
-         "%s") % (output, ))
+         "%s") % (output.encode('utf-8'), ))
 
 
 def diffStrings(orig, new, desc='input'):
+
+    assert type(orig) == type(new), 'type %s and %s are different' % (
+        type(orig), type(new))
 
     def _tolines(s):
         return [line + '\n' for line in s.split('\n')]

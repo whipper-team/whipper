@@ -22,7 +22,7 @@
 
 import os
 
-from morituri.common import logcommand, accurip, program, encode, renamer
+from morituri.common import logcommand, accurip, program
 from morituri.image import image
 from morituri.result import result
 
@@ -51,7 +51,7 @@ class Encode(logcommand.LogCommand):
             default=default)
 
     def do(self, args):
-        prog = program.Program()
+        prog = program.Program(self.getRootCommand().config)
         prog.outdir = (self.options.output_directory or os.getcwd())
         prog.outdir = prog.outdir.decode('utf-8')
 
@@ -110,7 +110,10 @@ class Retag(logcommand.LogCommand):
 
 
     def do(self, args):
-        prog = program.Program(stdout=self.stdout)
+        # here to avoid import gst eating our options
+        from morituri.common import encode
+
+        prog = program.Program(self.getRootCommand().config, stdout=self.stdout)
         runner = task.SyncRunner()
 
         for arg in args:
@@ -147,63 +150,18 @@ class Retag(logcommand.LogCommand):
                     print '%s already tagged correctly' % path
             print
 
-class Rename(logcommand.LogCommand):
-
-    summary = "rename image and all files based on metadata"
-
-    def addOptions(self):
-        self.parser.add_option('-R', '--release-id',
-            action="store", dest="release_id",
-            help="MusicBrainz release id to match to (if there are multiple)")
-
-
-    def do(self, args):
-        prog = program.Program(stdout=self.stdout)
-        runner = task.SyncRunner()
-
-        for arg in args:
-            self.stdout.write('Renaming image %r\n' % arg)
-            arg = arg.decode('utf-8')
-            cueImage = image.Image(arg)
-            cueImage.setup(runner)
-
-            mbdiscid = cueImage.table.getMusicBrainzDiscId()
-
-            operator = renamer.Operator(statePath, mbdiscid)
-
-            self.stdout.write('MusicBrainz disc id is %s\n' % mbdiscid)
-            prog.metadata = prog.getMusicBrainz(cueImage.table, mbdiscid,
-                release=self.options.release_id)
-
-            if not prog.metadata:
-                print 'Not in MusicBrainz database, skipping'
-                continue
-
-            # FIXME: this feels like we're poking at internals.
-            prog.cuePath = arg
-            prog.result = result.RipResult()
-            for track in cueImage.table.tracks:
-                path = cueImage.getRealPath(track.indexes[1].path)
-
-                taglist = prog.getTagList(track.number)
-                self.debug(
-                    'possibly retagging %r from cue path %r with taglist %r',
-                    path, arg, taglist)
-                t = encode.SafeRetagTask(path, taglist)
-                runner.run(t)
-                path = os.path.basename(path)
-                if t.changed:
-                    print 'Retagged %s' % path
-                else:
-                    print '%s already tagged correctly' % path
-            print
 
 class Verify(logcommand.LogCommand):
 
+    usage = '[CUEFILE]...'
     summary = "verify image"
 
+    description = '''
+Verifies the image from the given .cue files against the AccurateRip database.
+'''
+
     def do(self, args):
-        prog = program.Program()
+        prog = program.Program(self.getRootCommand().config())
         runner = task.SyncRunner()
         cache = accurip.AccuCache()
 

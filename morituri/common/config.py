@@ -54,6 +54,32 @@ class Config(log.Loggable):
         self.info('Loaded %d sections from config file' %
             len(self._parser.sections()))
 
+    def write(self):
+        fd, path = tempfile.mkstemp(suffix=u'.moriturirc')
+        handle = os.fdopen(fd, 'w')
+        self._parser.write(handle)
+        handle.close()
+        shutil.move(path, self._path)
+
+
+    ### any section
+
+    def _getter(self, suffix, section, option):
+        methodName = 'get' + suffix
+        method = getattr(self._parser, methodName)
+        try:
+            return method(section, option)
+        except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
+            return None
+
+    def get(self, section, option):
+        return self._getter('', section, option)
+
+    def getboolean(self, section, option):
+        return self._getter('boolean', section, option)
+
+    ### drive sections
+
     def setReadOffset(self, vendor, model, release, offset):
         """
         Set a read offset for the given drive.
@@ -95,13 +121,6 @@ class Config(log.Loggable):
         except ConfigParser.NoOptionError:
             raise KeyError("Could not find defeats_cache for %s/%s/%s" % (
                 vendor, model, release))
-
-    def write(self):
-        fd, path = tempfile.mkstemp(suffix=u'.moriturirc')
-        handle = os.fdopen(fd, 'w')
-        self._parser.write(handle)
-        handle.close()
-        shutil.move(path, self._path)
 
     def _findDriveSection(self, vendor, model, release):
         for name in self._parser.sections():

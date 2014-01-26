@@ -1,41 +1,27 @@
 morituri is a CD ripper aiming for accuracy over speed.
+morituri runs on Linux and possibly other Unix-based systems.
 Its features are modeled to compare with Exact Audio Copy on Windows.
+For more information, see http://thomas.apestaart.org/morituri/trac/
 
-This is morituri 0.2.0 "ears".
+This is morituri 0.2.2, "my bad"
 
-This is intended as a release for daring and curious people who've had enough
-of the fact that Windows has a more accurate CD ripper than Linux.
+Coverage in 0.2.2: 67 %   (1972 / 2904), 109 python tests
 
-Coverage in 0.2.0: 67 %   (1890 / 2807), 95 python tests
+Bugs fixed in 0.2.2:
 
-Features added in 0.2.0:
+in github:
+- 38: No matching offset found
+- 35: 'rip cd info' should not eject the disc
+- 34: Use track instead of the release artist MBID for the 'Musicbrainz artist ID'
+- 33: "rip offset find" fails to initialise program.Program
+- 19: Set album artist tag
 
-- added plugins system for logger
-- added rip cd rip --logger to specify logger
-- added reading speed, cdparanoia and cdrdao version to logger
-- added rip drive analyze to detect whether we can defeat audio cache behaviour
-- store drive offsets and cache defeating in config file
-- rip drive list shows configured offset and audio cache defeating
-- added rip image retag --release-id to specify the release id to tag with
-- added %r/%R for release type to use in track/disc template
-- added %x for extension to release template
 
-Bugs fixed in 0.2.0:
+morituri 0.2.2 is brought to you by:
 
--  89: Fails to rip track with \ in its name
-- 105: Backslash in track names causes "Cannot find file" during rip
-- 108: Unable to find offset / rip
-- 109: KeyError when running "rip offset find"
-- 111: Python traceback when config has no read offset for CD
--  76: morituri should allow for a configuration file
--  96: rip image retag: allow specification of release ID
-- 107: Backslash in track name confuses AR step
-- 112: add MusicBrainz lookup URL to generated logfile
-
-morituri 0.2.0 is brought to you by:
-
-Loïc Minier
-Ross Burton
-Christophe Fergeau
 Thomas Vander Stichele
-mustbenice
+Velo Superman
+Nicolas Cornu
+dioltas
+Frederik "Freso" S. Olesen
+Jonas Smedegaard

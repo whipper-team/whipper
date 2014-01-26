@@ -1,6 +1,7 @@
 TODO:
-- add drive analysis mode
-  - use cdparanoia -A from 10.2 on for caching behaviour
+- after fixing relative, pregaps, and index 02, check when htoa is 0,
+  and add a setSilence to table to set a counter 0 with no path, and test
+  that the cue file puts a SILENCE/PREGAP
 - store drive features in a database
 - try http://www.ime.usp.br/~pjssilva/secure-cdparanoia.py and see if it
   is better at handling some bad cd's
@@ -16,13 +17,10 @@ TODO:
   or not putting the disk in)
 - check if it's simple to listen to each track in a multitrack completing
 - save trms to a pickle, after finishing each track
-- add a way to store configuration data per drive, like offset
 - rip the data session
 - add AccurateRip validation for ripped images to rip command
 - add GUI
-- persist RipResult so rips can be aborted and continued too; needs verification
-  of previously ripped files
-- write moovida plugin
+- write moovida/xbmc plugin
 - cache results of MusicBrainz lookups
 - on ana, Goldfrapp tells me I have offset 0!
 - don't keep short HTOA's if their peak level is low
@@ -63,4 +61,3 @@ TODO:
   right now it is; maybe split in to base and output ?
 - rip task should abort on task 4 if checksums don't match
 - retry cdrdao a few times when it had to load the tray
-- when it detects the target dir is already there, but the files would be different names, complain or customize the name with further info (see GLB - mockingbirds singles)

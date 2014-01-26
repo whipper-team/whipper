@@ -290,7 +290,7 @@ class DiscInfoTask(CDRDAOTask):
         @param device:  the device to rip from
         @type  device:  str
         """
-        self.debug('creating DiscInfoTask')
+        self.debug('creating DiscInfoTask for device %r', device)
         CDRDAOTask.__init__(self)
 
         self.options = ['disk-info', ]
@@ -342,6 +342,8 @@ class ReadSessionTask(CDRDAOTask):
         @param device:  the device to rip from
         @type  device:  str
         """
+        self.debug('Creating ReadSessionTask for session %d on device %r',
+            session, device)
         CDRDAOTask.__init__(self)
         self.parser = OutputParser(self)
         (fd, self._tocfilepath) = tempfile.mkstemp(
@@ -505,3 +507,16 @@ class ProgramFailedException(Exception):
     def __init__(self, code):
         self.code = code
         self.args = (code, )
+
+
+_VERSION_RE = re.compile(
+    "^Cdrdao version (?P<version>.+) -")
+
+
+def getCDRDAOVersion():
+    getter = common.VersionGetter('cdrdao',
+        ["cdrdao"],
+        _VERSION_RE,
+        "%(version)s")
+
+    return getter.get()

@@ -95,6 +95,12 @@ class Track:
         return self.indexes[number]
 
     def getFirstIndex(self):
+        """
+        Get the first chronological index for this track.
+
+        Typically this is INDEX 01; but it could be INDEX 00 if there's
+        a pre-gap.
+        """
         indexes = self.indexes.keys()
         indexes.sort()
         return self.indexes[indexes[0]]
@@ -162,7 +168,7 @@ class Table(object, log.Loggable):
     catalog = None # catalog number; FIXME: is this UPC ?
     cdtext = None
 
-    classVersion = 2
+    classVersion = 4
 
     def __init__(self, tracks=None):
         if not tracks:
@@ -170,10 +176,14 @@ class Table(object, log.Loggable):
 
         self.tracks = tracks
         self.cdtext = {}
-        self.logName = "Table 0x%08X" % id(self)
         # done this way because just having a class-defined instance var
         # gets overridden when unpickling
         self.instanceVersion = self.classVersion
+        self.unpickled()
+
+    def unpickled(self):
+        self.logName = "Table 0x%08x v%d" % (id(self), self.instanceVersion)
+        self.debug('set logName')
 
     def getTrackStart(self, number):
         """
@@ -510,12 +520,18 @@ class Table(object, log.Loggable):
 
 
         Dump our internal representation to a .cue file content.
+
+        @rtype: C{unicode}
         """
+        self.debug('generating .cue for cuePath %r', cuePath)
+
         lines = []
 
         def writeFile(path):
             targetPath = common.getRelativePath(path, cuePath)
-            lines.append('FILE "%s" WAVE' % targetPath)
+            line = 'FILE "%s" WAVE' % targetPath
+            lines.append(line)
+            self.debug('writeFile: %r' % line)
 
         # header
         main = ['PERFORMER', 'TITLE']
@@ -535,41 +551,91 @@ class Table(object, log.Loggable):
             if key in self.cdtext:
                 lines.append('%s "%s"' % (key, self.cdtext[key]))
 
-        # add the first FILE line
-        path = self.tracks[0].getFirstIndex().path
-        counter = self.tracks[0].getFirstIndex().counter
-        writeFile(path)
+        # FIXME:
+        # - the first FILE statement goes before the first TRACK, even if
+        #   there is a non-file-using PREGAP
+        # - the following FILE statements come after the last INDEX that
+        #   use that FILE; so before a next TRACK, PREGAP silence, ...
+
+        # add the first FILE line; EAC always puts the first FILE
+        # statement before TRACK 01 and any possible PRE-GAP
+        firstTrack = self.tracks[0]
+        index = firstTrack.getFirstIndex()
+        indexOne = firstTrack.getIndex(1)
+        counter = index.counter
+        track = firstTrack
+
+        while not index.path:
+            t, i = self.getNextTrackIndex(track.number, index.number)
+            track = self.tracks[t - 1]
+            index = track.getIndex(i)
+            counter = index.counter
+
+        if index.path:
+            self.debug('counter %d, writeFile' % counter)
+            writeFile(index.path)
 
         for i, track in enumerate(self.tracks):
+            self.debug('track i %r, track %r' % (i, track))
             # FIXME: skip data tracks for now
             if not track.audio:
                 continue
 
-            # if there is no index 0, but there is a new file, advance
-            # FILE line here
-            if not 0 in track.indexes:
-                index = track.indexes[1]
-                if index.counter != counter:
-                    writeFile(index.path)
-                    counter = index.counter
-            lines.append("  TRACK %02d %s" % (i + 1, 'AUDIO'))
-            for key in CDTEXT_FIELDS:
-                if key in track.cdtext:
-                    lines.append('    %s "%s"' % (key, track.cdtext[key]))
-
-            if track.isrc is not None:
-                lines.append("    ISRC %s" % track.isrc)
-
             indexes = track.indexes.keys()
             indexes.sort()
 
+            wroteTrack = False
+
             for number in indexes:
                 index = track.indexes[number]
-                if index.counter != counter:
-                    writeFile(index.path)
+                self.debug('index %r, %r' % (number, index))
+
+                # any time the source counter changes to a higher value,
+                # write a FILE statement
+                # it has to be higher, because we can run into the HTOA
+                # at counter 0 here
+                if index.counter > counter:
+                    if index.path:
+                        self.debug('counter %d, writeFile' % counter)
+                        writeFile(index.path)
+                    self.debug('setting counter to index.counter %r' %
+                        index.counter)
                     counter = index.counter
-                lines.append("    INDEX %02d %s" % (number,
-                    common.framesToMSF(index.relative)))
+
+                # any time we hit the first index, write a TRACK statement
+                if not wroteTrack:
+                    wroteTrack = True
+                    line = "  TRACK %02d %s" % (i + 1, 'AUDIO')
+                    lines.append(line)
+                    self.debug('%r' % line)
+
+                    for key in CDTEXT_FIELDS:
+                        if key in track.cdtext:
+                            lines.append('    %s "%s"' % (
+                                key, track.cdtext[key]))
+
+                    if track.isrc is not None:
+                        lines.append("    ISRC %s" % track.isrc)
+
+                    # handle TRACK 01 INDEX 00 specially
+                    if 0 in indexes:
+                        index00 = track.indexes[0]
+                        if i == 0:
+                            # if we have a silent pre-gap, output it
+                            if not index00.path:
+                                length = indexOne.absolute - index00.absolute
+                                lines.append("    PREGAP %s" %
+                                    common.framesToMSF(length))
+                                continue
+
+                        # handle any other INDEX 00 after its TRACK
+                        lines.append("    INDEX %02d %s" % (0,
+                            common.framesToMSF(index00.relative)))
+
+                if number > 0:
+                    # index 00 is output after TRACK up above
+                    lines.append("    INDEX %02d %s" % (number,
+                        common.framesToMSF(index.relative)))
 
         lines.append("")
 
@@ -607,6 +673,9 @@ class Table(object, log.Loggable):
         to adjust the path.
 
         Assumes all indexes have an absolute offset and will raise if not.
+
+        @type  track: C{int}
+        @type  index: C{int}
         """
         self.debug('setFile: track %d, index %d, path %r, '
             'length %r, counter %r', track, index, path, length, counter)
