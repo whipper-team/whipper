@@ -15,3 +15,7 @@ missing
 morituri.spec
 py-compile
 REVISION
+
+# For Python development using Eclipse IDE
+.project
+.pydevproject
