@@ -40,7 +40,7 @@ PYCHECKER_BLACKLIST = \
 release: dist
 	make $(PACKAGE)-$(VERSION).tar.bz2.md5
 
-REVISION: $(top_srcdir)/.git
+REVISION: $(top_srcdir)/.git morituri/common/common.py
 	$(PYTHON) -c 'from morituri.configure import configure; print configure.revision' > REVISION
 
 # generate md5 sum files
