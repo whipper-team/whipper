@@ -351,14 +351,15 @@ def getRevision():
     # which may be higher than your current source tree
     if os.path.exists(os.path.join(topsrcdir, '.git')):
 
-        status, describe = commands.getstatusoutput('git describe')
+        # always falls back to the current commit hash if no tags are found
+        status, describe = commands.getstatusoutput('git describe --all')
         if status == 0:
             if commands.getoutput('git diff-index --name-only HEAD --'):
                 describe += '-modified'
 
             return describe
 
-    # check for a top-level REIVISION file
+    # check for a top-level REVISION file
     path = os.path.join(topsrcdir, 'REVISION')
     if os.path.exists(path):
         revision = open(path).read().strip()
