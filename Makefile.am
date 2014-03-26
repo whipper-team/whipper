@@ -3,11 +3,9 @@ AUTOMAKE_OPTIONS = 1.8 dist-bzip2 no-dist-gzip
 
 ACLOCAL_AMFLAGS = -I m4
 
-BUILT_SOURCES = REVISION
-
 SUBDIRS = morituri bin etc doc m4 misc
 
-EXTRA_DIST = morituri.spec morituri.doap RELEASE README.md HACKING $(BUILT_SOURCES)
+EXTRA_DIST = morituri.spec morituri.doap RELEASE README.md HACKING REVISION
 
 SOURCES = $(top_srcdir)/morituri/*.py $(top_srcdir)/morituri/*/*.py
 
@@ -48,3 +46,6 @@ REVISION: $(top_srcdir)/.git morituri/common/common.py
 	md5sum $< > $@
 
 include $(top_srcdir)/m4/pychecker.mk
+
+all-local:
+	if test -e $(top_srcdir)/.git; then make REVISION; fi
