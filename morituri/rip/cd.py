@@ -123,6 +123,8 @@ class _CD(logcommand.LogCommand):
             "full table's AR URL %s differs from toc AR URL %s" % (
             self.itable.getAccurateRipURL(), self.ittoc.getAccurateRipURL())
 
+        self.program.metadata.discid = self.ittoc.getMusicBrainzDiscId()
+
         # result
 
         self.program.result.cdrdaoVersion = cdrdao.getCDRDAOVersion()
