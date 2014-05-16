@@ -24,7 +24,7 @@ dnl Add parameters for aclocal
 AC_SUBST(ACLOCAL_AMFLAGS, "-I m4")
 
 dnl check for python
-AS_PATH_PYTHON(2.3)
+AM_PATH_PYTHON(2.3)
 
 dnl check for where to install our python stuff
 PYVER=[`$PYTHON -c "import sys ; print sys.version[:3]"`]
