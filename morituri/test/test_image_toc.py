@@ -88,8 +88,7 @@ class CureTestCase(common.TestCase):
     def testConvertCue(self):
         # self.toc.table.absolutize()
         cue = self.toc.table.cue()
-        ref = open(os.path.join(os.path.dirname(__file__), 'cure.cue')).read(
-            ).decode('utf-8')
+        ref = self.readCue('cure.cue')
         common.diffStrings(ref, cue)
 
         # we verify it because it has failed in readdisc in the past
@@ -159,8 +158,7 @@ class BlocTestCase(common.TestCase):
         #self.toc.table.absolutize()
         self.failUnless(self.toc.table.hasTOC())
         cue = self.toc.table.cue()
-        ref = open(os.path.join(os.path.dirname(__file__),
-            'bloc.cue')).read().decode('utf-8')
+        ref = self.readCue('bloc.cue')
         common.diffStrings(ref, cue)
 
     def testCDDBId(self):
@@ -204,8 +202,7 @@ class BreedersTestCase(common.TestCase):
         # self.toc.table.absolutize()
         self.failUnless(self.toc.table.hasTOC())
         cue = self.toc.table.cue()
-        ref = open(os.path.join(os.path.dirname(__file__),
-            'breeders.cue')).read()
+        ref = self.readCue('breeders.cue')
         self.assertEquals(cue, ref)
 
 # Ladyhawke has a data track

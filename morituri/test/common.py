@@ -1,6 +1,7 @@
 # -*- Mode: Python -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
+import re
 import os
 import sys
 
@@ -8,6 +9,7 @@ import sys
 from twisted.trial import unittest
 
 from morituri.common import log
+from morituri.configure import configure
 
 log.init()
 
@@ -63,6 +65,19 @@ class TestCase(log.Loggable, unittest.TestCase):
 
     assertRaises = failUnlessRaises
 
+    def readCue(self, name):
+        """
+        Read a .cue file, and replace the version comment with the current
+        version so we can use it in comparisons.
+        """
+        ret = open(os.path.join(os.path.dirname(__file__), name)).read(
+            ).decode('utf-8')
+        ret = re.sub(
+            'REM COMMENT "Morituri.*',
+            'REM COMMENT "Morituri %s"' % (configure.version),
+            ret, re.MULTILINE)
+
+        return ret
 
 class UnicodeTestMixin:
     # A helper mixin to skip tests if we're not in a UTF-8 locale
