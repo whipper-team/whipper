@@ -6,6 +6,7 @@ import tempfile
 import unittest
 
 from morituri.image import table, cue
+from morituri.configure import configure
 
 from morituri.test import common
 
@@ -76,7 +77,7 @@ class WriteCueFileTestCase(unittest.TestCase):
         it.leadout = 3000
 
         common.diffStrings(u"""REM DISCID 0C002802
-REM COMMENT "Morituri"
+REM COMMENT "Morituri %s"
 FILE "track01.wav" WAVE
   TRACK 01 AUDIO
     INDEX 01 00:00:00
@@ -84,5 +85,5 @@ FILE "track01.wav" WAVE
     INDEX 00 00:13:25
 FILE "track02.wav" WAVE
     INDEX 01 00:00:00
-""", it.cue())
+""" % configure.version, it.cue())
         os.unlink(path)
