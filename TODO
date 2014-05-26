@@ -5,10 +5,6 @@ TODO:
 - store drive features in a database
 - try http://www.ime.usp.br/~pjssilva/secure-cdparanoia.py and see if it
   is better at handling some bad cd's
-- .cue file:
-  - add version to morituri comment
-  - add DATE and CATALOG and PERFORMER and TITLE to top of cue
-  - add TITLE AND PERFORMER to each track
 - change format to be %2d - %performer by default
 - at least mention the data track somewhere in the log
 - check pregaps more than once, to see if results are consistent, or with
