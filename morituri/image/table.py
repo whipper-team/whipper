@@ -29,6 +29,7 @@ import urllib
 import urlparse
 
 from morituri.common import common, log
+from morituri.configure import configure
 
 # FIXME: taken from libcdio, but no reference found for these
 
@@ -542,7 +543,7 @@ class Table(object, log.Loggable):
 
         assert self.hasTOC(), "Table does not represent a full CD TOC"
         lines.append('REM DISCID %s' % self.getCDDBDiscId().upper())
-        lines.append('REM COMMENT "%s"' % program)
+        lines.append('REM COMMENT "%s %s"' % (program, configure.version))
 
         if self.catalog:
             lines.append("CATALOG %s" % self.catalog)
