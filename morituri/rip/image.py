@@ -161,7 +161,7 @@ Verifies the image from the given .cue files against the AccurateRip database.
 '''
 
     def do(self, args):
-        prog = program.Program(self.getRootCommand().config())
+        prog = program.Program(self.getRootCommand().config)
         runner = task.SyncRunner()
         cache = accurip.AccuCache()
 
