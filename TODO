@@ -1,40 +1,76 @@
 TODO:
+
+EASY
+
+- change format to be %2d - %performer by default
+  FIXME: why was this again?
+
+- at least mention the data track somewhere in the log
+
+- handle errors on cdrdao spawning (for example, not having cdrecorder,
+  or not putting the disk in)
+
+MEDIUM
+
 - after fixing relative, pregaps, and index 02, check when htoa is 0,
   and add a setSilence to table to set a counter 0 with no path, and test
   that the cue file puts a SILENCE/PREGAP
+
 - store drive features in a database
+
 - try http://www.ime.usp.br/~pjssilva/secure-cdparanoia.py and see if it
   is better at handling some bad cd's
-- change format to be %2d - %performer by default
-- at least mention the data track somewhere in the log
-- check pregaps more than once, to see if results are consistent, or with
-  different methods
-- handle errors on cdrdao spawning (for example, not having cdrecorder,
-  or not putting the disk in)
-- check if it's simple to listen to each track in a multitrack completing
-- save trms to a pickle, after finishing each track
-- rip the data session
+
 - add AccurateRip validation for ripped images to rip command
-- add GUI
-- write moovida/xbmc plugin
-- cache results of MusicBrainz lookups
-- on ana, Goldfrapp tells me I have offset 0!
-- don't keep short HTOA's if their peak level is low
-  (see Pixies Planet of Sound single)
-- lossy encoding
+
 - consider basing ripping progress not only on read (reaches 100% before
   writes are done) or writes (very bursty in cdparanoia) but a combo of the
   two, each counting for half.
-- if disk not found in accuraterip, it doesn't mean that it's not accurate
+
+- rip task should abort on task 4 if checksums don't match
+
+- retry cdrdao a few times when it had to load the tray
+
+- getting cache results should depend on same drive/offset
+
+- do some character mangling so trail of dead is not in a hidden dir
+
+HARD
+
+- rip the data session
+
+- add GUI
+
+- write xbmc/plex plugin
+
+SPECIFIC ALBUMS ISSUES
+
+- on ana, Goldfrapp tells me I have offset 0!
+
 - discs we should rip:
 	LCD soundsystem disc 2 (data track)
-- check if cdda2wav or icedax analyze pregaps correctly
+
 - Zita Swoon anthology cd 1 shows track 8 rip NOT accurate, but checksums match
+
+NO DECISION YET
+
+- possibly figure out how to name albums with credited artist; look at gorky and spiritualized electric mainline
+
+- check if cdda2wav or icedax analyze pregaps correctly
+
+OLD
+
+- check pregaps more than once, to see if results are consistent, or with
+  different methods
+- check if it's simple to listen to each track in a multitrack completing
+- save trms to a pickle, after finishing each track
+- cache results of MusicBrainz lookups
+- don't keep short HTOA's if their peak level is low
+  (see Pixies Planet of Sound single)
+- if disk not found in accuraterip, it doesn't mean that it's not accurate
 - burn ripped images
 - use a temp dir, until the whole rip is good don't move it, so we easily find
   half done rips
-- primal scream, track 5, it rips/checks/rips/checks/encodes/checks and then complains read and verify failed.  why did it encode ?
-- Musicbrainz disc id error:
   Compare http://www.musicbrainz.org/cdtoc/MAj3xXf6QMy7G.BIFOyHyq4MySE-
   with http://www.musicbrainz.org/cdtoc/USC1utCZbTLZy80aHvQzJw4FASk-
   Almost same, but second is 2 seconds longer on last track, suggesting it
@@ -42,7 +78,6 @@ TODO:
   edit history though
   Write an example document with this cd as an example explaining offsets
   and id calculations
-- possibly figure out how to name albums with credited artist; look at gorky and spiritualized electric mainline
 - when shortening file name then reripping, it rerips since it doesn't know
   the shortened name; see sufjan stevens
 - if a disc output dir is already there, see if it was properly finished;
@@ -50,10 +85,6 @@ TODO:
 - if multiple releases with different artist match the disc id, stop and
   let user continue by choosing one
 - artist-credit-phrase fabricated by musicbrainzngs only looks at name, not at artist-credit->name (see e.g. Gorky)
-- getting cache results should depend on same drive/offset
-- do some character mangling so trail of dead is not in a hidden dir
 - fix %r for normal case release name
 - decide whether output-dir should be part of the relative filenames of things;
   right now it is; maybe split in to base and output ?
-- rip task should abort on task 4 if checksums don't match
-- retry cdrdao a few times when it had to load the tray
