@@ -447,6 +447,7 @@ class Program(log.Loggable):
             disc = self.metadata.title
             mbidAlbum = self.metadata.mbid
             mbidTrackAlbum = self.metadata.mbidArtist
+            mbDiscId = self.metadata.discid
 
             if number > 0:
                 try:
@@ -510,6 +511,7 @@ class Program(log.Loggable):
                 ret["musicbrainz-artistid"] = mbidTrackArtist
                 ret["musicbrainz-albumid"] = mbidAlbum
                 ret["musicbrainz-albumartistid"] = mbidTrackAlbum
+                ret["musicbrainz-discid"] = mbDiscId
 
         # FIXME: gst.TAG_ISRC
 
