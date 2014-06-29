@@ -124,6 +124,9 @@ class Retag(logcommand.LogCommand):
 
             mbdiscid = cueImage.table.getMusicBrainzDiscId()
             self.stdout.write('MusicBrainz disc id is %s\n' % mbdiscid)
+
+            self.stdout.write("MusicBrainz lookup URL %s\n" %
+                cueImage.table.getMusicBrainzSubmitURL())
             prog.metadata = prog.getMusicBrainz(cueImage.table, mbdiscid,
                 release=self.options.release_id)
 
