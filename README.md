@@ -170,24 +170,3 @@ CONTRIBUTING
 - You can always [flattr morituri to donate](https://flattr.com/submit/auto?%20%20user_id=thomasvs&url=https://thomas.apestaart.org/morituri/trac/&%20%20title=morituri&%20%20description=morituri&%20%20language=en_GB&tags=flattr,morituri,software&category=software)
 
 
-rip command tree
-----------------
-rip
-
- * accurip
-    * show (show accuraterip data)
- * offset
-    * find (find drive's read offset using AccurateRip)
-    * verify (verify drive's read offset using AccurateRip)
- * cd
-    * rip (rip the cd)
- * debug
-    * encode (encode a file)
- * htoa
-    * find
-    * rip (rip the htoa if it's there)
- * image
-    * verify (verify the cd image)
-    * encode (encode to a different codec)
-    * retag (retag the image with current MusicBrainz data)
-
