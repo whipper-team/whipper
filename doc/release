@@ -22,7 +22,10 @@ pre-release checklist
   correct:
   https://thomas.apestaart.org/morituri/trac/query?order=priority&col=id&col=summary&col=status&col=type&col=priority&col=milestone&col=component&milestone=0.1.1
 - remilestone still open tickets to next release
-- FIXME: same on github
+- verify all tickets for this milestone are correct on github:
+  https://github.com/thomasvs/morituri/issues?milestone=4&page=1&state=open
+  (for 0.2.3)
+- remilestone still open tickets to next release
 
 release
 -------
@@ -31,6 +34,8 @@ release
 - Update configure.ac
 - Pick a release name
 - Update .doap file
+  - add new release
+  - list new features
 - verify the update with moap doap show
 - Run coverage
   make coverage
@@ -40,20 +45,21 @@ release
 - Update bugs fixed in NEWS:
   moap doap bug query -f "- %(id)3s: %(summary)s" "milestone=$VERSION"
   FIXME: same on github
+  https://github.com/thomasvs/morituri/issues?milestone=4&page=1&state=closed
+  (for 0.2.3)
+  copy and paste and edit manually for now
 - Update README and home page with relevant new features, as well as version
 - Update RELEASE, copying sections from NEWS, and adding contributors with
   moap cl cont
   or from git:
   git log --format='%aN' | sort -u
-- Run moap cl prep and add comment about release
-- Update ChangeLog; add === release x.y.z === line
 - commit locally
   git commit -a -m "Releasing $VERSION"
 - tag the release:
   git tag -a v$VERSION -m "Releasing $VERSION"
 - make sure we build installed.py with the correct tag
   autoregen.sh
-  cat morituri/configure/installed.py
+  cat morituri/configure/installed.py | grep revision
 - make distcheck
 - make release
 - build rpm using rpmbuild and mach

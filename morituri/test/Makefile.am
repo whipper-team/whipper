@@ -53,6 +53,7 @@ EXTRA_DIST = \
 	cdrdao.readtoc.progress \
 	silentalarm.result.pickle \
 	strokes-someday.toc \
+        strokes-someday.eac.cue \
 	surferrosa.toc \
 	totbl.fast.toc \
 	track.flac \
