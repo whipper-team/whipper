@@ -33,11 +33,18 @@ class RCCue(logcommand.LogCommand):
     def do(self, args):
         self._cache = cache.ResultCache()
 
-        persisted = self._cache.getRipResult(args[0], create=False)
+        try:
+            discid = args[0]
+        except IndexError:
+            self.stderr.write(
+                'Please specify a cddb disc id\n')
+            return 3
+
+        persisted = self._cache.getRipResult(discid, create=False)
 
         if not persisted:
             self.stderr.write(
-                'Could not find a result for cddb disc id %s\n' % args[0])
+                'Could not find a result for cddb disc id %s\n' % discid)
             return 3
 
         self.stdout.write(persisted.object.table.cue().encode('utf-8'))
