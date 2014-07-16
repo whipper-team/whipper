@@ -1,5 +1,6 @@
-morituri is a CD ripper aiming for accuracy over speed.
+morituri is a CD ripper aiming for accuracy over speed for UNIX systems.
 Its features are modeled to compare with Exact Audio Copy on Windows.
+The home page is https://thomas.apestaart.org/morituri/trac/
 
 
 RATIONALE
