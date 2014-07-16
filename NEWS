@@ -1,4 +1,39 @@
-This is morituri 0.2.2, "my bad"
+This is morituri 0.2.3, "moved"
+
+Coverage in 0.2.3: 68 %   (2058 / 3019)
+
+Bugs fixed in 0.2.3:
+
+in github:
+- 81: Show morituri version in cue and update TODO.
+- 78: Use standard AM_PATH_PYTHON rather than broken AS_PATH_PYTHON.
+- 77: Save MusicBrainz DiscID to tags.
+- 74: Support dev on Eclipse and Pydev by .gitignoring two project files.
+- 68: Also show the MusicBrainz lookup ID when retagging.
+- 59: EN DASH in album title
+- 56: image verify fails
+- 53: template default for MusicBrainz miss
+- 52: Makefile.am: error: required file './README' not found
+- 43: README: slight markup modifications to show formatted on github start page
+- 42: update lame mp3 profiles for gstreamer
+- 41: "rip offset verify" subcommand not found
+- 40: 0.2.2 tarball broken
+- 39: Run $PYTHON, not python
+
+in trac:
+- 148: Makefile error compiling 0.2.2
+-  45: lame element is deprecated, should use 'lamemp3enc' instead
+- 144: Building out of git fails on Fedora 19
+- 147: problems with 2.2 and 2.1 on Ubuntu 13.04 2.0 is fine tho
+- 151: Morituri not finding my drive
+- 152: UnicodeEncodeError: 'ascii' codec can't encode characters in position 53-59: ordinal not in range(128)
+
+Features added in 0.2.3:
+
+- fixed non-01 index offsets
+- add new debug command, rip debug resultcache cue
+- use newer lamemp3enc element for mp3 encoding
+- fixed rip image verify command
 
 Coverage in 0.2.2: 67 %   (1972 / 2904), 109 python tests
 
