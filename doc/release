@@ -58,14 +58,17 @@ release
 - tag the release:
   git tag -a v$VERSION -m "Releasing $VERSION"
 - make sure we build installed.py with the correct tag
-  autoregen.sh
+  ./autoregen.sh
   cat morituri/configure/installed.py | grep revision
 - make distcheck
 - make release
 - build rpm using rpmbuild and mach
+  rpmbuild -ta morituri-$VERSION.tar.bz2
+  mach -r f19u64 -k build morituri.spec
 - gpg sign
   rpm --addsign /var/tmp/mach/fedora-*/morituri-$VERSION-*/*.rpm
 - install it
+  sudo rpm -Uhv /var/tmp/mach/fedora-*/morituri-$VERSION-*/*.noarch.rpm
 - rip a test cd
 - sync from website:
   tao-get
@@ -76,8 +79,6 @@ release
 - push to master
   git push
   git push origin v$VERSION
-- announce to freshmeat:
-  moap doap -v $VERSION freshmeat
 - send out release mails:
   - first test:
     export AT=@
@@ -87,6 +88,8 @@ release
     moap doap -v $VERSION mail -f thomas${AT}apestaart.org cdrdao-devel${AT}lists.sourceforge.net teuf${AT}gnome.org morituri${AT}packages.debian.org
 - announce on hydrogenaudio:
   http://www.hydrogenaudio.org/forums/index.php?showforum=22
+  See for example
+  http://www.hydrogenaud.io/forums/index.php?showtopic=102003&st=0&gopid=869731&#entry869731
 - tweet it
 - add this new version to trac
 - update the homepage
