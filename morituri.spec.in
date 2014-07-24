@@ -35,7 +35,8 @@ Morituri is a CD ripper.
 %prep
 
 %setup -q
-%configure --sysconfdir=%{_sysconfdir}
+
+PATH=/usr/bin:/bin:\$PATH %configure --sysconfdir=%{_sysconfdir}
 
 %build
 
@@ -49,7 +50,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-%doc README.md morituri.doap NEWS RELEASE ChangeLog
+%doc README morituri.doap NEWS RELEASE ChangeLog
 %{_bindir}/rip
 %{_libdir}/morituri/plugins
 %{_mandir}/man1/rip.1*
@@ -57,6 +58,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/bash_completion.d/rip
 
 %changelog
+* Thu Jul 24 2014 Thomas Vander Stichele <thomas at apestaart dot org>
+- add a hack to make the build pick up /usr/bin/python for python instead
+
 * Sun Jan 20 2013 Thomas Vander Stichele <thomas at apestaart dot org>
 - put rip completion file directly in package, not parent dir
 
