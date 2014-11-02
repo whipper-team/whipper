@@ -53,7 +53,7 @@ class LadyhawkeTestCase(tcommon.TestCase):
 
     def testMusicBrainz(self):
         # output from mb-submit-disc:
-        # http://musicbrainz.org/bare/cdlookup.html?toc=1+12+195856+150+
+        # https://musicbrainz.org/bare/cdlookup.html?toc=1+12+195856+150+
         # 15687+31841+51016+66616+81352+99559+116070+133243+149997+161710+
         # 177832&tracks=12&id=KnpGsLhvH.lPrNc1PBL21lb9Bg4-
         # however, not (yet) in musicbrainz database
@@ -73,7 +73,7 @@ class LadyhawkeTestCase(tcommon.TestCase):
 
 
 class MusicBrainzTestCase(tcommon.TestCase):
-    # example taken from http://musicbrainz.org/doc/DiscIDCalculation
+    # example taken from https://musicbrainz.org/doc/DiscIDCalculation
     # disc is Ettella Diamant
 
     def setUp(self):

@@ -395,7 +395,7 @@ class Table(object, log.Loggable):
         })
 
         return urlparse.urlunparse((
-            'http', host, '/bare/cdlookup.html', '', query, ''))
+            'https', host, '/bare/cdlookup.html', '', query, ''))
 
     def getFrameLength(self, data=False):
         """

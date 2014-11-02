@@ -73,8 +73,8 @@ OLD
 - burn ripped images
 - use a temp dir, until the whole rip is good don't move it, so we easily find
   half done rips
-  Compare http://www.musicbrainz.org/cdtoc/MAj3xXf6QMy7G.BIFOyHyq4MySE-
-  with http://www.musicbrainz.org/cdtoc/USC1utCZbTLZy80aHvQzJw4FASk-
+  Compare https://musicbrainz.org/cdtoc/MAj3xXf6QMy7G.BIFOyHyq4MySE-
+  with https://musicbrainz.org/cdtoc/USC1utCZbTLZy80aHvQzJw4FASk-
   Almost same, but second is 2 seconds longer on last track, suggesting it
   was calculated wrong (150 frame offset done wrong ?) Can't find it in
   edit history though
