@@ -187,7 +187,7 @@ def _getMetadata(releaseShort, release, discid):
 
     discMD.mbid = release['id']
     discMD.mbidArtist = discCredit.getIds()
-    discMD.url = 'http://musicbrainz.org/release/' + release['id']
+    discMD.url = 'https://musicbrainz.org/release/' + release['id']
 
     discMD.barcode = release.get('barcode', None)
     lil = release.get('label-info-list', [{}])

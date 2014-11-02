@@ -383,7 +383,7 @@ class Table(object, log.Loggable):
         return result
 
     def getMusicBrainzSubmitURL(self):
-        host = 'mm.musicbrainz.org'
+        host = 'musicbrainz.org'
 
         discid = self.getMusicBrainzDiscId()
         values = self._getMusicBrainzValues()
@@ -395,7 +395,7 @@ class Table(object, log.Loggable):
         })
 
         return urlparse.urlunparse((
-            'http', host, '/bare/cdlookup.html', '', query, ''))
+            'https', host, '/cdtoc/attach', '', query, ''))
 
     def getFrameLength(self, data=False):
         """
