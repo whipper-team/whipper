@@ -73,7 +73,7 @@ class LadyhawkeTestCase(tcommon.TestCase):
 
 
 class MusicBrainzTestCase(tcommon.TestCase):
-    # example taken from https://musicbrainz.org/doc/DiscIDCalculation
+    # example taken from https://musicbrainz.org/doc/Disc_ID_Calculation
     # disc is Ettella Diamant
 
     def setUp(self):
