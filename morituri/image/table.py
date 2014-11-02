@@ -383,7 +383,7 @@ class Table(object, log.Loggable):
         return result
 
     def getMusicBrainzSubmitURL(self):
-        host = 'mm.musicbrainz.org'
+        host = 'musicbrainz.org'
 
         discid = self.getMusicBrainzDiscId()
         values = self._getMusicBrainzValues()
