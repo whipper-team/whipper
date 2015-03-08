@@ -33,6 +33,10 @@ REQUIREMENTS
 - python-cddb, for showing but not using disc info if not in musicbrainz
 - pycdio, for drive identification (optional)
 
+Additionally, if you're building from a git checkout:
+- autoconf
+- automake
+
 GETTING MORITURI
 ----------------
 If you are building from a source tarball or checkout, you can choose to
