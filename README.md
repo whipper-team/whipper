@@ -141,7 +141,7 @@ KNOWN ISSUES
 ------------
 - no GUI yet
 - only AccurateRip V1 CRCs are computed and checked against the online database
-- `rip offset find` fails to delete the temporary .wav files it creates if error occurrs while ripping (thomasvs/morituri#75)
+- `rip offset find` fails to delete the temporary .wav files it creates if error occurs while ripping (thomasvs/morituri#75)
 - morituri detects the pre-emphasis flag in the TOC but doesn't add it to the cue sheet
   - To improve the accuracy of the detection the sub-channel data should be scanned too
 - CD-Text is not used when ripping CDs not available in MusicBrainz DB
