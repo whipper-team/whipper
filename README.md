@@ -32,6 +32,7 @@ REQUIREMENTS
 - python-setuptools, for plugin support
 - python-cddb, for showing but not using disc info if not in musicbrainz
 - pycdio, for drive identification (optional)
+  - Required for drive offset and caching behaviour to be stored in the config file
 
 Additionally, if you're building from a git checkout:
 - autoconf
