@@ -1,5 +1,4 @@
 *.pyc
-COPYING
 INSTALL
 Makefile
 Makefile.in

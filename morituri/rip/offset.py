@@ -239,6 +239,7 @@ CD in the AccurateRip database."""
 
         info = drive.getDeviceInfo(device)
         if not info:
+            self.stdout.write('Offset not saved: could not get device info (requires pycdio).\n')
             return
 
         self.stdout.write('Adding read offset to configuration file.\n')

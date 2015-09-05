@@ -67,6 +67,7 @@ class Analyze(logcommand.LogCommand):
 
         info = drive.getDeviceInfo(self.options.device)
         if not info:
+            self.stdout.write('Drive caching behaviour not saved: could not get device info (requires pycdio).\n')
             return
 
         self.stdout.write(
