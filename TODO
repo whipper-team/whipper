@@ -2,6 +2,8 @@ TODO:
 
 EASY
 
+- self.error() invokes exit() which is bad for a gui
+
 - change format to be %2d - %performer by default
   FIXME: why was this again?
 
