@@ -216,8 +216,8 @@ class ReadTrackTask(log.Loggable, task.Task):
 
     _MAXERROR = 100 # number of errors detected by parser
 
-    def __init__(self, path, table, start, stop, offset=0, device=None,
-        action="Reading", what="track"):
+    def __init__(self, path, table, start, stop, overread, offset=0,
+        device=None, action="Reading", what="track"):
         """
         Read the given track.
 
@@ -248,6 +248,7 @@ class ReadTrackTask(log.Loggable, task.Task):
         self._parser = ProgressParser(start, stop)
         self._device = device
         self._start_time = None
+        self._overread = overread
 
         self._buffer = "" # accumulate characters
         self._errors = []
@@ -278,8 +279,12 @@ class ReadTrackTask(log.Loggable, task.Task):
             stopTrack, stopOffset)
 
         bufsize = 1024
-        argv = ["cdparanoia", "--stderr-progress",
-            "--sample-offset=%d" % self._offset, ]
+        if self._overread:
+            argv = ["cdparanoia", "--stderr-progress",
+                "--sample-offset=%d" % self._offset, "--force-overread", ]
+        else:
+            argv = ["cdparanoia", "--stderr-progress",
+                "--sample-offset=%d" % self._offset, ]
         if self._device:
             argv.extend(["--force-cdrom-device", self._device, ])
         argv.extend(["%d[%s]-%d[%s]" % (
@@ -422,8 +427,8 @@ class ReadVerifyTrackTask(log.Loggable, task.MultiSeparateTask):
     _tmpwavpath = None
     _tmppath = None
 
-    def __init__(self, path, table, start, stop, offset=0, device=None,
-                 profile=None, taglist=None, what="track"):
+    def __init__(self, path, table, start, stop, overread, offset=0,
+                 device=None, profile=None, taglist=None, what="track"):
         """
         @param path:    where to store the ripped track
         @type  path:    str
@@ -459,10 +464,10 @@ class ReadVerifyTrackTask(log.Loggable, task.MultiSeparateTask):
 
         self.tasks = []
         self.tasks.append(
-            ReadTrackTask(tmppath, table, start, stop,
+            ReadTrackTask(tmppath, table, start, stop, overread,
                 offset=offset, device=device, what=what))
         self.tasks.append(checksum.CRC32Task(tmppath))
-        t = ReadTrackTask(tmppath, table, start, stop,
+        t = ReadTrackTask(tmppath, table, start, stop, overread,
             offset=offset, device=device, action="Verifying", what=what)
         self.tasks.append(t)
         self.tasks.append(checksum.CRC32Task(tmppath))

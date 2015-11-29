@@ -204,6 +204,13 @@ Log files will log the path to tracks relative to this directory.
         self.parser.add_option('-o', '--offset',
             action="store", dest="offset",
             help="sample read offset (defaults to configured value, or 0)")
+        self.parser.add_option('-x', '--force-overread',
+            action="store_true", dest="overread",
+            help="Force overreading into the lead-out portion of the disc. "
+                "Works only if the patched cdparanoia package is installed "
+                "and the drive supports this feature. "
+                "The default value is: %default",
+            default=False)
         self.parser.add_option('-O', '--output-directory',
             action="store", dest="output_directory",
             help="output directory; will be included in file paths in result "
@@ -282,6 +289,7 @@ Install pycdio and run 'rip offset find' to detect your drive's offset.
         self.program.setWorkingDirectory(self.options.working_directory)
         self.program.outdir = self.options.output_directory.decode('utf-8')
         self.program.result.offset = int(self.options.offset)
+        self.program.result.overread = self.options.overread
 
         ### write disc files
         disambiguate = False
@@ -378,6 +386,7 @@ Install pycdio and run 'rip offset find' to detect your drive's offset.
                             device=self.parentCommand.options.device,
                             profile=profile,
                             taglist=self.program.getTagList(number),
+                            overread=self.options.overread,
                             what='track %d of %d%s' % (
                                 number, len(self.itable.tracks), extra))
                         break

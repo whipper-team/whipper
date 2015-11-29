@@ -69,6 +69,12 @@ class MorituriLogger(result.Logger):
 
         lines.append("Read offset correction: %d" %
             ripResult.offset)
+        overread = "Unknown"
+        if ripResult.overread is True:
+            overread = "Yes (Lead-Out)"
+        if ripResult.overread is False:
+            overread = "No"
+        lines.append("Overread: %s" % overread)
         lines.append("")
 
         # toc

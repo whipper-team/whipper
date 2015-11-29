@@ -566,7 +566,7 @@ class Program(log.Loggable):
         return ret
 
     def ripTrack(self, runner, trackResult, offset, device, profile, taglist,
-        what=None):
+        overread, what=None):
         """
         Ripping the track may change the track's filename as stored in
         trackResult.
@@ -590,7 +590,7 @@ class Program(log.Loggable):
             what='track %d' % (trackResult.number, )
 
         t = cdparanoia.ReadVerifyTrackTask(trackResult.filename,
-            self.result.table, start, stop,
+            self.result.table, start, stop, overread,
             offset=offset,
             device=device,
             profile=profile,

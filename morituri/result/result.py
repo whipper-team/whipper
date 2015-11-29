@@ -93,6 +93,7 @@ class RipResult:
     """
 
     offset = 0
+    overread = None
     table = None
     artist = None
     title = None
