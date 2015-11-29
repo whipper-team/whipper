@@ -134,6 +134,8 @@ class Retag(logcommand.LogCommand):
                 print 'Not in MusicBrainz database, skipping'
                 continue
 
+            prog.metadata.discid = mbdiscid
+
             # FIXME: this feels like we're poking at internals.
             prog.cuePath = arg
             prog.result = result.RipResult()

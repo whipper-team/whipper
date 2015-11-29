@@ -311,16 +311,18 @@ class AccurateRipChecksumTask(ChecksumTask):
                 self.debug('skipping frame %d', self._discFrameCounter)
                 return checksum
 
+        # self._bytes is updated after do_checksum_buffer
+        factor = self._bytes / 4 + 1
         values = struct.unpack("<%dI" % (len(buf) / 4), buf)
-        for i, value in enumerate(values):
-            # self._bytes is updated after do_checksum_buffer
-            checksum += (self._bytes / 4 + i + 1) * value
-            checksum &= 0xFFFFFFFF
+        for value in values:
+            checksum += factor * value
+            factor += 1
             # offset = self._bytes / 4 + i + 1
             # if offset % common.SAMPLES_PER_FRAME == 0:
             #   print 'frame %d, ends before %d, last value %08x, CRC %08x' % (
             #     offset / common.SAMPLES_PER_FRAME, offset, value, sum)
 
+        checksum &= 0xFFFFFFFF
         return checksum
 
 

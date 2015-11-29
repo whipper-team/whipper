@@ -79,7 +79,10 @@ class Image(object, log.Loggable):
 
         # CD's have a standard lead-in time of 2 seconds;
         # checksums that use it should add it there
-        offset = self.cue.table.tracks[0].getIndex(1).relative
+        if verify.lengths.has_key(0):
+            offset = verify.lengths[0]
+        else:
+            offset = self.cue.table.tracks[0].getIndex(1).relative
 
         tracks = []
 
@@ -210,6 +213,18 @@ class ImageVerifyTask(log.Loggable, task.MultiSeparateTask):
         cue = image.cue
         self._tasks = []
         self.lengths = {}
+
+        try:
+            htoa = cue.table.tracks[0].indexes[0]
+            track = cue.table.tracks[0]
+            path = image.getRealPath(htoa.path)
+            assert type(path) is unicode, "%r is not unicode" % path
+            self.debug('schedule scan of audio length of %r', path)
+            taskk = AudioLengthTask(path)
+            self.addTask(taskk)
+            self._tasks.append((0, track, taskk))
+        except (KeyError, IndexError):
+            self.debug('no htoa track')
 
         for trackIndex, track in enumerate(cue.table.tracks):
             self.debug('verifying track %d', trackIndex + 1)
