@@ -38,6 +38,7 @@ from morituri.rip import common as rcommon
 from morituri.extern.command import command
 
 
+SILENT = 1e-10
 MAX_TRIES = 5
 
 
@@ -405,8 +406,18 @@ Install pycdio and run 'rip offset find' to detect your drive's offset.
             # overlay this rip onto the Table
             if number == 0:
                 # HTOA goes on index 0 of track 1
-                self.itable.setFile(1, 0, trackResult.filename,
-                    self.ittoc.getTrackStart(1), number)
+                # ignore silence in PREGAP
+                if trackResult.peak <= SILENT:
+                    self.debug('HTOA peak %r is below SILENT threshold, disregarding', trackResult.peak)
+                    self.itable.setFile(1, 0, None,
+                        self.ittoc.getTrackStart(1), number)
+                    self.debug('Unlinking %r', trackResult.filename)
+                    os.unlink(trackResult.filename)
+                    trackResult.filename = None
+                    self.stdout.write('HTOA discarded, contains digital silence\n')
+                else:
+                    self.itable.setFile(1, 0, trackResult.filename,
+                        self.ittoc.getTrackStart(1), number)
             else:
                 self.itable.setFile(number, 1, trackResult.filename,
                     self.ittoc.getTrackLength(number), number)
