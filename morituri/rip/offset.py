@@ -218,7 +218,7 @@ CD in the AccurateRip database."""
 
         t = cdparanoia.ReadTrackTask(path, table,
             table.getTrackStart(track), table.getTrackEnd(track),
-            offset=offset, device=self.options.device)
+            overread=False, offset=offset, device=self.options.device)
         t.description = 'Ripping track %d with read offset %d' % (
             track, offset)
         runner.run(t)

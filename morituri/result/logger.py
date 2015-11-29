@@ -41,7 +41,7 @@ class MorituriLogger(result.Logger):
         lines.append("Ripper: morituri %s" % configure.version)
         date = time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime(epoch)).strip()
         lines.append("Ripped at: %s" % date)
-        lines.append("Drive: %s%s{%s}" %
+        lines.append("Drive: %s%s (revision %s)" %
                      (ripResult.vendor, ripResult.model, ripResult.release))
         defeat = "Unknown"
         if ripResult.cdparanoiaDefeatsCache is True:
