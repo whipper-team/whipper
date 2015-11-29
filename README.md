@@ -11,7 +11,7 @@ https://thomas.apestaart.org/thomas/trac/wiki/DAD/Rip).
 FEATURES
 --------
 * support for MusicBrainz for metadata lookup
-* support for AccurateRip verification
+* support for AccurateRip (V1) verification
 * detects sample read offset and ability to defeat cache of drives
 * performs test and copy rip
 * detects and rips Hidden Track One Audio
@@ -32,6 +32,7 @@ REQUIREMENTS
 - python-setuptools, for plugin support
 - python-cddb, for showing but not using disc info if not in musicbrainz
 - pycdio, for drive identification (optional)
+  - Required for drive offset and caching behaviour to be stored in the config file
 
 Additionally, if you're building from a git checkout:
 - autoconf
@@ -139,6 +140,11 @@ And attach the gzipped log file to your bug report.
 KNOWN ISSUES
 ------------
 - no GUI yet
+- only AccurateRip V1 CRCs are computed and checked against the online database
+- `rip offset find` fails to delete the temporary .wav files it creates if error occurs while ripping (thomasvs/morituri#75)
+- morituri detects the pre-emphasis flag in the TOC but doesn't add it to the cue sheet
+  - To improve the accuracy of the detection the sub-channel data should be scanned too
+- CD-Text is not used when ripping CDs not available in MusicBrainz DB
 
 GOALS
 -----

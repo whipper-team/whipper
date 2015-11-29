@@ -2,6 +2,8 @@ TODO:
 
 EASY
 
+- self.error() invokes exit() which is bad for a gui
+
 - change format to be %2d - %performer by default
   FIXME: why was this again?
 
@@ -11,6 +13,11 @@ EASY
   or not putting the disk in)
 
 - add rip offset verify, to verify that the current offset looks coorect
+
+- handle not having wav plugin:
+  http://sprunge.us/DYjd
+  DEBUG [13888] "ChecksumTask 0xb5e8b290"        ChecksumTask      Jul 25 19:09:47      bus_error_cb: bus <gst.Bus object (bus2) at 0xb5e940a8>, message <gst.Message GstMessageError, gerror=(GError)NULL, debug=(string)"/var/tmp/portage/media-libs/gst-plugins-base-0.10.36-r1/work/gst-plugins-base-0.10.36/gst/playback/gstdecodebin.c\(1003\):\ close_pad_link\ \(\):\ /GstPipeline:pipeline0/GstDecodeBin:decode:\012No\ decoder\ to\ handle\ media\ type\ \'audio/x-wav\'"; from decode at 0x7f74fea8> (morituri/extern/task/gstreamer.py:211)
+DEBUG [13888] "ChecksumTask 0xb5e8b290"        ChecksumTask      Jul 25 19:09:47      set exception, 'exception GstException at /home/merlijn/archive/morituri/morituri/extern/task/gstreamer.py:217: bus_error_cb(): (<GError at 0x7f7f5360>, "/var/tmp/portage/media-libs/gst-plugins-base-0.10.36-r1/work/gst-plugins-base-0.10.36/gst/playback/gstdecodebin.c(1003): close_pad_link (): /GstPipeline:pipeline0/GstDecodeBin:decode:\\nNo decoder to handle media type \'audio/x-wav\'")' (morituri/extern/task/task.py:197)
 
 MEDIUM
 
