@@ -445,7 +445,6 @@ class ReadVerifyTrackTask(log.Loggable, task.MultiSeparateTask):
         task.MultiSeparateTask.__init__(self)
 
         self.debug('Creating read and verify task on %r', path)
-        self.path = path
 
         if taglist:
             self.debug('read and verify with taglist %r', taglist)
@@ -468,11 +467,18 @@ class ReadVerifyTrackTask(log.Loggable, task.MultiSeparateTask):
         self.tasks.append(t)
         self.tasks.append(checksum.CRC32Task(tmppath))
 
-        fd, tmpoutpath = tempfile.mkstemp(suffix='.morituri.%s' %
-            profile.extension)
-        tmpoutpath = unicode(tmpoutpath)
-        os.close(fd)
+        # encode to the final path + '.part'
+        try:
+            tmpoutpath = path + u'.part'
+            open(tmpoutpath, 'wb').close()
+        except IOError, e:
+            if errno.ENAMETOOLONG != e.errno:
+                raise
+            path = common.shrinkPath(path)
+            tmpoutpath = path + u'.part'
+            open(tmpoutpath, 'wb').close()
         self._tmppath = tmpoutpath
+        self.path = path
 
         # here to avoid import gst eating our options
         from morituri.common import encode
@@ -483,10 +489,6 @@ class ReadVerifyTrackTask(log.Loggable, task.MultiSeparateTask):
         self.tasks.append(checksum.CRC32Task(tmpoutpath))
 
         self.checksum = None
-
-        umask = os.umask(0)
-        os.umask(umask)
-        self.file_mode = 0666 - umask
 
     def stop(self):
         # FIXME: maybe this kind of try-wrapping to make sure
@@ -521,16 +523,10 @@ class ReadVerifyTrackTask(log.Loggable, task.MultiSeparateTask):
                 # delete the unencoded file
                 os.unlink(self._tmpwavpath)
 
-                os.chmod(self._tmppath, self.file_mode)
-
                 if not self.exception:
                     try:
                         self.debug('Moving to final path %r', self.path)
-                        shutil.move(self._tmppath, self.path)
-                    except IOError, e:
-                        if e.errno == errno.ENAMETOOLONG:
-                            self.path = common.shrinkPath(self.path)
-                            shutil.move(self._tmppath, self.path)
+                        os.rename(self._tmppath, self.path)
                     except Exception, e:
                         self.debug('Exception while moving to final path %r: '
                             '%r',
