@@ -151,7 +151,7 @@ class Program(log.Loggable):
         assert toc.hasTOC()
         return toc
 
-    def getTable(self, runner, cddbdiscid, mbdiscid, device):
+    def getTable(self, runner, cddbdiscid, mbdiscid, device, offset):
         """
         Retrieve the Table either from the cache or the drive.
 
@@ -159,21 +159,31 @@ class Program(log.Loggable):
         """
         tcache = cache.TableCache()
         ptable = tcache.get(cddbdiscid, mbdiscid)
+        itable = None
+        tdict = {}
 
-        if not ptable.object:
-            self.debug('getTable: cddbdiscid %s, mbdiscid %s not in cache, '
+        # Ingore old cache, since we do not know what offset it used.
+        if type(ptable.object) is dict:
+            tdict = ptable.object
+
+            if offset in tdict:
+                itable = tdict[offset]
+
+        if not itable:
+            self.debug('getTable: cddbdiscid %s, mbdiscid %s not in cache for offset %s, '
                 'reading table' % (
-                cddbdiscid, mbdiscid))
+                cddbdiscid, mbdiscid, offset))
             t = cdrdao.ReadTableTask(device=device)
             runner.run(t)
-            ptable.persist(t.table)
-            self.debug('getTable: read table %r' % t.table)
+            itable = t.table
+            tdict[offset] = itable
+            ptable.persist(tdict)
+            self.debug('getTable: read table %r' % itable)
         else:
-            self.debug('getTable: cddbdiscid %s, mbdiscid %s in cache' % (
-                cddbdiscid, mbdiscid))
-            ptable.object.unpickled()
-            self.debug('getTable: loaded table %r' % ptable.object)
-        itable = ptable.object
+            self.debug('getTable: cddbdiscid %s, mbdiscid %s in cache for offset %s' % (
+                cddbdiscid, mbdiscid, offset))
+            self.debug('getTable: loaded table %r' % itable)
+
         assert itable.hasTOC()
 
         self.result.table = itable
@@ -181,8 +191,6 @@ class Program(log.Loggable):
         self.debug('getTable: returning table with mb id %s' %
             itable.getMusicBrainzDiscId())
         return itable
-
-    # FIXME: the cache should be model/offset specific
 
     def getRipResult(self, cddbdiscid):
         """
