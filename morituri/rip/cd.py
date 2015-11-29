@@ -59,6 +59,12 @@ class _CD(logcommand.LogCommand):
         self.parser.add_option('-R', '--release-id',
             action="store", dest="release_id",
             help="MusicBrainz release id to match to (if there are multiple)")
+        self.parser.add_option('-p', '--prompt',
+            action="store_true", dest="prompt",
+            help="Prompt if there are multiple matching releases")
+        self.parser.add_option('-c', '--country',
+            action="store", dest="country",
+            help="Filter releases by country")
 
 
     def do(self, args):
@@ -90,7 +96,9 @@ class _CD(logcommand.LogCommand):
 
         self.program.metadata = self.program.getMusicBrainz(self.ittoc,
             self.mbdiscid,
-            release=self.options.release_id)
+            release=self.options.release_id,
+            country=self.options.country,
+            prompt=self.options.prompt)
 
         if not self.program.metadata:
             # fall back to FreeDB for lookup

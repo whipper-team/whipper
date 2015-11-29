@@ -322,7 +322,7 @@ class Program(log.Loggable):
 
         return None
 
-    def getMusicBrainz(self, ittoc, mbdiscid, release=None):
+    def getMusicBrainz(self, ittoc, mbdiscid, release=None, country=None, prompt=False):
         """
         @type  ittoc: L{morituri.image.table.Table}
         """
@@ -340,6 +340,7 @@ class Program(log.Loggable):
         for _ in range(0, 4):
             try:
                 metadatas = mbngs.musicbrainz(mbdiscid,
+                    country=country,
                     record=self._record)
             except mbngs.NotFoundException, e:
                 break
@@ -372,11 +373,28 @@ class Program(log.Loggable):
                 self._stdout.write('URL     : %s\n' % metadata.url)
                 self._stdout.write('Release : %s\n' % metadata.mbid)
                 self._stdout.write('Type    : %s\n' % metadata.releaseType)
+                if metadata.barcode:
+                    self._stdout.write("Barcode : %s\n" % metadata.barcode)
+                if metadata.catalogNumber:
+                    self._stdout.write("Cat no  : %s\n" % metadata.catalogNumber)
 
                 delta = abs(metadata.duration - ittoc.duration())
                 if not delta in deltas:
                     deltas[delta] = []
                 deltas[delta].append(metadata)
+
+            lowest = None
+
+            if not release and len(metadatas) > 1:
+                # Select the release that most closely matches the duration.
+                lowest = min(deltas.keys())
+
+                if prompt:
+                    guess = (deltas[lowest])[0].mbid
+                    release = raw_input("\nPlease select a release [%s]: " % guess)
+
+                    if not release:
+                        release = guess
 
             if release:
                 metadatas = [m for m in metadatas if m.url.endswith(release)]
@@ -396,12 +414,10 @@ class Program(log.Loggable):
                         "but none of the found releases match\n" % release)
                     return
             else:
-                # Select the release that most closely matches the duration.
-                lowest = min(deltas.keys())
+                if lowest:
+                    metadatas = deltas[lowest]
 
-                # If we have multiple, make sure they match
-                metadatas = deltas[lowest]
-
+            # If we have multiple, make sure they match
             if len(metadatas) > 1:
                 artist = metadatas[0].artist
                 releaseTitle = metadatas[0].releaseTitle

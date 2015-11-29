@@ -107,6 +107,12 @@ class Retag(logcommand.LogCommand):
         self.parser.add_option('-R', '--release-id',
             action="store", dest="release_id",
             help="MusicBrainz release id to match to (if there are multiple)")
+        self.parser.add_option('-p', '--prompt',
+            action="store_true", dest="prompt",
+            help="Prompt if there are multiple matching releases")
+        self.parser.add_option('-c', '--country',
+            action="store", dest="country",
+            help="Filter releases by country")
 
 
     def do(self, args):
@@ -128,7 +134,9 @@ class Retag(logcommand.LogCommand):
             self.stdout.write("MusicBrainz lookup URL %s\n" %
                 cueImage.table.getMusicBrainzSubmitURL())
             prog.metadata = prog.getMusicBrainz(cueImage.table, mbdiscid,
-                release=self.options.release_id)
+                release=self.options.release_id,
+                country=self.options.country,
+                prompt=self.options.prompt)
 
             if not prog.metadata:
                 print 'Not in MusicBrainz database, skipping'
