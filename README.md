@@ -163,17 +163,32 @@ when possible.
 It lives in `$XDG_CONFIG_HOME/morituri/morituri.conf`
 
 The configuration file follows python's ConfigParser syntax.
-There is a "main" section and zero or more sections starting with "drive:"
 
-- main section:
+The possible sections are:
+
+- main section: [main]
   - `path_filter_fat`: whether to filter path components for FAT file systems
   - `path_filter_special`: whether to filter path components for special
                            characters
 
-- drive section:
+- drive section: [drive:IDENTIFIER], one for each configured drive
   All these values are probed by morituri and should not be edited by hand.
   - `defeats_cache`: whether this drive can defeat the audio cache
   - `read_offset`: the read offset of the drive
+
+- rip command section: [rip.COMMAND.SUBCOMMAND]
+  Can be used to change the command options default values.
+
+Example section to configure "rip cd rip" defaults:
+
+   [rip.cd.rip]
+    unknown = True
+    output_directory = ~/My Music
+    track_template = new/%%A/%%y - %%d/%%t - %%n
+    disc_template = %(track_template)s
+    profile = flac
+
+Note: to get a literal '%' character it must be doubled.
 
 CONTRIBUTING
 ------------

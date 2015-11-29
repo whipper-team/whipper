@@ -224,11 +224,13 @@ Log files will log the path to tracks relative to this directory.
             help="output directory; will be included in file paths in result "
                 "files "
                 "(defaults to absolute path to current directory; set to "
-                "empty if you want paths to be relative instead) ")
+                "empty if you want paths to be relative instead; "
+                "configured value: %default) ")
         self.parser.add_option('-W', '--working-directory',
             action="store", dest="working_directory",
             help="working directory; morituri will change to this directory "
-                "and files will be created relative to it when not absolute ")
+                "and files will be created relative to it when not absolute "
+                "(configured value: %default) ")
 
         rcommon.addTemplate(self)
 
@@ -239,8 +241,8 @@ Log files will log the path to tracks relative to this directory.
 
         self.parser.add_option('', '--profile',
             action="store", dest="profile",
-            help="profile for encoding (default '%s', choices '%s')" % (
-                default, "', '".join(encode.PROFILES.keys())),
+            help="profile for encoding (default '%%default', choices '%s')" % (
+                "', '".join(encode.PROFILES.keys())),
             default=default)
         self.parser.add_option('-U', '--unknown',
             action="store_true", dest="unknown",
@@ -270,6 +272,11 @@ Install pycdio and run 'rip offset find' to detect your drive's offset.
                         options.offset)
         if self.options.output_directory is None:
             self.options.output_directory = os.getcwd()
+        else:
+            self.options.output_directory = os.path.expanduser(self.options.output_directory)
+
+        if self.options.working_directory is not None:
+            self.options.working_directory = os.path.expanduser(self.options.working_directory)
 
         if self.options.logger:
             try:
