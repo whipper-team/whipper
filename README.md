@@ -14,7 +14,7 @@ This branch is very close to morituri's master one (the internal 'morituri' refe
 
 And changed the default logger to the morituri-whatlogger's one.
 
-WHIPPER [![Build Status](https://travis-ci.org/JoeLametta/morituri.svg?branch=fork)](https://travis-ci.org/JoeLametta/morituri)
+WHIPPER [![Build Status](https://travis-ci.org/JoeLametta/whipper.svg?branch=fork)](https://travis-ci.org/JoeLametta/whipper)
 ---------
 whipper is a fork of the morituri project (CDDA ripper, for *nix systems, aiming for accuracy over speed).
 
@@ -88,10 +88,9 @@ use whipper installed or uninstalled.
 
             make install
 
-    - running uninstalled:
+    - running uninstalled (within the make directory):
 
-            ln -sf `pwd`/misc/morituri-uninstalled $HOME/bin/morituri-git
-            morituri-git  # this drops you in a shell where everything is set up to use whipper
+            ./misc/morituri-uninstalled rip <commands>
 
 RUNNING WHIPPER
 ----------------
