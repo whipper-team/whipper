@@ -39,7 +39,7 @@ class MorituriLogger(result.Logger):
     def logRip(self, ripResult, epoch):
         lines = []
         lines.append("Ripper: morituri %s" % configure.version)
-        date = time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime(epoch)).strip()
+        date = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(epoch)).strip()
         lines.append("Ripped at: %s" % date)
         lines.append("Drive: %s%s (revision %s)" %
                      (ripResult.vendor, ripResult.model, ripResult.release))
@@ -138,7 +138,7 @@ class MorituriLogger(result.Logger):
 
         hasher = hashlib.sha256()
         hasher.update("\n".join(lines).encode("utf-8"))
-        lines.append("==== Log checksum %s ====" % hasher.hexdigest())
+        lines.append("Log checksum: %s" % hasher.hexdigest())
         lines.append("")
         return lines
 

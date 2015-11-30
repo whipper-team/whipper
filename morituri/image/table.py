@@ -514,7 +514,7 @@ class Table(object, log.Loggable):
                 discId1[-1], discId1[-2], discId1[-3],
                 self.getAudioTracks(), discId1, discId2, self.getCDDBDiscId())
 
-    def cue(self, cuePath='', program='Morituri'):
+    def cue(self, cuePath='', program='morituri'):
         """
         @param cuePath: path to the cue file to be written. If empty,
                         will treat paths as if in current directory.
