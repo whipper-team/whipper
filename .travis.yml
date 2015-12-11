@@ -1,0 +1,35 @@
+sudo: required
+
+language: bash
+
+branches:
+  only:
+    - fork
+
+install:
+    # Dependencies
+    - sudo apt-get update -qq
+    - sudo pip install --upgrade pip
+    - sudo apt-get install -qq cdparanoia cdrdao gstreamer0.10-plugins-base gstreamer0.10-plugins-good libcdio-dev libiso9660-dev python-cddb python-gobject swig
+    - sudo pip install musicbrainzngs pycdio
+
+    # Testing dependencies
+    - sudo apt-get install -qq python-gst0.10
+    - sudo pip install twisted
+
+    # Checkout
+    - ./autogen.sh
+
+    # Building
+    - ./configure
+    - make
+
+    # Installing
+    - sudo make install
+
+    # Check flacenc availability
+    - sudo apt-get install -qq gstreamer0.10-tools
+    - gst-inspect-0.10 flacenc
+
+script:
+    - python -m unittest discover

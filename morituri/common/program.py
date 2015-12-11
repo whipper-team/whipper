@@ -151,7 +151,7 @@ class Program(log.Loggable):
         assert toc.hasTOC()
         return toc
 
-    def getTable(self, runner, cddbdiscid, mbdiscid, device):
+    def getTable(self, runner, cddbdiscid, mbdiscid, device, offset):
         """
         Retrieve the Table either from the cache or the drive.
 
@@ -159,21 +159,31 @@ class Program(log.Loggable):
         """
         tcache = cache.TableCache()
         ptable = tcache.get(cddbdiscid, mbdiscid)
+        itable = None
+        tdict = {}
 
-        if not ptable.object:
-            self.debug('getTable: cddbdiscid %s, mbdiscid %s not in cache, '
+        # Ingore old cache, since we do not know what offset it used.
+        if type(ptable.object) is dict:
+            tdict = ptable.object
+
+            if offset in tdict:
+                itable = tdict[offset]
+
+        if not itable:
+            self.debug('getTable: cddbdiscid %s, mbdiscid %s not in cache for offset %s, '
                 'reading table' % (
-                cddbdiscid, mbdiscid))
+                cddbdiscid, mbdiscid, offset))
             t = cdrdao.ReadTableTask(device=device)
             runner.run(t)
-            ptable.persist(t.table)
-            self.debug('getTable: read table %r' % t.table)
+            itable = t.table
+            tdict[offset] = itable
+            ptable.persist(tdict)
+            self.debug('getTable: read table %r' % itable)
         else:
-            self.debug('getTable: cddbdiscid %s, mbdiscid %s in cache' % (
-                cddbdiscid, mbdiscid))
-            ptable.object.unpickled()
-            self.debug('getTable: loaded table %r' % ptable.object)
-        itable = ptable.object
+            self.debug('getTable: cddbdiscid %s, mbdiscid %s in cache for offset %s' % (
+                cddbdiscid, mbdiscid, offset))
+            self.debug('getTable: loaded table %r' % itable)
+
         assert itable.hasTOC()
 
         self.result.table = itable
@@ -181,8 +191,6 @@ class Program(log.Loggable):
         self.debug('getTable: returning table with mb id %s' %
             itable.getMusicBrainzDiscId())
         return itable
-
-    # FIXME: the cache should be model/offset specific
 
     def getRipResult(self, cddbdiscid):
         """
@@ -314,7 +322,7 @@ class Program(log.Loggable):
 
         return None
 
-    def getMusicBrainz(self, ittoc, mbdiscid, release=None):
+    def getMusicBrainz(self, ittoc, mbdiscid, release=None, country=None, prompt=False):
         """
         @type  ittoc: L{morituri.image.table.Table}
         """
@@ -332,6 +340,7 @@ class Program(log.Loggable):
         for _ in range(0, 4):
             try:
                 metadatas = mbngs.musicbrainz(mbdiscid,
+                    country=country,
                     record=self._record)
             except mbngs.NotFoundException, e:
                 break
@@ -364,11 +373,28 @@ class Program(log.Loggable):
                 self._stdout.write('URL     : %s\n' % metadata.url)
                 self._stdout.write('Release : %s\n' % metadata.mbid)
                 self._stdout.write('Type    : %s\n' % metadata.releaseType)
+                if metadata.barcode:
+                    self._stdout.write("Barcode : %s\n" % metadata.barcode)
+                if metadata.catalogNumber:
+                    self._stdout.write("Cat no  : %s\n" % metadata.catalogNumber)
 
                 delta = abs(metadata.duration - ittoc.duration())
                 if not delta in deltas:
                     deltas[delta] = []
                 deltas[delta].append(metadata)
+
+            lowest = None
+
+            if not release and len(metadatas) > 1:
+                # Select the release that most closely matches the duration.
+                lowest = min(deltas.keys())
+
+                if prompt:
+                    guess = (deltas[lowest])[0].mbid
+                    release = raw_input("\nPlease select a release [%s]: " % guess)
+
+                    if not release:
+                        release = guess
 
             if release:
                 metadatas = [m for m in metadatas if m.url.endswith(release)]
@@ -388,12 +414,10 @@ class Program(log.Loggable):
                         "but none of the found releases match\n" % release)
                     return
             else:
-                # Select the release that most closely matches the duration.
-                lowest = min(deltas.keys())
+                if lowest:
+                    metadatas = deltas[lowest]
 
-                # If we have multiple, make sure they match
-                metadatas = deltas[lowest]
-
+            # If we have multiple, make sure they match
             if len(metadatas) > 1:
                 artist = metadatas[0].artist
                 releaseTitle = metadatas[0].releaseTitle
@@ -471,7 +495,7 @@ class Program(log.Loggable):
         # gst-python 0.10.15.1 does not handle unicode -> utf8 string
         # conversion
         # see http://bugzilla.gnome.org/show_bug.cgi?id=584445
-        if self.metadata and self.metadata.various:
+        if self.metadata and not self.metadata.various:
             ret["album-artist"] = albumArtist.encode('utf-8')
         ret[gst.TAG_ARTIST] = trackArtist.encode('utf-8')
         ret[gst.TAG_TITLE] = title.encode('utf-8')
@@ -558,7 +582,7 @@ class Program(log.Loggable):
         return ret
 
     def ripTrack(self, runner, trackResult, offset, device, profile, taglist,
-        what=None):
+        overread, what=None):
         """
         Ripping the track may change the track's filename as stored in
         trackResult.
@@ -582,7 +606,7 @@ class Program(log.Loggable):
             what='track %d' % (trackResult.number, )
 
         t = cdparanoia.ReadVerifyTrackTask(trackResult.filename,
-            self.result.table, start, stop,
+            self.result.table, start, stop, overread,
             offset=offset,
             device=device,
             profile=profile,

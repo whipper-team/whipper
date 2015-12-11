@@ -38,6 +38,7 @@ from morituri.rip import common as rcommon
 from morituri.extern.command import command
 
 
+SILENT = 1e-10
 MAX_TRIES = 5
 
 
@@ -58,6 +59,12 @@ class _CD(logcommand.LogCommand):
         self.parser.add_option('-R', '--release-id',
             action="store", dest="release_id",
             help="MusicBrainz release id to match to (if there are multiple)")
+        self.parser.add_option('-p', '--prompt',
+            action="store_true", dest="prompt",
+            help="Prompt if there are multiple matching releases")
+        self.parser.add_option('-c', '--country',
+            action="store", dest="country",
+            help="Filter releases by country")
 
 
     def do(self, args):
@@ -89,7 +96,9 @@ class _CD(logcommand.LogCommand):
 
         self.program.metadata = self.program.getMusicBrainz(self.ittoc,
             self.mbdiscid,
-            release=self.options.release_id)
+            release=self.options.release_id,
+            country=self.options.country,
+            prompt=self.options.prompt)
 
         if not self.program.metadata:
             # fall back to FreeDB for lookup
@@ -108,7 +117,7 @@ class _CD(logcommand.LogCommand):
 
         self.itable = self.program.getTable(self.runner,
             self.ittoc.getCDDBDiscId(),
-            self.ittoc.getMusicBrainzDiscId(), self.device)
+            self.ittoc.getMusicBrainzDiscId(), self.device, self.options.offset)
 
         assert self.itable.getCDDBDiscId() == self.ittoc.getCDDBDiscId(), \
             "full table's id %s differs from toc id %s" % (
@@ -203,16 +212,25 @@ Log files will log the path to tracks relative to this directory.
         self.parser.add_option('-o', '--offset',
             action="store", dest="offset",
             help="sample read offset (defaults to configured value, or 0)")
+        self.parser.add_option('-x', '--force-overread',
+            action="store_true", dest="overread",
+            help="Force overreading into the lead-out portion of the disc. "
+                "Works only if the patched cdparanoia package is installed "
+                "and the drive supports this feature. "
+                "The default value is: %default",
+            default=False)
         self.parser.add_option('-O', '--output-directory',
             action="store", dest="output_directory",
             help="output directory; will be included in file paths in result "
                 "files "
                 "(defaults to absolute path to current directory; set to "
-                "empty if you want paths to be relative instead) ")
+                "empty if you want paths to be relative instead; "
+                "configured value: %default) ")
         self.parser.add_option('-W', '--working-directory',
             action="store", dest="working_directory",
             help="working directory; morituri will change to this directory "
-                "and files will be created relative to it when not absolute ")
+                "and files will be created relative to it when not absolute "
+                "(configured value: %default) ")
 
         rcommon.addTemplate(self)
 
@@ -223,8 +241,8 @@ Log files will log the path to tracks relative to this directory.
 
         self.parser.add_option('', '--profile',
             action="store", dest="profile",
-            help="profile for encoding (default '%s', choices '%s')" % (
-                default, "', '".join(encode.PROFILES.keys())),
+            help="profile for encoding (default '%%default', choices '%s')" % (
+                "', '".join(encode.PROFILES.keys())),
             default=default)
         self.parser.add_option('-U', '--unknown',
             action="store_true", dest="unknown",
@@ -254,6 +272,11 @@ Install pycdio and run 'rip offset find' to detect your drive's offset.
                         options.offset)
         if self.options.output_directory is None:
             self.options.output_directory = os.getcwd()
+        else:
+            self.options.output_directory = os.path.expanduser(self.options.output_directory)
+
+        if self.options.working_directory is not None:
+            self.options.working_directory = os.path.expanduser(self.options.working_directory)
 
         if self.options.logger:
             try:
@@ -281,6 +304,7 @@ Install pycdio and run 'rip offset find' to detect your drive's offset.
         self.program.setWorkingDirectory(self.options.working_directory)
         self.program.outdir = self.options.output_directory.decode('utf-8')
         self.program.result.offset = int(self.options.offset)
+        self.program.result.overread = self.options.overread
 
         ### write disc files
         disambiguate = False
@@ -377,6 +401,7 @@ Install pycdio and run 'rip offset find' to detect your drive's offset.
                             device=self.parentCommand.options.device,
                             profile=profile,
                             taglist=self.program.getTagList(number),
+                            overread=self.options.overread,
                             what='track %d of %d%s' % (
                                 number, len(self.itable.tracks), extra))
                         break
@@ -405,8 +430,18 @@ Install pycdio and run 'rip offset find' to detect your drive's offset.
             # overlay this rip onto the Table
             if number == 0:
                 # HTOA goes on index 0 of track 1
-                self.itable.setFile(1, 0, trackResult.filename,
-                    self.ittoc.getTrackStart(1), number)
+                # ignore silence in PREGAP
+                if trackResult.peak <= SILENT:
+                    self.debug('HTOA peak %r is below SILENT threshold, disregarding', trackResult.peak)
+                    self.itable.setFile(1, 0, None,
+                        self.ittoc.getTrackStart(1), number)
+                    self.debug('Unlinking %r', trackResult.filename)
+                    os.unlink(trackResult.filename)
+                    trackResult.filename = None
+                    self.stdout.write('HTOA discarded, contains digital silence\n')
+                else:
+                    self.itable.setFile(1, 0, trackResult.filename,
+                        self.ittoc.getTrackStart(1), number)
             else:
                 self.itable.setFile(number, 1, trackResult.filename,
                     self.ittoc.getTrackLength(number), number)

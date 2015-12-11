@@ -144,7 +144,7 @@ class _Credit(list):
             joinString=";")
 
 
-def _getMetadata(releaseShort, release, discid):
+def _getMetadata(releaseShort, release, discid, country=None):
     """
     @type  release: C{dict}
     @param release: a release dict as returned in the value for key release
@@ -159,6 +159,10 @@ def _getMetadata(releaseShort, release, discid):
         return None
 
     assert release['id'], 'Release does not have an id'
+
+    if 'country' in release and country and release['country'] != country:
+        log.warning('program', '%r was not released in %r', release, country)
+        return None
 
     discMD = DiscMetadata()
 
@@ -251,7 +255,7 @@ def _getMetadata(releaseShort, release, discid):
 #     ripper.py
 
 
-def musicbrainz(discid, record=False):
+def musicbrainz(discid, country=None, record=False):
     """
     Based on a MusicBrainz disc id, get a list of DiscMetadata objects
     for the given disc id.
@@ -305,7 +309,7 @@ def musicbrainz(discid, record=False):
         formatted = json.dumps(releaseDetail, sort_keys=False, indent=4)
         log.debug('program', 'release %s' % formatted)
 
-        md = _getMetadata(release, releaseDetail, discid)
+        md = _getMetadata(release, releaseDetail, discid, country)
         if md:
             log.debug('program', 'duration %r', md.duration)
             ret.append(md)
