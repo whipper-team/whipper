@@ -4,7 +4,7 @@ language: bash
 
 branches:
   only:
-    - fork
+    - master
 
 install:
     # Dependencies

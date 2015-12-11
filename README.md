@@ -14,7 +14,7 @@ This branch is very close to morituri's master one (the internal 'morituri' refe
 
 And changed the default logger to the morituri-whatlogger's one.
 
-WHIPPER [![Build Status](https://travis-ci.org/JoeLametta/whipper.svg?branch=fork)](https://travis-ci.org/JoeLametta/whipper)
+WHIPPER [![Build Status](https://travis-ci.org/JoeLametta/whipper.svg?branch=master)](https://travis-ci.org/JoeLametta/whipper)
 ---------
 whipper is a fork of the morituri project (CDDA ripper, for *nix systems, aiming for accuracy over speed).
 
