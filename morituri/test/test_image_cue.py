@@ -77,7 +77,7 @@ class WriteCueFileTestCase(unittest.TestCase):
         it.leadout = 3000
 
         common.diffStrings(u"""REM DISCID 0C002802
-REM COMMENT "Morituri %s"
+REM COMMENT "morituri %s"
 FILE "track01.wav" WAVE
   TRACK 01 AUDIO
     INDEX 01 00:00:00

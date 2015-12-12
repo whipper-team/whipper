@@ -33,7 +33,7 @@ from morituri.program import cdrdao, cdparanoia
 from morituri.image import image
 
 from morituri.extern.task import task, gstreamer
-from morituri.extern.musicbrainzngs import musicbrainz
+import musicbrainzngs
 
 
 # FIXME: should Program have a runner ?

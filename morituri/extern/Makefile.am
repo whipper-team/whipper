@@ -34,19 +34,9 @@ task_PYTHON = \
 	task/taskgtk.py \
 	task/gstreamer.py
 
-musicbrainzngsdir = $(PYTHONLIBDIR)/morituri/extern/musicbrainzngs
-
-musicbrainzngs_PYTHON = \
-	musicbrainzngs/__init__.py \
-	musicbrainzngs/musicbrainz.py \
-	musicbrainzngs/mbxml.py
-
-
 EXTRA_DIST = python-command/scripts/help2man
 
 log:
-	make git-submodule
-musicbrainzngs:
 	make git-submodule
 
 git-submodule:
@@ -55,4 +45,3 @@ git-submodule:
 .PHONY: git-submodule
 
 
-all-local: log musicbrainzngs
