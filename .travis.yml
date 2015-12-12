@@ -10,7 +10,7 @@ install:
     - sudo pip install musicbrainzngs pycdio
 
     # Testing dependencies
-    - sudo apt-get install -qq python-gst1.0
+    - sudo apt-get install -qq python-gst-1.0
     - sudo pip install twisted
 
     # Checkout
