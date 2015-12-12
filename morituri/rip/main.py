@@ -35,7 +35,7 @@ def main(argv):
     h.validate()
 
     # set user agent
-    from morituri.extern.musicbrainzngs import musicbrainz
+    import musicbrainzngs
     musicbrainz.set_useragent("morituri", configure.version,
         'https://thomas.apestaart.org/morituri/trac')
 

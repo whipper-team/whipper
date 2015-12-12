@@ -267,7 +267,7 @@ def musicbrainz(discid, country=None, record=False):
     @rtype: list of L{DiscMetadata}
     """
     log.debug('musicbrainz', 'looking up results for discid %r', discid)
-    import musicbrainz
+    import musicbrainzngs
 
     ret = []
 
