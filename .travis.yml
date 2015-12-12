@@ -2,10 +2,6 @@ sudo: required
 
 language: bash
 
-branches:
-  only:
-    - master
-
 install:
     # Dependencies
     - sudo apt-get update -qq
