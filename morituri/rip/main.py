@@ -36,7 +36,7 @@ def main(argv):
 
     # set user agent
     import musicbrainzngs
-    musicbrainz.set_useragent("morituri", configure.version,
+    musicbrainzngs.set_useragent("morituri", configure.version,
         'https://thomas.apestaart.org/morituri/trac')
 
 

@@ -344,7 +344,7 @@ class Program(log.Loggable):
                     record=self._record)
             except mbngs.NotFoundException, e:
                 break
-            except musicbrainz.NetworkError, e:
+            except musicbrainzngs.NetworkError, e:
                 self._stdout.write("Warning: network error: %r\n" % (e, ))
                 break
             except mbngs.MusicBrainzException, e:

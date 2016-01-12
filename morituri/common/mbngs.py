@@ -272,9 +272,9 @@ def musicbrainz(discid, country=None, record=False):
     ret = []
 
     try:
-        result = musicbrainz.get_releases_by_discid(discid,
+        result = musicbrainzngs.get_releases_by_discid(discid,
             includes=["artists", "recordings", "release-groups"])
-    except musicbrainz.ResponseError, e:
+    except musicbrainzngs.ResponseError, e:
         if isinstance(e.cause, urllib2.HTTPError):
             if e.cause.code == 404:
                 raise NotFoundException(e)
@@ -301,7 +301,7 @@ def musicbrainz(discid, country=None, record=False):
         # to get titles of recordings, we need to query the release with
         # artist-credits
 
-        res = musicbrainz.get_release_by_id(release['id'],
+        res = musicbrainzngs.get_release_by_id(release['id'],
             includes=["artists", "artist-credits", "recordings", "discids",
                 "labels"])
         _record(record, 'release', release['id'], res)
