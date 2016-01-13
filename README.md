@@ -1,8 +1,8 @@
 FORK INFORMATIONS
 ---------
-The name of this fork is still to be decided, right now I'll be using whipper.
+The name of this fork is still to be decided: right now I'll be using whipper.
 
-This branch is very close to morituri's master one (the internal 'morituri' references are still unchanged), I've just merged the following commits:
+This branch is very close to morituri's master one (the internal 'morituri' references are still unchanged). As a starting point, I've just merged the following commits:
 - [#79](https://github.com/thomasvs/morituri/issues/79)
 - [#92](https://github.com/thomasvs/morituri/issues/92)
 - [#109](https://github.com/thomasvs/morituri/issues/109)
@@ -12,17 +12,17 @@ This branch is very close to morituri's master one (the internal 'morituri' refe
 - [#140](https://github.com/thomasvs/morituri/issues/140)
 - [#141](https://github.com/thomasvs/morituri/issues/141)
 
-And changed the default logger to the morituri-whatlogger's one.
+And changed the default logger to morituri-whatlogger's one.
 
 WHIPPER [![Build Status](https://travis-ci.org/JoeLametta/whipper.svg?branch=master)](https://travis-ci.org/JoeLametta/whipper)
 ---------
-whipper is a fork of the morituri project (CDDA ripper, for *nix systems, aiming for accuracy over speed).
+whipper is a fork of the morituri project (CDDA ripper for *nix systems aiming for accuracy over speed).
 
-It improves morituri which development seems to have halted/slowed down merging old pull requests and improving it with new functions.
+It improves morituri which development seems to have halted/slowed down merging old pull requests and improving it with bugfixes and new functions.
 
 If possible, I'll try to mainline the useful commits of this fork but, in the future, this may not be possible because of different project choices.
 
-The home page is still TBD.
+The project home page is still TBD.
 
 RATIONALE
 ---------
@@ -71,8 +71,8 @@ use whipper installed or uninstalled.
     - source: download tarball, unpack, and change to its directory
     - checkout:
 
-            git clone -b fork --single-branch git://github.com/JoeLametta/morituri.git
-            cd morituri
+            git clone -b fork --single-branch git://github.com/JoeLametta/whipper.git
+            cd whipper
             git submodule init
             git submodule update
             ./autogen.sh
