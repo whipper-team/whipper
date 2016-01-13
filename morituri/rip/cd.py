@@ -113,11 +113,19 @@ class _CD(logcommand.LogCommand):
                     self.program.ejectDevice(self.device)
                 return -1
 
-        # now, read the complete index table, which is slower
+        # Hackish fix for broken commit
+        offset = 0
+        info = drive.getDeviceInfo(self.parentCommand.options.device)
+        if info:
+            try:
+                offset = self.getRootCommand().config.getReadOffset(*info)
+            except KeyError:
+                pass
 
+        # now, read the complete index table, which is slower
         self.itable = self.program.getTable(self.runner,
             self.ittoc.getCDDBDiscId(),
-            self.ittoc.getMusicBrainzDiscId(), self.device, self.options.offset)
+            self.ittoc.getMusicBrainzDiscId(), self.device, offset)
 
         assert self.itable.getCDDBDiscId() == self.ittoc.getCDDBDiscId(), \
             "full table's id %s differs from toc id %s" % (
