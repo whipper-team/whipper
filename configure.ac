@@ -56,6 +56,10 @@ dnl check for pychecker
 AC_CHECK_PROG(PYCHECKER, pychecker, yes, no)
 AM_CONDITIONAL(HAVE_PYCHECKER, test "x$PYCHECKER" = "xyes")
 
+dnl 
+AC_PROG_CC
+AC_CHECK_LIB(sndfile,sf_open)
+
 dnl output stuff
 AC_CONFIG_FILES([bin/rip], [chmod +x bin/rip])
 AC_CONFIG_FILES([etc/bash_completion.d/bash-compgen],
@@ -81,4 +85,5 @@ morituri/test/Makefile
 doc/Makefile
 misc/Makefile
 morituri.spec
+src/Makefile
 )

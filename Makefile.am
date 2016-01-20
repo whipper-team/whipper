@@ -3,7 +3,7 @@ AUTOMAKE_OPTIONS = 1.8 dist-bzip2 no-dist-gzip
 
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = morituri bin etc doc m4 misc
+SUBDIRS = morituri bin etc doc m4 misc src
 
 EXTRA_DIST = morituri.spec morituri.doap RELEASE README.md HACKING REVISION
 

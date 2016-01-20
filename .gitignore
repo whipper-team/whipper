@@ -14,6 +14,10 @@ missing
 morituri.spec
 py-compile
 REVISION
+*.o
+.deps
+/compile
+/depcomp
 
 # For Python development using Eclipse IDE
 .project
