@@ -337,7 +337,6 @@ class EncodeTask(ctask.GstPipelineTask):
             if self._length == common.SAMPLES_PER_FRAME:
                 self.warning('only one frame of audio, setting peak to 0.0')
                 self.peak = 0.0
-        return
 
 class TagReadTask(ctask.GstPipelineTask):
     """
