@@ -329,13 +329,15 @@ class EncodeTask(ctask.GstPipelineTask):
 
         self.warning('No peak found.')
 
+        self.peak = 0.0
+
         if self._duration:
             self.warning('GStreamer level element did not send messages.')
             # workaround for when the file is too short to have volume ?
             if self._length == common.SAMPLES_PER_FRAME:
                 self.warning('only one frame of audio, setting peak to 0.0')
                 self.peak = 0.0
-
+        return
 
 class TagReadTask(ctask.GstPipelineTask):
     """
