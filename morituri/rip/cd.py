@@ -430,10 +430,9 @@ Install pycdio and run 'rip offset find' to detect your drive's offset.
                         number)
                     raise
 
-                self.stdout.write('Peak level: %.2f %%\n' % (
-                    math.sqrt(trackResult.peak) * 100.0, ))
-                self.stdout.write('Rip quality: %.2f %%\n' % (
-                    trackResult.quality * 100.0, ))
+                self.stdout.write('Peak level: {:.2%} \n'.format(math.sqrt(trackResult.peak)))
+
+                self.stdout.write('Rip quality: {:.2%}\n'.format(trackResult.quality))
 
             # overlay this rip onto the Table
             if number == 0:
