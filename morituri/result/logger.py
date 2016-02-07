@@ -119,7 +119,7 @@ class MorituriLogger(result.Logger):
             elif self._accuratelyRipped < nonHTOA:
                 lines.append("  %d track(s) accurately ripped" %
                              self._accuratelyRipped)
-                lines.append("  %d track(s) could not be verified as"
+                lines.append("  %d track(s) could not be verified as "
                              "accurate" % (nonHTOA - self._accuratelyRipped))
                 lines.append("")
                 lines.append("  Some tracks could not be verified as accurate")
