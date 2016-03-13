@@ -1,6 +1,3 @@
-[submodule "morituri/extern/python-musicbrainz-ngs"]
-	path = morituri/extern/python-musicbrainz-ngs
-	url = git://github.com/thomasvs/python-musicbrainz-ngs.git
 [submodule "morituri/extern/python-command"]
 	path = morituri/extern/python-command
 	url = git://github.com/thomasvs/python-command.git
