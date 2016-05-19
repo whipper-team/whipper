@@ -29,13 +29,19 @@ AM_PATH_PYTHON(2.3)
 dnl check for where to install our python stuff
 PYVER=[`$PYTHON -c "import sys ; print sys.version[:3]"`]
 
+AC_ARG_WITH([pluginsdir],
+	AS_HELP_STRING([--with-pluginsdir], [Set custom global plugin directory]),
+	[],
+	[with_pluginsdir=none])
+
 dnl This is the best way of installing in an arch-independent location for now
 AS_AC_EXPAND(PYTHONLIBDIR, "\${exec_prefix}/lib/python$PYVER/site-packages")
 
 AC_MSG_NOTICE(Installing python code in $PYTHONLIBDIR)
 AC_SUBST(PYTHONLIBDIR)
 
-AS_AC_EXPAND(PLUGINSDIR, "\${libdir}/morituri/plugins")
+AS_IF([test "x$with_pluginsdir" != "xnone"], [AS_AC_EXPAND(PLUGINSDIR, "$with_pluginsdir")],
+	  [test "x$with_pluginsdir" = "xnone"], [AS_AC_EXPAND(PLUGINSDIR, "\${libdir}/morituri/plugins")])
 AC_MSG_NOTICE(Setting plugins directory to $PLUGINSDIR)
 
 dnl get git revision for installed.py.in
