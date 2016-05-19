@@ -65,7 +65,7 @@ class MorituriLogger(result.Logger):
         if htoa and htoa.path:
             htoastart = htoa.absolute
             htoaend = table.getTrackEnd(0)
-            htoalength = table.tracks[0].getIndex(1).absolute - htoastart + 1
+            htoalength = table.tracks[0].getIndex(1).absolute - htoastart
             lines.append("  00:")
             lines.append("    Start: %s" % self._framesToMSF(htoastart))
             lines.append("    Length: %s" % self._framesToMSF(htoalength))
