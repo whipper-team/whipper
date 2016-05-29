@@ -71,7 +71,7 @@ use whipper installed or uninstalled.
     - source: download tarball, unpack, and change to its directory
     - checkout:
 
-            git clone -b fork --single-branch git://github.com/JoeLametta/whipper.git
+            git clone -b master --single-branch git://github.com/JoeLametta/whipper.git
             cd whipper
             git submodule init
             git submodule update
