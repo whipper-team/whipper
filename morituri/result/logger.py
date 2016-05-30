@@ -12,14 +12,6 @@ class MorituriLogger(result.Logger):
     _inARDatabase = 0
     _errors = False
 
-    def _framesToMSF(self, frames):
-        f = frames % common.FRAMES_PER_SECOND
-        frames -= f
-        s = (frames / common.FRAMES_PER_SECOND) % 60
-        frames -= s * 60
-        m = frames / common.FRAMES_PER_SECOND / 60
-        return "%02d:%02d.%02d" % (m, s, f)
-
     def log(self, ripResult, epoch=time.time()):
         lines = self.logRip(ripResult, epoch=epoch)
         return "\n".join(lines)
@@ -67,8 +59,8 @@ class MorituriLogger(result.Logger):
             htoaend = table.getTrackEnd(0)
             htoalength = table.tracks[0].getIndex(1).absolute - htoastart
             lines.append("  00:")
-            lines.append("    Start: %s" % self._framesToMSF(htoastart))
-            lines.append("    Length: %s" % self._framesToMSF(htoalength))
+            lines.append("    Start: %s" % common.framesToMSF(htoastart))
+            lines.append("    Length: %s" % common.framesToMSF(htoalength))
             lines.append("    Start sector: %d" % htoastart)
             lines.append("    End sector: %d" % htoaend)
         for t in table.tracks:
@@ -78,8 +70,8 @@ class MorituriLogger(result.Logger):
             length = table.getTrackLength(t.number)
             end = table.getTrackEnd(t.number)
             lines.append("  %02d:" % t.number)
-            lines.append("    Start: %s" % self._framesToMSF(start))
-            lines.append("    Length: %s" % self._framesToMSF(length))
+            lines.append("    Start: %s" % common.framesToMSF(start))
+            lines.append("    Length: %s" % common.framesToMSF(length))
             lines.append("    Start sector: %d" % start)
             lines.append("    End sector: %d" % end)
             lines.append("")
@@ -139,7 +131,7 @@ class MorituriLogger(result.Logger):
         lines.append("    Filename: %s" % trackResult.filename)
         pregap = trackResult.pregap
         if pregap:
-            lines.append("    Pre-gap length: %s" % self._framesToMSF(pregap))
+            lines.append("    Pre-gap length: %s" % common.framesToMSF(pregap))
         peak = trackResult.peak
         lines.append("    Peak level: %.6f %%" % peak)
         if trackResult.copyspeed:
