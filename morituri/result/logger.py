@@ -28,13 +28,18 @@ class MorituriLogger(result.Logger):
         defeat = "Unknown"
         if ripResult.cdparanoiaDefeatsCache is True:
             defeat = "Yes"
-        if ripResult.cdparanoiaDefeatsCache is False:
+        elif ripResult.cdparanoiaDefeatsCache is False:
             defeat = "No"
         lines.append("Defeat audio cache: %s" % defeat)
         lines.append("Read offset correction: %+d" % ripResult.offset)
         # Currently unsupported by the official cdparanoia package
-        lines.append("Overread into lead-out: No")
-        # Fully working only using the patched cdparanoia package
+        over = "Unknown"
+        if ripResult.overread is True:
+            over = "Yes"
+        elif ripResult.overread is False:
+            over = "No"
+        lines.append("Overread into lead-out: %s" % over)
+        # Next one fully works only using the patched cdparanoia package
         # lines.append("Fill up missing offset samples with silence: Yes")
         lines.append("Gap detection: cdrdao %s" % ripResult.cdrdaoVersion)
         lines.append("")
@@ -65,7 +70,7 @@ class MorituriLogger(result.Logger):
             lines.append("    End sector: %d" % htoaend)
         for t in table.tracks:
             # FIXME: what happens to a track start over 60 minutes ?
-            # Answer: tested experimentally, everything seems OK
+            # Answer: tested empirically, everything seems OK
             start = t.getIndex(1).absolute
             length = table.getTrackLength(t.number)
             end = table.getTrackEnd(t.number)
@@ -144,8 +149,8 @@ class MorituriLogger(result.Logger):
             lines.append("    Test CRC: %08X" % trackResult.testcrc)
         if trackResult.copycrc is not None:
             lines.append("    Copy CRC: %08X" % trackResult.copycrc)
-        lines.append("    AccurateRip v1:")
         if trackResult.accurip:
+            lines.append("    AccurateRip v1:")
             self._inARDatabase += 1
             if trackResult.ARCRC == trackResult.ARDBCRC:
                 lines.append("      Result: Found, exact match")
@@ -160,7 +165,8 @@ class MorituriLogger(result.Logger):
                              "AccurateRip returned [%08x]" % (
                                  trackResult.ARDBConfidence,
                                  trackResult.ARCRC, trackResult.ARDBCRC))
-        else:
+        elif trackResult.number != 0:
+            lines.append("    AccurateRip v1:")
             lines.append("      Result: Track not present in "
                          "AccurateRip database")
 
