@@ -266,7 +266,7 @@ def musicbrainz(discid, country=None, record=False):
 
     @rtype: list of L{DiscMetadata}
     """
-    log.debug('musicbrainz', 'looking up results for discid %r', discid)
+    log.debug('musicbrainzngs', 'looking up results for discid %r', discid)
     import musicbrainzngs
 
     ret = []
@@ -278,40 +278,45 @@ def musicbrainz(discid, country=None, record=False):
         if isinstance(e.cause, urllib2.HTTPError):
             if e.cause.code == 404:
                 raise NotFoundException(e)
+            else:
+                log.debug('musicbrainzngs',
+                          'received bad response from the server')
 
         raise MusicBrainzException(e)
 
-    # No disc matching this DiscID has been found.
-    if len(result) == 0:
+    # The result can either be a "disc" or a "cdstub"
+    if result.get('disc'):
+        log.debug('musicbrainzngs', 'found %d releases for discid %r',
+                  len(result['disc']['release-list']), discid)
+        _record(record, 'releases', discid, result)
+
+        # Display the returned results to the user.
+
+        import json
+        for release in result['disc']['release-list']:
+            formatted = json.dumps(release, sort_keys=False, indent=4)
+            log.debug('program', 'result %s: artist %r, title %r' % (
+                formatted, release['artist-credit-phrase'], release['title']))
+
+            # to get titles of recordings, we need to query the release with
+            # artist-credits
+
+            res = musicbrainzngs.get_release_by_id(
+                release['id'], includes=["artists", "artist-credits",
+                                         "recordings", "discids", "labels"])
+            _record(record, 'release', release['id'], res)
+            releaseDetail = res['release']
+            formatted = json.dumps(releaseDetail, sort_keys=False, indent=4)
+            log.debug('program', 'release %s' % formatted)
+
+            md = _getMetadata(release, releaseDetail, discid, country)
+            if md:
+                log.debug('program', 'duration %r', md.duration)
+                ret.append(md)
+
+        return ret
+    elif result.get('cdstub'):
+        log.debug('musicbrainzngs', 'query returned cdstub: ignored')
         return None
-
-    log.debug('musicbrainzngs', 'found %d releases for discid %r',
-        len(result['disc']['release-list']),
-        discid)
-    _record(record, 'releases', discid, result)
-
-    # Display the returned results to the user.
-
-    import json
-    for release in result['disc']['release-list']:
-        formatted = json.dumps(release, sort_keys=False, indent=4)
-        log.debug('program', 'result %s: artist %r, title %r' % (
-            formatted, release['artist-credit-phrase'], release['title']))
-
-        # to get titles of recordings, we need to query the release with
-        # artist-credits
-
-        res = musicbrainzngs.get_release_by_id(release['id'],
-            includes=["artists", "artist-credits", "recordings", "discids",
-                "labels"])
-        _record(record, 'release', release['id'], res)
-        releaseDetail = res['release']
-        formatted = json.dumps(releaseDetail, sort_keys=False, indent=4)
-        log.debug('program', 'release %s' % formatted)
-
-        md = _getMetadata(release, releaseDetail, discid, country)
-        if md:
-            log.debug('program', 'duration %r', md.duration)
-            ret.append(md)
-
-    return ret
+    else:
+        return None
