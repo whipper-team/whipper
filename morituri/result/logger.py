@@ -90,7 +90,7 @@ class MorituriLogger(result.Logger):
             lines.append("")
             duration += t.testduration + t.copyduration
 
-        lines.append("Informations:")
+        lines.append("Information:")
         lines.append("  AccurateRip summary:")
         if self._inARDatabase == 0:
             lines.append("    Result: None of the tracks are present in "
@@ -109,8 +109,9 @@ class MorituriLogger(result.Logger):
                 lines.append("    %d track(s) could not be verified as "
                              "accurate" % (nonHTOA - self._accuratelyRipped))
                 lines.append("")
-                lines.append("    Some tracks could not be verified as "
-                             "accurate")
+                lines.append("    Result: Some tracks could not be verified "
+                             "as accurate (%d/%d got no match)" % (
+                                (nonHTOA - self._accuratelyRipped), nonHTOA))
             else:
                 lines.append("    Result: All tracks accurately ripped")
         lines.append("")
@@ -159,12 +160,11 @@ class MorituriLogger(result.Logger):
                 lines.append("      Checksum: %08X" % trackResult.ARCRC)
                 self._accuratelyRipped += 1
             else:
-                lines.append("      Result: Found, no exact match")
-                lines.append("      Cannot be verified as accurate "
-                             "(confidence %d), [%08X], "
-                             "AccurateRip returned [%08x]" % (
-                                 trackResult.ARDBConfidence,
-                                 trackResult.ARCRC, trackResult.ARDBCRC))
+                lines.append("      Result: Found, NO exact match "
+                             "(confidence %d [%08X], AccurateRip "
+                             "returned [%08x])" % (trackResult.ARDBConfidence,
+                                                   trackResult.ARCRC,
+                                                   trackResult.ARDBCRC))
         elif trackResult.number != 0:
             lines.append("    AccurateRip v1:")
             lines.append("      Result: Track not present in "
