@@ -68,6 +68,7 @@ class MorituriLogger(result.Logger):
             lines.append("    Length: %s" % common.framesToMSF(htoalength))
             lines.append("    Start sector: %d" % htoastart)
             lines.append("    End sector: %d" % htoaend)
+            lines.append("")
         for t in table.tracks:
             # FIXME: what happens to a track start over 60 minutes ?
             # Answer: tested empirically, everything seems OK
@@ -104,11 +105,6 @@ class MorituriLogger(result.Logger):
                              "accurate (you may have a different pressing "
                              "from the one(s) in the database")
             elif self._accuratelyRipped < nonHTOA:
-                lines.append("    %d track(s) accurately ripped" %
-                             self._accuratelyRipped)
-                lines.append("    %d track(s) could not be verified as "
-                             "accurate" % (nonHTOA - self._accuratelyRipped))
-                lines.append("")
                 lines.append("    Result: Some tracks could not be verified "
                              "as accurate (%d/%d got no match)" % (
                                 (nonHTOA - self._accuratelyRipped), nonHTOA))
