@@ -18,38 +18,50 @@ class MorituriLogger(result.Logger):
 
     def logRip(self, ripResult, epoch):
         lines = []
-        lines.append("Ripper: morituri %s" % configure.version)
+        lines.append("Log created by: morituri %s" % configure.version)
         date = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(epoch)).strip()
-        lines.append("Ripped at: %s" % date)
-        lines.append("Drive: %s%s (revision %s)" %
-                     (ripResult.vendor, ripResult.model, ripResult.release))
+        lines.append("Log creation date: %s" % date)
         lines.append("")
 
+        lines.append("Ripping phase information:")
+        lines.append("  Drive: %s%s (revision %s)" % (
+            ripResult.vendor, ripResult.model, ripResult.release))
         defeat = "Unknown"
         if ripResult.cdparanoiaDefeatsCache is True:
             defeat = "Yes"
         elif ripResult.cdparanoiaDefeatsCache is False:
             defeat = "No"
-        lines.append("Defeat audio cache: %s" % defeat)
-        lines.append("Read offset correction: %+d" % ripResult.offset)
+        lines.append("  Defeat audio cache: %s" % defeat)
+        lines.append("  Read offset correction: %+d" % ripResult.offset)
         # Currently unsupported by the official cdparanoia package
         over = "Unknown"
         if ripResult.overread is True:
             over = "Yes"
         elif ripResult.overread is False:
             over = "No"
-        lines.append("Overread into lead-out: %s" % over)
+        lines.append("  Overread into lead-out: %s" % over)
         # Next one fully works only using the patched cdparanoia package
         # lines.append("Fill up missing offset samples with silence: Yes")
-        lines.append("Gap detection: cdrdao %s" % ripResult.cdrdaoVersion)
+        lines.append("  Gap detection: cdrdao %s" % ripResult.cdrdaoVersion)
         lines.append("")
 
-        lines.append("Used output format: %s" % ripResult.profileName)
-        lines.append("GStreamer:")
-        lines.append("  Pipeline: %s" % ripResult.profilePipeline)
-        lines.append("  Version: %s" % ripResult.gstreamerVersion)
-        lines.append("  Python version: %s" % ripResult.gstPythonVersion)
-        lines.append("  Encoder plugin version: %s" % ripResult.encoderVersion)
+        lines.append("Encoding phase information:")
+        lines.append("  Used output format: %s" % ripResult.profileName)
+        lines.append("  GStreamer:")
+        lines.append("    Pipeline: %s" % ripResult.profilePipeline)
+        lines.append("    Version: %s" % ripResult.gstreamerVersion)
+        lines.append("    Python version: %s" % ripResult.gstPythonVersion)
+        lines.append("    Encoder plugin version: %s" %
+                     ripResult.encoderVersion)
+        lines.append("")
+
+        lines.append("CD metadata:")
+        lines.append("  Album: %s - %s" % (ripResult.artist, ripResult.title))
+        lines.append("  CDDB Disc ID: %s" % ripResult. table.getCDDBDiscId())
+        lines.append("  MusicBrainz Disc ID: %s" %
+                     ripResult. table.getMusicBrainzDiscId())
+        lines.append("  MusicBrainz lookup url: %s" %
+                     ripResult. table.getMusicBrainzSubmitURL())
         lines.append("")
 
         lines.append("TOC:")
@@ -91,33 +103,32 @@ class MorituriLogger(result.Logger):
             lines.append("")
             duration += t.testduration + t.copyduration
 
-        lines.append("Information:")
-        lines.append("  AccurateRip summary:")
+        lines.append("Conclusive status report:")
+        arHeading = "  AccurateRip summary:"
         if self._inARDatabase == 0:
-            lines.append("    Result: None of the tracks are present in "
-                         "the AccurateRip database")
+            lines.append("%s None of the tracks are present in the "
+                         "AccurateRip database" % arHeading)
         else:
             nonHTOA = len(ripResult.tracks)
             if ripResult.tracks[0].number == 0:
                 nonHTOA -= 1
             if self._accuratelyRipped == 0:
-                lines.append("    Result: No tracks could be verified as "
-                             "accurate (you may have a different pressing "
-                             "from the one(s) in the database")
+                lines.append("%s No tracks could be verified as accurate "
+                             "(you may have a different pressing from the "
+                             "one(s) in the database)" % arHeading)
             elif self._accuratelyRipped < nonHTOA:
-                lines.append("    Result: Some tracks could not be verified "
-                             "as accurate (%d/%d got no match)" % (
-                                (nonHTOA - self._accuratelyRipped), nonHTOA))
+                lines.append("%s Some tracks could not be verified as "
+                             "accurate (%d/%d got no match)") % (
+                             arHeading, (nonHTOA - self._accuratelyRipped),
+                             nonHTOA)
             else:
-                lines.append("    Result: All tracks accurately ripped")
-        lines.append("")
+                lines.append("%s All tracks accurately ripped" % arHeading)
 
-        lines.append("  Health status:")
+        hsHeading = "  Health status:"
         if self._errors:
-            lines.append("    Result: There were errors")
+            lines.append("%s There were errors" % hsHeading)
         else:
-            lines.append("    Result: No errors occurred")
-        lines.append("")
+            lines.append("%s No errors occurred" % hsHeading)
         lines.append("  EOF: End of status report")
         lines.append("")
 
@@ -147,22 +158,19 @@ class MorituriLogger(result.Logger):
         if trackResult.copycrc is not None:
             lines.append("    Copy CRC: %08X" % trackResult.copycrc)
         if trackResult.accurip:
-            lines.append("    AccurateRip v1:")
+            lines.append("    AccurateRip V1:")
             self._inARDatabase += 1
             if trackResult.ARCRC == trackResult.ARDBCRC:
                 lines.append("      Result: Found, exact match")
-                lines.append("      Confidence: %d" %
-                             trackResult.ARDBConfidence)
-                lines.append("      Checksum: %08X" % trackResult.ARCRC)
                 self._accuratelyRipped += 1
             else:
-                lines.append("      Result: Found, NO exact match "
-                             "(confidence %d [%08X], AccurateRip "
-                             "returned [%08x])" % (trackResult.ARDBConfidence,
-                                                   trackResult.ARCRC,
-                                                   trackResult.ARDBCRC))
+                lines.append("      Result: Found, NO exact match")
+            lines.append("      Confidence: %d" %
+                         trackResult.ARDBConfidence)
+            lines.append("      Local CRC: %08X" % trackResult.ARCRC)
+            lines.append("      Remote CRC: %08X" % trackResult.ARDBCRC)
         elif trackResult.number != 0:
-            lines.append("    AccurateRip v1:")
+            lines.append("    AccurateRip V1:")
             lines.append("      Result: Track not present in "
                          "AccurateRip database")
 
