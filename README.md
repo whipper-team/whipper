@@ -14,6 +14,8 @@ This branch is very close to morituri's master one (the internal 'morituri' refe
 
 And changed the default logger to morituri-whatlogger's one.
 
+In order to track whipper's development it's better to check its commit history (readme needs to be updated).
+
 WHIPPER [![Build Status](https://travis-ci.org/JoeLametta/whipper.svg?branch=master)](https://travis-ci.org/JoeLametta/whipper)
 ---------
 whipper is a fork of the morituri project (CDDA ripper for *nix systems aiming for accuracy over speed).
@@ -202,7 +204,7 @@ The possible sections are:
 
 Example section to configure "rip cd rip" defaults:
 
-   [rip.cd.rip]
+    [rip.cd.rip]
     unknown = True
     output_directory = ~/My Music
     track_template = new/%%A/%%y - %%d/%%t - %%n
