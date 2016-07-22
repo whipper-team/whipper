@@ -117,10 +117,10 @@ class MorituriLogger(result.Logger):
                              "(you may have a different pressing from the "
                              "one(s) in the database)" % arHeading)
             elif self._accuratelyRipped < nonHTOA:
+                accurateTracks = nonHTOA - self._accuratelyRipped
                 lines.append("%s Some tracks could not be verified as "
                              "accurate (%d/%d got no match)") % (
-                             arHeading, (nonHTOA - self._accuratelyRipped),
-                             nonHTOA)
+                             arHeading, accurateTracks, nonHTOA)
             else:
                 lines.append("%s All tracks accurately ripped" % arHeading)
 
