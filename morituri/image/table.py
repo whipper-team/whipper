@@ -64,7 +64,7 @@ class Track:
     @ivar cdtext:       dictionary of CD Text information; see L{CDTEXT_KEYS}.
     @type cdtext:       str -> unicode
     @ivar pre_emphasis: whether track is pre-emphasised
-    @ivar pre_emphasis: bool
+    @type pre_emphasis: bool
     """
 
     number = None
