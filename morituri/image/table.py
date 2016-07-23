@@ -54,15 +54,17 @@ class Track:
     """
     I represent a track entry in an Table.
 
-    @ivar number:  track number (1-based)
-    @type number:  int
-    @ivar audio:   whether the track is audio
-    @type audio:   bool
-    @type indexes: dict of number -> L{Index}
-    @ivar isrc:    ISRC code (12 alphanumeric characters)
-    @type isrc:    str
-    @ivar cdtext:  dictionary of CD Text information; see L{CDTEXT_KEYS}.
-    @type cdtext:  str -> unicode
+    @ivar number:       track number (1-based)
+    @type number:       int
+    @ivar audio:        whether the track is audio
+    @type audio:        bool
+    @type indexes:      dict of number -> L{Index}
+    @ivar isrc:         ISRC code (12 alphanumeric characters)
+    @type isrc:         str
+    @ivar cdtext:       dictionary of CD Text information; see L{CDTEXT_KEYS}.
+    @type cdtext:       str -> unicode
+    @ivar pre_emphasis: whether track is pre-emphasised
+    @ivar pre_emphasis: bool
     """
 
     number = None
@@ -71,6 +73,7 @@ class Track:
     isrc = None
     cdtext = None
     session = None
+    pre_emphasis = None
 
     def __repr__(self):
         return '<Track %02d>' % self.number
@@ -617,6 +620,9 @@ class Table(object, log.Loggable):
 
                     if track.isrc is not None:
                         lines.append("    ISRC %s" % track.isrc)
+
+                    if track.pre_emphasis is not None:
+                        lines.append("    FLAGS PRE")
 
                     # handle TRACK 01 INDEX 00 specially
                     if 0 in indexes:
