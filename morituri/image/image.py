@@ -112,6 +112,7 @@ class AccurateRipChecksumTask(log.Loggable, task.MultiSeparateTask):
 
     description = "Checksumming tracks"
 
+    # TODO MW: Update this further for V2 code
     def __init__(self, image):
         task.MultiSeparateTask.__init__(self)
 
@@ -134,10 +135,10 @@ class AccurateRipChecksumTask(log.Loggable, task.MultiSeparateTask):
             # here to avoid import gst eating our options
             from morituri.common import checksum
 
-            checksumTask = checksum.AccurateRipChecksumTask(path,
+            checksumTask = checksum.FastAccurateRipChecksumTask(path,
                 trackNumber=trackIndex + 1, trackCount=len(cue.table.tracks),
-                sampleStart=index.relative * common.SAMPLES_PER_FRAME,
-                sampleLength=length * common.SAMPLES_PER_FRAME)
+                wave=True, v2=False)
+
             self.addTask(checksumTask)
 
     def stop(self):
