@@ -168,11 +168,9 @@ class _CD(logcommand.LogCommand):
                 self.program.result.release = \
                 cdio.Device(self.device).get_hwinfo()
         except ImportError:
-            self.stdout.write(
-                'WARNING: pycdio not installed, cannot identify drive\n')
-            self.program.result.vendor = 'Unknown'
-            self.program.result.model = 'Unknown'
-            self.program.result.release = 'Unknown'
+            raise ImportError("Pycdio module import failed.\n"
+                              "This is a hard dependency: if not available "
+                              "please install it")
 
         self.doCommand()
 
@@ -273,11 +271,13 @@ Log files will log the path to tracks relative to this directory.
                     pass
 
         if options.offset is None:
-            options.offset = 0
-            self.stdout.write("""WARNING: using default offset %d.
-Install pycdio and run 'rip offset find' to detect your drive's offset.
-""" %
-                        options.offset)
+            raise ValueError("Drive offset is unconfigured.\n"
+                             "Please install pycdio and run 'rip offset "
+                             "find' to detect your drive's offset or set it "
+                             "manually in the configuration file. It can "
+                             "also be specified at runtime using the "
+                             "'--offset=value' argument")
+
         if self.options.output_directory is None:
             self.options.output_directory = os.getcwd()
         else:
