@@ -77,6 +77,7 @@ use whipper installed or uninstalled.
             cd whipper
             git submodule init
             git submodule update
+            export PYTHON=$(which python2)
             ./autogen.sh
 
 - building:
