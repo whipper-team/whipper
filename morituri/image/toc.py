@@ -38,6 +38,9 @@ _CDTEXT_CANDIDATE_RE = re.compile(r'(?P<key>\w+) "(?P<value>.+)"')
 # header
 _CATALOG_RE = re.compile(r'^CATALOG "(?P<catalog>\d+)"$')
 
+# pre emphasis
+_PRE_EMPHASIS_RE = re.compile(r'^PRE_EMPHASIS$')
+
 # records
 _TRACK_RE = re.compile(r"""
     ^TRACK            # TRACK
@@ -250,6 +253,12 @@ class TocFile(object, log.Loggable):
                 pregapLength = 0
 
                 continue
+
+            # look for PRE_EMPHASIS lines
+            m = _PRE_EMPHASIS_RE.search(line)
+            if m:
+                currentTrack.pre_emphasis = True
+                self.debug('Track has PRE_EMPHASIS')
 
             # look for ISRC lines
             m = _ISRC_RE.search(line)
