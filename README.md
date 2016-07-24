@@ -2,7 +2,7 @@ FORK INFORMATIONS
 ---------
 The name of this fork is still to be decided: right now I'll be using whipper.
 
-This branch is very close to morituri's master one (the internal 'morituri' references are still unchanged). As a starting point, I've just merged the following commits:
+This branch is very close to morituri's master one (internal morituri references are still unchanged). As a starting point, I've just merged the following commits:
 - [#79](https://github.com/thomasvs/morituri/issues/79)
 - [#92](https://github.com/thomasvs/morituri/issues/92)
 - [#109](https://github.com/thomasvs/morituri/issues/109)
@@ -12,9 +12,29 @@ This branch is very close to morituri's master one (the internal 'morituri' refe
 - [#140](https://github.com/thomasvs/morituri/issues/140)
 - [#141](https://github.com/thomasvs/morituri/issues/141)
 
-And changed the default logger to morituri-whatlogger's one.
+And changed the default logger to [morituri-yamllogger](https://github.com/JoeLametta/morituri-yamllogger)'s one.
 
-In order to track whipper's development it's better to check its commit history (readme needs to be updated).
+In order to track whipper's current development it's better to check its commit history (README *needs* to be updated).
+
+**WARNING:** As whipper is still under heavy development sometimes I will force push (`--force-with-lease`) to the non master branches.
+
+BACKWARD INCOMPATIBLE CHANGES
+---------
+* Whipper has adopted new config/cache/state file paths
+  * Now always follows XDG specifications
+    * Paths used when XDG environment variables are available:
+      * `$XDG_CONFIG_HOME/whipper`
+      * `$XDG_CACHE_HOME/whipper`
+      * `$XDG_DATA_HOME/whipper`
+    * Paths used when XDG environment variables are **NOT** available:
+      * `$HOME/.config/whipper`
+      * `$HOME/.cache/whipper`
+      * `$HOME/.local/share/whipper`
+  * Configuration file information:
+    * `.moriturirc`, `morituri.conf` aren't used anymore
+    * `$XDG_CONFIG_HOME/whipper/whipper.conf` (OR `$HOME/.config/whipper/whipper.conf`)
+  * Plugins folder path:
+    * `$XDG_DATA_HOME/whipper/plugins` (OR `$HOME/.local/share/whipper/plugins`)
 
 WHIPPER [![Build Status](https://travis-ci.org/JoeLametta/whipper.svg?branch=master)](https://travis-ci.org/JoeLametta/whipper)
 ---------
@@ -22,9 +42,7 @@ whipper is a fork of the morituri project (CDDA ripper for *nix systems aiming f
 
 It improves morituri which development seems to have halted/slowed down merging old pull requests and improving it with bugfixes and new functions.
 
-If possible, I'll try to mainline the useful commits of this fork but, in the future, this may not be possible because of different project choices.
-
-The project home page is still TBD.
+If possible, I'll try to upstream the progress done here but, in the future, this may not be possible because of different project choices.
 
 RATIONALE
 ---------
@@ -150,7 +168,7 @@ The simplest way to get started making accurate rips is:
 
 FILING BUGS
 -----------
-whipper's bug tracker is still TBD.
+whipper's bugs are tracked using the repository issue section provided by GitHub.
 
 morituri's bug tracker is at [http://thomas.apestaart.org/morituri/trac/](
 http://thomas.apestaart.org/morituri/trac/).
@@ -184,7 +202,7 @@ The configuration file is stored according to [XDG Base Directory Specification]
 http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html)
 when possible.
 
-It lives in `$XDG_CONFIG_HOME/morituri/morituri.conf`
+It lives in `$XDG_CONFIG_HOME/whipper/whipper.conf` (or `$HOME/.config/whipper/whipper.conf`)
 
 The configuration file follows python's ConfigParser syntax.
 
@@ -217,3 +235,4 @@ Note: to get a literal '%' character it must be doubled.
 CONTRIBUTING
 ------------
 - Please send pull requests through GitHub.
+

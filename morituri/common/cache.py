@@ -162,8 +162,8 @@ class ResultCache(log.Loggable):
         self._pcache = PersistedCache(self._path)
 
     def _getResultCachePath(self):
-        path = os.path.join(os.path.expanduser('~'), '.morituri', 'cache',
-            'result')
+        d = directory.Directory()
+        path = d.getCache('result')
         return path
 
     def getRipResult(self, cddbdiscid, create=True):

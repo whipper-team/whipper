@@ -5,7 +5,7 @@ import os
 import sys
 import pkg_resources
 
-from morituri.common import log, logcommand, common, config
+from morituri.common import log, logcommand, common, config, directory
 from morituri.configure import configure
 
 from morituri.rip import cd, offset, drive, image, accurip, debug
@@ -19,8 +19,8 @@ def main(argv):
 
     from morituri.configure import configure
     pluginsdir = configure.pluginsdir
-    homepluginsdir = os.path.join(os.path.expanduser('~'),
-        '.morituri', 'plugins')
+    d = directory.Directory()
+    homepluginsdir = d.getData('plugins')
 
     distributions, errors = pkg_resources.working_set.find_plugins(
         pkg_resources.Environment([pluginsdir, homepluginsdir]))
