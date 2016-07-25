@@ -30,7 +30,7 @@ import gobject
 gobject.threads_init()
 
 from morituri.common import logcommand, common, accurip, gstreamer
-from morituri.common import drive, program, task
+from morituri.common import drive, program, task, directory
 from morituri.result import result
 from morituri.program import cdrdao, cdparanoia
 from morituri.rip import common as rcommon
@@ -168,9 +168,20 @@ class _CD(logcommand.LogCommand):
                 self.program.result.release = \
                 cdio.Device(self.device).get_hwinfo()
         except ImportError:
-            raise ImportError("Pycdio module import failed.\n"
-                              "This is a hard dependency: if not available "
-                              "please install it")
+            d = directory.Directory()
+            path = os.path.dirname(d.getConfig())
+            fullPath = os.path.join(path, 'PYCDIO_IGNORE')
+            if os.path.isfile(fullPath):
+                self.stdout.write(
+                    'WARNING: pycdio not installed, cannot identify drive '
+                    '(hard dependency overridden)\n')
+                self.program.result.vendor = 'Unknown'
+                self.program.result.model = 'Unknown'
+                self.program.result.release = 'Unknown'
+            else:
+                raise ImportError("Pycdio module import failed.\n"
+                                  "This is a hard dependency: if not "
+                                  "available please install it")
 
         self.doCommand()
 

@@ -52,10 +52,10 @@ REQUIREMENTS
 - GStreamer and its python bindings, for encoding
   - gstreamer0.10-base-plugins >= 0.10.22 for appsink
   - gstreamer0.10-good-plugins for wav encoding (it depends on the Linux distro used)
-- python musicbrainz2, for metadata lookup
+- python musicbrainzngs, for metadata lookup
 - python-setuptools, for plugin support
 - python-cddb, for showing but not using disc info if not in MusicBrainz
-- pycdio, for drive identification (optional)
+- pycdio, for drive identification (it can be overridden placing a blank file named `PYCDIO_IGNORE` into whipper's config path)
   - Required for drive offset and caching behavior to be stored in the config file
 
 Additionally, if you're building from a git checkout:
