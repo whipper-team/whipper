@@ -168,7 +168,7 @@ KNOWN ISSUES
 - no GUI yet
 - only AccurateRip V1 CRCs are computed and checked against the online database
 - `rip offset find` fails to delete the temporary .wav files it creates if an error occurs while ripping
-- morituri detects the pre-emphasis flag in the TOC but doesn't add it to the cue sheet
+- whipper only checks for the pre-emphasis flag in the TOC
   - To improve the accuracy of the detection, the sub-channel data should be scanned too
 - cd-text isn't read from the CD (useful when the CD informations are not available in the MusicBrainz DB)
 
@@ -197,7 +197,7 @@ The possible sections are:
                            characters
 
 - drive section: [drive:IDENTIFIER], one for each configured drive
-  All these values are probed by morituri and should not be edited by hand.
+  All these values are probed by whipper and should not be edited by hand.
   - `defeats_cache`: whether this drive can defeat the audio cache
   - `read_offset`: the read offset of the drive
 
