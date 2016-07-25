@@ -55,6 +55,7 @@ REQUIREMENTS
 - python musicbrainz2, for metadata lookup
 - python-setuptools, for plugin support
 - python-cddb, for showing but not using disc info if not in MusicBrainz
+- pyxdg, for following XDG standard (suggested)
 - pycdio, for drive identification (optional)
   - Required for drive offset and caching behavior to be stored in the config file
 
