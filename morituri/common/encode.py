@@ -30,6 +30,7 @@ from morituri.common import gstreamer as cgstreamer
 from morituri.common import task as ctask
 
 from morituri.extern.task import task, gstreamer
+from morituri.program import sox
 
 
 class Profile(log.Loggable):
@@ -164,6 +165,20 @@ LOSSY_PROFILES = {
 ALL_PROFILES = PROFILES.copy()
 ALL_PROFILES.update(LOSSY_PROFILES)
 
+class SoxPeakTask(task.Task):
+    description = 'Calculating peak level'
+
+    def __init__(self, track_path):
+        self.track_path = track_path
+        self.peak = None
+
+    def start(self, runner):
+        task.Task.start(self, runner)
+        self.schedule(0.0, self._sox_peak)
+
+    def _sox_peak(self):
+        self.peak = sox.peak_level(self.track_path)
+        self.stop()
 
 class EncodeTask(ctask.GstPipelineTask):
     """
