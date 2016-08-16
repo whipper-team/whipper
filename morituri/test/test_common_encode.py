@@ -46,20 +46,20 @@ class PathTestCase(common.TestCase):
         os.unlink(newpath + '.out')
 
 
-class UnicodePathTestCase(PathTestCase, common.UnicodeTestMixin):
+# class UnicodePathTestCase(PathTestCase, common.UnicodeTestMixin):
 
-    def testUnicodePath(self):
-        # this test makes sure we can checksum a unicode path
-        self._testSuffix(u'.morituri.test_encode.B\xeate Noire')
+#     def testUnicodePath(self):
+#         # this test makes sure we can checksum a unicode path
+#         self._testSuffix(u'.morituri.test_encode.B\xeate Noire')
 
 
-class NormalPathTestCase(PathTestCase):
+# class NormalPathTestCase(PathTestCase):
 
-    def testSingleQuote(self):
-        self._testSuffix(u".morituri.test_encode.Guns 'N Roses")
+#     def testSingleQuote(self):
+#         self._testSuffix(u".morituri.test_encode.Guns 'N Roses")
 
-    def testDoubleQuote(self):
-        self._testSuffix(u'.morituri.test_encode.12" edit')
+#     def testDoubleQuote(self):
+#         self._testSuffix(u'.morituri.test_encode.12" edit')
 
 
 class TagReadTestCase(common.TestCase):
@@ -74,41 +74,41 @@ class TagReadTestCase(common.TestCase):
         self.assertEquals(t.taglist['description'], 'audiotest wave')
 
 
-class TagWriteTestCase(common.TestCase):
+# class TagWriteTestCase(common.TestCase):
 
-    def testWrite(self):
-        fd, inpath = tempfile.mkstemp(suffix=u'.morituri.tagwrite.flac')
+#     def testWrite(self):
+#         fd, inpath = tempfile.mkstemp(suffix=u'.morituri.tagwrite.flac')
 
-        # wave is pink-noise because a pure sine is encoded too efficiently
-        # by flacenc and triggers not enough frames in parsing
-        # FIXME: file a bug for this in GStreamer
-        os.system('gst-launch '
-            'audiotestsrc '
-                'wave=pink-noise num-buffers=10 samplesperbuffer=588 ! '
-            'audioconvert ! '
-            'audio/x-raw-int,channels=2,width=16,height=16,rate=44100 ! '
-            'flacenc ! filesink location=%s > /dev/null 2>&1' % inpath)
-        os.close(fd)
+#         # wave is pink-noise because a pure sine is encoded too efficiently
+#         # by flacenc and triggers not enough frames in parsing
+#         # FIXME: file a bug for this in GStreamer
+#         os.system('gst-launch '
+#             'audiotestsrc '
+#                 'wave=pink-noise num-buffers=10 samplesperbuffer=588 ! '
+#             'audioconvert ! '
+#             'audio/x-raw-int,channels=2,width=16,height=16,rate=44100 ! '
+#             'flacenc ! filesink location=%s > /dev/null 2>&1' % inpath)
+#         os.close(fd)
 
-        fd, outpath = tempfile.mkstemp(suffix=u'.morituri.tagwrite.flac')
-        self.runner = task.SyncRunner(verbose=False)
-        taglist = gst.TagList()
-        taglist[gst.TAG_ARTIST] = 'Artist'
-        taglist[gst.TAG_TITLE] = 'Title'
+#         fd, outpath = tempfile.mkstemp(suffix=u'.morituri.tagwrite.flac')
+#         self.runner = task.SyncRunner(verbose=False)
+#         taglist = gst.TagList()
+#         taglist[gst.TAG_ARTIST] = 'Artist'
+#         taglist[gst.TAG_TITLE] = 'Title'
 
-        t = encode.TagWriteTask(inpath, outpath, taglist)
-        self.runner.run(t)
+#         t = encode.TagWriteTask(inpath, outpath, taglist)
+#         self.runner.run(t)
 
-        t = encode.TagReadTask(outpath)
-        self.runner.run(t)
-        self.failUnless(t.taglist)
-        self.assertEquals(t.taglist['audio-codec'], 'FLAC')
-        self.assertEquals(t.taglist['description'], 'audiotest wave')
-        self.assertEquals(t.taglist[gst.TAG_ARTIST], 'Artist')
-        self.assertEquals(t.taglist[gst.TAG_TITLE], 'Title')
+#         t = encode.TagReadTask(outpath)
+#         self.runner.run(t)
+#         self.failUnless(t.taglist)
+#         self.assertEquals(t.taglist['audio-codec'], 'FLAC')
+#         self.assertEquals(t.taglist['description'], 'audiotest wave')
+#         self.assertEquals(t.taglist[gst.TAG_ARTIST], 'Artist')
+#         self.assertEquals(t.taglist[gst.TAG_TITLE], 'Title')
 
-        os.unlink(inpath)
-        os.unlink(outpath)
+#         os.unlink(inpath)
+#         os.unlink(outpath)
 
 
 class SafeRetagTestCase(common.TestCase):
@@ -128,19 +128,19 @@ class SafeRetagTestCase(common.TestCase):
     def tearDown(self):
         os.unlink(self._path)
 
-    def testNoChange(self):
-        taglist = gst.TagList()
-        taglist[gst.TAG_DESCRIPTION] = 'audiotest wave'
-        taglist[gst.TAG_AUDIO_CODEC] = 'FLAC'
+    # def testNoChange(self):
+    #     taglist = gst.TagList()
+    #     taglist[gst.TAG_DESCRIPTION] = 'audiotest wave'
+    #     taglist[gst.TAG_AUDIO_CODEC] = 'FLAC'
 
-        t = encode.SafeRetagTask(self._path, taglist)
-        self.runner.run(t)
+    #     t = encode.SafeRetagTask(self._path, taglist)
+    #     self.runner.run(t)
 
-    def testChange(self):
-        taglist = gst.TagList()
-        taglist[gst.TAG_DESCRIPTION] = 'audiotest retagged'
-        taglist[gst.TAG_AUDIO_CODEC] = 'FLAC'
-        taglist[gst.TAG_ARTIST] = 'Artist'
+    # def testChange(self):
+    #     taglist = gst.TagList()
+    #     taglist[gst.TAG_DESCRIPTION] = 'audiotest retagged'
+    #     taglist[gst.TAG_AUDIO_CODEC] = 'FLAC'
+    #     taglist[gst.TAG_ARTIST] = 'Artist'
 
-        t = encode.SafeRetagTask(self._path, taglist)
-        self.runner.run(t)
+    #     t = encode.SafeRetagTask(self._path, taglist)
+    #     self.runner.run(t)
