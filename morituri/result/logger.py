@@ -34,11 +34,12 @@ class MorituriLogger(result.Logger):
         lines.append("  Defeat audio cache: %s" % defeat)
         lines.append("  Read offset correction: %+d" % ripResult.offset)
         # Currently unsupported by the official cdparanoia package
-        over = "Unknown"
-        if ripResult.overread is True:
-            over = "Yes"
-        elif ripResult.overread is False:
-            over = "No"
+        over = "No"
+        try:
+            if ripResult.overread is True:
+                over = "Yes"
+        except NameError:
+            pass
         lines.append("  Overread into lead-out: %s" % over)
         # Next one fully works only using the patched cdparanoia package
         # lines.append("Fill up missing offset samples with silence: Yes")
