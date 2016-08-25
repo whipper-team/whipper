@@ -30,8 +30,6 @@ def main(argv):
     map(pkg_resources.working_set.add, distributions)
 
     # validate dependencies
-    from morituri.common import deps
-    h = deps.DepsHandler()
     h.validate()
 
     # set user agent
