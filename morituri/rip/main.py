@@ -29,9 +29,6 @@ def main(argv):
     log.debug('mapping distributions %r', distributions)
     map(pkg_resources.working_set.add, distributions)
 
-    # validate dependencies
-    h.validate()
-
     # set user agent
     import musicbrainzngs
     musicbrainzngs.set_useragent("morituri", configure.version,
