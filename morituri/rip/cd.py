@@ -313,6 +313,7 @@ Install pycdio and run 'rip offset find' to detect your drive's offset.
         self.program.outdir = self.options.output_directory.decode('utf-8')
         self.program.result.offset = int(self.options.offset)
         self.program.result.overread = self.options.overread
+        self.program.result.logger = self.options.logger
 
         ### write disc files
         disambiguate = False
