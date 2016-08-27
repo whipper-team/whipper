@@ -18,7 +18,8 @@ class MorituriLogger(result.Logger):
 
     def logRip(self, ripResult, epoch):
         lines = []
-        lines.append("Log created by: morituri %s" % configure.version)
+        lines.append("Log created by: morituri %s (%s logger)" % (
+            configure.version, ripResult.logger))
         date = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(epoch)).strip()
         lines.append("Log creation date: %s" % date)
         lines.append("")
