@@ -9,7 +9,6 @@ morituri_PYTHON = \
 	cache.py \
 	common.py \
 	config.py \
-	deps.py \
 	directory.py \
 	drive.py \
 	encode.py \

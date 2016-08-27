@@ -4,6 +4,3 @@
 [submodule "morituri/extern/flog"]
 	path = morituri/extern/flog
 	url = git://github.com/Flumotion/flog
-[submodule "morituri/extern/python-deps"]
-	path = morituri/extern/python-deps
-	url = git://github.com/thomasvs/python-deps
