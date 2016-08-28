@@ -6,7 +6,7 @@ install:
     # Dependencies
     - sudo apt-get update -qq
     - sudo pip install --upgrade pip
-    - sudo apt-get install -qq cdparanoia cdrdao gstreamer0.10-plugins-base gstreamer0.10-plugins-good libcdio-dev libiso9660-dev python-cddb python-gobject swig python-dev
+    - sudo apt-get install -qq cdparanoia cdrdao gstreamer0.10-plugins-base gstreamer0.10-plugins-good libcdio-dev libiso9660-dev python-cddb python-gobject swig python-dev python-xdg
     - sudo pip install musicbrainzngs pycdio
 
     # Testing dependencies

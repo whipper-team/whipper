@@ -94,6 +94,7 @@ class RipResult:
 
     offset = 0
     overread = None
+    logger = None
     table = None
     artist = None
     title = None

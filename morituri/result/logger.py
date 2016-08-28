@@ -18,7 +18,8 @@ class MorituriLogger(result.Logger):
 
     def logRip(self, ripResult, epoch):
         lines = []
-        lines.append("Log created by: morituri %s" % configure.version)
+        lines.append("Log created by: morituri %s (%s logger)" % (
+            configure.version, ripResult.logger))
         date = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(epoch)).strip()
         lines.append("Log creation date: %s" % date)
         lines.append("")
@@ -34,11 +35,12 @@ class MorituriLogger(result.Logger):
         lines.append("  Defeat audio cache: %s" % defeat)
         lines.append("  Read offset correction: %+d" % ripResult.offset)
         # Currently unsupported by the official cdparanoia package
-        over = "Unknown"
-        if ripResult.overread is True:
-            over = "Yes"
-        elif ripResult.overread is False:
-            over = "No"
+        over = "No"
+        try:
+            if ripResult.overread is True:
+                over = "Yes"
+        except NameError:
+            pass
         lines.append("  Overread into lead-out: %s" % over)
         # Next one fully works only using the patched cdparanoia package
         # lines.append("Fill up missing offset samples with silence: Yes")
@@ -119,8 +121,8 @@ class MorituriLogger(result.Logger):
             elif self._accuratelyRipped < nonHTOA:
                 accurateTracks = nonHTOA - self._accuratelyRipped
                 lines.append("%s Some tracks could not be verified as "
-                             "accurate (%d/%d got no match)") % (
-                             arHeading, accurateTracks, nonHTOA)
+                             "accurate (%d/%d got no match)" % (
+                              arHeading, accurateTracks, nonHTOA))
             else:
                 lines.append("%s All tracks accurately ripped" % arHeading)
 
