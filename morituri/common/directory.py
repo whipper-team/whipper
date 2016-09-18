@@ -50,20 +50,6 @@ class Directory(log.Loggable):
                 os.makedirs(path)
         return path
 
-    def getReadCaches(self, name=None):
-        cache_directory = os.getenv('XDG_CACHE_HOME')
-        if not cache_directory:
-            cache_directory = os.path.join(os.path.expanduser('~'), u'.cache')
-        path = os.path.join(cache_directory, u'whipper')
-        self.info('Read cache path: %s' % path)
-        if not os.path.exists(path):
-            os.makedirs(path)
-        if name:
-            path = os.path.join(path, name)
-            if not os.path.exists(path):
-                os.makedirs(path)
-        return [path]
-
     def getData(self, name=None):
         data_directory = os.getenv('XDG_DATA_HOME')
         if not data_directory:

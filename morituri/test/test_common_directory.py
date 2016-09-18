@@ -16,6 +16,3 @@ class DirectoryTestCase(common.TestCase):
 
         path = d.getCache()
         self.failUnless(path.startswith('/home'))
-
-        paths = d.getReadCaches()
-        self.failUnless(paths[0].startswith('/home'))
