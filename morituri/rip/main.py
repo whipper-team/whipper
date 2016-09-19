@@ -42,12 +42,10 @@ def main(argv):
         sys.stderr.write('rip: error: %s\n' % e.args)
         return 255
     except ImportError, e:
-        h.handleImportError(e)
-        return 255
+        raise ImportError(e)
     except task.TaskException, e:
         if isinstance(e.exception, ImportError):
-            h.handleImportError(e.exception)
-            return 255
+            raise ImportError(e.exception)
         elif isinstance(e.exception, common.MissingDependencyException):
             sys.stderr.write('rip: error: missing dependency "%s"\n' %
                 e.exception.dependency)
