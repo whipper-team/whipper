@@ -6,7 +6,7 @@ install:
     # Dependencies
     - sudo apt-get update -qq
     - sudo pip install --upgrade pip
-    - sudo apt-get install -qq cdparanoia cdrdao gstreamer0.10-plugins-base gstreamer0.10-plugins-good libcdio-dev libiso9660-dev python-cddb python-gobject swig python-dev python-xdg
+    - sudo apt-get install -qq cdparanoia cdrdao gstreamer0.10-plugins-base gstreamer0.10-plugins-good libcdio-dev libiso9660-dev libsndfile1-dev python-cddb python-gobject swig python-dev python-xdg
     - sudo pip install musicbrainzngs pycdio
 
     # Testing dependencies
@@ -22,10 +22,6 @@ install:
 
     # Installing
     - sudo make install
-
-    # Check flacenc availability
-    - sudo apt-get install -qq gstreamer0.10-tools
-    - gst-inspect-0.10 flacenc
 
 script:
     - python -m unittest discover
