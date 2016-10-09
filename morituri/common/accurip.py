@@ -26,9 +26,10 @@ import struct
 import urlparse
 import urllib2
 
-from morituri.common import log
+from morituri.common import log, directory
 
-_CACHE_DIR = os.path.join(os.path.expanduser('~'), '.morituri', 'cache')
+d = directory.Directory()
+_CACHE_DIR = d.getCache()
 
 
 class AccuCache(log.Loggable):

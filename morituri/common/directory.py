@@ -28,56 +28,40 @@ from morituri.common import log
 class Directory(log.Loggable):
 
     def getConfig(self):
-        try:
-            from xdg import BaseDirectory
-            directory = BaseDirectory.save_config_path('morituri')
-            path = os.path.join(directory, 'morituri.conf')
-            self.info('Using XDG, configuration file is %s' % path)
-        except ImportError:
-            path = os.path.join(os.path.expanduser('~'), '.moriturirc')
-            self.info('Not using XDG, configuration file is %s' % path)
+        config_directory = os.getenv('XDG_CONFIG_HOME')
+        if not config_directory:
+            config_directory = os.path.join(os.path.expanduser('~'),
+                                            u'.config')
+        path = os.path.join(config_directory, u'whipper/whipper.conf')
+        self.info('Configuration file path: %s' % path)
         return path
 
-
     def getCache(self, name=None):
-        try:
-            from xdg import BaseDirectory
-            path = BaseDirectory.save_cache_path('morituri')
-            self.info('Using XDG, cache directory is %s' % path)
-        except (ImportError, AttributeError):
-            # save_cache_path was added in pyxdg 0.25
-            path = os.path.join(os.path.expanduser('~'), '.morituri', 'cache')
-            if not os.path.exists(path):
-                os.makedirs(path)
-            self.info('Not using XDG, cache directory is %s' % path)
-
+        cache_directory = os.getenv('XDG_CACHE_HOME')
+        if not cache_directory:
+            cache_directory = os.path.join(os.path.expanduser('~'), u'.cache')
+        path = os.path.join(cache_directory, u'whipper')
+        self.info('Cache directory path: %s' % path)
+        if not os.path.exists(path):
+            os.makedirs(path)
         if name:
             path = os.path.join(path, name)
             if not os.path.exists(path):
                 os.makedirs(path)
-
         return path
 
-    def getReadCaches(self, name=None):
-        paths = []
-
-        try:
-            from xdg import BaseDirectory
-            path = BaseDirectory.save_cache_path('morituri')
-            self.info('For XDG, read cache directory is %s' % path)
-            paths.append(path)
-        except (ImportError, AttributeError):
-            # save_cache_path was added in pyxdg 0.21
-            pass
-
-        path = os.path.join(os.path.expanduser('~'), '.morituri', 'cache')
-        if os.path.exists(path):
-            self.info('From before XDG, read cache directory is %s' % path)
-            paths.append(path)
-
+    def getData(self, name=None):
+        data_directory = os.getenv('XDG_DATA_HOME')
+        if not data_directory:
+            data_directory = os.path.join(os.path.expanduser('~'),
+                                          u'.local/share')
+        path = os.path.join(data_directory, u'whipper')
+        self.info('Data directory path: %s' % path)
+        if not os.path.exists(path):
+            os.makedirs(path)
         if name:
-            paths = [os.path.join(p, name) for p in paths]
-
-        return paths
-
+            path = os.path.join(path, name)
+            if not os.path.exists(path):
+                os.makedirs(path)
+        return path
 
