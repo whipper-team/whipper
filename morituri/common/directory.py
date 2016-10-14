@@ -32,8 +32,9 @@ class Directory(log.Loggable):
         if not config_directory:
             config_directory = os.path.join(os.path.expanduser('~'),
                                             u'.config')
-        if not os.path.exists(config_directory):
-            os.makedirs(config_directory)
+        folder_path = os.path.join(config_directory, u'whipper')
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
         path = os.path.join(config_directory, u'whipper/whipper.conf')
         self.info('Configuration file path: %s' % path)
         return path
