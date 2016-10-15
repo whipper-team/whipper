@@ -32,6 +32,10 @@ from morituri.common import log
 from morituri.common import task
 
 from morituri.extern.task import gstreamer
+from morituri.extern.task import task as etask
+
+from morituri.program.arc import accuraterip_checksum
+
 
 # checksums are not CRC's. a CRC is a specific type of checksum.
 
@@ -266,6 +270,29 @@ class CRC32Task(ChecksumTask):
 
     def do_checksum_buffer(self, buf, checksum):
         return zlib.crc32(buf, checksum)
+
+
+class FastAccurateRipChecksumTask(etask.Task):
+    description = 'Calculating (Fast) AccurateRip checksum'
+
+    def __init__(self, path, trackNumber, trackCount, wave, v2=False):
+        self.path = path
+        self.trackNumber = trackNumber
+        self.trackCount = trackCount
+        self._wave = wave
+        self._v2 = v2
+        self.checksum = None
+
+    def start(self, runner):
+        etask.Task.start(self, runner)
+        self.schedule(0.0, self._arc)
+
+    def _arc(self):
+        arc = accuraterip_checksum(self.path, self.trackNumber, self.trackCount,
+                self._wave, self._v2)
+        self.checksum = arc
+
+        self.stop()
 
 
 class AccurateRipChecksumTask(ChecksumTask):

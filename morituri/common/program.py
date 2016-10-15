@@ -715,6 +715,7 @@ class Program(log.Loggable):
             else:
                 trackResult.ARDBCRC = int(response.checksums[i], 16)
 
+    # TODO MW: Update this further for ARv2 code
     def getAccurateRipResults(self):
         """
         @rtype: list of str
