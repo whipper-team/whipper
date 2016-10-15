@@ -67,7 +67,7 @@ REQUIREMENTS
 ------------
 - cdparanoia, for the actual ripping
 - cdrdao, for session, TOC, pregap, and ISRC extraction
-- GStreamer and its python bindings, for encoding
+- GStreamer and its python bindings, for encoding (it's going to be removed soon™)
   - gstreamer0.10-base-plugins >= 0.10.22 for appsink
   - gstreamer0.10-good-plugins for wav encoding (it depends on the Linux distro used)
 - python musicbrainzngs, for metadata lookup
@@ -75,6 +75,8 @@ REQUIREMENTS
 - python-cddb, for showing but not using disc info if not in MusicBrainz
 - pycdio, for drive identification
   - Required for drive offset and caching behavior to be stored in the config file
+- libsndfile, for reading wav files
+- flac, for reading flac files
 
 Additionally, if you're building from a git checkout:
 - autoconf
