@@ -23,7 +23,6 @@ taskdir = $(PYTHONLIBDIR)/morituri/extern/task
 task_PYTHON = \
 	task/__init__.py \
 	task/task.py \
-	task/taskgtk.py \
 	task/gstreamer.py
 
 EXTRA_DIST = python-command/scripts/help2man
