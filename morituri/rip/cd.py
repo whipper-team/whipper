@@ -430,7 +430,7 @@ Log files will log the path to tracks relative to this directory.
                         number)
                     raise
 
-                self.stdout.write('Peak level: {:.2%} \n'.format(math.sqrt(trackResult.peak)))
+                self.stdout.write('Peak level: {:.2%} \n'.format(trackResult.peak))
 
                 self.stdout.write('Rip quality: {:.2%}\n'.format(trackResult.quality))
 

@@ -492,6 +492,7 @@ class ReadVerifyTrackTask(log.Loggable, task.MultiSeparateTask):
             taglist=taglist, what=what))
         # make sure our encoding is accurate
         self.tasks.append(checksum.CRC32Task(tmpoutpath))
+        self.tasks.append(encode.SoxPeakTask(tmppath))
 
         self.checksum = None
 
@@ -502,7 +503,7 @@ class ReadVerifyTrackTask(log.Loggable, task.MultiSeparateTask):
             if not self.exception:
                 self.quality = max(self.tasks[0].quality,
                     self.tasks[2].quality)
-                self.peak = self.tasks[4].peak
+                self.peak = self.tasks[6].peak
                 self.debug('peak: %r', self.peak)
                 self.testspeed = self.tasks[0].speed
                 self.copyspeed = self.tasks[2].speed
