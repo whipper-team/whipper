@@ -1,23 +1,8 @@
 *.pyc
 INSTALL
-Makefile
-Makefile.in
-aclocal.m4
-autom4te.cache
-autoregen.sh
-config.log
-config.status
-configure
-!*/configure
-install-sh
-missing
-morituri.spec
 py-compile
 REVISION
 *.o
-.deps
-/compile
-/depcomp
 
 # For Python development using Eclipse IDE
 .project

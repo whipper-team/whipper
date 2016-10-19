@@ -4,40 +4,23 @@
 import os
 import sys
 import pkg_resources
+import musicbrainzngs
 
 from morituri.common import log, logcommand, common, config, directory
 from morituri.configure import configure
-
-from morituri.rip import cd, offset, drive, image, accurip, debug
-
 from morituri.extern.command import command
 from morituri.extern.task import task
+from morituri.program import cdrdao
+from morituri.rip import cd, offset, drive, image, accurip, debug
 
 
-def main(argv):
-    # load plugins
-
-    from morituri.configure import configure
-    pluginsdir = configure.pluginsdir
-    d = directory.Directory()
-    homepluginsdir = d.getData('plugins')
-
-    distributions, errors = pkg_resources.working_set.find_plugins(
-        pkg_resources.Environment([pluginsdir, homepluginsdir]))
-    if errors:
-        log.warning('errors finding plugins: %r', errors)
-    log.debug('mapping distributions %r', distributions)
-    map(pkg_resources.working_set.add, distributions)
-
+def main():
     # set user agent
-    import musicbrainzngs
     musicbrainzngs.set_useragent("morituri", configure.version,
         'https://thomas.apestaart.org/morituri/trac')
-
-
     c = Rip()
     try:
-        ret = c.parse(argv)
+        ret = c.parse(sys.argv[1:])
     except SystemError, e:
         sys.stderr.write('rip: error: %s\n' % e.args)
         return 255
@@ -51,7 +34,6 @@ def main(argv):
                 e.exception.dependency)
             return 255
         # FIXME: move this exception
-        from morituri.program import cdrdao
         if isinstance(e.exception, cdrdao.DeviceOpenException):
             sys.stderr.write("""rip: error: cannot read CD from drive.
 cdrdao says:
@@ -91,7 +73,6 @@ You can get help on subcommands by using the -h option to the subcommand.
     def addOptions(self):
         # FIXME: is this the right place ?
         log.init()
-        from morituri.configure import configure
         log.debug("morituri", "This is morituri version %s (%s)",
             configure.version, configure.revision)
 
