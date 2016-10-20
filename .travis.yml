@@ -13,15 +13,13 @@ install:
     - sudo apt-get install -qq gstreamer0.10-tools python-gst0.10
     - sudo pip install twisted
 
-    # Checkout
-    - ./autogen.sh
-
-    # Building
-    - ./configure
-    - make
+    # Build bundled C utils
+    - cd src
+    - sudo make install
+    - cd ..
 
     # Installing
-    - sudo make install
+    - sudo python setup.py install
 
 script:
     - python -m unittest discover
