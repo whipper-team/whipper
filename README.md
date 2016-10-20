@@ -98,22 +98,22 @@ use whipper installed or uninstalled.
             git submodule init
             git submodule update
             export PYTHON=$(which python2)
-            ./autogen.sh
 
-- building:
+- building bundled dependencies
 
-        ./configure
-        make
+This is only needed if you do not have the 'accuraterip-checksum' package installed on
+your system. whipper packages this for your convenience:
 
-- you can now choose to install it or run it uninstalled.
+You can edit the install path in `config.mk`.
 
-    - installing:
+	cd src
+	make
+	sudo make install
+	cd ..
 
-            make install
+- installation
 
-    - running uninstalled (within the make directory):
-
-            ./misc/morituri-uninstalled rip <commands>
+	python2 setup.py install
 
 RUNNING WHIPPER
 ----------------
