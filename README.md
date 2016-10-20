@@ -1,7 +1,5 @@
-FORK INFORMATIONS
+FORK INFORMATION
 ---------
-The name of this fork is still to be decided: right now I'll be using whipper.
-
 This branch is very close to morituri's master one (internal morituri references are still unchanged). As a starting point, I've just merged the following commits:
 - [#79](https://github.com/thomasvs/morituri/issues/79)
 - [#92](https://github.com/thomasvs/morituri/issues/92)
@@ -93,7 +91,7 @@ use whipper installed or uninstalled.
     - source: download tarball, unpack, and change to its directory
     - checkout:
 
-            git clone -b master --single-branch git://github.com/JoeLametta/whipper.git
+            git clone -b master --single-branch https://github.com/JoeLametta/whipper.git
             cd whipper
             git submodule init
             git submodule update
