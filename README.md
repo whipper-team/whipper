@@ -75,10 +75,7 @@ REQUIREMENTS
   - Required for drive offset and caching behavior to be stored in the config file
 - libsndfile, for reading wav files
 - flac, for reading flac files
-
-Additionally, if you're building from a git checkout:
-- autoconf
-- automake
+- sox, for track peak detection
 
 GETTING WHIPPER
 ----------------
