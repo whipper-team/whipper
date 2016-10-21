@@ -5,6 +5,12 @@ from subprocess import Popen, PIPE
 SOX = 'sox'
 
 def peak_level(track_path):
+    """
+    Accepts a path to a sox-decodable audio file.
+
+    Returns track peak level from sox ('maximum amplitude') as a float.
+    Returns None on error.
+    """
     if not os.path.exists(track_path):
         logging.warning("SoX peak detection failed: file not found")
         return None
