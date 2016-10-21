@@ -126,26 +126,14 @@ class Program(log.Loggable):
 
         ptoc = cache.Persister(toc_pickle or None)
         if not ptoc.object:
-            tries = 0
-            while True:
-                tries += 1
-                t = cdrdao.ReadTOCTask(device=device)
-                try:
-                    function(runner, t)
-                    break
-                except:
-                    if tries > 3:
-                        raise
-                    self.debug('failed to read TOC after %d tries, retrying' % tries)
-
-            version = t.tasks[1].parser.version
             from pkg_resources import parse_version as V
-            # we've built a cdrdao 1.2.3rc2 modified package with the patch
-            if V(version) < V('1.2.3rc2p1'):
+            version = cdrdao.getCDRDAOVersion()
+            if V(version) < V('1.2.3rc2'):
                 self.stdout.write('Warning: cdrdao older than 1.2.3 has a '
                     'pre-gap length bug.\n'
                     'See http://sourceforge.net/tracker/?func=detail'
                     '&aid=604751&group_id=2171&atid=102171\n')
+            t = cdrdao.ReadTOCTask(device)
             ptoc.persist(t.table)
         toc = ptoc.object
         assert toc.hasTOC()
@@ -173,8 +161,7 @@ class Program(log.Loggable):
             self.debug('getTable: cddbdiscid %s, mbdiscid %s not in cache for offset %s, '
                 'reading table' % (
                 cddbdiscid, mbdiscid, offset))
-            t = cdrdao.ReadTableTask(device=device)
-            runner.run(t)
+            t = cdrdao.ReadTableTask(device)
             itable = t.table
             tdict[offset] = itable
             ptable.persist(tdict)
