@@ -6,11 +6,11 @@ install:
     # Dependencies
     - sudo apt-get update -qq
     - sudo pip install --upgrade pip
-    - sudo apt-get install -qq cdparanoia cdrdao gstreamer0.10-plugins-base gstreamer0.10-plugins-good libcdio-dev libiso9660-dev libsndfile1-dev python-cddb python-gobject swig python-dev python-xdg
+    - sudo apt-get install -qq cdparanoia cdrdao gstreamer0.10-plugins-base gstreamer0.10-plugins-good libcdio-dev libiso9660-dev libsndfile1-dev python-cddb python-gobject swig python-dev python-xdg sox
     - sudo pip install musicbrainzngs pycdio
 
     # Testing dependencies
-    - sudo apt-get install -qq gstreamer0.10-tools python-gst0.10 sox
+    - sudo apt-get install -qq gstreamer0.10-tools python-gst0.10
     - sudo pip install twisted
 
     # Build bundled C utils
