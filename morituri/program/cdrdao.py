@@ -22,9 +22,8 @@ def read_toc(device, fast_toc=False):
     os.close(fd)
     os.unlink(tocfile)
 
-    cmd = [CDRDAO, 'read-toc', '--device', device, tocfile]
-    if fast_toc:
-        cmd.insert(2, '--fast-toc')
+    cmd = [CDRDAO, 'read-toc'] + (['--fast-toc'] if fast_toc else []) + [
+           '--device', device, tocfile]
     # PIPE is the closest to >/dev/null we can get
     try:
         check_call(cmd, stdout=PIPE, stderr=PIPE)
