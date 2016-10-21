@@ -56,18 +56,18 @@ def version():
 
 def ReadTOCTask(device):
     """
-    stopgap morituri-insanity compatability layer
+    stopgap morituri-insanity compatibility layer
     """
     return read_toc(device, fast_toc=True)
 
 def ReadTableTask(device):
     """
-    stopgap morituri-insanity compatability layer
+    stopgap morituri-insanity compatibility layer
     """
     return read_toc(device)
 
 def getCDRDAOVersion():
     """
-    stopgap morituri-insanity compatability layer
+    stopgap morituri-insanity compatibility layer
     """
     return version()
