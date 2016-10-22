@@ -10,7 +10,6 @@ from morituri.common import log, logcommand, common, config, directory
 from morituri.configure import configure
 from morituri.extern.command import command
 from morituri.extern.task import task
-from morituri.program import cdrdao
 from morituri.rip import cd, offset, drive, image, accurip, debug
 
 
@@ -32,13 +31,6 @@ def main():
         elif isinstance(e.exception, common.MissingDependencyException):
             sys.stderr.write('rip: error: missing dependency "%s"\n' %
                 e.exception.dependency)
-            return 255
-        # FIXME: move this exception
-        if isinstance(e.exception, cdrdao.DeviceOpenException):
-            sys.stderr.write("""rip: error: cannot read CD from drive.
-cdrdao says:
-%s
-""" % e.exception.msg)
             return 255
 
         if isinstance(e.exception, common.EmptyError):
