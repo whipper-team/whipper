@@ -1,149 +1,135 @@
-FORK INFORMATION
----------
-This branch is very close to morituri's master one (internal morituri references are still unchanged). As a starting point, I've just merged the following commits:
-- [#79](https://github.com/thomasvs/morituri/issues/79)
-- [#92](https://github.com/thomasvs/morituri/issues/92)
-- [#109](https://github.com/thomasvs/morituri/issues/109)
-- [#133](https://github.com/thomasvs/morituri/issues/133) (with custom `.travis.yml`)
-- [#137](https://github.com/thomasvs/morituri/issues/137)
-- [#139](https://github.com/thomasvs/morituri/issues/139)
-- [#140](https://github.com/thomasvs/morituri/issues/140)
-- [#141](https://github.com/thomasvs/morituri/issues/141)
+# Whipper
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0) [![Current Version](https://img.shields.io/badge/version-0.3.0-green.svg)](https://github.com/JoeLametta/whipper) [![Build Status](https://travis-ci.org/JoeLametta/whipper.svg?branch=master)](https://travis-ci.org/JoeLametta/whipper) [![IRC](https://img.shields.io/badge/chat-on%20freenode-brightgreen.svg)](https://webchat.freenode.net/) [![GitHub Stars](https://img.shields.io/github/stars/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/stargazers) [![GitHub Issues](https://img.shields.io/github/issues/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/issues)
 
-And changed the default logger to [morituri-yamllogger](https://github.com/JoeLametta/morituri-yamllogger)'s one.
+Whipper is a Python 2 CD-DA ripper, fork of the morituri project (_CDDA ripper for *nix systems aiming for accuracy over speed_). It improves morituri which development seems to have halted merging old ignored pull requests, improving it with bugfixes and new features.
 
-In order to track whipper's current development it's better to check its commit history (README *needs* to be updated).
+In order to track whipper's current development it's advised to check its commit history (README **isn't** complete).
 
-**WARNING:** As whipper is still under heavy development sometimes I will force push (`--force-with-lease`) to the non master branches.
+## Table of content
+- [Rationale](#rationale)
+- [Features](#features)
+- [Release history](#release-history)
+- [Installation](#installation)
+  1. [Required dependencies](#required-dependencies)
+  2. [Fetching the source code](#fetching-the-source-code)
+  3. [Building the bundled dependencies](#building-the-bundled-dependencies)
+  4. [Finalize the installation](#finalize-the-installation)
+- [Usage](#usage)
+- [Getting started](#getting-started)
+- [Configuration file documentation](#configuration-file-documentation)
+- [Backward incompatible changes](#backward-incompatible-changes)
+- [Running uninstalled](#running-uninstalled)
+- [Reporting bugs](#reporting-bugs)
+- [License](#license)
+- [Contributing](#contributing)
+  - [Bug reports & feature requests](#bug-reports--feature-requests)
+  - [Developing](#developing)
 
-BACKWARD INCOMPATIBLE CHANGES
----------
-* Whipper has adopted new config/cache/state file paths
-  * Now always follows XDG specifications
-    * Paths used when XDG environment variables are available:
-      * `$XDG_CONFIG_HOME/whipper`
-      * `$XDG_CACHE_HOME/whipper`
-      * `$XDG_DATA_HOME/whipper`
-    * Paths used when XDG environment variables are **NOT** available:
-      * `$HOME/.config/whipper`
-      * `$HOME/.cache/whipper`
-      * `$HOME/.local/share/whipper`
-  * Configuration file information:
-    * `.moriturirc`, `morituri.conf` aren't used anymore
-    * `$XDG_CONFIG_HOME/whipper/whipper.conf` (OR `$HOME/.config/whipper/whipper.conf`)
-  * Plugins folder path:
-    * `$XDG_DATA_HOME/whipper/plugins` (OR `$HOME/.local/share/whipper/plugins`)
+## Rationale
+For a detailed description, see morituri's wiki page: [The Art of the Rip](
+https://web.archive.org/web/20160528213242/https://thomas.apestaart.org/thomas/trac/wiki/DAD/Rip).
 
-WHIPPER [![Build Status](https://travis-ci.org/JoeLametta/whipper.svg?branch=master)](https://travis-ci.org/JoeLametta/whipper)
----------
-whipper is a fork of the morituri project (CDDA ripper for *nix systems aiming for accuracy over speed).
+## Features
+* Detects correct sample read offset and ability to defeat cache of drives
+* Performs Test & Copy rips
+* Verifies rip accuracy using the [AccurateRip database](http://www.accuraterip.com/)
+* Uses MusicBrainz for metadata lookup and tagging
+* Supports reading the pre-emphasis flag embedded into some CDs and correctly tags the resulting rip
+* Detects and rips non digitally silent Hidden Track One Audio
+* Provides batch ripping capabilities
+* Provides templates for file and directory naming
+* Supports lossless encoding
+* Allows retagging of already completed rips
+* Allows extensibility through external logger plugins
 
-It improves morituri which development seems to have halted/slowed down merging old pull requests and improving it with bugfixes and new functions.
+## Release history
 
-If possible, I'll try to upstream the progress done here but, in the future, this may not be possible because of different project choices.
+- 0.3.0 - Bla bla bla
+- 0.2.4 - Bla
 
-RATIONALE
----------
-For a more detailed rationale, see morituri's wiki page ['The Art of the Rip'](
-http://thomas.apestaart.org/thomas/trac/wiki/DAD/Rip).
+## Installation
+Whipper isn't currently available in a prepackaged form so, in order to use it, it must be built from its sources.
 
-FEATURES
---------
-* support for MusicBrainz for metadata lookup
-* support for AccurateRip (V1) verification
-* detects sample read offset and ability to defeat cache of drives
-* performs test and copy rip
-* detects and rips Hidden Track One Audio (only if not digitally silent)
-* templates for file and directory naming
-* support for lossless encoding and lossy encoding or re-encoding of images
-* tagging using GStreamer, including embedding MusicBrainz id's
-* retagging of images
-* plugins for logging
-* for now, only a command line client (rip) is shipped
+If you are building from a source tarball or checkout, you can choose to use whipper installed or uninstalled but first install all the required dependencies.
 
-REQUIREMENTS
-------------
+### Required dependencies
+Whipper relies on the following packages in order to run correctly and provide all the supported features:
 - cdparanoia, for the actual ripping
-- cdrdao, for session, TOC, pregap, and ISRC extraction
+- cdrdao, for session, TOC, pre-gap, and ISRC extraction
 - GStreamer and its python bindings, for encoding (it's going to be removed soon™)
   - gstreamer0.10-base-plugins >= 0.10.22 for appsink
   - gstreamer0.10-good-plugins for wav encoding (it depends on the Linux distro used)
 - python musicbrainzngs, for metadata lookup
-- python-setuptools, for plugin support
+- python-setuptools, for installation, plugin support
 - python-cddb, for showing but not using disc info if not in MusicBrainz
 - pycdio, for drive identification
-  - Required for drive offset and caching behavior to be stored in the config file
+  - Required for drive offset and caching behavior to be stored in the configuration file
 - libsndfile, for reading wav files
 - flac, for reading flac files
 - sox, for track peak detection
 
-GETTING WHIPPER
-----------------
-If you are building from a source tarball or checkout, you can choose to
-use whipper installed or uninstalled.
+### Fetching the source code
+  1. Change to a directory where you want to put whipper source code (for example, `$HOME/dev/ext` or `$HOME/prefix/src`)
+  2. Clone the repository master branch
 
-- getting:
-    - Change to a directory where you want to put the whipper source code
-      (For example, `$HOME/dev/ext` or `$HOME/prefix/src`)
-    - source: download tarball, unpack, and change to its directory
-    - checkout:
+    `git clone -b master --single-branch https://github.com/JoeLametta/whipper.git`
 
-            git clone -b master --single-branch https://github.com/JoeLametta/whipper.git
-            cd whipper
-            git submodule init
-            git submodule update
-            export PYTHON=$(which python2)
+  3. Change to its directory
 
-- building bundled dependencies
+    `cd whipper`
 
-This is only needed if you do not have the 'accuraterip-checksum' package installed on
-your system. whipper packages this for your convenience:
+  4. Initialize git submodules
 
-You can edit the install path in `config.mk`.
+    `git submodule init`
 
-	cd src
-	make
-	sudo make install
-	cd ..
+  5. Update the registered submodules
 
-- installation
+     `git submodule update`
 
-	python2 setup.py install
+### Building the bundled dependencies
+This is only needed if you do not have the `accuraterip-checksum` package installed on your system. Whipper packages this for your convenience:
 
-RUNNING WHIPPER
-----------------
-whipper currently only has a command-line interface called 'rip'
+You can edit the install path in `config.mk`
 
-rip is self-documenting.
-`rip -h` gives you the basic instructions.
+1. Change to the src directory
 
-rip implements a tree of commands; for example, the top-level 'changelog'
-command has a number of sub-commands.
+   `cd src`
 
-Positioning of arguments is important;
+2. Build `accuraterip-checksum`
 
-    rip cd -d (device) rip
+   `make`
+
+3. Install `accuraterip-checksum`
+
+   `sudo make install`
+
+4. Change to the original directory
+
+   `cd ..`
+
+### Finalize the installation
+Install whipper: `python2 setup.py install`
+
+## Usage
+Whipper currently only has a command-line interface called `whipper` which is self-documenting: `whipper -h` gives you the basic instructions.
+
+Whipper implements a tree of commands: for example, the top-level `whipper` command has a number of sub-commands.
+
+Positioning of arguments is important:
+
+`whipper cd -d (device) rip`
 
 is correct, while
 
-    rip cd rip -d (device)
+`whipper cd rip -d (device)`
 
-is not, because the `-d` argument applies to the rip command.
+is not, because the `-d` argument applies to the whipper command.
 
-Check the man page (rip(1)) for more information.
+Check the man page (`whipper(1)`) for more information.
 
+## Getting started
+**NEEDS TO BE UPDATED**
 
-RUNNING UNINSTALLED
--------------------
-To make it easier for developers, you can run whipper straight from the
-source checkout:
-
-    ./autogen.sh
-    make
-    misc/morituri-uninstalled
-
-GETTING STARTED
----------------
 The simplest way to get started making accurate rips is:
 
 - pick a relatively popular CD that has a good change of being in the
@@ -163,73 +149,98 @@ The simplest way to get started making accurate rips is:
         rip cd rip  # uses the offset from configuration file
         rip cd rip --offset (the number you got before)  # manually specified offset
 
-FILING BUGS
------------
-whipper's bugs are tracked using the repository issue section provided by GitHub.
-
-morituri's bug tracker is at [http://thomas.apestaart.org/morituri/trac/](
-http://thomas.apestaart.org/morituri/trac/).
-When filing bugs, please run the failing command with the environment variable
-`RIP_DEBUG` set; for example:
-
-    RIP_DEBUG=5 rip offset find > morituri.log 2>&1
-    gzip morituri.log
-
-And attach the gzipped log file to your bug report.
-
-KNOWN ISSUES
-------------
-- no GUI yet
-- only AccurateRip V1 CRCs are computed and checked against the online database
-- `rip offset find` fails to delete the temporary .wav files it creates if an error occurs while ripping
-- whipper only checks for the pre-emphasis flag in the TOC
-  - To improve the accuracy of the detection, the sub-channel data should be scanned too
-- cd-text isn't read from the CD (useful when the CD informations are not available in the MusicBrainz DB)
-
-GOALS
------
-- quality over speed
-- support one-command automatic ripping
-- support offline ripping (doing metadata lookup and log rewriting later)
-  - separate the info/result about the rip from the metadata/file generation/...
-
-CONFIGURATION FILE
-------------------
+## Configuration file documentation
 The configuration file is stored according to [XDG Base Directory Specification](
 http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html)
 when possible.
 
-It lives in `$XDG_CONFIG_HOME/whipper/whipper.conf` (or `$HOME/.config/whipper/whipper.conf`)
+It lives in `$XDG_CONFIG_HOME/whipper/whipper.conf` (or `$HOME/.config/whipper/whipper.conf`).
 
 The configuration file follows python's ConfigParser syntax.
 
 The possible sections are:
 
-- main section: [main]
+- Main section: [main]
   - `path_filter_fat`: whether to filter path components for FAT file systems
-  - `path_filter_special`: whether to filter path components for special
-                           characters
-
-- drive section: [drive:IDENTIFIER], one for each configured drive
-  All these values are probed by whipper and should not be edited by hand.
+  - `path_filter_special`: whether to filter path components for special characters
+- Drive section: [drive:IDENTIFIER], one for each configured drive. All these values are probed by whipper and should not be edited by hand.
   - `defeats_cache`: whether this drive can defeat the audio cache
   - `read_offset`: the read offset of the drive
+- Rip command section: [rip.COMMAND.SUBCOMMAND]. Can be used to change the command options default values.
 
-- rip command section: [rip.COMMAND.SUBCOMMAND]
-  Can be used to change the command options default values.
+Example section to configure `rip cd rip` defaults:
 
-Example section to configure "rip cd rip" defaults:
+```
+[rip.cd.rip]
+unknown = True
+output_directory = ~/My Music
+track_template = new/%%A/%%y - %%d/%%t - %%n
+disc_template = %(track_template)s
+profile = flac
+```
 
-    [rip.cd.rip]
-    unknown = True
-    output_directory = ~/My Music
-    track_template = new/%%A/%%y - %%d/%%t - %%n
-    disc_template = %(track_template)s
-    profile = flac
+Note: to get a literal `%` character it must be doubled.
 
-Note: to get a literal '%' character it must be doubled.
+## Backward incompatible changes
+* Whipper has adopted new config/cache/state file paths
+  * Now always follows XDG specifications
+    * Paths used when XDG environment variables are available:
+      * `$XDG_CONFIG_HOME/whipper`
+      * `$XDG_CACHE_HOME/whipper`
+      * `$XDG_DATA_HOME/whipper`
+    * Paths used when XDG environment variables are **NOT** available:
+      * `$HOME/.config/whipper`
+      * `$HOME/.cache/whipper`
+      * `$HOME/.local/share/whipper`
+  * Configuration file information:
+    * `.moriturirc`, `morituri.conf` aren't used anymore
+    * When XDG environment variables are available it's located in:
+      * `$XDG_CONFIG_HOME/whipper/whipper.conf`
+    * When XDG environment variables are **NOT** available it's located in:
+      * `$HOME/.config/whipper/whipper.conf`
+  * Plugins folder path:
+    * When XDG environment variables are available it's located in:
+      * `$XDG_DATA_HOME/whipper/plugins`
+    * When XDG environment variables are **NOT** available it's located in:
+      * `$HOME/.local/share/whipper/plugins`
 
-CONTRIBUTING
-------------
-- Please send pull requests through GitHub.
+## Running uninstalled
+To make it easier for developers, you can run whipper straight from the
+source checkout:
 
+```bash
+INSERT UPDATED INSTRUCTIONS HERE
+```
+
+## Reporting bugs
+whipper's bugs are tracked using the repository issue section provided by GitHub.
+
+When filing bugs, please run the failing command with the environment variable
+`RIP_DEBUG` set. For example:
+
+```bash
+RIP_DEBUG=5 rip offset find > morituri.log 2>&1
+gzip morituri.log
+```
+
+And attach the gzipped log file to your bug report.
+
+## License
+
+Copyright (???)
+
+Licensed under the [GNU GPLv3 license](http://www.gnu.org/licenses/gpl-3.0).
+
+## Contributing
+
+### Bug reports & feature requests
+
+Please use the [issue tracker](https://github.com/JoeLametta/whipper/issues) to report any bugs or file feature requests.
+
+### Developing
+
+PRs are welcome.
+
+**INSERT MENTION OF FREENODE #WHIPPER CHANNEL HERE**
+
+**INSERT MENTION OF NON MASTER BRANCHES FORCE PUSH**
