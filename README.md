@@ -1,9 +1,11 @@
 # Whipper
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0) [![Current Version](https://img.shields.io/badge/version-0.3.0-green.svg)](https://github.com/JoeLametta/whipper) [![Build Status](https://travis-ci.org/JoeLametta/whipper.svg?branch=master)](https://travis-ci.org/JoeLametta/whipper) [![IRC](https://img.shields.io/badge/chat-on%20freenode-brightgreen.svg)](https://webchat.freenode.net/) [![GitHub Stars](https://img.shields.io/github/stars/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/stargazers) [![GitHub Issues](https://img.shields.io/github/issues/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/issues)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0) [![Current Version](https://img.shields.io/badge/version-0.3.0-green.svg)](https://github.com/JoeLametta/whipper) [![Build Status](https://travis-ci.org/JoeLametta/whipper.svg?branch=master)](https://travis-ci.org/JoeLametta/whipper) [![IRC](https://img.shields.io/badge/chat-on%20freenode-brightgreen.svg)](https://webchat.freenode.net/?channels=%23whipper) [![GitHub Stars](https://img.shields.io/github/stars/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/stargazers) [![GitHub Issues](https://img.shields.io/github/issues/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/issues)
 
 Whipper is a Python 2 CD-DA ripper, fork of the morituri project (_CDDA ripper for *nix systems aiming for accuracy over speed_). It improves morituri which development seems to have halted merging old ignored pull requests, improving it with bugfixes and new features.
 
-In order to track whipper's current development it's advised to check its commit history (README **isn't** complete).
+Whipper is developed and tested only on Linux distributions but _should_ work fine on other *nix OSes too.
+
+In order to track whipper's current development it's advised to check its commit history (README **isn't** still complete).
 
 ## Table of content
 - [Rationale](#rationale)
@@ -13,17 +15,18 @@ In order to track whipper's current development it's advised to check its commit
   1. [Required dependencies](#required-dependencies)
   2. [Fetching the source code](#fetching-the-source-code)
   3. [Building the bundled dependencies](#building-the-bundled-dependencies)
-  4. [Finalize the installation](#finalize-the-installation)
+  4. [Finalizing the installation](#finalizing-the-installation)
 - [Usage](#usage)
 - [Getting started](#getting-started)
 - [Configuration file documentation](#configuration-file-documentation)
 - [Backward incompatible changes](#backward-incompatible-changes)
 - [Running uninstalled](#running-uninstalled)
-- [Reporting bugs](#reporting-bugs)
 - [License](#license)
 - [Contributing](#contributing)
   - [Bug reports & feature requests](#bug-reports--feature-requests)
   - [Developing](#developing)
+- [Credits](#credits)
+- [Links](#links)
 
 ## Rationale
 For a detailed description, see morituri's wiki page: [The Art of the Rip](
@@ -33,9 +36,9 @@ https://web.archive.org/web/20160528213242/https://thomas.apestaart.org/thomas/t
 * Detects correct sample read offset and ability to defeat cache of drives
 * Performs Test & Copy rips
 * Verifies rip accuracy using the [AccurateRip database](http://www.accuraterip.com/)
-* Uses MusicBrainz for metadata lookup and tagging
-* Supports reading the pre-emphasis flag embedded into some CDs and correctly tags the resulting rip
-* Detects and rips non digitally silent Hidden Track One Audio
+* Uses [MusicBrainz](https://musicbrainz.org/doc/About) for metadata lookup
+* Supports reading the [pre-emphasis](http://wiki.hydrogenaud.io/index.php?title=Pre-emphasis) flag embedded into some CDs (and correctly tags the resulting rip)
+* Detects and rips non digitally silent [Hidden Track One Audio](http://wiki.hydrogenaud.io/index.php?title=HTOA) (HTOA)
 * Provides batch ripping capabilities
 * Provides templates for file and directory naming
 * Supports lossless encoding
@@ -45,12 +48,12 @@ https://web.archive.org/web/20160528213242/https://thomas.apestaart.org/thomas/t
 ## Release history
 
 - 0.3.0 - Bla bla bla
-- 0.2.4 - Bla
+- 0.2.4 - First tagged release after morituri fork
 
 ## Installation
-Whipper isn't currently available in a prepackaged form so, in order to use it, it must be built from its sources.
+With the exception of an [AUR package for Arch Linux](https://aur.archlinux.org/packages/whipper-git), whipper isn't currently available in a prepackaged form so, in order to use it, it must be built from its source code.
 
-If you are building from a source tarball or checkout, you can choose to use whipper installed or uninstalled but first install all the required dependencies.
+If you are building from a source tarball or checkout, you can choose to use whipper installed or uninstalled _but first install all the required dependencies_.
 
 ### Required dependencies
 Whipper relies on the following packages in order to run correctly and provide all the supported features:
@@ -59,9 +62,9 @@ Whipper relies on the following packages in order to run correctly and provide a
 - GStreamer and its python bindings, for encoding (it's going to be removed soon™)
   - gstreamer0.10-base-plugins >= 0.10.22 for appsink
   - gstreamer0.10-good-plugins for wav encoding (it depends on the Linux distro used)
-- python musicbrainzngs, for metadata lookup
-- python-setuptools, for installation, plugin support
-- python-cddb, for showing but not using disc info if not in MusicBrainz
+- python-musicbrainzngs, for metadata lookup
+- python-setuptools, for installation, plugins support
+- python-cddb, for showing but not using metadata if disc not available in the MusicBrainz DB
 - pycdio, for drive identification
   - Required for drive offset and caching behavior to be stored in the configuration file
 - libsndfile, for reading wav files
@@ -78,7 +81,7 @@ Whipper relies on the following packages in order to run correctly and provide a
 
     `cd whipper`
 
-  4. Initialize git submodules
+  4. Initialize the git submodules
 
     `git submodule init`
 
@@ -95,7 +98,7 @@ You can edit the install path in `config.mk`
 
    `cd src`
 
-2. Build `accuraterip-checksum`
+2. Compile `accuraterip-checksum`
 
    `make`
 
@@ -107,7 +110,7 @@ You can edit the install path in `config.mk`
 
    `cd ..`
 
-### Finalize the installation
+### Finalizing the installation
 Install whipper: `python2 setup.py install`
 
 ## Usage
@@ -125,50 +128,71 @@ is correct, while
 
 is not, because the `-d` argument applies to the whipper command.
 
-Check the man page (`whipper(1)`) for more information.
+~~Check the man page (`whipper(1)`) for more information.~~ (currently not available)
 
 ## Getting started
-**NEEDS TO BE UPDATED**
-
 The simplest way to get started making accurate rips is:
 
-- pick a relatively popular CD that has a good change of being in the
-  AccurateRip database
-- find the drive's offset by running
+1. Pick a relatively popular CD that has a good change of being in the AccurateRip database
+2. Analyze the drive's caching behavior
 
-        rip offset find
+   `whipper drive analyze`
 
-- wait for it to complete; this might take a while
-- optionally, confirm this offset with two more discs
-- analyze the drive's caching behaviour
+3. Find the drive's offset by running
 
-        rip drive analyze
+   - `whipper offset find`
 
-- rip the disc by running one of
+   - Wait for it to complete; this might take a while. Optionally, confirm this offset with two more discs.
 
-        rip cd rip  # uses the offset from configuration file
-        rip cd rip --offset (the number you got before)  # manually specified offset
+   - If this step fails, please look below.
+
+   Unfortunately the current `offset find` feature is quite unreliable and can easily fail; if that happens you can find the correct offset for your drive in this way:
+
+   1. Find the drive's model number
+
+      `whipper drive list`
+
+   2. Head to [AccurateRip's CD Drive Offset webpage](http://www.accuraterip.com/driveoffsets.htm)
+   3. Search the table for the model you previously found
+      - If nothing matches, try to refine your search
+   4. Open in a text editor the file located at: `$HOME/.config/whipper/whipper.conf`
+   5. Append the following text line to the bottom of the file replacing `value_here` with:
+      - The unsigned offset value (if positive)
+      - The signed offset value (if negative)
+
+      `read_offset = value_here` (example: `read_offset = 6`)
+   6. Mission accomplished :)
+
+4. Rip the disc by running
+
+   `whipper cd rip` (uses the offset from the configuration file)
+
+   or
+
+   `whipper cd rip --offset (the number you got before)` (manually specified offset)
 
 ## Configuration file documentation
-The configuration file is stored according to [XDG Base Directory Specification](
+The configuration file is stored according to the [XDG Base Directory Specification](
 http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html)
 when possible.
 
 It lives in `$XDG_CONFIG_HOME/whipper/whipper.conf` (or `$HOME/.config/whipper/whipper.conf`).
 
-The configuration file follows python's ConfigParser syntax.
+The configuration file follows python's [ConfigParser](https://docs.python.org/2/library/configparser.html) syntax.
 
 The possible sections are:
 
-- Main section: [main]
+- Main section: `[main]`
   - `path_filter_fat`: whether to filter path components for FAT file systems
   - `path_filter_special`: whether to filter path components for special characters
-- Drive section: [drive:IDENTIFIER], one for each configured drive. All these values are probed by whipper and should not be edited by hand.
+
+- Drive section: `[drive:IDENTIFIER]`, one for each configured drive. All these values are probed by whipper and should not be edited by hand.
   - `defeats_cache`: whether this drive can defeat the audio cache
   - `read_offset`: the read offset of the drive
-- Rip command section: [rip.COMMAND.SUBCOMMAND]. Can be used to change the command options default values.
 
-Example section to configure `rip cd rip` defaults:
+- Rip command section: `[rip.COMMAND.SUBCOMMAND]`. Can be used to change the command options default values.
+
+Example section to configure `whipper cd rip` defaults:
 
 ```
 [rip.cd.rip]
@@ -184,46 +208,42 @@ Note: to get a literal `%` character it must be doubled.
 ## Backward incompatible changes
 * Whipper has adopted new config/cache/state file paths
   * Now always follows XDG specifications
+
     * Paths used when XDG environment variables are available:
       * `$XDG_CONFIG_HOME/whipper`
       * `$XDG_CACHE_HOME/whipper`
       * `$XDG_DATA_HOME/whipper`
+
     * Paths used when XDG environment variables are **NOT** available:
       * `$HOME/.config/whipper`
       * `$HOME/.cache/whipper`
       * `$HOME/.local/share/whipper`
+
   * Configuration file information:
     * `.moriturirc`, `morituri.conf` aren't used anymore
+
     * When XDG environment variables are available it's located in:
       * `$XDG_CONFIG_HOME/whipper/whipper.conf`
+
     * When XDG environment variables are **NOT** available it's located in:
       * `$HOME/.config/whipper/whipper.conf`
+
   * Plugins folder path:
     * When XDG environment variables are available it's located in:
       * `$XDG_DATA_HOME/whipper/plugins`
+
     * When XDG environment variables are **NOT** available it's located in:
       * `$HOME/.local/share/whipper/plugins`
 
 ## Running uninstalled
+_**NEEDS TO BE UPDATED**_
+
 To make it easier for developers, you can run whipper straight from the
 source checkout:
 
 ```bash
 INSERT UPDATED INSTRUCTIONS HERE
 ```
-
-## Reporting bugs
-whipper's bugs are tracked using the repository issue section provided by GitHub.
-
-When filing bugs, please run the failing command with the environment variable
-`RIP_DEBUG` set. For example:
-
-```bash
-RIP_DEBUG=5 rip offset find > morituri.log 2>&1
-gzip morituri.log
-```
-
-And attach the gzipped log file to your bug report.
 
 ## License
 
@@ -237,10 +257,32 @@ Licensed under the [GNU GPLv3 license](http://www.gnu.org/licenses/gpl-3.0).
 
 Please use the [issue tracker](https://github.com/JoeLametta/whipper/issues) to report any bugs or file feature requests.
 
+When filing bug reports, please run the failing command with the environment variable `RIP_DEBUG` set. For example:
+
+```bash
+RIP_DEBUG=5 whipper offset find > whipper.log 2>&1
+gzip whipper.log
+```
+
+And attach the gzipped log file to your bug report.
+
 ### Developing
 
-PRs are welcome.
+Pull requests are welcome.
 
-**INSERT MENTION OF FREENODE #WHIPPER CHANNEL HERE**
+**WARNING:** As whipper is still under heavy development sometimes I will force push (`--force-with-lease`) to the non master branches.
 
-**INSERT MENTION OF NON MASTER BRANCHES FORCE PUSH**
+## Credits
+
+Thanks to ...
+
+- aaa (qwe)
+- bbb (rty)
+- ccc (uio)
+
+## Links
+You can find us and talk about the project on IRC: [freenode](https://webchat.freenode.net/?channels=%23whipper), **#whipper** channel.
+
+- [What.CD thread (official)](https://what.cd/forums.php?action=viewthread&threadid=163034)
+- [Reddit thread (unofficial)](https://www.reddit.com/r/linux/comments/53hyw1/github_joelamettawhipper_for_those_about_to_rip_a/)
+- [Arch Linux whipper AUR package](https://aur.archlinux.org/packages/whipper-git/)
