@@ -421,6 +421,9 @@ Log files will log the path to tracks relative to this directory.
                 if tries == MAX_TRIES:
                     self.error('Giving up on track %d after %d times' % (
                         number, tries))
+                    raise RuntimeError(
+                        "track can't be ripped. "
+                        "Rip attempts number is equal to 'MAX_TRIES'")
                 if trackResult.testcrc == trackResult.copycrc:
                     self.stdout.write('Checksums match for track %d\n' %
                         number)
