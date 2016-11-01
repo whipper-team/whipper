@@ -138,38 +138,21 @@ The simplest way to get started making accurate rips is:
 
    `whipper drive analyze`
 
-3. Find the drive's offset by running
+3. Find the drive's offset.
 
-   - `whipper offset find`
+   Consult the [AccurateRip's CD Drive Offset database](http://www.accuraterip.com/driveoffsets.htm) for your drive. Drive information can be retrieved with `whipper drive list`.
 
-   - Wait for it to complete; this might take a while. Optionally, confirm this offset with two more discs.
+   `whipper offset find -o OFFSET`
 
-   - If this step fails, please look below.
+   If you omit the -o argument, whipper will try a long, popularity-sorted list of drive offsets.
 
-   Unfortunately the current `offset find` feature is quite unreliable and can easily fail; if that happens you can find the correct offset for your drive in this way:
+   If you can not confirm your drive offset but wish to set a default regardless, set `read_offset = 42` in whipper.conf.
 
-   1. Find the drive's model number
-
-      `whipper drive list`
-
-   2. Head to [AccurateRip's CD Drive Offset webpage](http://www.accuraterip.com/driveoffsets.htm)
-   3. Search the table for the model you previously found
-      - If nothing matches, try to refine your search
-   4. Open in a text editor the file located at: `$HOME/.config/whipper/whipper.conf`
-   5. Append the following text line to the bottom of the file replacing `value_here` with:
-      - The unsigned offset value (if positive)
-      - The signed offset value (if negative)
-
-      `read_offset = value_here` (example: `read_offset = 6`)
-   6. Mission accomplished :)
+   Offsets confirmed with `whipper offset find` are automatically written to the configuration file.
 
 4. Rip the disc by running
 
-   `whipper cd rip` (uses the offset from the configuration file)
-
-   or
-
-   `whipper cd rip --offset (the number you got before)` (manually specified offset)
+   `whipper cd rip`
 
 ## Configuration file documentation
 The configuration file is stored according to the [XDG Base Directory Specification](
