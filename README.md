@@ -72,43 +72,27 @@ Whipper relies on the following packages in order to run correctly and provide a
 - sox, for track peak detection
 
 ### Fetching the source code
-  1. Change to a directory where you want to put whipper source code (for example, `$HOME/dev/ext` or `$HOME/prefix/src`)
-  2. Clone the repository master branch
+Change to a directory where you want to put whipper source code (for example, `$HOME/dev/ext` or `$HOME/prefix/src`)
 
-    `git clone -b master --single-branch https://github.com/JoeLametta/whipper.git`
-
-  3. Change to its directory
-
-    `cd whipper`
-
-  4. Initialize the git submodules
-
-    `git submodule init`
-
-  5. Update the registered submodules
-
-     `git submodule update`
+```bash
+git clone -b master --single-branch https://github.com/JoeLametta/whipper.git
+cd whipper
+# fetch bundled python dependencies
+git submodule init
+git submodule update
+```
 
 ### Building the bundled dependencies
 This is only needed if you do not have the `accuraterip-checksum` package installed on your system. Whipper packages this for your convenience:
 
 You can edit the install path in `config.mk`
 
-1. Change to the src directory
-
-   `cd src`
-
-2. Compile `accuraterip-checksum`
-
-   `make`
-
-3. Install `accuraterip-checksum`
-
-   `sudo make install`
-
-4. Change to the original directory
-
-   `cd ..`
+```bash
+cd src
+make
+sudo make install
+cd ..
+```
 
 ### Finalizing the installation
 Install whipper: `python2 setup.py install`
@@ -219,13 +203,12 @@ Note: to get a literal `%` character it must be doubled.
       * `$HOME/.local/share/whipper/plugins`
 
 ## Running uninstalled
-_**NEEDS TO BE UPDATED**_
-
 To make it easier for developers, you can run whipper straight from the
 source checkout:
 
 ```bash
-INSERT UPDATED INSTRUCTIONS HERE
+python2 setup.py develop
+whipper -h
 ```
 
 ## License
@@ -259,9 +242,10 @@ Pull requests are welcome.
 
 Thanks to ...
 
-- aaa (qwe)
-- bbb (rty)
-- ccc (uio)
+- [Thomas Vander Stichele](https://github.com/thomasvs)
+- [Joe Lametta](https://github.com/JoeLametta)
+- [Merlijn Wajer](https://github.com/MerlijnWajer)
+- [Samantha Baldwin](https://github.com/RecursiveForest)
 
 ## Links
 You can find us and talk about the project on IRC: [freenode](https://webchat.freenode.net/?channels=%23whipper), **#whipper** channel.
