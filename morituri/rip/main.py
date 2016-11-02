@@ -18,9 +18,9 @@ def main():
     musicbrainzngs.set_useragent("morituri", configure.version,
         'https://thomas.apestaart.org/morituri/trac')
     # register plugins with pkg_resources
-    plugins = directory.Directory().getData('plugins')
-    distributions, errors = pkg_resources.working_set.find_plugins(
-                            pkg_resources.Environment([plugins]))
+    distributions, _ = pkg_resources.working_set.find_plugins(
+        pkg_resources.Environment([directory.Directory().getData('plugins')])
+    )
     map(pkg_resources.working_set.add, distributions)
     c = Rip()
     try:
