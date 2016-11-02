@@ -33,17 +33,11 @@ from morituri.common import directory, log
 class Config(log.Loggable):
 
     def __init__(self, path=None):
-        if not path:
-            path = self.getDefaultPath()
-
-        self._path = path
+        self._path = path or directory.config_path()
 
         self._parser = ConfigParser.SafeConfigParser()
 
         self.open()
-
-    def getDefaultPath(self):
-        return directory.Directory().getConfig()
 
     def open(self):
         # Open the file with the correct encoding

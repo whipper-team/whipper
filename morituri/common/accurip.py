@@ -28,8 +28,7 @@ import urllib2
 
 from morituri.common import log, directory
 
-d = directory.Directory()
-_CACHE_DIR = d.getCache()
+_CACHE_DIR = directory.cache_path()
 
 
 class AccuCache(log.Loggable):
