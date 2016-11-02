@@ -211,6 +211,21 @@ python2 setup.py develop
 whipper -h
 ```
 
+## Logger plugins
+whipper supports using external logger plugins to write rip `.log` files.
+
+List available plugins with `whipper cd rip -h`. Specify a logger to rip with by passing `-L loggername`:
+
+```bash
+whipper cd rip -L what
+```
+
+### Officially loggers
+
+* [morituri-yamlloger](https://github.com/JoeLametta/morituri-yamllogger) - default whipper logger, yaml format
+* [morituri-eaclogger](https://github.com/JoeLametta/morituri-eaclogger) - eac-like logger attempting to maintain strict compatability with EAC
+* [morituri-whatlogger](https://github.com/RecursiveForest/morituri-whatlogger) - eac-like logger containing the informational enhancements of the yamllogger, for use on what.cd
+
 ## License
 
 Copyright (???)
