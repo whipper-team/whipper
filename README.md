@@ -220,7 +220,7 @@ List available plugins with `whipper cd rip -h`. Specify a logger to rip with by
 whipper cd rip -L what
 ```
 
-### Officially loggers
+### Official loggers
 
 * [morituri-yamlloger](https://github.com/JoeLametta/morituri-yamllogger) - default whipper logger, yaml format
 * [morituri-eaclogger](https://github.com/JoeLametta/morituri-eaclogger) - eac-like logger attempting to maintain strict compatability with EAC
