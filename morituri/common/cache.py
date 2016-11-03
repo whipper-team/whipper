@@ -155,16 +155,8 @@ class PersistedCache(log.Loggable):
 class ResultCache(log.Loggable):
 
     def __init__(self, path=None):
-        if not path:
-            path = self._getResultCachePath()
-
-        self._path = path
+        self._path = path or directory.cache_path('result')
         self._pcache = PersistedCache(self._path)
-
-    def _getResultCachePath(self):
-        d = directory.Directory()
-        path = d.getCache('result')
-        return path
 
     def getRipResult(self, cddbdiscid, create=True):
         """
@@ -208,8 +200,7 @@ class TableCache(log.Loggable):
 
     def __init__(self, path=None):
         if not path:
-            d = directory.Directory()
-            self._path = d.getCache('table')
+            self._path = directory.cache_path('table')
         else:
             self._path = path
 

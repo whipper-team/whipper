@@ -20,51 +20,31 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
+from os import getenv, makedirs
+from os.path import join, expanduser, exists
 
-from morituri.common import log
+def config_path():
+    path = join(getenv('XDG_CONFIG_HOME') or join(expanduser('~'), u'.config'),
+                u'whipper')
+    if not exists(path):
+        makedirs(path)
+    return join(path, u'whipper.conf')
 
+def cache_path(name=None):
+    path = join(getenv('XDG_CACHE_HOME') or join(expanduser('~'), u'.cache'),
+                u'whipper')
+    if name:
+        path = join(path, name)
+    if not exists(path):
+        makedirs(path)
+    return path
 
-class Directory(log.Loggable):
-
-    def getConfig(self):
-        config_directory = os.getenv('XDG_CONFIG_HOME')
-        if not config_directory:
-            config_directory = os.path.join(os.path.expanduser('~'),
-                                            u'.config')
-        folder_path = os.path.join(config_directory, u'whipper')
-        if not os.path.exists(folder_path):
-            os.makedirs(folder_path)
-        path = os.path.join(config_directory, u'whipper/whipper.conf')
-        self.info('Configuration file path: %s' % path)
-        return path
-
-    def getCache(self, name=None):
-        cache_directory = os.getenv('XDG_CACHE_HOME')
-        if not cache_directory:
-            cache_directory = os.path.join(os.path.expanduser('~'), u'.cache')
-        path = os.path.join(cache_directory, u'whipper')
-        self.info('Cache directory path: %s' % path)
-        if not os.path.exists(path):
-            os.makedirs(path)
-        if name:
-            path = os.path.join(path, name)
-            if not os.path.exists(path):
-                os.makedirs(path)
-        return path
-
-    def getData(self, name=None):
-        data_directory = os.getenv('XDG_DATA_HOME')
-        if not data_directory:
-            data_directory = os.path.join(os.path.expanduser('~'),
-                                          u'.local/share')
-        path = os.path.join(data_directory, u'whipper')
-        self.info('Data directory path: %s' % path)
-        if not os.path.exists(path):
-            os.makedirs(path)
-        if name:
-            path = os.path.join(path, name)
-            if not os.path.exists(path):
-                os.makedirs(path)
-        return path
-
+def data_path(name=None):
+    path = join(getenv('XDG_DATA_HOME')
+                or join(expanduser('~'), u'.local/share'),
+                u'whipper')
+    if name:
+        path = join(path, name)
+    if not exists(path):
+        makedirs(path)
+    return path
