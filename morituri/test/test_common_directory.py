@@ -9,10 +9,8 @@ from morituri.test import common
 class DirectoryTestCase(common.TestCase):
 
     def testAll(self):
-        d = directory.Directory()
-
-        path = d.getConfig()
+        path = directory.config_path()
         self.failUnless(path.startswith('/home'))
 
-        path = d.getCache()
+        path = directory.cache_path()
         self.failUnless(path.startswith('/home'))
