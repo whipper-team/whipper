@@ -72,43 +72,27 @@ Whipper relies on the following packages in order to run correctly and provide a
 - sox, for track peak detection
 
 ### Fetching the source code
-  1. Change to a directory where you want to put whipper source code (for example, `$HOME/dev/ext` or `$HOME/prefix/src`)
-  2. Clone the repository master branch
+Change to a directory where you want to put whipper source code (for example, `$HOME/dev/ext` or `$HOME/prefix/src`)
 
-    `git clone -b master --single-branch https://github.com/JoeLametta/whipper.git`
-
-  3. Change to its directory
-
-    `cd whipper`
-
-  4. Initialize the git submodules
-
-    `git submodule init`
-
-  5. Update the registered submodules
-
-     `git submodule update`
+```bash
+git clone -b master --single-branch https://github.com/JoeLametta/whipper.git
+cd whipper
+# fetch bundled python dependencies
+git submodule init
+git submodule update
+```
 
 ### Building the bundled dependencies
 This is only needed if you do not have the `accuraterip-checksum` package installed on your system. Whipper packages this for your convenience:
 
 You can edit the install path in `config.mk`
 
-1. Change to the src directory
-
-   `cd src`
-
-2. Compile `accuraterip-checksum`
-
-   `make`
-
-3. Install `accuraterip-checksum`
-
-   `sudo make install`
-
-4. Change to the original directory
-
-   `cd ..`
+```bash
+cd src
+make
+sudo make install
+cd ..
+```
 
 ### Finalizing the installation
 Install whipper: `python2 setup.py install`
@@ -138,38 +122,21 @@ The simplest way to get started making accurate rips is:
 
    `whipper drive analyze`
 
-3. Find the drive's offset by running
+3. Find the drive's offset.
 
-   - `whipper offset find`
+   Consult the [AccurateRip's CD Drive Offset database](http://www.accuraterip.com/driveoffsets.htm) for your drive. Drive information can be retrieved with `whipper drive list`.
 
-   - Wait for it to complete; this might take a while. Optionally, confirm this offset with two more discs.
+   `whipper offset find -o OFFSET`
 
-   - If this step fails, please look below.
+   If you omit the -o argument, whipper will try a long, popularity-sorted list of drive offsets.
 
-   Unfortunately the current `offset find` feature is quite unreliable and can easily fail; if that happens you can find the correct offset for your drive in this way:
+   If you can not confirm your drive offset but wish to set a default regardless, set `read_offset = 42` in whipper.conf.
 
-   1. Find the drive's model number
-
-      `whipper drive list`
-
-   2. Head to [AccurateRip's CD Drive Offset webpage](http://www.accuraterip.com/driveoffsets.htm)
-   3. Search the table for the model you previously found
-      - If nothing matches, try to refine your search
-   4. Open in a text editor the file located at: `$HOME/.config/whipper/whipper.conf`
-   5. Append the following text line to the bottom of the file replacing `value_here` with:
-      - The unsigned offset value (if positive)
-      - The signed offset value (if negative)
-
-      `read_offset = value_here` (example: `read_offset = 6`)
-   6. Mission accomplished :)
+   Offsets confirmed with `whipper offset find` are automatically written to the configuration file.
 
 4. Rip the disc by running
 
-   `whipper cd rip` (uses the offset from the configuration file)
-
-   or
-
-   `whipper cd rip --offset (the number you got before)` (manually specified offset)
+   `whipper cd rip`
 
 ## Configuration file documentation
 The configuration file is stored according to the [XDG Base Directory Specification](
@@ -236,14 +203,28 @@ Note: to get a literal `%` character it must be doubled.
       * `$HOME/.local/share/whipper/plugins`
 
 ## Running uninstalled
-_**NEEDS TO BE UPDATED**_
-
 To make it easier for developers, you can run whipper straight from the
 source checkout:
 
 ```bash
-INSERT UPDATED INSTRUCTIONS HERE
+python2 setup.py develop
+whipper -h
 ```
+
+## Logger plugins
+whipper supports using external logger plugins to write rip `.log` files.
+
+List available plugins with `whipper cd rip -h`. Specify a logger to rip with by passing `-L loggername`:
+
+```bash
+whipper cd rip -L what
+```
+
+### Official loggers
+
+* [morituri-yamlloger](https://github.com/JoeLametta/morituri-yamllogger) - default whipper logger, yaml format
+* [morituri-eaclogger](https://github.com/JoeLametta/morituri-eaclogger) - eac-like logger attempting to maintain strict compatability with EAC
+* [morituri-whatlogger](https://github.com/RecursiveForest/morituri-whatlogger) - eac-like logger containing the informational enhancements of the yamllogger, for use on what.cd
 
 ## License
 
@@ -276,9 +257,10 @@ Pull requests are welcome.
 
 Thanks to ...
 
-- aaa (qwe)
-- bbb (rty)
-- ccc (uio)
+- [Thomas Vander Stichele](https://github.com/thomasvs)
+- [Joe Lametta](https://github.com/JoeLametta)
+- [Merlijn Wajer](https://github.com/MerlijnWajer)
+- [Samantha Baldwin](https://github.com/RecursiveForest)
 
 ## Links
 You can find us and talk about the project on IRC: [freenode](https://webchat.freenode.net/?channels=%23whipper), **#whipper** channel.
