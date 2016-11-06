@@ -250,6 +250,9 @@ class ImageVerifyTask(log.Loggable, task.MultiSeparateTask):
                 self.setException(taskk.exception)
                 break
 
+            if taskk.length is None:
+                raise ValueError("Track length was not found; look for "
+                    "earlier errors in debug log (set RIP_DEBUG=4)")
             # print '%d has length %d' % (trackIndex, taskk.length)
             index = track.indexes[1]
             assert taskk.length % common.SAMPLES_PER_FRAME == 0
