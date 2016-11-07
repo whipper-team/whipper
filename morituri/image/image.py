@@ -29,7 +29,9 @@ import os
 from morituri.common import log, common
 from morituri.image import cue, table
 
-from morituri.extern.task import task, gstreamer
+from morituri.extern.task import task
+
+from morituri.program.soxi import AudioLengthTask
 
 
 class Image(object, log.Loggable):
@@ -144,57 +146,6 @@ class AccurateRipChecksumTask(log.Loggable, task.MultiSeparateTask):
     def stop(self):
         self.checksums = [t.checksum for t in self.tasks]
         task.MultiSeparateTask.stop(self)
-
-
-class AudioLengthTask(log.Loggable, gstreamer.GstPipelineTask):
-    """
-    I calculate the length of a track in audio samples.
-
-    @ivar  length: length of the decoded audio file, in audio samples.
-    """
-    logCategory = 'AudioLengthTask'
-    description = 'Getting length of audio track'
-    length = None
-
-    playing = False
-
-    def __init__(self, path):
-        """
-        @type  path: unicode
-        """
-        assert type(path) is unicode, "%r is not unicode" % path
-
-        self._path = path
-        self.logName = os.path.basename(path).encode('utf-8')
-
-    def getPipelineDesc(self):
-        return '''
-            filesrc location="%s" !
-            decodebin ! audio/x-raw-int !
-            fakesink name=sink''' % \
-                gstreamer.quoteParse(self._path).encode('utf-8')
-
-    def paused(self):
-        self.debug('query duration')
-        sink = self.pipeline.get_by_name('sink')
-        assert sink, 'Error constructing pipeline'
-
-        try:
-            length, qformat = sink.query_duration(self.gst.FORMAT_DEFAULT)
-        except self.gst.QueryError, e:
-            self.info('failed to query duration of %r' % self._path)
-            self.setException(e)
-            raise
-
-        # wavparse 0.10.14 returns in bytes
-        if qformat == self.gst.FORMAT_BYTES:
-            self.debug('query returned in BYTES format')
-            length /= 4
-        self.debug('total length of %r in samples: %d', self._path, length)
-        self.length = length
-
-        self.pipeline.set_state(self.gst.STATE_NULL)
-        self.stop()
 
 
 class ImageVerifyTask(log.Loggable, task.MultiSeparateTask):
