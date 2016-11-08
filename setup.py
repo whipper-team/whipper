@@ -3,7 +3,7 @@ from os import system, makedirs, environ
 
 setup(
     name="whipper",
-    version="0.3.0",
+    version="0.4.0",
     description="a secure cd ripper preferring accuracy over speed",
     author=['Thomas Vander Stichele', 'Joe Lametta', 'Samantha Baldwin'],
     maintainer=['Joe Lametta', 'Samantha Baldwin'],

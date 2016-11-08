@@ -1,5 +1,5 @@
 # Whipper
-  [![License: GPLv3+](https://img.shields.io/badge/license-GPLv3+-blue.svg)](https://github.com/JoeLametta/whipper/blob/readme-rewrite/COPYING) [![Build Status](https://travis-ci.org/JoeLametta/whipper.svg?branch=master)](https://travis-ci.org/JoeLametta/whipper) [![Current version number](https://img.shields.io/badge/version-0.3.0-red.svg)](https://github.com/JoeLametta/whipper)  [![IRC](https://img.shields.io/badge/irc-%23whipper%40freenode-008000.svg)](https://webchat.freenode.net/?channels=%23whipper) [![GitHub Stars](https://img.shields.io/github/stars/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/stargazers) [![GitHub Issues](https://img.shields.io/github/issues/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/issues)
+[![License: GPLv3+](https://img.shields.io/badge/license-GPLv3+-blue.svg)](https://github.com/JoeLametta/whipper/blob/readme-rewrite/COPYING) [![Build Status](https://travis-ci.org/JoeLametta/whipper.svg?branch=master)](https://travis-ci.org/JoeLametta/whipper) [![Current version number](https://img.shields.io/badge/version-0.4.0-red.svg)](https://github.com/JoeLametta/whipper/releases/latest) [![IRC](https://img.shields.io/badge/irc-%23whipper%40freenode-008000.svg)](https://webchat.freenode.net/?channels=%23whipper) [![GitHub Stars](https://img.shields.io/github/stars/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/stargazers) [![GitHub Issues](https://img.shields.io/github/issues/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/issues)
 
 Whipper is a Python 2 CD-DA ripper, fork of the morituri project (_CDDA ripper for *nix systems aiming for accuracy over speed_). It improves morituri which development seems to have halted merging old ignored pull requests, improving it with bugfixes and new features.
 
@@ -48,6 +48,7 @@ https://web.archive.org/web/20160528213242/https://thomas.apestaart.org/thomas/t
 
 ## Release history
 
+- 0.4.0 - Replace `cdrdao.py` with much simpler version. Logger update. Raise Exception when track rip runs out of attempts. Undelete overzealously removed plugin initialisation (fix regression). Invoke whipper by its name & readme rewrite
 - 0.3.0 - SoX is now used for peak detection. Migration to setuptools
 - 0.2.4 - First tagged release after morituri fork (includes "new config/cache/state file paths" backward incompatible change)
 
