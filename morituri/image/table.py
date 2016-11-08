@@ -171,6 +171,7 @@ class Table(object, log.Loggable):
     leadout = None # offset where the leadout starts
     catalog = None # catalog number; FIXME: is this UPC ?
     cdtext = None
+    mbdiscid = None
 
     classVersion = 4
 
@@ -336,6 +337,10 @@ class Table(object, log.Loggable):
         @rtype:   str
         @returns: the 28-character base64-encoded disc ID
         """
+        if self.mbdiscid:
+            self.log('getMusicBrainzDiscId: returning cached %r'
+                     % self.mbdiscid)
+            return self.mbdiscid
         values = self._getMusicBrainzValues()
 
         # MusicBrainz disc id does not take into account data tracks
@@ -383,6 +388,7 @@ class Table(object, log.Loggable):
             "Result should be 28 characters, not %d" % len(result)
 
         self.log('getMusicBrainzDiscId: returning %r' % result)
+        self.mbdiscid = result
         return result
 
     def getMusicBrainzSubmitURL(self):
