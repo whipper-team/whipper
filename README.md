@@ -1,9 +1,9 @@
 # Whipper
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0) [![Current Version](https://img.shields.io/badge/version-0.3.0-green.svg)](https://github.com/JoeLametta/whipper) [![Build Status](https://travis-ci.org/JoeLametta/whipper.svg?branch=master)](https://travis-ci.org/JoeLametta/whipper) [![IRC](https://img.shields.io/badge/chat-on%20freenode-brightgreen.svg)](https://webchat.freenode.net/?channels=%23whipper) [![GitHub Stars](https://img.shields.io/github/stars/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/stargazers) [![GitHub Issues](https://img.shields.io/github/issues/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/issues)
+  [![License: GPLv3+](https://img.shields.io/badge/license-GPLv3+-blue.svg)](https://github.com/JoeLametta/whipper/blob/readme-rewrite/COPYING) [![Build Status](https://travis-ci.org/JoeLametta/whipper.svg?branch=master)](https://travis-ci.org/JoeLametta/whipper) [![Current version number](https://img.shields.io/badge/version-0.3.0-red.svg)](https://github.com/JoeLametta/whipper)  [![IRC](https://img.shields.io/badge/irc-%23whipper%40freenode-008000.svg)](https://webchat.freenode.net/?channels=%23whipper) [![GitHub Stars](https://img.shields.io/github/stars/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/stargazers) [![GitHub Issues](https://img.shields.io/github/issues/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/issues)
 
 Whipper is a Python 2 CD-DA ripper, fork of the morituri project (_CDDA ripper for *nix systems aiming for accuracy over speed_). It improves morituri which development seems to have halted merging old ignored pull requests, improving it with bugfixes and new features.
 
-Whipper is developed and tested only on Linux distributions but _should_ work fine on other *nix OSes too.
+Whipper is developed and tested _only_ on Linux distributions but _should_ work fine on other *nix OSes too.
 
 In order to track whipper's current development it's advised to check its commit history (README **isn't** still complete).
 
@@ -21,6 +21,7 @@ In order to track whipper's current development it's advised to check its commit
 - [Configuration file documentation](#configuration-file-documentation)
 - [Backward incompatible changes](#backward-incompatible-changes)
 - [Running uninstalled](#running-uninstalled)
+- [Logger plugins](#logger-plugins)
 - [License](#license)
 - [Contributing](#contributing)
   - [Bug reports & feature requests](#bug-reports--feature-requests)
@@ -47,8 +48,8 @@ https://web.archive.org/web/20160528213242/https://thomas.apestaart.org/thomas/t
 
 ## Release history
 
-- 0.3.0 - Bla bla bla
-- 0.2.4 - First tagged release after morituri fork
+- 0.3.0 - SoX is now used for peak detection. Migration to setuptools
+- 0.2.4 - First tagged release after morituri fork (includes "new config/cache/state file paths" backward incompatible change)
 
 ## Installation
 With the exception of an [AUR package for Arch Linux](https://aur.archlinux.org/packages/whipper-git), whipper isn't currently available in a prepackaged form so, in order to use it, it must be built from its source code.
@@ -57,19 +58,19 @@ If you are building from a source tarball or checkout, you can choose to use whi
 
 ### Required dependencies
 Whipper relies on the following packages in order to run correctly and provide all the supported features:
-- cdparanoia, for the actual ripping
-- cdrdao, for session, TOC, pre-gap, and ISRC extraction
-- GStreamer and its python bindings, for encoding (it's going to be removed soon™)
-  - gstreamer0.10-base-plugins >= 0.10.22 for appsink
-  - gstreamer0.10-good-plugins for wav encoding (it depends on the Linux distro used)
-- python-musicbrainzngs, for metadata lookup
-- python-setuptools, for installation, plugins support
-- python-cddb, for showing but not using metadata if disc not available in the MusicBrainz DB
-- pycdio, for drive identification
+- [cdparanoia](https://www.xiph.org/paranoia/), for the actual ripping
+- [cdrdao](http://cdrdao.sourceforge.net/), for session, TOC, pre-gap, and ISRC extraction
+- [GStreamer](https://gstreamer.freedesktop.org/) and its python bindings, for encoding (it's going to be removed soon™)
+  - `gstreamer0.10-base-plugins` >= **0.10.22** for appsink
+  - `gstreamer0.10-good-plugins` for wav encoding (it depends on the Linux distro used)
+-[python-musicbrainzngs](https://github.com/alastair/python-musicbrainzngs), for metadata lookup
+- `python-setuptools`, for installation, plugins support
+- [python-cddb](http://cddb-py.sourceforge.net/), for showing but not using metadata if disc not available in the MusicBrainz DB
+- [pycdio](https://pypi.python.org/pypi/pycdio/) (to avoid bugs please use `pycdio` **0.20** & `libcdio` >= **0.90** or, with previous `libcdio` versions, `pycdio` **0.17**), for drive identification
   - Required for drive offset and caching behavior to be stored in the configuration file
-- libsndfile, for reading wav files
-- flac, for reading flac files
-- sox, for track peak detection
+- [libsndfile](http://www.mega-nerd.com/libsndfile/), for reading wav files
+- [flac](https://xiph.org/flac/), for reading flac files
+- [sox](http://sox.sourceforge.net/), for track peak detection
 
 ### Fetching the source code
 Change to a directory where you want to put whipper source code (for example, `$HOME/dev/ext` or `$HOME/prefix/src`)
@@ -83,7 +84,7 @@ git submodule update
 ```
 
 ### Building the bundled dependencies
-This is only needed if you do not have the `accuraterip-checksum` package installed on your system. Whipper packages this for your convenience:
+Whipper uses and packages a slightly different version of the `accuraterip-checksum` tool:
 
 You can edit the install path in `config.mk`
 
@@ -112,7 +113,7 @@ is correct, while
 
 is not, because the `-d` argument applies to the whipper command.
 
-~~Check the man page (`whipper(1)`) for more information.~~ (currently not available)
+~~Check the man page (`whipper(1)`) for more information.~~ (currently not available as whipper's documentation is planned to be migrated to [Sphinx](http://www.sphinx-doc.org)).
 
 ## Getting started
 The simplest way to get started making accurate rips is:
@@ -128,9 +129,9 @@ The simplest way to get started making accurate rips is:
 
    `whipper offset find -o OFFSET`
 
-   If you omit the -o argument, whipper will try a long, popularity-sorted list of drive offsets.
+   If you omit the `-o` argument, whipper will try a long, popularity-sorted list of drive offsets.
 
-   If you can not confirm your drive offset but wish to set a default regardless, set `read_offset = 42` in whipper.conf.
+   If you can not confirm your drive offset value but wish to set a default regardless, set `read_offset = 42` in `whipper.conf`.
 
    Offsets confirmed with `whipper offset find` are automatically written to the configuration file.
 
@@ -173,7 +174,8 @@ profile = flac
 Note: to get a literal `%` character it must be doubled.
 
 ## Backward incompatible changes
-* Whipper has adopted new config/cache/state file paths
+* Whipper executable name changed: from `rip` to `whipper`
+* Whipper has adopted new config/cache/state file paths ([PR #42](https://github.com/JoeLametta/whipper/pull/42))
   * Now always follows XDG specifications
 
     * Paths used when XDG environment variables are available:
@@ -212,7 +214,7 @@ whipper -h
 ```
 
 ## Logger plugins
-whipper supports using external logger plugins to write rip `.log` files.
+Whipper supports using external logger plugins to write rip `.log` files.
 
 List available plugins with `whipper cd rip -h`. Specify a logger to rip with by passing `-L loggername`:
 
@@ -224,13 +226,31 @@ whipper cd rip -L what
 
 * [morituri-yamlloger](https://github.com/JoeLametta/morituri-yamllogger) - default whipper logger, yaml format
 * [morituri-eaclogger](https://github.com/JoeLametta/morituri-eaclogger) - eac-like logger attempting to maintain strict compatability with EAC
-* [morituri-whatlogger](https://github.com/RecursiveForest/morituri-whatlogger) - eac-like logger containing the informational enhancements of the yamllogger, for use on what.cd
+* [morituri-whatlogger](https://github.com/RecursiveForest/morituri-whatlogger) - eac-like logger containing the informational enhancements of the yamllogger, for use on [What.CD](https://what.cd)
 
 ## License
 
-Copyright (???)
-
 Licensed under the [GNU GPLv3 license](http://www.gnu.org/licenses/gpl-3.0).
+
+```
+Copyright (C) 2009 Thomas Vander Stichele
+Copyright (C) 2016 JoeLametta
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software Foundation,
+Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
+```
+
 
 ## Contributing
 
@@ -255,7 +275,7 @@ Pull requests are welcome.
 
 ## Credits
 
-Thanks to ...
+Thanks to:
 
 - [Thomas Vander Stichele](https://github.com/thomasvs)
 - [Joe Lametta](https://github.com/JoeLametta)
@@ -268,3 +288,4 @@ You can find us and talk about the project on IRC: [freenode](https://webchat.fr
 - [What.CD thread (official)](https://what.cd/forums.php?action=viewthread&threadid=163034)
 - [Reddit thread (unofficial)](https://www.reddit.com/r/linux/comments/53hyw1/github_joelamettawhipper_for_those_about_to_rip_a/)
 - [Arch Linux whipper AUR package](https://aur.archlinux.org/packages/whipper-git/)
+- [Unattended ripping using whipper (script by Thomas McWork)](https://github.com/thomas-mc-work/most-possible-unattended-rip)
