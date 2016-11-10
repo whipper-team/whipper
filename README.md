@@ -48,7 +48,7 @@ https://web.archive.org/web/20160528213242/https://thomas.apestaart.org/thomas/t
 
 ## Release history
 
-- 0.4.0 - Replace `cdrdao.py` with much simpler version. Logger update. Raise Exception when track rip runs out of attempts. Undelete overzealously removed plugin initialisation (fix regression). Invoke whipper by its name & readme rewrite
+- 0.4.0 - Replace `cdrdao.py` with much simpler version. Logger update. Raise Exception when track rip runs out of attempts. Undelete overzealously removed plugin initialisation (fix regression). Invoke whipper by its name & README rewrite
 - 0.3.0 - SoX is now used for peak detection. Migration to setuptools
 - 0.2.4 - First tagged release after morituri fork (includes "new config/cache/state file paths" backward incompatible change)
 
@@ -64,7 +64,7 @@ Whipper relies on the following packages in order to run correctly and provide a
 - [GStreamer](https://gstreamer.freedesktop.org/) and its python bindings, for encoding (it's going to be removed soon™)
   - `gstreamer0.10-base-plugins` >= **0.10.22** for appsink
   - `gstreamer0.10-good-plugins` for wav encoding (it depends on the Linux distro used)
--[python-musicbrainzngs](https://github.com/alastair/python-musicbrainzngs), for metadata lookup
+- [python-musicbrainzngs](https://github.com/alastair/python-musicbrainzngs), for metadata lookup
 - `python-setuptools`, for installation, plugins support
 - [python-cddb](http://cddb-py.sourceforge.net/), for showing but not using metadata if disc not available in the MusicBrainz DB
 - [pycdio](https://pypi.python.org/pypi/pycdio/) (to avoid bugs please use `pycdio` **0.20** & `libcdio` >= **0.90** or, with previous `libcdio` versions, `pycdio` **0.17**), for drive identification
