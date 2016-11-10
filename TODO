@@ -1,5 +1,9 @@
 TODO:
 
+Please see https://github.com/JoeLametta/whipper/milestones for further
+TODO items; this file exists only to have contents individually removed
+eventually, not to be continually updated.
+
 EASY
 
 - self.error() invokes exit() which is bad for a gui
