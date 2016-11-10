@@ -1,13 +1,32 @@
 style guide
 -----------
 
-To avoid confusion:
+Where possible when writing new code, try to stay as PEP8 compliant as possible.
+We understand that large portions of the codebase are not, but part of our
+ongoing efforts is to clean up whipper.
 
- - cuefile is used for the CueFile object, which wraps/parses an existing .cue
-   file on disk
- - tocfile: same
- - toc: table of contents of a CD; instance of Table
+major data structures
+---------------------
 
+- image.table.Track: A list of track properties, including a list of indexes,
+	the isrc, cdtext, pre-emphasis flag, track number, and track type (audio
+	or data)
+
+- image.table.Index: A list of track index properties, including the track's path,
+	relative and absolute offsets within the track & disc, respectively, as
+	well as the track number and counter.
+
+- image.table.Table: An ordered list of Track objects, with their leadouts,
+	cdtext, and catalog numbers.
+
+- image.cue.CueFile: Generates an image.table.Table from a .cue file from an
+	existing rip.
+
+- image.toc.TocFile: Generates an image.table.Table from a .toc file generated
+	by `cdrdao read-toc`.
+
+notes
+-----
 
 test: single rip of kings of leon - only by the night
 
@@ -41,8 +60,13 @@ CDROMS
 
 PLEXTOR CD-R   PX-W8432T Read offset of device is: 355.
 
-Test discs
+test discs
 ----------
+Julie Roberts - Julie Roberts: cdparanoia paranoid mode has a false positive
+	jitter correction and silently rips the incorrect track. ripping with
+	-Z rips the correct track.
+Rush - Test for Echo: has 31 frames of silence in the first track's pregap,
+	test for HTOA detection regressions.
 The Strokes - Someday (promo): has 1 frame silence marked as SILENCE
 The Pixies - Surfer Rosa/Come on Pilgrim: has pre-gap, and INDEX 02 on TRACK 11
 Florence & The Machine - Lungs: data track
