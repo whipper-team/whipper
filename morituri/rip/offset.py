@@ -20,6 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
+import argparse
 import os
 import tempfile
 
@@ -47,26 +48,36 @@ OFFSETS = "+6, +48, +102, +667, +12, +30, +618, +594, +738, -472, " + \
           "+1127"
 
 
-class Find(logcommand.LogCommand):
+class Find(logcommand.Lager):
     summary = "find drive read offset"
     description = """Find drive's read offset by ripping tracks from a
 CD in the AccurateRip database."""
 
-    def addOptions(self):
-        default = OFFSETS
-        self.parser.add_option('-o', '--offsets',
-            action="store", dest="offsets",
-            help="list of offsets, comma-separated, "
-                "colon-separated for ranges (defaults to %s)" % default,
-            default=default)
-        self.parser.add_option('-d', '--device',
-            action="store", dest="device",
-            help="CD-DA device")
-
-    def handleOptions(self, options):
-        self.options = options
+    def __init__(self, argv, prog=None):
+        parser = argparse.ArgumentParser(
+            prog=prog,
+            description=self.description,
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter
+        )
+        parser.add_argument(
+            '-o', '--offsets',
+            action="store", dest="offsets", default=OFFSETS,
+            help="list of offsets, comma-separated, colon-separated for ranges"
+        )
+        # pick the first drive as default
+        # this can be a symlink to another device
+        drives = drive.getAllDevicePaths()
+        if not drives:
+            self.error('No CD-DA drives found!')
+            #return 3
+        parser.add_argument(
+            '-d', '--device',
+            action="store", dest="device", default=drives[0],
+            help="CD-DA device"
+        )
+        self.options = parser.parse_args(argv)
         self._offsets = []
-        blocks = options.offsets.split(',')
+        blocks = self.options.offsets.split(',')
         for b in blocks:
             if ':' in b:
                 a, b = b.split(':')
@@ -76,19 +87,8 @@ CD in the AccurateRip database."""
 
         self.debug('Trying with offsets %r', self._offsets)
 
-        if not options.device:
-            drives = drive.getAllDevicePaths()
-            if not drives:
-                self.error('No CD-DA drives found!')
-                return 3
-
-            # pick the first
-            self.options.device = drives[0]
-
-        # this can be a symlink to another device
-
-    def do(self, args):
-        prog = program.Program(self.getRootCommand().config)
+    def do(self):
+        prog = program.Program(self.config)
         runner = ctask.SyncRunner()
 
         device = self.options.device
@@ -243,7 +243,11 @@ CD in the AccurateRip database."""
             offset)
 
 
-class Offset(logcommand.LogCommand):
+class Offset(logcommand.Lager):
     summary = "handle drive offsets"
-
-    subCommandClasses = [Find, ]
+    description = """
+Drive offset detection utility.
+"""
+    subcommands = {
+        'find': Find,
+    }

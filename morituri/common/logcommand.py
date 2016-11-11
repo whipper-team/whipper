@@ -33,6 +33,7 @@ import sys
 class Lager():
     """
     Provides self.debug() logging facility for existing commands.
+    Provides self.error() raising facility for existing commands.
     Provides self.epilog() formatting command for argparse.
     Provides self.config, self.stdout objects for children.
 
@@ -71,8 +72,13 @@ class Lager():
         return self.cmd.do()
 
     def debug(self, format, *args):
+        # FIXME
         kwargs = {}
         pass
+
+    def error(self, msg):
+        # FIXME
+        raise Exception(msg)
 
     def epilog(self):
         s = "commands:\n"
