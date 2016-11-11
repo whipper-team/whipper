@@ -49,7 +49,6 @@ def main():
     return ret if ret else 0
 
 class Whipper(logcommand.Lager):
-    usage = "%prog %command"
     description = """whipper is a CD ripping utility focusing on accuracy over speed.
 
 whipper gives you a tree of subcommands to work with.
