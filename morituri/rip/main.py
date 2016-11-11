@@ -89,6 +89,8 @@ You can get help on subcommands by using the -h option to the subcommand.
             sys.exit(0)
         if opt.version:
             print "whipper %s" % configure.version
+            sys.exit(0)
+        if not opt.remainder[0] in self.subcommands:
             sys.stderr.write("incorrect subcommand: %s" % opt.remainder[0])
             sys.exit(1)
         return self.subcommands[opt.remainder[0]](
