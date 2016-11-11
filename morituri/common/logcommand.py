@@ -25,8 +25,24 @@ Logging Command.
 """
 
 from morituri.extern.command import command
-from morituri.common import log
+from morituri.common import log, config
+import logging
 
+class Lager():
+    """
+    Provides self.debug() logging facility for existing commands.
+    Provides self.epilog() formatting command for argparse.
+    """
+    config = config.Config()
+    def debug(self, format, *args):
+        kwargs = {}
+        pass
+
+    def epilog(self):
+        s = "commands:\n"
+        for com in sorted(self.subcommands.keys()):
+            s += "  %s %s\n" % (com.ljust(8), self.subcommands[com].summary)
+        return s
 
 class LogCommand(command.Command, log.Loggable):
 

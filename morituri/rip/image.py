@@ -20,9 +20,13 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
+import argparse
 import os
+import sys
 
-from morituri.common import logcommand, accurip, program
+import logging
+
+from morituri.common import logcommand, accurip, program, config
 from morituri.image import image
 from morituri.result import result
 
@@ -99,27 +103,43 @@ class Encode(logcommand.LogCommand):
                 outm3u.close()
 
 
-class Retag(logcommand.LogCommand):
-
+class Retag(logcommand.Lager):
     summary = "retag image files"
+    description = """
+Retags the image from the given .cue files with tags obtained from MusicBrainz.
+"""
+    stdout = sys.stdout
 
-    def addOptions(self):
-        self.parser.add_option('-R', '--release-id',
+    def __init__(self, argv, prog=None):
+        parser = argparse.ArgumentParser(
+            prog=prog,
+            description=self.description
+        )
+        parser.add_argument('cuefile', nargs='+', action='store',
+                            help="cue file to load rip image from")
+        parser.add_argument(
+            '-R', '--release-id',
             action="store", dest="release_id",
-            help="MusicBrainz release id to match to (if there are multiple)")
-        self.parser.add_option('-p', '--prompt',
+            help="MusicBrainz release id to match to (if there are multiple)"
+        )
+        parser.add_argument(
+            '-p', '--prompt',
             action="store_true", dest="prompt",
-            help="Prompt if there are multiple matching releases")
-        self.parser.add_option('-c', '--country',
+            help="Prompt if there are multiple matching releases"
+        )
+        parser.add_argument(
+            '-c', '--country',
             action="store", dest="country",
-            help="Filter releases by country")
-
+            help="Filter releases by country"
+        )
+        self.options = parser.parse_args(argv)
+        return self.do(self.options.cuefile)
 
     def do(self, args):
         # here to avoid import gst eating our options
         from morituri.common import encode
 
-        prog = program.Program(self.getRootCommand().config, stdout=self.stdout)
+        prog = program.Program(self.config, stdout=self.stdout)
         runner = task.SyncRunner()
 
         for arg in args:
@@ -164,17 +184,24 @@ class Retag(logcommand.LogCommand):
             print
 
 
-class Verify(logcommand.LogCommand):
-
-    usage = '[CUEFILE]...'
+class Verify(logcommand.Lager):
     summary = "verify image"
-
-    description = '''
+    description = """
 Verifies the image from the given .cue files against the AccurateRip database.
-'''
+"""
+
+    def __init__(self, argv, prog=None):
+        parser = argparse.ArgumentParser(
+            prog=prog,
+            description=self.description
+        )
+        parser.add_argument('cuefile', nargs='+', action='store',
+                            help="cue file to load rip image from")
+        options = parser.parse_args(argv)
+        return self.do(options.cuefile)
 
     def do(self, args):
-        prog = program.Program(self.getRootCommand().config)
+        prog = program.Program(self.config)
         runner = task.SyncRunner()
         cache = accurip.AccuCache()
 
@@ -199,14 +226,34 @@ Verifies the image from the given .cue files against the AccurateRip database.
             print "\n".join(prog.getAccurateRipResults()) + "\n"
 
 
-class Image(logcommand.LogCommand):
-
+class Image(logcommand.Lager):
     summary = "handle images"
-
     description = """
 Handle disc images.  Disc images are described by a .cue file.
 Disc images can be encoded to another format (for example, to make a
 compressed encoding), retagged and verified.
 """
+    subcommands = {
+        'verify': Verify,
+        'retag': Retag
+    }
 
-    subCommandClasses = [Encode, Retag, Verify, ]
+    def __init__(self, argv, prog=None):
+        parser = argparse.ArgumentParser(
+            prog=prog,
+            description=self.description,
+            epilog=self.epilog(),
+            formatter_class=argparse.RawDescriptionHelpFormatter
+        )
+        parser.add_argument('remainder', nargs=argparse.REMAINDER,
+                            help=argparse.SUPPRESS)
+        opt = parser.parse_args(argv)
+        if not opt.remainder:
+            parser.print_help()
+            sys.exit(0)
+        if not opt.remainder[0] in self.subcommands:
+            sys.stderr.write("incorrect subcommand: %s" % opt.remainder[0])
+            sys.exit(1)
+        return self.subcommands[opt.remainder[0]](
+            opt.remainder[1:], prog=prog + " " + opt.remainder[0]
+        )

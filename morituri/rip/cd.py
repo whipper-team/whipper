@@ -572,7 +572,7 @@ Log files will log the path to tracks relative to this directory.
 
 class CD(logcommand.LogCommand):
 
-    summary = "handle CD's"
+    summary = "handle CDs"
 
     subCommandClasses = [Info, Rip, ]
 

@@ -1,6 +1,7 @@
 # -*- Mode: Python -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
+import argparse
 import os
 import sys
 import pkg_resources
@@ -22,9 +23,8 @@ def main():
         pkg_resources.Environment([directory.data_path('plugins')])
     )
     map(pkg_resources.working_set.add, distributions)
-    c = Rip()
     try:
-        ret = c.parse(sys.argv[1:])
+        ret = Whipper(sys.argv[1:], prog=os.path.basename(sys.argv[0]))
     except SystemError, e:
         sys.stderr.write('rip: error: %s\n' % e.args)
         return 255
@@ -46,15 +46,54 @@ def main():
             return 255
 
         raise
-    except command.CommandError, e:
-        sys.stderr.write('rip: error: %s\n' % e.output)
-        return e.status
+    return ret if ret else 0
 
-    if ret is None:
-        return 0
+class Whipper(logcommand.Lager):
+    usage = "%prog %command"
+    description = """whipper is a CD ripping utility focusing on accuracy over speed.
 
-    return ret
+whipper gives you a tree of subcommands to work with.
+You can get help on subcommands by using the -h option to the subcommand.
+"""
+    subcommands = {
+        'accurip': accurip.AccuRip,
+        'cd':      cd.CD,
+        'debug':   debug.Debug,
+        'drive':   drive.Drive,
+        'offset':  offset.Offset,
+        'image':   image.Image
+    }
 
+    def __init__(self, argv, prog=None):
+        parser = argparse.ArgumentParser(
+            prog=prog,
+            add_help=False,
+            description=self.description,
+            epilog=self.epilog(),
+            formatter_class=argparse.RawDescriptionHelpFormatter
+        )
+        parser.add_argument('-R', '--record',
+                            action='store_true', dest='record',
+                            help="record API requests for playback")
+        parser.add_argument('-v', '--version',
+                            action="store_true", dest="version",
+                            help="show version information")
+        parser.add_argument('-h', '--help',
+                            action="store_true", dest="help",
+                            help="show this help message and exit")
+        parser.add_argument('remainder', nargs=argparse.REMAINDER,
+                            help=argparse.SUPPRESS)
+        opt = parser.parse_args(argv)
+        if opt.help or not opt.remainder:
+            parser.print_help()
+            sys.exit(0)
+        if opt.version:
+            print "whipper %s" % configure.version
+            sys.stderr.write("incorrect subcommand: %s" % opt.remainder[0])
+            sys.exit(1)
+        return self.subcommands[opt.remainder[0]](
+            opt.remainder[1:], prog=prog + " " + opt.remainder[0]
+        )
 
 class Rip(logcommand.LogCommand):
     usage = "%prog %command"
