@@ -20,6 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
+import argparse
 import os
 
 from morituri.extern.task import task
@@ -27,29 +28,31 @@ from morituri.extern.task import task
 from morituri.common import logcommand, drive
 from morituri.program import cdparanoia
 
-class Analyze(logcommand.LogCommand):
-
+class Analyze(logcommand.Lager):
     summary = "analyze caching behaviour of drive"
+    description = """Determine whether cdparanoia can defeat the audio cache of the drive."""
 
-    def addOptions(self):
-        self.parser.add_option('-d', '--device',
-            action="store", dest="device",
-            help="CD-DA device")
-
-    def handleOptions(self, options):
-        if not options.device:
-            drives = drive.getAllDevicePaths()
-            if not drives:
-                self.error('No CD-DA drives found!')
-                return 3
-
-            # pick the first
-            self.options.device = drives[0]
-
+    def __init__(self, argv, prog=None):
+        parser = argparse.ArgumentParser(
+            prog=prog,
+            description=self.description
+        )
+        # pick the first drive as default
+        # this can be a symlink to another device
+        drives = drive.getAllDevicePaths()
+        if not drives:
+            self.error('No CD-DA drives found!')
+            #return 3
+        parser.add_argument(
+            '-d', '--device',
+            action="store", dest="device", default=drives[0],
+            help="CD-DA device"
+        )
+        self.options = parser.parse_args(argv)
         # this can be a symlink to another device
         self.options.device = os.path.realpath(self.options.device)
 
-    def do(self, args):
+    def do(self):
         runner = task.SyncRunner()
         t = cdparanoia.AnalyzeTask(self.options.device)
         runner.run(t)
@@ -73,15 +76,22 @@ class Analyze(logcommand.LogCommand):
         self.stdout.write(
             'Adding drive cache behaviour to configuration file.\n')
 
-        self.getRootCommand().config.setDefeatsCache(info[0], info[1], info[2],
+        self.config.setDefeatsCache(info[0], info[1], info[2],
             t.defeatsCache)
 
 
-class List(logcommand.LogCommand):
-
+class List(logcommand.Lager):
     summary = "list drives"
+    description = """list available CD-DA drives"""
 
-    def do(self, args):
+    def __init__(self, argv, prog=None):
+        parser = argparse.ArgumentParser(
+            prog=prog,
+            description=self.description
+        )
+        parser.parse_args(argv)
+
+    def do(self):
         paths = drive.getAllDevicePaths()
 
         if not paths:
@@ -105,7 +115,7 @@ class List(logcommand.LogCommand):
                 path, vendor, model, release))
 
             try:
-                offset = self.getRootCommand().config.getReadOffset(
+                offset = self.config.getReadOffset(
                     vendor, model, release)
                 self.stdout.write(
                     "       Configured read offset: %d\n" % offset)
@@ -114,7 +124,7 @@ class List(logcommand.LogCommand):
                     "       No read offset found.  Run 'rip offset find'\n")
 
             try:
-                defeats = self.getRootCommand().config.getDefeatsCache(
+                defeats = self.config.getDefeatsCache(
                     vendor, model, release)
                 self.stdout.write(
                     "       Can defeat audio cache: %s\n" % defeats)
@@ -128,8 +138,10 @@ class List(logcommand.LogCommand):
             self.stdout.write('No drives found.\n')
 
 
-class Drive(logcommand.LogCommand):
-
+class Drive(logcommand.Lager):
     summary = "handle drives"
-
-    subCommandClasses = [Analyze, List, ]
+    description = """Drive utilities."""
+    subcommands = {
+        'analyze': Analyze,
+        'list': List
+    }
