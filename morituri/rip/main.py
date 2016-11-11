@@ -24,7 +24,7 @@ def main():
     )
     map(pkg_resources.working_set.add, distributions)
     try:
-        ret = Whipper(sys.argv[1:], prog=os.path.basename(sys.argv[0])).do()
+        ret = Whipper(sys.argv[1:], os.path.basename(sys.argv[0])).do()
     except SystemError, e:
         sys.stderr.write('rip: error: %s\n' % e.args)
         return 255
