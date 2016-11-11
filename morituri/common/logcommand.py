@@ -44,7 +44,7 @@ class Lager():
     config = config.Config()
     stdout = sys.stdout
 
-    def __init__(self, argv, prog=None):
+    def __init__(self, argv, prog):
         """
         Launch subcommands without any mid-level options.
         Override to include options.
@@ -65,7 +65,7 @@ class Lager():
             sys.stderr.write("incorrect subcommand: %s" % opt.remainder[0])
             sys.exit(1)
         self.cmd = self.subcommands[opt.remainder[0]](
-            opt.remainder[1:], prog=prog + " " + opt.remainder[0]
+            opt.remainder[1:], prog + " " + opt.remainder[0]
         )
 
     def do(self):

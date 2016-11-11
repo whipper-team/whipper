@@ -53,7 +53,7 @@ class Find(logcommand.Lager):
     description = """Find drive's read offset by ripping tracks from a
 CD in the AccurateRip database."""
 
-    def __init__(self, argv, prog=None):
+    def __init__(self, argv, prog):
         parser = argparse.ArgumentParser(
             prog=prog,
             description=self.description,

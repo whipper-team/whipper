@@ -64,7 +64,7 @@ You can get help on subcommands by using the -h option to the subcommand.
         'image':   image.Image
     }
 
-    def __init__(self, argv, prog=None):
+    def __init__(self, argv, prog):
         parser = argparse.ArgumentParser(
             prog=prog,
             add_help=False,
@@ -94,7 +94,7 @@ You can get help on subcommands by using the -h option to the subcommand.
             sys.stderr.write("incorrect subcommand: %s" % opt.remainder[0])
             sys.exit(1)
         self.cmd = self.subcommands[opt.remainder[0]](
-            opt.remainder[1:], prog=prog + " " + opt.remainder[0]
+            opt.remainder[1:], prog + " " + opt.remainder[0]
         )
 
 class Rip(logcommand.LogCommand):

@@ -30,7 +30,7 @@ class Show(logcommand.Lager):
 retrieves and display accuraterip data from the given URL
 """
 
-    def __init__(self, argv, prog=None):
+    def __init__(self, argv, prog):
         parser = argparse.ArgumentParser(
             prog=prog,
             description=self.description

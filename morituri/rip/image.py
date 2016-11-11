@@ -107,7 +107,7 @@ class Retag(logcommand.Lager):
 Retags the image from the given .cue files with tags obtained from MusicBrainz.
 """
 
-    def __init__(self, argv, prog=None):
+    def __init__(self, argv, prog):
         parser = argparse.ArgumentParser(
             prog=prog,
             description=self.description
@@ -186,7 +186,7 @@ class Verify(logcommand.Lager):
 Verifies the image from the given .cue files against the AccurateRip database.
 """
 
-    def __init__(self, argv, prog=None):
+    def __init__(self, argv, prog):
         parser = argparse.ArgumentParser(
             prog=prog,
             description=self.description

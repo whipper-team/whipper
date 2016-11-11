@@ -32,7 +32,7 @@ class Analyze(logcommand.Lager):
     summary = "analyze caching behaviour of drive"
     description = """Determine whether cdparanoia can defeat the audio cache of the drive."""
 
-    def __init__(self, argv, prog=None):
+    def __init__(self, argv, prog):
         parser = argparse.ArgumentParser(
             prog=prog,
             description=self.description
@@ -84,7 +84,7 @@ class List(logcommand.Lager):
     summary = "list drives"
     description = """list available CD-DA drives"""
 
-    def __init__(self, argv, prog=None):
+    def __init__(self, argv, prog):
         parser = argparse.ArgumentParser(
             prog=prog,
             description=self.description
