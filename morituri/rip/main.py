@@ -24,7 +24,7 @@ def main():
     )
     map(pkg_resources.working_set.add, distributions)
     try:
-        ret = Whipper(sys.argv[1:], prog=os.path.basename(sys.argv[0]))
+        ret = Whipper(sys.argv[1:], prog=os.path.basename(sys.argv[0])).do()
     except SystemError, e:
         sys.stderr.write('rip: error: %s\n' % e.args)
         return 255
@@ -93,7 +93,7 @@ You can get help on subcommands by using the -h option to the subcommand.
         if not opt.remainder[0] in self.subcommands:
             sys.stderr.write("incorrect subcommand: %s" % opt.remainder[0])
             sys.exit(1)
-        return self.subcommands[opt.remainder[0]](
+        self.cmd = self.subcommands[opt.remainder[0]](
             opt.remainder[1:], prog=prog + " " + opt.remainder[0]
         )
 

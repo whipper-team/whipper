@@ -24,8 +24,6 @@ import argparse
 import os
 import sys
 
-import logging
-
 from morituri.common import logcommand, accurip, program, config
 from morituri.image import image
 from morituri.result import result
@@ -108,7 +106,6 @@ class Retag(logcommand.Lager):
     description = """
 Retags the image from the given .cue files with tags obtained from MusicBrainz.
 """
-    stdout = sys.stdout
 
     def __init__(self, argv, prog=None):
         parser = argparse.ArgumentParser(
@@ -133,16 +130,15 @@ Retags the image from the given .cue files with tags obtained from MusicBrainz.
             help="Filter releases by country"
         )
         self.options = parser.parse_args(argv)
-        return self.do(self.options.cuefile)
 
-    def do(self, args):
+    def do(self):
         # here to avoid import gst eating our options
         from morituri.common import encode
 
         prog = program.Program(self.config, stdout=self.stdout)
         runner = task.SyncRunner()
 
-        for arg in args:
+        for arg in self.options.cuefile:
             self.stdout.write('Retagging image %r\n' % arg)
             arg = arg.decode('utf-8')
             cueImage = image.Image(arg)
@@ -197,15 +193,14 @@ Verifies the image from the given .cue files against the AccurateRip database.
         )
         parser.add_argument('cuefile', nargs='+', action='store',
                             help="cue file to load rip image from")
-        options = parser.parse_args(argv)
-        return self.do(options.cuefile)
+        self.options = parser.parse_args(argv)
 
-    def do(self, args):
+    def do(self):
         prog = program.Program(self.config)
         runner = task.SyncRunner()
         cache = accurip.AccuCache()
 
-        for arg in args:
+        for arg in self.options.cuefile:
             arg = arg.decode('utf-8')
             cueImage = image.Image(arg)
             cueImage.setup(runner)
@@ -237,23 +232,3 @@ compressed encoding), retagged and verified.
         'verify': Verify,
         'retag': Retag
     }
-
-    def __init__(self, argv, prog=None):
-        parser = argparse.ArgumentParser(
-            prog=prog,
-            description=self.description,
-            epilog=self.epilog(),
-            formatter_class=argparse.RawDescriptionHelpFormatter
-        )
-        parser.add_argument('remainder', nargs=argparse.REMAINDER,
-                            help=argparse.SUPPRESS)
-        opt = parser.parse_args(argv)
-        if not opt.remainder:
-            parser.print_help()
-            sys.exit(0)
-        if not opt.remainder[0] in self.subcommands:
-            sys.stderr.write("incorrect subcommand: %s" % opt.remainder[0])
-            sys.exit(1)
-        return self.subcommands[opt.remainder[0]](
-            opt.remainder[1:], prog=prog + " " + opt.remainder[0]
-        )

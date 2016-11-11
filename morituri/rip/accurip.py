@@ -21,20 +21,28 @@
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
 from morituri.common import logcommand, accurip
+import argparse
+import sys
 
-
-class Show(logcommand.LogCommand):
-
+class Show(logcommand.Lager):
     summary = "show accuraterip data"
+    description = """
+retrieves and display accuraterip data from the given URL
+"""
 
-    def do(self, args):
+    def __init__(self, argv, prog=None):
+        parser = argparse.ArgumentParser(
+            prog=prog,
+            description=self.description
+        )
+        parser.add_argument('url', action='store',
+                            help="accuraterip URL to load data from")
+        self.options = parser.parse_args(argv)
+        #print opt.url
+        #self.rc = self.do(opt.url)
 
-        try:
-            url = args[0]
-        except IndexError:
-            self.stdout.write('Please specify an accuraterip URL.\n')
-            return 3
-
+    def do(self):
+        url = self.options.url
         cache = accurip.AccuCache()
         responses = cache.retrieve(url)
 
@@ -86,7 +94,12 @@ class Show(logcommand.LogCommand):
                     str(checksums[checksum])))
 
 
-class AccuRip(logcommand.LogCommand):
+class AccuRip(logcommand.Lager):
     summary = "handle AccurateRip information"
-
-    subCommandClasses = [Show, ]
+    description = """
+Handle AccurateRip information. Retrieves AccurateRip disc entries and
+displays diagnostic information.
+"""
+    subcommands = {
+        'show': Show
+    }

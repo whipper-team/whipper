@@ -26,15 +26,50 @@ Logging Command.
 
 from morituri.extern.command import command
 from morituri.common import log, config
+import argparse
 import logging
+import sys
 
 class Lager():
     """
     Provides self.debug() logging facility for existing commands.
     Provides self.epilog() formatting command for argparse.
-    Provides config.Config() object for commands.
+    Provides self.config, self.stdout objects for children.
+
+    __init__() registers a subcommand with .cmd that is executed
+    by do(); this is because python does not allow returning values
+    from __init__().
     """
     config = config.Config()
+    stdout = sys.stdout
+
+    def __init__(self, argv, prog=None):
+        """
+        Launch subcommands without any mid-level options.
+        Override to include options.
+        """
+        parser = argparse.ArgumentParser(
+            prog=prog,
+            description=self.description,
+            epilog=self.epilog(),
+            formatter_class=argparse.RawDescriptionHelpFormatter
+        )
+        parser.add_argument('remainder', nargs=argparse.REMAINDER,
+                            help=argparse.SUPPRESS)
+        opt = parser.parse_args(argv)
+        if not opt.remainder:
+            parser.print_help()
+            sys.exit(0)
+        if not opt.remainder[0] in self.subcommands:
+            sys.stderr.write("incorrect subcommand: %s" % opt.remainder[0])
+            sys.exit(1)
+        self.cmd = self.subcommands[opt.remainder[0]](
+            opt.remainder[1:], prog=prog + " " + opt.remainder[0]
+        )
+
+    def do(self):
+        return self.cmd.do()
+
     def debug(self, format, *args):
         kwargs = {}
         pass
