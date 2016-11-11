@@ -32,6 +32,7 @@ class Lager():
     """
     Provides self.debug() logging facility for existing commands.
     Provides self.epilog() formatting command for argparse.
+    Provides config.Config() object for commands.
     """
     config = config.Config()
     def debug(self, format, *args):
