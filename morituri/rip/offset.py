@@ -64,19 +64,8 @@ CD in the AccurateRip database."""
             action="store", dest="offsets", default=OFFSETS,
             help="list of offsets, comma-separated, colon-separated for ranges"
         )
-        # pick the first drive as default
-        drives = drive.getAllDevicePaths()
-        if not drives:
-            self.error('No CD-DA drives found!')
-            #return 3
-        parser.add_argument(
-            '-d', '--device',
-            action="store", dest="device", default=drives[0],
-            help="CD-DA device"
-        )
-        self.options = parser.parse_args(argv)
-        # this can be a symlink to another device
-        self.options.device = os.path.realpath(self.options.device)
+        with self.device_option(parser):
+            self.options = parser.parse_args(argv)
         self._offsets = []
         blocks = self.options.offsets.split(',')
         for b in blocks:

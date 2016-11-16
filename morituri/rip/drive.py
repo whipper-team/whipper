@@ -34,23 +34,11 @@ class Analyze(logcommand.Lager):
 
     def __init__(self, argv, prog):
         parser = argparse.ArgumentParser(
-            prog=prog,
-            description=self.description
-        )
-        # pick the first drive as default
-        # this can be a symlink to another device
-        drives = drive.getAllDevicePaths()
-        if not drives:
-            self.error('No CD-DA drives found!')
-            #return 3
-        parser.add_argument(
-            '-d', '--device',
-            action="store", dest="device", default=drives[0],
-            help="CD-DA device"
-        )
-        self.options = parser.parse_args(argv)
-        # this can be a symlink to another device
-        self.options.device = os.path.realpath(self.options.device)
+                prog=prog,
+                description=self.description
+                )
+        with self.device_option(parser):
+            self.options = parser.parse_args(argv)
 
     def do(self):
         runner = task.SyncRunner()

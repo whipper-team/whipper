@@ -25,10 +25,12 @@ Logging Command.
 """
 
 from morituri.extern.command import command
-from morituri.common import log, config
+from morituri.common import log, config, drive
 import argparse
+import contextlib
 import logging
 import sys
+import os
 
 class Lager():
     """
@@ -75,6 +77,24 @@ class Lager():
         # FIXME
         kwargs = {}
         pass
+
+    @contextlib.contextmanager
+    def device_option(self, parser):
+        """
+        Wrap self.options = parser.parse_args(...) to add --device param.
+        """
+        # pick the first drive as default
+        drives = drive.getAllDevicePaths()
+        if not drives:
+            self.error('No CD-DA drives found!')
+            # morituri exited with return code 3 here
+        parser.add_argument('-d', '--device',
+                            action="store", dest="device", default=drives[0],
+                            help="CD-DA device")
+        yield
+        # this can be a symlink to another device
+        self.options.device = os.path.realpath(self.options.device)
+        # FIXME should raise an error / exit if options.device does not exist.
 
     def error(self, msg):
         # FIXME
