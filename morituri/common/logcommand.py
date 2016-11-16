@@ -32,6 +32,19 @@ import logging
 import sys
 import os
 
+# What about argparse.add_subparsers(), you ask?
+# Unfortunately add_subparsers() does not support specifying the
+# formatter_class of subparsers, nor does it support epilogs, so
+# unfortunately it does not quite fit our use case. Besides, using this
+# structure made the migration from python-command more straightforward.
+
+# Why not subclass ArgumentParser and extend/replace the relevant methods?
+# If this can be done in a simpler fashion than this current implementation,
+# by all means submit a patch.
+
+# Why not argparse.parse_known_args()?
+# TODO investigation
+
 class Lager():
     """
     Provides self.debug() logging facility for existing commands.
@@ -46,7 +59,7 @@ class Lager():
     config = config.Config()
     stdout = sys.stdout
 
-    def __init__(self, argv, prog):
+    def __init__(self, argv, prog, opts):
         """
         Launch subcommands without any mid-level options.
         Override to include options.
@@ -59,7 +72,7 @@ class Lager():
         )
         parser.add_argument('remainder', nargs=argparse.REMAINDER,
                             help=argparse.SUPPRESS)
-        opt = parser.parse_args(argv)
+        opt = parser.parse_args(argv, namespace=opts)
         if not opt.remainder:
             parser.print_help()
             sys.exit(0)
@@ -67,7 +80,7 @@ class Lager():
             sys.stderr.write("incorrect subcommand: %s" % opt.remainder[0])
             sys.exit(1)
         self.cmd = self.subcommands[opt.remainder[0]](
-            opt.remainder[1:], prog + " " + opt.remainder[0]
+            opt.remainder[1:], prog + " " + opt.remainder[0], opts
         )
 
     def do(self):

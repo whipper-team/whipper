@@ -82,18 +82,18 @@ You can get help on subcommands by using the -h option to the subcommand.
                             help="show this help message and exit")
         parser.add_argument('remainder', nargs=argparse.REMAINDER,
                             help=argparse.SUPPRESS)
-        opt = parser.parse_args(argv)
-        if opt.help or not opt.remainder:
+        opts = parser.parse_args(argv)
+        if opts.help or not opts.remainder:
             parser.print_help()
             sys.exit(0)
-        if opt.version:
+        if opts.version:
             print "whipper %s" % configure.version
             sys.exit(0)
-        if not opt.remainder[0] in self.subcommands:
-            sys.stderr.write("incorrect subcommand: %s" % opt.remainder[0])
+        if not opts.remainder[0] in self.subcommands:
+            sys.stderr.write("incorrect subcommand: %s" % opts.remainder[0])
             sys.exit(1)
-        self.cmd = self.subcommands[opt.remainder[0]](
-            opt.remainder[1:], prog + " " + opt.remainder[0]
+        self.cmd = self.subcommands[opts.remainder[0]](
+            opts.remainder[1:], prog + " " + opts.remainder[0], opts
         )
 
 class Rip(logcommand.LogCommand):

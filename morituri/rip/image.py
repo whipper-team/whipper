@@ -107,7 +107,7 @@ class Retag(logcommand.Lager):
 Retags the image from the given .cue files with tags obtained from MusicBrainz.
 """
 
-    def __init__(self, argv, prog):
+    def __init__(self, argv, prog, opts):
         parser = argparse.ArgumentParser(
             prog=prog,
             description=self.description
@@ -129,7 +129,7 @@ Retags the image from the given .cue files with tags obtained from MusicBrainz.
             action="store", dest="country",
             help="Filter releases by country"
         )
-        self.options = parser.parse_args(argv)
+        self.options = parser.parse_args(argv, namespace=opt)
 
     def do(self):
         # here to avoid import gst eating our options
@@ -186,14 +186,14 @@ class Verify(logcommand.Lager):
 Verifies the image from the given .cue files against the AccurateRip database.
 """
 
-    def __init__(self, argv, prog):
+    def __init__(self, argv, prog, opts):
         parser = argparse.ArgumentParser(
             prog=prog,
             description=self.description
         )
         parser.add_argument('cuefile', nargs='+', action='store',
                             help="cue file to load rip image from")
-        self.options = parser.parse_args(argv)
+        self.options = parser.parse_args(argv, namespace=opts)
 
     def do(self):
         prog = program.Program(self.config)
