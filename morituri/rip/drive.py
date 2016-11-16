@@ -36,7 +36,7 @@ class Analyze(logcommand.Lager):
         parser = argparse.ArgumentParser(
                 prog=prog,
                 description=self.description
-                )
+        )
         with self.device_option(parser):
             self.options = parser.parse_args(argv)
 
