@@ -20,11 +20,13 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
+import argparse
 import os
 import math
 import glob
 import urllib2
 import socket
+import sys
 
 import gobject
 gobject.threads_init()
@@ -41,8 +43,7 @@ from morituri.extern.command import command
 SILENT = 1e-10
 MAX_TRIES = 5
 
-
-class _CD(logcommand.LogCommand):
+class _CD(logcommand.Lager):
 
     """
     @type program: L{program.Program}
@@ -51,30 +52,32 @@ class _CD(logcommand.LogCommand):
 
     eject = True
 
-    def addOptions(self):
+    @staticmethod
+    def add_arguments(parser):
         # FIXME: have a cache of these pickles somewhere
-        self.parser.add_option('-T', '--toc-pickle',
+        parser.add_argument('-T', '--toc-pickle',
             action="store", dest="toc_pickle",
             help="pickle to use for reading and writing the TOC")
-        self.parser.add_option('-R', '--release-id',
+        parser.add_argument('-R', '--release-id',
             action="store", dest="release_id",
             help="MusicBrainz release id to match to (if there are multiple)")
-        self.parser.add_option('-p', '--prompt',
+        parser.add_argument('-p', '--prompt',
             action="store_true", dest="prompt",
             help="Prompt if there are multiple matching releases")
-        self.parser.add_option('-c', '--country',
+        parser.add_argument('-c', '--country',
             action="store", dest="country",
             help="Filter releases by country")
 
 
-    def do(self, args):
-        self.program = program.Program(self.getRootCommand().config,
-            record=self.getRootCommand().record,
+    def do(self):
+        self.program = program.Program(self.config,
+            record=self.options.record,
             stdout=self.stdout)
         self.runner = task.SyncRunner()
 
         # if the device is mounted (data session), unmount it
-        self.device = self.parentCommand.options.device
+        #self.device = self.parentCommand.options.device
+        self.device = self.options.device
         self.stdout.write('Checking device %s\n' % self.device)
 
         self.program.loadDevice(self.device)
@@ -113,12 +116,13 @@ class _CD(logcommand.LogCommand):
                     self.program.ejectDevice(self.device)
                 return -1
 
+        # FIXME ?????
         # Hackish fix for broken commit
         offset = 0
-        info = drive.getDeviceInfo(self.parentCommand.options.device)
+        info = drive.getDeviceInfo(self.device)
         if info:
             try:
-                offset = self.getRootCommand().config.getReadOffset(*info)
+                offset = self.config.getReadOffset(*info)
             except KeyError:
                 pass
 
@@ -148,11 +152,11 @@ class _CD(logcommand.LogCommand):
         self.program.result.cdrdaoVersion = cdrdao.getCDRDAOVersion()
         self.program.result.cdparanoiaVersion = \
             cdparanoia.getCdParanoiaVersion()
-        info = drive.getDeviceInfo(self.parentCommand.options.device)
+        info = drive.getDeviceInfo(self.device)
         if info:
             try:
                 self.program.result.cdparanoiaDefeatsCache = \
-                    self.getRootCommand().config.getDefeatsCache(*info)
+                    self.config.getDefeatsCache(*info)
             except KeyError, e:
                 self.debug('Got key error: %r' % (e, ))
         self.program.result.artist = self.program.metadata \
@@ -182,13 +186,21 @@ class _CD(logcommand.LogCommand):
 
 class Info(_CD):
     summary = "retrieve information about the currently inserted CD"
-
+    description = ("Display musicbrainz, CDDB/FreeDB, and AccurateRip"
+                   "information for the currently inserted CD.")
     eject = False
 
+    def __init__(self, argv, prog, opts):
+        # Requires opts.device
+        parser = argparse.ArgumentParser(
+            prog=prog,
+            description=self.description
+        )
+        _CD.add_arguments(parser)
+        self.options = parser.parse_args(argv, namespace=opts)
 
 class Rip(_CD):
     summary = "rip CD"
-
     # see morituri.common.program.Program.getPath for expansion
     description = """
 Rips a CD.
@@ -202,74 +214,68 @@ All files will be created relative to the given output directory.
 Log files will log the path to tracks relative to this directory.
 """ % rcommon.TEMPLATE_DESCRIPTION
 
-    def addOptions(self):
-        _CD.addOptions(self)
+    def __init__(self, argv, prog, opts):
+        # Requires opts.record
+        # Requires opts.device
+        parser = argparse.ArgumentParser(
+            prog=prog,
+            description=self.description,
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter
+        )
 
         loggers = result.getLoggers().keys()
+        default_offset = None
+        info = drive.getDeviceInfo(opts.device)
+        if info:
+            try:
+                default_offset = self.config.getReadOffset(*info)
+                self.stdout.write("Using configured read offset %d\n" %
+                                  default_offset)
+            except KeyError:
+                pass
 
-        self.parser.add_option('-L', '--logger',
-            action="store", dest="logger",
-            default='morituri',
-            help="logger to use "
-                "(default '%default', choose from '" +
-                    "', '".join(loggers) + "')")
+        _CD.add_arguments(parser)
+        parser.add_argument('-L', '--logger',
+            action="store", dest="logger", default='morituri',
+            help="logger to use (choose from '" + "', '".join(loggers) + "')")
         # FIXME: get from config
-        self.parser.add_option('-o', '--offset',
-            action="store", dest="offset",
-            help="sample read offset (defaults to configured value, or 0)")
-        self.parser.add_option('-x', '--force-overread',
-            action="store_true", dest="overread",
+        parser.add_argument('-o', '--offset',
+            action="store", dest="offset", default=default_offset,
+            help="sample read offset")
+        parser.add_argument('-x', '--force-overread',
+            action="store_true", dest="overread", default=False,
             help="Force overreading into the lead-out portion of the disc. "
                 "Works only if the patched cdparanoia package is installed "
-                "and the drive supports this feature. "
-                "The default value is: %default",
-            default=False)
-        self.parser.add_option('-O', '--output-directory',
+                "and the drive supports this feature. ")
+        parser.add_argument('-O', '--output-directory',
             action="store", dest="output_directory",
-            help="output directory; will be included in file paths in result "
-                "files "
-                "(defaults to absolute path to current directory; set to "
-                "empty if you want paths to be relative instead; "
-                "configured value: %default) ")
-        self.parser.add_option('-W', '--working-directory',
+            default=os.path.relpath(os.getcwd()),
+            help="output directory; will be included in file paths in log")
+        parser.add_argument('-W', '--working-directory',
             action="store", dest="working_directory",
             help="working directory; morituri will change to this directory "
-                "and files will be created relative to it when not absolute "
-                "(configured value: %default) ")
-
-        rcommon.addTemplate(self)
-
-        default = 'flac'
-
-        # here to avoid import gst eating our options
-        from morituri.common import encode
-
-        self.parser.add_option('', '--profile',
-            action="store", dest="profile",
-            help="profile for encoding (default '%%default', choices '%s')" % (
-                "', '".join(encode.PROFILES.keys())),
-            default=default)
-        self.parser.add_option('-U', '--unknown',
+                "and files will be created relative to it when not absolute")
+        parser.add_argument('--track-template',
+            action="store", dest="track_template",
+            default=rcommon.DEFAULT_TRACK_TEMPLATE,
+            help="template for track file naming (default default)")
+        parser.add_argument('--disc-template',
+            action="store", dest="disc_template",
+            default=rcommon.DEFAULT_DISC_TEMPLATE,
+            help="template for disc file naming (default default)")
+        parser.add_argument('-U', '--unknown',
             action="store_true", dest="unknown",
-            help="whether to continue ripping if the CD is unknown (%default)",
+            help="whether to continue ripping if the CD is unknown",
             default=False)
 
-    def handleOptions(self, options):
-        options.track_template = options.track_template.decode('utf-8')
-        options.disc_template = options.disc_template.decode('utf-8')
+        self.options = parser.parse_args(argv, namespace=opts)
 
-        if options.offset is None:
-            info = drive.getDeviceInfo(self.parentCommand.options.device)
-            if info:
-                try:
-                    options.offset = self.getRootCommand(
-                        ).config.getReadOffset(*info)
-                    self.stdout.write("Using configured read offset %d\n" %
-                        options.offset)
-                except KeyError:
-                    pass
+        self.options.output_directory = os.path.expanduser(self.options.output_directory)
 
-        if options.offset is None:
+        self.options.track_template = self.options.track_template.decode('utf-8')
+        self.options.disc_template = self.options.disc_template.decode('utf-8')
+
+        if self.options.offset is None:
             raise ValueError("Drive offset is unconfigured.\n"
                              "Please install pycdio and run 'rip offset "
                              "find' to detect your drive's offset or set it "
@@ -277,29 +283,24 @@ Log files will log the path to tracks relative to this directory.
                              "also be specified at runtime using the "
                              "'--offset=value' argument")
 
-        if self.options.output_directory is None:
-            self.options.output_directory = os.getcwd()
-        else:
-            self.options.output_directory = os.path.expanduser(self.options.output_directory)
 
         if self.options.working_directory is not None:
             self.options.working_directory = os.path.expanduser(self.options.working_directory)
 
         if self.options.logger:
             try:
-                klazz = result.getLoggers()[self.options.logger]
+                self.logger = result.getLoggers()[self.options.logger]()
             except KeyError:
-                self.stderr.write("No logger named %s found!\n" % (
-                    self.options.logger))
+                sys.stderr.write("No logger named %s found!\n" % (
+                                 self.options.logger))
                 raise command.CommandError("No logger named %s" %
-                    self.options.logger)
+                                           self.options.logger)
 
-            self.logger = klazz()
 
     def doCommand(self):
         # here to avoid import gst eating our options
         from morituri.common import encode
-        profile = encode.PROFILES[self.options.profile]()
+        profile = encode.PROFILES['flac']()
         self.program.result.profileName = profile.name
         self.program.result.profilePipeline = profile.pipeline
         elementFactory = profile.pipeline.split(' ')[0]
@@ -406,7 +407,7 @@ Log files will log the path to tracks relative to this directory.
                             number, tries)
                         self.program.ripTrack(self.runner, trackResult,
                             offset=int(self.options.offset),
-                            device=self.parentCommand.options.device,
+                            device=self.device,
                             profile=profile,
                             taglist=self.program.getTagList(number),
                             overread=self.options.overread,
@@ -570,26 +571,33 @@ Log files will log the path to tracks relative to this directory.
         self.program.ejectDevice(self.device)
 
 
-class CD(logcommand.LogCommand):
-
+class CD(logcommand.Lager):
     summary = "handle CDs"
+    description = "Display and rip CD-DA and metadata."
 
-    subCommandClasses = [Info, Rip, ]
+    subcommands = {
+        'info': Info,
+        'rip': Rip
+    }
 
-    def addOptions(self):
-        self.parser.add_option('-d', '--device',
-            action="store", dest="device",
-            help="CD-DA device")
-
-    def handleOptions(self, options):
-        if not options.device:
-            drives = drive.getAllDevicePaths()
-            if not drives:
-                self.error('No CD-DA drives found!')
-                return 3
-
-            # pick the first
-            self.options.device = drives[0]
-
-        # this can be a symlink to another device
-        self.options.device = os.path.realpath(self.options.device)
+    def __init__(self, argv, prog, opts):
+        parser = argparse.ArgumentParser(
+            prog=prog,
+            description=self.description,
+            epilog=self.epilog(),
+            formatter_class=argparse.RawDescriptionHelpFormatter
+        )
+        parser.add_argument('remainder', nargs=argparse.REMAINDER,
+                            help=argparse.SUPPRESS)
+        with self.device_option(parser):
+            self.options = parser.parse_args(argv, namespace=opts)
+        if not self.options.remainder:
+            parser.print_help()
+            sys.exit(0)
+        if not self.options.remainder[0] in self.subcommands:
+            sys.stderr.write("incorrect subcommand: %s"
+                             % self.options.remainder[0])
+            sys.exit(1)
+        self.cmd = self.subcommands[self.options.remainder[0]](
+            self.options.remainder[1:], prog + " " + self.options.remainder[0], opts
+        )
