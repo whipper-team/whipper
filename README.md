@@ -119,7 +119,7 @@ is not, because the `-d` argument applies to the whipper command.
 ## Getting started
 The simplest way to get started making accurate rips is:
 
-1. Pick a relatively popular CD that has a good change of being in the AccurateRip database
+1. Pick a relatively popular CD that has a good chance of being in the AccurateRip database
 2. Analyze the drive's caching behavior
 
    `whipper drive analyze`
