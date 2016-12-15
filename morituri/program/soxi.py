@@ -21,16 +21,15 @@ class AudioLengthTask(ctask.PopenTask, log.Loggable):
         """
         assert type(path) is unicode, "%r is not unicode" % path
 
-        self._path = path
         self.logName = os.path.basename(path).encode('utf-8')
 
-        self.command = [SOXI, '-s', self._path]
+        self.command = [SOXI, '-s', path]
 
         self._error = []
         self._output = []
 
     def commandMissing(self):
-        raise common.MissingDependencyException('sox')
+        raise common.MissingDependencyException('soxi')
 
     def readbytesout(self, bytes):
         self._output.append(bytes)
