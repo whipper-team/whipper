@@ -38,7 +38,6 @@ from morituri.rip import common as rcommon
 from morituri.extern.command import command
 
 
-SILENT = 1e-10
 MAX_TRIES = 5
 
 
@@ -441,8 +440,8 @@ Log files will log the path to tracks relative to this directory.
             if number == 0:
                 # HTOA goes on index 0 of track 1
                 # ignore silence in PREGAP
-                if trackResult.peak <= SILENT:
-                    self.debug('HTOA peak %r is below SILENT threshold, disregarding', trackResult.peak)
+                if trackResult.peak == 0.0:
+                    self.debug('HTOA peak %r is 0.0, disregarding', trackResult.peak)
                     self.itable.setFile(1, 0, None,
                         self.ittoc.getTrackStart(1), number)
                     self.debug('Unlinking %r', trackResult.filename)
