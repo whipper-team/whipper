@@ -165,7 +165,9 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
             result = sink.send_event(event)
             logger.debug('event sent, result %r', result)
             if not result:
-                self.error('Failed to select samples with GStreamer seek event')
+                msg = 'Failed to select samples with GStreamer seek event'
+                logger.error(msg)
+                raise Exception(msg)
         sink.connect('new-buffer', self._new_buffer_cb)
         sink.connect('eos', self._eos_cb)
 

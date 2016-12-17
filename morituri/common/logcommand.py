@@ -47,7 +47,6 @@ import os
 
 class Lager():
     """
-    Provides self.error() raising facility for existing commands.
     Provides self.epilog() formatting command for argparse.
     Provides self.config, self.stdout objects for children.
 
@@ -93,8 +92,10 @@ class Lager():
         # pick the first drive as default
         drives = drive.getAllDevicePaths()
         if not drives:
-            self.error('No CD-DA drives found!')
+            msg = 'No CD-DA drives found!'
+            logger.error(msg)
             # morituri exited with return code 3 here
+            raise Exception(msg)
         parser.add_argument('-d', '--device',
                             action="store", dest="device", default=drives[0],
                             help="CD-DA device")
@@ -102,10 +103,6 @@ class Lager():
         # this can be a symlink to another device
         self.options.device = os.path.realpath(self.options.device)
         # FIXME should raise an error / exit if options.device does not exist.
-
-    def error(self, msg):
-        # FIXME
-        raise Exception(msg)
 
     def epilog(self):
         s = "commands:\n"

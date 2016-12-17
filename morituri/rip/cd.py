@@ -423,7 +423,7 @@ Log files will log the path to tracks relative to this directory.
 
 
                 if tries == MAX_TRIES:
-                    self.error('Giving up on track %d after %d times' % (
+                    logger.error('Giving up on track %d after %d times' % (
                         number, tries))
                     raise RuntimeError(
                         "track can't be ripped. "
