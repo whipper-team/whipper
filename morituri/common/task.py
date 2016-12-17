@@ -66,14 +66,14 @@ class PopenTask(log.Loggable, task.Task):
             ret = self._popen.recv()
 
             if ret:
-                self.log("read from stdout: %s", ret)
+                logger.debug("read from stdout: %s", ret)
                 self.readbytesout(ret)
                 read = True
 
             ret = self._popen.recv_err()
 
             if ret:
-                self.log("read from stderr: %s", ret)
+                logger.debug("read from stderr: %s", ret)
                 self.readbyteserr(ret)
                 read = True
 

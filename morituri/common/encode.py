@@ -329,7 +329,7 @@ class EncodeTask(ctask.GstPipelineTask):
 
         for p in s['peak']:
             if self._peakdB < p:
-                self.log('higher peakdB found, now %r', self._peakdB)
+                logger.debug('higher peakdB found, now %r', self._peakdB)
                 self._peakdB = p
 
         # FIXME: works around a bug on F-15 where buffer probes don't seem

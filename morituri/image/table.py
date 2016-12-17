@@ -341,8 +341,8 @@ class Table(object, log.Loggable):
         @returns: the 28-character base64-encoded disc ID
         """
         if self.mbdiscid:
-            self.log('getMusicBrainzDiscId: returning cached %r'
-                     % self.mbdiscid)
+            logger.debug('getMusicBrainzDiscId: returning cached %r'
+                         % self.mbdiscid)
             return self.mbdiscid
         values = self._getMusicBrainzValues()
 
@@ -390,7 +390,7 @@ class Table(object, log.Loggable):
         assert len(result) == 28, \
             "Result should be 28 characters, not %d" % len(result)
 
-        self.log('getMusicBrainzDiscId: returning %r' % result)
+        logger.debug('getMusicBrainzDiscId: returning %r' % result)
         self.mbdiscid = result
         return result
 
@@ -478,7 +478,7 @@ class Table(object, log.Loggable):
                 pass
 
 
-        self.log('Musicbrainz values: %r', result)
+        logger.debug('Musicbrainz values: %r', result)
         return result
 
     def getAccurateRipIds(self):
