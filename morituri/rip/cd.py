@@ -39,6 +39,9 @@ from morituri.rip import common as rcommon
 
 from morituri.extern.command import command
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 SILENT = 1e-10
 MAX_TRIES = 5
@@ -158,7 +161,7 @@ class _CD(logcommand.Lager):
                 self.program.result.cdparanoiaDefeatsCache = \
                     self.config.getDefeatsCache(*info)
             except KeyError, e:
-                self.debug('Got key error: %r' % (e, ))
+                logger.debug('Got key error: %r' % (e, ))
         self.program.result.artist = self.program.metadata \
             and self.program.metadata.artist \
             or 'Unknown Artist'
@@ -350,14 +353,14 @@ Log files will log the path to tracks relative to this directory.
         # FIXME: turn this into a method
 
         def ripIfNotRipped(number):
-            self.debug('ripIfNotRipped for track %d' % number)
+            logger.debug('ripIfNotRipped for track %d' % number)
             # we can have a previous result
             trackResult = self.program.result.getTrackResult(number)
             if not trackResult:
                 trackResult = result.TrackResult()
                 self.program.result.tracks.append(trackResult)
             else:
-                self.debug('ripIfNotRipped have trackresult, path %r' %
+                logger.debug('ripIfNotRipped have trackresult, path %r' %
                     trackResult.filename)
 
             path = self.program.getPath(self.program.outdir,
@@ -365,7 +368,7 @@ Log files will log the path to tracks relative to this directory.
                 self.mbdiscid, number,
                 profile=profile, disambiguate=disambiguate) \
                 + '.' + profile.extension
-            self.debug('ripIfNotRipped: path %r' % path)
+            logger.debug('ripIfNotRipped: path %r' % path)
             trackResult.number = number
 
             assert type(path) is unicode, "%r is not unicode" % path
@@ -378,7 +381,7 @@ Log files will log the path to tracks relative to this directory.
                 if path != trackResult.filename:
                     # the path is different (different name/template ?)
                     # but we can copy it
-                    self.debug('previous result %r, expected %r' % (
+                    logger.debug('previous result %r, expected %r' % (
                         trackResult.filename, path))
 
                 self.stdout.write('Verifying track %d of %d: %s\n' % (
@@ -389,7 +392,7 @@ Log files will log the path to tracks relative to this directory.
                     os.unlink(path)
 
             if not os.path.exists(path):
-                self.debug('path %r does not exist, ripping...' % path)
+                logger.debug('path %r does not exist, ripping...' % path)
                 tries = 0
                 # we reset durations for test and copy here
                 trackResult.testduration = 0.0
@@ -403,7 +406,7 @@ Log files will log the path to tracks relative to this directory.
                         number, len(self.itable.tracks), extra,
                         os.path.basename(path).encode('utf-8')))
                     try:
-                        self.debug('ripIfNotRipped: track %d, try %d',
+                        logger.debug('ripIfNotRipped: track %d, try %d',
                             number, tries)
                         self.program.ripTrack(self.runner, trackResult,
                             offset=int(self.options.offset),
@@ -415,7 +418,7 @@ Log files will log the path to tracks relative to this directory.
                                 number, len(self.itable.tracks), extra))
                         break
                     except Exception, e:
-                        self.debug('Got exception %r on try %d',
+                        logger.debug('Got exception %r on try %d',
                             e, tries)
 
 
@@ -443,10 +446,10 @@ Log files will log the path to tracks relative to this directory.
                 # HTOA goes on index 0 of track 1
                 # ignore silence in PREGAP
                 if trackResult.peak <= SILENT:
-                    self.debug('HTOA peak %r is below SILENT threshold, disregarding', trackResult.peak)
+                    logger.debug('HTOA peak %r is below SILENT threshold, disregarding', trackResult.peak)
                     self.itable.setFile(1, 0, None,
                         self.ittoc.getTrackStart(1), number)
-                    self.debug('Unlinking %r', trackResult.filename)
+                    logger.debug('Unlinking %r', trackResult.filename)
                     os.unlink(trackResult.filename)
                     trackResult.filename = None
                     self.stdout.write('HTOA discarded, contains digital silence\n')
@@ -493,11 +496,11 @@ Log files will log the path to tracks relative to this directory.
         if not os.path.exists(dirname):
             os.makedirs(dirname)
 
-        self.debug('writing cue file for %r', discName)
+        logger.debug('writing cue file for %r', discName)
         self.program.writeCue(discName)
 
         # write .m3u file
-        self.debug('writing m3u file for %r', discName)
+        logger.debug('writing m3u file for %r', discName)
         m3uPath = u'%s.m3u' % discName
         handle = open(m3uPath, 'w')
         handle.write(u'#EXTM3U\n')

@@ -31,6 +31,8 @@ from morituri.common import directory
 
 from morituri.extern.log import log
 
+import logging
+logger = logging.getLogger(__name__)
 
 class Persister(log.Loggable):
     """
@@ -88,7 +90,7 @@ class Persister(log.Loggable):
         handle.close()
         # do an atomic move
         shutil.move(path, self._path)
-        self.debug('saved persisted object to %r' % self._path)
+        logger.debug('saved persisted object to %r' % self._path)
 
     def _unpickle(self, default=None):
         self.object = default
@@ -104,7 +106,7 @@ class Persister(log.Loggable):
 
         try:
             self.object = pickle.load(handle)
-            self.debug('loaded persisted object from %r' % self._path)
+            logger.debug('loaded persisted object from %r' % self._path)
         except:
             # can fail for various reasons; in that case, pretend we didn't
             # load it
@@ -142,7 +144,7 @@ class PersistedCache(log.Loggable):
             if hasattr(persister.object, 'instanceVersion'):
                 o = persister.object
                 if o.instanceVersion < o.__class__.classVersion:
-                    self.debug(
+                    logger.debug(
                         'key %r persisted object version %d is outdated',
                         key, o.instanceVersion)
                     persister.object = None
@@ -168,16 +170,16 @@ class ResultCache(log.Loggable):
         presult = self._pcache.get(cddbdiscid)
 
         if not presult.object:
-            self.debug('result for cddbdiscid %r not in cache', cddbdiscid)
+            logger.debug('result for cddbdiscid %r not in cache', cddbdiscid)
             if not create:
-                self.debug('returning None')
+                logger.debug('returning None')
                 return None
 
-            self.debug('creating result')
+            logger.debug('creating result')
             presult.object = result.RipResult()
             presult.persist(presult.object)
         else:
-            self.debug('result for cddbdiscid %r found in cache, reusing',
+            logger.debug('result for cddbdiscid %r found in cache, reusing',
                 cddbdiscid)
 
         return presult
@@ -215,11 +217,11 @@ class TableCache(log.Loggable):
             ptable = self._pcache.get(cddbdiscid)
             if ptable.object:
                 if ptable.object.getMusicBrainzDiscId() != mbdiscid:
-                    self.debug('cached table is for different mb id %r' % (
+                    logger.debug('cached table is for different mb id %r' % (
                         ptable.object.getMusicBrainzDiscId()))
                 ptable.object = None
             else:
-                self.debug('no valid cached table found for %r' %
+                logger.debug('no valid cached table found for %r' %
                     cddbdiscid)
 
         if not ptable.object:

@@ -36,6 +36,8 @@ from morituri.extern.task import task as etask
 
 from morituri.program.arc import accuraterip_checksum
 
+import logging
+logger = logging.getLogger(__name__)
 
 # checksums are not CRC's. a CRC is a specific type of checksum.
 
@@ -71,11 +73,11 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
 
         # use repr/%r because path can be unicode
         if sampleLength < 0:
-            self.debug(
+            logger.debug(
                 'Creating checksum task on %r from sample %d until the end',
                 path, sampleStart)
         else:
-            self.debug(
+            logger.debug(
                 'Creating checksum task on %r from sample %d for %d samples',
                 path, sampleStart, sampleLength)
 
@@ -109,7 +111,7 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
         # get length in samples of file
         sink = self.pipeline.get_by_name('sink')
 
-        self.debug('query duration')
+        logger.debug('query duration')
         try:
             length, qformat = sink.query_duration(gst.FORMAT_DEFAULT)
         except gst.QueryError, e:
@@ -118,9 +120,9 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
 
         # wavparse 0.10.14 returns in bytes
         if qformat == gst.FORMAT_BYTES:
-            self.debug('query returned in BYTES format')
+            logger.debug('query returned in BYTES format')
             length /= 4
-        self.debug('total sample length of file: %r', length)
+        logger.debug('total sample length of file: %r', length)
 
         return length
 
@@ -134,40 +136,40 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
 
         if self._sampleLength < 0:
             self._sampleLength = length - self._sampleStart
-            self.debug('sampleLength is queried as %d samples',
+            logger.debug('sampleLength is queried as %d samples',
                 self._sampleLength)
         else:
-            self.debug('sampleLength is known, and is %d samples' %
+            logger.debug('sampleLength is known, and is %d samples' %
                 self._sampleLength)
 
         self._sampleEnd = self._sampleStart + self._sampleLength - 1
-        self.debug('sampleEnd is sample %d' % self._sampleEnd)
+        logger.debug('sampleEnd is sample %d' % self._sampleEnd)
 
-        self.debug('event')
+        logger.debug('event')
 
 
         if self._sampleStart == 0 and self._sampleEnd + 1 == length:
-            self.debug('No need to seek, crcing full file')
+            logger.debug('No need to seek, crcing full file')
         else:
             # the segment end only is respected since -good 0.10.14.1
             event = gst.event_new_seek(1.0, gst.FORMAT_DEFAULT,
                 gst.SEEK_FLAG_FLUSH,
                 gst.SEEK_TYPE_SET, self._sampleStart,
                 gst.SEEK_TYPE_SET, self._sampleEnd + 1) # half-inclusive
-            self.debug('CRCing %r from frame %d to frame %d (excluded)' % (
+            logger.debug('CRCing %r from frame %d to frame %d (excluded)' % (
                 self._path,
                 self._sampleStart / common.SAMPLES_PER_FRAME,
                 (self._sampleEnd + 1) / common.SAMPLES_PER_FRAME))
             # FIXME: sending it with sampleEnd set screws up the seek, we
             # don't get # everything for flac; fixed in recent -good
             result = sink.send_event(event)
-            self.debug('event sent, result %r', result)
+            logger.debug('event sent, result %r', result)
             if not result:
                 self.error('Failed to select samples with GStreamer seek event')
         sink.connect('new-buffer', self._new_buffer_cb)
         sink.connect('eos', self._eos_cb)
 
-        self.debug('scheduling setting to play')
+        logger.debug('scheduling setting to play')
         # since set_state returns non-False, adding it as timeout_add
         # will repeatedly call it, and block the main loop; so
         #   gobject.timeout_add(0L, self.pipeline.set_state, gst.STATE_PLAYING)
@@ -179,30 +181,30 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
         self.schedule(0, play)
 
         #self.pipeline.set_state(gst.STATE_PLAYING)
-        self.debug('scheduled setting to play')
+        logger.debug('scheduled setting to play')
 
     def stopped(self):
-        self.debug('stopped')
+        logger.debug('stopped')
         if not self._last:
             # see http://bugzilla.gnome.org/show_bug.cgi?id=578612
-            self.debug(
+            logger.debug(
                 'not a single buffer gotten, setting exception EmptyError')
             self.setException(common.EmptyError('not a single buffer gotten'))
             return
         else:
             self._checksum = self._checksum % 2 ** 32
-            self.debug("last buffer's sample offset %r", self._last.offset)
-            self.debug("last buffer's sample size %r", len(self._last) / 4)
+            logger.debug("last buffer's sample offset %r", self._last.offset)
+            logger.debug("last buffer's sample size %r", len(self._last) / 4)
             last = self._last.offset + len(self._last) / 4 - 1
-            self.debug("last sample offset in buffer: %r", last)
-            self.debug("requested sample end: %r", self._sampleEnd)
-            self.debug("requested sample length: %r", self._sampleLength)
-            self.debug("checksum: %08X", self._checksum)
-            self.debug("bytes: %d", self._bytes)
+            logger.debug("last sample offset in buffer: %r", last)
+            logger.debug("requested sample end: %r", self._sampleEnd)
+            logger.debug("requested sample length: %r", self._sampleLength)
+            logger.debug("checksum: %08X", self._checksum)
+            logger.debug("bytes: %d", self._bytes)
             if self._sampleEnd != last:
                 msg = 'did not get all samples, %d of %d missing' % (
                     self._sampleEnd - last, self._sampleEnd)
-                self.warning(msg)
+                logger.warning(msg)
                 self.setExceptionAndTraceback(common.MissingFrames(msg))
                 return
 
@@ -231,7 +233,7 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
             buf.offset, buf.size))
         if self._first is None:
             self._first = buf.offset
-            self.debug('first sample is sample offset %r', self._first)
+            logger.debug('first sample is sample offset %r', self._first)
         self._last = buf
 
         assert len(buf) % 4 == 0, "buffer is not a multiple of 4 bytes"
@@ -257,7 +259,7 @@ class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
     def _eos_cb(self, sink):
         # get the last one; FIXME: why does this not get to us before ?
         #self._new_buffer_cb(sink)
-        self.debug('eos, scheduling stop')
+        logger.debug('eos, scheduling stop')
         self.schedule(0, self.stop)
 
 
@@ -335,7 +337,7 @@ class AccurateRipChecksumTask(ChecksumTask):
         if self._trackNumber == self._trackCount:
             discFrameLength = self._sampleLength / common.SAMPLES_PER_FRAME
             if self._discFrameCounter > discFrameLength - 5:
-                self.debug('skipping frame %d', self._discFrameCounter)
+                logger.debug('skipping frame %d', self._discFrameCounter)
                 return checksum
 
         # self._bytes is updated after do_checksum_buffer

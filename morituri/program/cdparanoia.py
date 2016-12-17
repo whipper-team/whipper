@@ -20,20 +20,22 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
 import errno
-import time
+import os
 import re
-import stat
 import shutil
+import stat
 import subprocess
 import tempfile
+import time
 
 from morituri.common import log, common
 from morituri.common import task as ctask
-
 from morituri.extern import asyncsub
 from morituri.extern.task import task
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 class FileSizeError(Exception):
@@ -130,12 +132,12 @@ class ProgressParser(log.Loggable):
         # set nframes if not yet set
         if self._nframes is None and self.read != 0:
             self._nframes = frameOffset - self.read
-            self.debug('set nframes to %r', self._nframes)
+            logger.debug('set nframes to %r', self._nframes)
 
         # set firstFrames if not yet set
         if self._firstFrames is None:
             self._firstFrames = frameOffset - self.start
-            self.debug('set firstFrames to %r', self._firstFrames)
+            logger.debug('set firstFrames to %r', self._firstFrames)
 
         markStart = None
         markEnd = None # the next unread frame (half-inclusive)
@@ -192,7 +194,7 @@ class ProgressParser(log.Loggable):
         """
         frames = self.stop - self.start + 1 # + 1 since stop is inclusive
         reads = self.reads
-        self.debug('getTrackQuality: frames %d, reads %d' % (frames, reads))
+        logger.debug('getTrackQuality: frames %d, reads %d' % (frames, reads))
 
         # don't go over a 100%; we know cdparanoia reads each frame at least
         # twice
@@ -271,11 +273,11 @@ class ReadTrackTask(log.Loggable, task.Task):
                 stopTrack = i + 1
                 stopOffset = self._stop - self._table.getTrackStart(i + 1)
 
-        self.debug('Ripping from %d to %d (inclusive)',
+        logger.debug('Ripping from %d to %d (inclusive)',
             self._start, self._stop)
-        self.debug('Starting at track %d, offset %d',
+        logger.debug('Starting at track %d, offset %d',
             startTrack, startOffset)
-        self.debug('Stopping at track %d, offset %d',
+        logger.debug('Stopping at track %d, offset %d',
             stopTrack, stopOffset)
 
         bufsize = 1024
@@ -291,7 +293,7 @@ class ReadTrackTask(log.Loggable, task.Task):
                 startTrack, common.framesToHMSF(startOffset),
                 stopTrack, common.framesToHMSF(stopOffset)),
             self.path])
-        self.debug('Running %s' % (" ".join(argv), ))
+        logger.debug('Running %s' % (" ".join(argv), ))
         try:
             self._popen = asyncsub.Popen(argv,
                 bufsize=bufsize,
@@ -333,7 +335,7 @@ class ReadTrackTask(log.Loggable, task.Task):
 
             # fail if too many errors
             if self._parser.errors > self._MAXERROR:
-                self.debug('%d errors, terminating', self._parser.errors)
+                logger.debug('%d errors, terminating', self._parser.errors)
                 self._popen.terminate()
 
             num = self._parser.wrote - self._start + 1
@@ -366,13 +368,13 @@ class ReadTrackTask(log.Loggable, task.Task):
         expected = offsetLength * common.BYTES_PER_FRAME + 44
         if size != expected:
             # FIXME: handle errors better
-            self.warning('file size %d did not match expected size %d',
+            logger.warning('file size %d did not match expected size %d',
                 size, expected)
             if (size - expected) % common.BYTES_PER_FRAME == 0:
-                self.warning('%d frames difference' % (
+                logger.warning('%d frames difference' % (
                     (size - expected) / common.BYTES_PER_FRAME))
             else:
-                self.warning('non-integral amount of frames difference')
+                logger.warning('non-integral amount of frames difference')
 
             self.setAndRaiseException(FileSizeError(self.path,
                 "File size %d did not match expected size %d" % (
@@ -382,7 +384,7 @@ class ReadTrackTask(log.Loggable, task.Task):
             if self._errors:
                 print "\n".join(self._errors)
             else:
-                self.warning('exit code %r', self._popen.returncode)
+                logger.warning('exit code %r', self._popen.returncode)
                 self.exception = ReturnCodeError(self._popen.returncode)
 
         self.quality = self._parser.getTrackQuality()
@@ -449,10 +451,10 @@ class ReadVerifyTrackTask(log.Loggable, task.MultiSeparateTask):
         """
         task.MultiSeparateTask.__init__(self)
 
-        self.debug('Creating read and verify task on %r', path)
+        logger.debug('Creating read and verify task on %r', path)
 
         if taglist:
-            self.debug('read and verify with taglist %r', taglist)
+            logger.debug('read and verify with taglist %r', taglist)
         # FIXME: choose a dir on the same disk/dir as the final path
         fd, tmppath = tempfile.mkstemp(suffix='.morituri.wav')
         tmppath = unicode(tmppath)
@@ -504,7 +506,7 @@ class ReadVerifyTrackTask(log.Loggable, task.MultiSeparateTask):
                 self.quality = max(self.tasks[0].quality,
                     self.tasks[2].quality)
                 self.peak = self.tasks[6].peak
-                self.debug('peak: %r', self.peak)
+                logger.debug('peak: %r', self.peak)
                 self.testspeed = self.tasks[0].speed
                 self.copyspeed = self.tasks[2].speed
                 self.testduration = self.tasks[0].duration
@@ -513,11 +515,11 @@ class ReadVerifyTrackTask(log.Loggable, task.MultiSeparateTask):
                 self.testchecksum = c1 = self.tasks[1].checksum
                 self.copychecksum = c2 = self.tasks[3].checksum
                 if c1 == c2:
-                    self.info('Checksums match, %08x' % c1)
+                    logging.info('Checksums match, %08x' % c1)
                     self.checksum = self.testchecksum
                 else:
                     # FIXME: detect this before encoding
-                    self.info('Checksums do not match, %08x %08x' % (
+                    logging.info('Checksums do not match, %08x %08x' % (
                         c1, c2))
                     self.exception = ChecksumException(
                         'read and verify failed: test checksum')
@@ -531,17 +533,17 @@ class ReadVerifyTrackTask(log.Loggable, task.MultiSeparateTask):
 
                 if not self.exception:
                     try:
-                        self.debug('Moving to final path %r', self.path)
+                        logger.debug('Moving to final path %r', self.path)
                         os.rename(self._tmppath, self.path)
                     except Exception, e:
-                        self.debug('Exception while moving to final path %r: '
+                        logger.debug('Exception while moving to final path %r: '
                             '%r',
                             self.path, log.getExceptionMessage(e))
                         self.exception = e
                 else:
                     os.unlink(self._tmppath)
             else:
-                self.debug('stop: exception %r', self.exception)
+                logger.debug('stop: exception %r', self.exception)
         except Exception, e:
             print 'WARNING: unhandled exception %r' % (e, )
 

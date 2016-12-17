@@ -30,6 +30,8 @@ from morituri.result import result
 
 from morituri.extern.task import task
 
+import logging
+logger = logging.getLogger(__name__)
 
 class Encode(logcommand.LogCommand):
 
@@ -87,7 +89,7 @@ class Encode(logcommand.LogCommand):
             root, ext = os.path.splitext(arg)
             m3upath = root + '.m3u'
             if os.path.exists(m3upath):
-                self.debug('translating .m3u file')
+                logger.debug('translating .m3u file')
                 inm3u = open(m3upath)
                 outm3u = open(os.path.join(outdir, os.path.basename(m3upath)),
                     'w')
@@ -167,7 +169,7 @@ Retags the image from the given .cue files with tags obtained from MusicBrainz.
                 path = cueImage.getRealPath(track.indexes[1].path)
 
                 taglist = prog.getTagList(track.number)
-                self.debug(
+                logger.debug(
                     'possibly retagging %r from cue path %r with taglist %r',
                     path, arg, taglist)
                 t = encode.SafeRetagTask(path, taglist)

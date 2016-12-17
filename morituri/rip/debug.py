@@ -25,6 +25,9 @@ from morituri.result import result
 
 from morituri.common import task, cache
 
+import logging
+logger = logging.getLogger(__name__)
+
 class RCCue(logcommand.LogCommand):
 
     name = "cue"
@@ -174,7 +177,7 @@ class Encode(logcommand.LogCommand):
 
         runner = task.SyncRunner()
 
-        self.debug('Encoding %s to %s',
+        logger.debug('Encoding %s to %s',
             fromPath.encode('utf-8'),
             toPath.encode('utf-8'))
         encodetask = encode.EncodeTask(fromPath, toPath, profile)
@@ -224,7 +227,7 @@ class Tag(logcommand.LogCommand):
         runner = task.SyncRunner()
 
         from morituri.common import encode
-        self.debug('Reading tags from %s' % path.encode('utf-8'))
+        logger.debug('Reading tags from %s' % path.encode('utf-8'))
         tagtask = encode.TagReadTask(path)
 
         runner.run(tagtask)

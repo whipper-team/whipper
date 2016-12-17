@@ -32,6 +32,8 @@ from morituri.common import task as ctask
 from morituri.extern.task import task, gstreamer
 from morituri.program import sox
 
+import logging
+logger = logging.getLogger(__name__)
 
 class Profile(log.Loggable):
 
@@ -107,7 +109,7 @@ class _LameProfile(Profile):
 
     def test(self):
         version = cgstreamer.elementFactoryVersion('lamemp3enc')
-        self.debug('lamemp3enc version: %r', version)
+        logger.debug('lamemp3enc version: %r', version)
         if version:
             t = tuple([int(s) for s in version.split('.')])
             if t >= (0, 10, 19):
@@ -115,7 +117,7 @@ class _LameProfile(Profile):
                 return True
 
         version = cgstreamer.elementFactoryVersion('lame')
-        self.debug('lame version: %r', version)
+        logger.debug('lame version: %r', version)
         if version:
             self.pipeline = self._lame_pipeline
             return True
@@ -246,13 +248,13 @@ class EncodeTask(ctask.GstPipelineTask):
             try:
                 tagger.merge_tags(self._taglist, self.gst.TAG_MERGE_APPEND)
             except AttributeError, e:
-                self.warning('Could not merge tags: %r',
+                logger.warning('Could not merge tags: %r',
                     log.getExceptionMessage(e))
 
     def paused(self):
         # get length
         identity = self.pipeline.get_by_name('identity')
-        self.debug('query duration')
+        logger.debug('query duration')
         try:
             length, qformat = identity.query_duration(self.gst.FORMAT_DEFAULT)
         except self.gst.QueryError, e:
@@ -263,16 +265,16 @@ class EncodeTask(ctask.GstPipelineTask):
 
         # wavparse 0.10.14 returns in bytes
         if qformat == self.gst.FORMAT_BYTES:
-            self.debug('query returned in BYTES format')
+            logger.debug('query returned in BYTES format')
             length /= 4
-        self.debug('total length: %r', length)
+        logger.debug('total length: %r', length)
         self._length = length
 
         duration = None
         try:
             duration, qformat = identity.query_duration(self.gst.FORMAT_TIME)
         except self.gst.QueryError, e:
-            self.debug('Could not query duration')
+            logger.debug('Could not query duration')
         self._duration = duration
 
         # set up level callbacks
@@ -289,7 +291,7 @@ class EncodeTask(ctask.GstPipelineTask):
         interval = self.gst.SECOND
         if interval > duration:
             interval = duration / 2
-        self.debug('Setting level interval to %s, duration %s',
+        logger.debug('Setting level interval to %s, duration %s',
             self.gst.TIME_ARGS(interval), self.gst.TIME_ARGS(duration))
         self._level.set_property('interval', interval)
         # add a probe so we can track progress
@@ -310,7 +312,7 @@ class EncodeTask(ctask.GstPipelineTask):
         return True
 
     def bus_eos_cb(self, bus, message):
-        self.debug('eos, scheduling stop')
+        logger.debug('eos, scheduling stop')
         self.schedule(0, self.stop)
 
     def _message_element_cb(self, bus, message):
@@ -338,19 +340,19 @@ class EncodeTask(ctask.GstPipelineTask):
 
     def stopped(self):
         if self._peakdB is not None:
-            self.debug('peakdB %r', self._peakdB)
+            logger.debug('peakdB %r', self._peakdB)
             self.peak = math.sqrt(math.pow(10, self._peakdB / 10.0))
             return
 
-        self.warning('No peak found.')
+        logger.warning('No peak found.')
 
         self.peak = 0.0
 
         if self._duration:
-            self.warning('GStreamer level element did not send messages.')
+            logger.warning('GStreamer level element did not send messages.')
             # workaround for when the file is too short to have volume ?
             if self._length == common.SAMPLES_PER_FRAME:
-                self.warning('only one frame of audio, setting peak to 0.0')
+                logger.warning('only one frame of audio, setting peak to 0.0')
                 self.peak = 0.0
 
 class TagReadTask(ctask.GstPipelineTask):
@@ -382,12 +384,12 @@ class TagReadTask(ctask.GstPipelineTask):
                 gstreamer.quoteParse(self._path).encode('utf-8'))
 
     def bus_eos_cb(self, bus, message):
-        self.debug('eos, scheduling stop')
+        logger.debug('eos, scheduling stop')
         self.schedule(0, self.stop)
 
     def bus_tag_cb(self, bus, message):
         taglist = message.parse_tag()
-        self.debug('tag_cb, %d tags' % len(taglist.keys()))
+        logger.debug('tag_cb, %d tags' % len(taglist.keys()))
         if not self.taglist:
             self.taglist = taglist
         else:
@@ -434,17 +436,17 @@ class TagWriteTask(ctask.LoggableTask):
         if self._taglist:
             tagger.merge_tags(self._taglist, gst.TAG_MERGE_APPEND)
 
-        self.debug('pausing pipeline')
+        logger.debug('pausing pipeline')
         self._pipeline.set_state(gst.STATE_PAUSED)
         self._pipeline.get_state()
-        self.debug('paused pipeline')
+        logger.debug('paused pipeline')
 
         # add eos handling
         bus = self._pipeline.get_bus()
         bus.add_signal_watch()
         bus.connect('message::eos', self._message_eos_cb)
 
-        self.debug('scheduling setting to play')
+        logger.debug('scheduling setting to play')
         # since set_state returns non-False, adding it as timeout_add
         # will repeatedly call it, and block the main loop; so
         #   gobject.timeout_add(0L, self._pipeline.set_state,
@@ -457,20 +459,20 @@ class TagWriteTask(ctask.LoggableTask):
         self.schedule(0, play)
 
         #self._pipeline.set_state(gst.STATE_PLAYING)
-        self.debug('scheduled setting to play')
+        logger.debug('scheduled setting to play')
 
     def _message_eos_cb(self, bus, message):
-        self.debug('eos, scheduling stop')
+        logger.debug('eos, scheduling stop')
         self.schedule(0, self.stop)
 
     def stop(self):
         # here to avoid import gst eating our options
         import gst
 
-        self.debug('stopping')
-        self.debug('setting state to NULL')
+        logger.debug('stopping')
+        logger.debug('setting state to NULL')
         self._pipeline.set_state(gst.STATE_NULL)
-        self.debug('set state to NULL')
+        logger.debug('set state to NULL')
         task.Task.stop(self)
 
 
@@ -512,12 +514,12 @@ class SafeRetagTask(ctask.LoggableMultiSeparateTask):
             if taskk == self.tasks[0]:
                 taglist = taskk.taglist.copy()
                 if common.tagListEquals(taglist, self._taglist):
-                    self.debug('tags are already fine: %r',
+                    logger.debug('tags are already fine: %r',
                         common.tagListToDict(taglist))
                 else:
                     # need to retag
-                    self.debug('tags need to be rewritten')
-                    self.debug('Current tags: %r, new tags: %r',
+                    logger.debug('tags need to be rewritten')
+                    logger.debug('Current tags: %r, new tags: %r',
                         common.tagListToDict(taglist),
                         common.tagListToDict(self._taglist))
                     assert common.tagListToDict(taglist) \
@@ -531,15 +533,15 @@ class SafeRetagTask(ctask.LoggableMultiSeparateTask):
                     self.tasks.append(TagReadTask(self._tmppath))
             elif len(self.tasks) > 1 and taskk == self.tasks[4]:
                 if common.tagListEquals(self.tasks[4].taglist, self._taglist):
-                    self.debug('tags written successfully')
+                    logger.debug('tags written successfully')
                     c1 = self.tasks[1].checksum
                     c2 = self.tasks[3].checksum
-                    self.debug('comparing checksums %08x and %08x' % (c1, c2))
+                    logger.debug('comparing checksums %08x and %08x' % (c1, c2))
                     if c1 == c2:
                         # data is fine, so we can now move
                         # but first, copy original mode to our temporary file
                         shutil.copymode(self._path, self._tmppath)
-                        self.debug('moving temporary file to %r' % self._path)
+                        logger.debug('moving temporary file to %r' % self._path)
                         os.rename(self._tmppath, self._path)
                         self.changed = True
                     else:
@@ -547,9 +549,9 @@ class SafeRetagTask(ctask.LoggableMultiSeparateTask):
                         e = TypeError("Checksums failed")
                         self.setAndRaiseException(e)
                 else:
-                    self.debug('failed to update tags, only have %r',
+                    logger.debug('failed to update tags, only have %r',
                         common.tagListToDict(self.tasks[4].taglist))
-                    self.debug('difference: %r',
+                    logger.debug('difference: %r',
                         common.tagListDifference(self.tasks[4].taglist,
                             self._taglist))
                     os.unlink(self._tmppath)

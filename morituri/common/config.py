@@ -20,15 +20,17 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
+import ConfigParser
+import codecs
 import os.path
 import shutil
-import urllib
-import codecs
 import tempfile
-import ConfigParser
+import urllib
 
 from morituri.common import directory, log
 
+import logging
+logger = logging.getLogger(__name__)
 
 class Config(log.Loggable):
 
@@ -45,8 +47,8 @@ class Config(log.Loggable):
             with codecs.open(self._path, 'r', encoding='utf-8') as f:
                 self._parser.readfp(f)
 
-        self.info('Loaded %d sections from config file' %
-            len(self._parser.sections()))
+        logging.info('Loaded %d sections from config file' %
+                     len(self._parser.sections()))
 
     def write(self):
         fd, path = tempfile.mkstemp(suffix=u'.moriturirc')
@@ -121,13 +123,14 @@ class Config(log.Loggable):
             if not name.startswith('drive:'):
                 continue
 
-            self.debug('Looking at section %r' % name)
+            logging.debug('Looking at section %r' % name)
             conf = {}
             for key in ['vendor', 'model', 'release']:
                 locals()[key] = locals()[key].strip()
                 conf[key] = self._parser.get(name, key)
-                self.debug("%s: '%s' versus '%s'" % (
-                    key, locals()[key], conf[key]))
+                logging.debug("%s: '%s' versus '%s'" % (
+                    key, locals()[key], conf[key]
+                ))
             if vendor.strip() != conf['vendor']:
                 continue
             if model.strip() != conf['model']:
@@ -154,5 +157,3 @@ class Config(log.Loggable):
         self.write()
 
         return self._findDriveSection(vendor, model, release)
-
-

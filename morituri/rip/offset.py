@@ -33,6 +33,9 @@ from morituri.program import cdrdao, cdparanoia
 
 from morituri.extern.task import task
 
+import logging
+logger = logging.getLogger(__name__)
+
 # see http://www.accuraterip.com/driveoffsets.htm
 # and misc/offsets.py
 OFFSETS = "+6, +48, +102, +667, +12, +30, +618, +594, +738, -472, " + \
@@ -75,7 +78,7 @@ CD in the AccurateRip database."""
             else:
                 self._offsets.append(int(b))
 
-        self.debug('Trying with offsets %r', self._offsets)
+        logger.debug('Trying with offsets %r', self._offsets)
 
     def do(self):
         prog = program.Program(self.config)
@@ -93,9 +96,9 @@ CD in the AccurateRip database."""
         t = cdrdao.ReadTOCTask(device)
         table = t.table
 
-        self.debug("CDDB disc id: %r", table.getCDDBDiscId())
+        logger.debug("CDDB disc id: %r", table.getCDDBDiscId())
         url = table.getAccurateRipURL()
-        self.debug("AccurateRip URL: %s", url)
+        logger.debug("AccurateRip URL: %s", url)
 
         # FIXME: download url as a task too
         responses = []
@@ -113,10 +116,10 @@ CD in the AccurateRip database."""
                 raise
 
         if responses:
-            self.debug('%d AccurateRip responses found.' % len(responses))
+            logger.debug('%d AccurateRip responses found.' % len(responses))
 
             if responses[0].cddbDiscId != table.getCDDBDiscId():
-                self.warning("AccurateRip response discid different: %s",
+                logger.warning("AccurateRip response discid different: %s",
                     responses[0].cddbDiscId)
 
         # now rip the first track at various offsets, calculating AccurateRip
@@ -145,18 +148,18 @@ CD in the AccurateRip database."""
                         'WARNING: cannot rip with offset %d...\n' % offset)
                     continue
 
-                self.warning("Unknown task exception for offset %d: %r" % (
+                logger.warning("Unknown task exception for offset %d: %r" % (
                     offset, e))
                 self.stdout.write(
                     'WARNING: cannot rip with offset %d...\n' % offset)
                 continue
 
-            self.debug('AR checksum calculated: %s' % archecksum)
+            logger.debug('AR checksum calculated: %s' % archecksum)
 
             c, i = match(archecksum, 1, responses)
             if c:
                 count = 1
-                self.debug('MATCHED against response %d' % i)
+                logger.debug('MATCHED against response %d' % i)
                 self.stdout.write(
                     'Offset of device is likely %d, confirming ...\n' %
                         offset)
@@ -175,7 +178,7 @@ CD in the AccurateRip database."""
 
                     c, i = match(archecksum, track, responses)
                     if c:
-                        self.debug('MATCHED track %d against response %d' % (
+                        logger.debug('MATCHED track %d against response %d' % (
                             track, i))
                         count += 1
 
@@ -193,7 +196,7 @@ CD in the AccurateRip database."""
     # TODO MW: Update this further for ARv2 code
     def _arcs(self, runner, table, track, offset):
         # rips the track with the given offset, return the arcs checksum
-        self.debug('Ripping track %r with offset %d ...', track, offset)
+        logger.debug('Ripping track %r with offset %d ...', track, offset)
 
         fd, path = tempfile.mkstemp(
             suffix=u'.track%02d.offset%d.morituri.wav' % (

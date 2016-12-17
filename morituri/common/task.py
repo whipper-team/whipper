@@ -9,6 +9,9 @@ from morituri.extern import asyncsub
 from morituri.extern.log import log
 from morituri.extern.task import task, gstreamer
 
+import logging
+logger = logging.getLogger(__name__)
+
 # log.Loggable first to get logging
 
 
@@ -51,7 +54,7 @@ class PopenTask(log.Loggable, task.Task):
 
             raise
 
-        self.debug('Started %r with pid %d', self.command,
+        logger.debug('Started %r with pid %d', self.command,
             self._popen.pid)
 
         self.schedule(1.0, self._read, runner)
@@ -89,8 +92,8 @@ class PopenTask(log.Loggable, task.Task):
 
             self._done()
         except Exception, e:
-            self.debug('exception during _read()')
-            self.debug(log.getExceptionMessage(e))
+            logger.debug('exception during _read()')
+            logger.debug(log.getExceptionMessage(e))
             self.setException(e)
             self.stop()
 
@@ -98,9 +101,9 @@ class PopenTask(log.Loggable, task.Task):
             assert self._popen.returncode is not None, "No returncode"
 
             if self._popen.returncode >= 0:
-                self.debug('Return code was %d', self._popen.returncode)
+                logger.debug('Return code was %d', self._popen.returncode)
             else:
-                self.debug('Terminated with signal %d',
+                logger.debug('Terminated with signal %d',
                     -self._popen.returncode)
 
             self.setProgress(1.0)
@@ -114,7 +117,7 @@ class PopenTask(log.Loggable, task.Task):
             return
 
     def abort(self):
-        self.debug('Aborting, sending SIGTERM to %d', self._popen.pid)
+        logger.debug('Aborting, sending SIGTERM to %d', self._popen.pid)
         os.kill(self._popen.pid, signal.SIGTERM)
         # self.stop()
 
