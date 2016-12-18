@@ -20,6 +20,8 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
+import argparse
+
 from morituri.result import result
 from morituri.common import cache, command, task
 
@@ -77,7 +79,7 @@ class RCList(command.BaseCommand):
 class RCLog(command.BaseCommand):
     summary = "write a log file for the cached result"
     description = summary
-    #formatter_class = argparse.
+    formatter_class = argparse.ArgumentDefaultsHelpFormatter
 
     def add_arguments(self):
         loggers = result.getLoggers().keys()

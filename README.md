@@ -81,9 +81,6 @@ Change to a directory where you want to put whipper source code (for example, `$
 ```bash
 git clone -b master --single-branch https://github.com/JoeLametta/whipper.git
 cd whipper
-# fetch bundled python dependencies
-git submodule init
-git submodule update
 ```
 
 ### Building the bundled dependencies
