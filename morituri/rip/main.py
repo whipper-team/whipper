@@ -26,7 +26,7 @@ def main():
     )
     map(pkg_resources.working_set.add, distributions)
     try:
-        ret = Whipper(sys.argv[1:], os.path.basename(sys.argv[0])).do()
+        ret = Whipper(sys.argv[1:], os.path.basename(sys.argv[0]), None).do()
     except SystemError, e:
         sys.stderr.write('rip: error: %s\n' % e.args)
         return 255
@@ -60,6 +60,7 @@ class Whipper(logcommand.Lager):
 whipper gives you a tree of subcommands to work with.
 You can get help on subcommands by using the -h option to the subcommand.
 """
+    no_add_help = True
     subcommands = {
         'accurip': accurip.AccuRip,
         'cd':      cd.CD,
@@ -69,35 +70,21 @@ You can get help on subcommands by using the -h option to the subcommand.
         'image':   image.Image
     }
 
-    def __init__(self, argv, prog):
-        parser = argparse.ArgumentParser(
-            prog=prog,
-            add_help=False,
-            description=self.description,
-            epilog=self.epilog(),
-            formatter_class=argparse.RawDescriptionHelpFormatter
-        )
-        parser.add_argument('-R', '--record',
+    def add_arguments(self):
+        self.parser.add_argument('-R', '--record',
                             action='store_true', dest='record',
                             help="record API requests for playback")
-        parser.add_argument('-v', '--version',
+        self.parser.add_argument('-v', '--version',
                             action="store_true", dest="version",
                             help="show version information")
-        parser.add_argument('-h', '--help',
+        self.parser.add_argument('-h', '--help',
                             action="store_true", dest="help",
                             help="show this help message and exit")
-        parser.add_argument('remainder', nargs=argparse.REMAINDER,
-                            help=argparse.SUPPRESS)
-        opts = parser.parse_args(argv)
-        if opts.help or not opts.remainder:
-            parser.print_help()
+
+    def handle_arguments(self):
+        if self.options.help:
+            self.parser.print_help()
             sys.exit(0)
-        if opts.version:
+        if self.options.version:
             print "whipper %s" % configure.version
             sys.exit(0)
-        if not opts.remainder[0] in self.subcommands:
-            sys.stderr.write("incorrect subcommand: %s" % opts.remainder[0])
-            sys.exit(1)
-        self.cmd = self.subcommands[opts.remainder[0]](
-            opts.remainder[1:], prog + " " + opts.remainder[0], opts
-        )

@@ -47,45 +47,96 @@ import os
 
 class Lager():
     """
+    A base command class for whipper commands.
+
+    Creates an argparse.ArgumentParser.
+    Override add_arguments() and handle_arguments() to register
+    and process arguments before & after argparse.parse_args().
+
     Provides self.epilog() formatting command for argparse.
     Provides self.config, self.stdout objects for children.
 
-    __init__() registers a subcommand with .cmd that is executed
-    by do(); this is because python does not allow returning values
-    from __init__().
+    device_option = True adds -d / --device option to current command
+    no_add_help = True removes -h / --help option from current command
+
+    Overriding formatter_class sets the argparse formatter class.
+
+    If the 'subcommands' dictionary is set, __init__ searches the
+    arguments for subcommands.keys() and instantiates the class
+    implementing the subcommand as self.cmd, passing all non-understood
+    arguments, the current options namespace, and the full command path
+    name.
     """
     config = config.Config()
     stdout = sys.stdout
 
-    def __init__(self, argv, prog, opts):
-        """
-        Launch subcommands without any mid-level options.
-        Override to include options.
-        """
-        parser = argparse.ArgumentParser(
-            prog=prog,
-            description=self.description,
-            epilog=self.epilog(),
-            formatter_class=argparse.RawDescriptionHelpFormatter
-        )
-        parser.add_argument('remainder', nargs=argparse.REMAINDER,
-                            help=argparse.SUPPRESS)
-        opt = parser.parse_args(argv, namespace=opts)
-        if not opt.remainder:
-            parser.print_help()
-            sys.exit(0)
-        if not opt.remainder[0] in self.subcommands:
-            sys.stderr.write("incorrect subcommand: %s" % opt.remainder[0])
-            sys.exit(1)
-        self.cmd = self.subcommands[opt.remainder[0]](
-            opt.remainder[1:], prog + " " + opt.remainder[0], opts
-        )
+    device_option = False
+    no_add_help = False  # for rip.main.Whipper
+    formatter_class = argparse.RawDescriptionHelpFormatter
+
+    def __init__(self, argv, prog_name, opts):
+        self.opts = opts  # for Rip.add_arguments()
+        self.prog_name = prog_name
+
+        self.init_parser()
+        self.add_arguments()
+
+        if hasattr(self, 'subcommands'):
+            self.parser.add_argument('remainder',
+                                     nargs=argparse.REMAINDER,
+                                     help=argparse.SUPPRESS)
+
+        if self.device_option:
+            with self.add_device_option(self.parser):
+                self.options = self.parser.parse_args(argv, namespace=opts)
+        else:
+            self.options = self.parser.parse_args(argv, namespace=opts)
+
+        self.handle_arguments()
+
+        if hasattr(self, 'subcommands'):
+            if not self.options.remainder:
+                self.parser.print_help()
+                sys.exit(0)
+            if not self.options.remainder[0] in self.subcommands:
+                sys.stderr.write("incorrect subcommand: %s" %
+                                 self.options.remainder[0])
+                sys.exit(1)
+            self.cmd = self.subcommands[self.options.remainder[0]](
+                self.options.remainder[1:],
+                prog_name + " " + self.options.remainder[0],
+                self.options
+            )
+
+    def init_parser(self):
+        kw = {
+            'prog': self.prog_name,
+            'description': self.description,
+            'formatter_class': self.formatter_class,
+        }
+        if hasattr(self, 'subcommands'):
+            kw['epilog'] = self.epilog()
+        if self.no_add_help:
+            kw['add_help'] = False
+        self.parser = argparse.ArgumentParser(**kw)
+
+    def add_arguments(self):
+        pass
+
+    def handle_arguments(self):
+        pass
 
     def do(self):
         return self.cmd.do()
 
+    def epilog(self):
+        s = "commands:\n"
+        for com in sorted(self.subcommands.keys()):
+            s += "  %s %s\n" % (com.ljust(8), self.subcommands[com].summary)
+        return s
+
     @contextlib.contextmanager
-    def device_option(self, parser):
+    def add_device_option(self, parser):
         """
         Wrap self.options = parser.parse_args(...) to add --device param.
         """
@@ -97,15 +148,11 @@ class Lager():
             # morituri exited with return code 3 here
             raise Exception(msg)
         parser.add_argument('-d', '--device',
-                            action="store", dest="device", default=drives[0],
+                            action="store",
+                            dest="device",
+                            default=drives[0],
                             help="CD-DA device")
         yield
         # this can be a symlink to another device
         self.options.device = os.path.realpath(self.options.device)
         # FIXME should raise an error / exit if options.device does not exist.
-
-    def epilog(self):
-        s = "commands:\n"
-        for com in sorted(self.subcommands.keys()):
-            s += "  %s %s\n" % (com.ljust(8), self.subcommands[com].summary)
-        return s

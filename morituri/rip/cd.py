@@ -193,14 +193,10 @@ class Info(_CD):
                    "information for the currently inserted CD.")
     eject = False
 
-    def __init__(self, argv, prog, opts):
-        # Requires opts.device
-        parser = argparse.ArgumentParser(
-            prog=prog,
-            description=self.description
-        )
-        _CD.add_arguments(parser)
-        self.options = parser.parse_args(argv, namespace=opts)
+    # Requires opts.device
+
+    def add_arguments(self):
+        _CD.add_arguments(self.parser)
 
 class Rip(_CD):
     summary = "rip CD"
@@ -216,19 +212,15 @@ relative to the directory of the disc files.
 All files will be created relative to the given output directory.
 Log files will log the path to tracks relative to this directory.
 """ % rcommon.TEMPLATE_DESCRIPTION
+    formatter_class = argparse.ArgumentDefaultsHelpFormatter
 
-    def __init__(self, argv, prog, opts):
-        # Requires opts.record
-        # Requires opts.device
-        parser = argparse.ArgumentParser(
-            prog=prog,
-            description=self.description,
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter
-        )
+    # Requires opts.record
+    # Requires opts.device
 
+    def add_arguments(self):
         loggers = result.getLoggers().keys()
         default_offset = None
-        info = drive.getDeviceInfo(opts.device)
+        info = drive.getDeviceInfo(self.opts.device)
         if info:
             try:
                 default_offset = self.config.getReadOffset(*info)
@@ -237,42 +229,42 @@ Log files will log the path to tracks relative to this directory.
             except KeyError:
                 pass
 
-        _CD.add_arguments(parser)
-        parser.add_argument('-L', '--logger',
+        _CD.add_arguments(self.parser)
+
+        self.parser.add_argument('-L', '--logger',
             action="store", dest="logger", default='morituri',
             help="logger to use (choose from '" + "', '".join(loggers) + "')")
         # FIXME: get from config
-        parser.add_argument('-o', '--offset',
+        self.parser.add_argument('-o', '--offset',
             action="store", dest="offset", default=default_offset,
             help="sample read offset")
-        parser.add_argument('-x', '--force-overread',
+        self.parser.add_argument('-x', '--force-overread',
             action="store_true", dest="overread", default=False,
             help="Force overreading into the lead-out portion of the disc. "
                 "Works only if the patched cdparanoia package is installed "
                 "and the drive supports this feature. ")
-        parser.add_argument('-O', '--output-directory',
+        self.parser.add_argument('-O', '--output-directory',
             action="store", dest="output_directory",
             default=os.path.relpath(os.getcwd()),
             help="output directory; will be included in file paths in log")
-        parser.add_argument('-W', '--working-directory',
+        self.parser.add_argument('-W', '--working-directory',
             action="store", dest="working_directory",
             help="working directory; morituri will change to this directory "
                 "and files will be created relative to it when not absolute")
-        parser.add_argument('--track-template',
+        self.parser.add_argument('--track-template',
             action="store", dest="track_template",
             default=rcommon.DEFAULT_TRACK_TEMPLATE,
             help="template for track file naming (default default)")
-        parser.add_argument('--disc-template',
+        self.parser.add_argument('--disc-template',
             action="store", dest="disc_template",
             default=rcommon.DEFAULT_DISC_TEMPLATE,
             help="template for disc file naming (default default)")
-        parser.add_argument('-U', '--unknown',
+        self.parser.add_argument('-U', '--unknown',
             action="store_true", dest="unknown",
             help="whether to continue ripping if the CD is unknown",
             default=False)
 
-        self.options = parser.parse_args(argv, namespace=opts)
-
+    def handle_arguments(self):
         self.options.output_directory = os.path.expanduser(self.options.output_directory)
 
         self.options.track_template = self.options.track_template.decode('utf-8')
@@ -577,30 +569,9 @@ Log files will log the path to tracks relative to this directory.
 class CD(logcommand.Lager):
     summary = "handle CDs"
     description = "Display and rip CD-DA and metadata."
+    device_option = True
 
     subcommands = {
         'info': Info,
         'rip': Rip
     }
-
-    def __init__(self, argv, prog, opts):
-        parser = argparse.ArgumentParser(
-            prog=prog,
-            description=self.description,
-            epilog=self.epilog(),
-            formatter_class=argparse.RawDescriptionHelpFormatter
-        )
-        parser.add_argument('remainder', nargs=argparse.REMAINDER,
-                            help=argparse.SUPPRESS)
-        with self.device_option(parser):
-            self.options = parser.parse_args(argv, namespace=opts)
-        if not self.options.remainder:
-            parser.print_help()
-            sys.exit(0)
-        if not self.options.remainder[0] in self.subcommands:
-            sys.stderr.write("incorrect subcommand: %s"
-                             % self.options.remainder[0])
-            sys.exit(1)
-        self.cmd = self.subcommands[self.options.remainder[0]](
-            self.options.remainder[1:], prog + " " + self.options.remainder[0], opts
-        )

@@ -30,14 +30,9 @@ class Show(logcommand.Lager):
 retrieves and display accuraterip data from the given URL
 """
 
-    def __init__(self, argv, prog, opts):
-        parser = argparse.ArgumentParser(
-            prog=prog,
-            description=self.description
-        )
-        parser.add_argument('url', action='store',
-                            help="accuraterip URL to load data from")
-        self.options = parser.parse_args(argv, namespace=opts)
+    def add_arguments(self):
+        self.parser.add_argument('url', action='store',
+                                 help="accuraterip URL to load data from")
 
     def do(self):
         url = self.options.url

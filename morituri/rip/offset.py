@@ -55,20 +55,17 @@ class Find(logcommand.Lager):
     summary = "find drive read offset"
     description = """Find drive's read offset by ripping tracks from a
 CD in the AccurateRip database."""
+    formatter_class = argparse.ArgumentDefaultsHelpFormatter
+    device_option = True
 
-    def __init__(self, argv, prog, opts):
-        parser = argparse.ArgumentParser(
-            prog=prog,
-            description=self.description,
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter
-        )
-        parser.add_argument(
+    def add_arguments(self):
+        self.parser.add_argument(
             '-o', '--offsets',
             action="store", dest="offsets", default=OFFSETS,
             help="list of offsets, comma-separated, colon-separated for ranges"
         )
-        with self.device_option(parser):
-            self.options = parser.parse_args(argv, namespace=opts)
+
+    def handle_arguments(self):
         self._offsets = []
         blocks = self.options.offsets.split(',')
         for b in blocks:
