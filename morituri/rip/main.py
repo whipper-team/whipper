@@ -7,7 +7,7 @@ import sys
 import pkg_resources
 import musicbrainzngs
 
-from morituri.common import log, logcommand, common, config, directory
+from morituri.common import logcommand, common, config, directory
 from morituri.configure import configure
 from morituri.extern.command import command
 from morituri.extern.task import task
@@ -37,14 +37,12 @@ def main():
             raise ImportError(e.exception)
         elif isinstance(e.exception, common.MissingDependencyException):
             sys.stderr.write('rip: error: missing dependency "%s"\n' %
-                e.exception.dependency)
+                             e.exception.dependency)
             return 255
 
         if isinstance(e.exception, common.EmptyError):
-            log.debug('main',
-                "EmptyError: %r", log.getExceptionMessage(e.exception))
-            sys.stderr.write(
-                'rip: error: Could not create encoded file.\n')
+            logger.debug("EmptyError: %r", log.getExceptionMessage(e.exception))
+            sys.stderr.write('rip: error: Could not create encoded file.\n')
             return 255
 
         raise
@@ -112,7 +110,7 @@ You can get help on subcommands by using the -h option to the subcommand.
     def addOptions(self):
         # FIXME: is this the right place ?
         log.init()
-        log.debug("morituri", "This is morituri version %s (%s)",
+        logger.debug("morituri", "This is morituri version %s (%s)",
             configure.version, configure.revision)
 
         self.parser.add_option('-R', '--record',
@@ -132,5 +130,5 @@ You can get help on subcommands by using the -h option to the subcommand.
         self.config = config.Config()
 
     def parse(self, argv):
-        log.debug("morituri", "rip %s" % " ".join(argv))
+        logger.debug("morituri", "rip %s" % " ".join(argv))
         logcommand.LogCommand.parse(self, argv)

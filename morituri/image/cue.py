@@ -29,7 +29,7 @@ See http://digitalx.org/cuesheetsyntax.php
 import re
 import codecs
 
-from morituri.common import common, log
+from morituri.common import common
 from morituri.image import table
 
 import logging

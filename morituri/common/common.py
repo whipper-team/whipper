@@ -30,6 +30,9 @@ import subprocess
 from morituri.extern import asyncsub
 from morituri.extern.log import log
 
+import logging
+logger = logging.getLogger(__name__)
+
 FRAMES_PER_SECOND = 75
 
 SAMPLES_PER_FRAME = 588 # a sample is 2 16-bit values, left and right channel
@@ -273,22 +276,21 @@ def getRelativePath(targetPath, collectionPath):
 
     Used to determine the path to use in .cue/.m3u files
     """
-    log.debug('common', 'getRelativePath: target %r, collection %r' % (
+    logger.debug('getRelativePath: target %r, collection %r' % (
         targetPath, collectionPath))
 
     targetDir = os.path.dirname(targetPath)
     collectionDir = os.path.dirname(collectionPath)
     if targetDir == collectionDir:
-        log.debug('common',
-            'getRelativePath: target and collection in same dir')
+        logger.debug('getRelativePath: target and collection in same dir')
         return os.path.basename(targetPath)
     else:
         rel = os.path.relpath(
             targetDir + os.path.sep,
             collectionDir + os.path.sep)
-        log.debug('common',
-            'getRelativePath: target and collection in different dir, %r' %
-                rel)
+        logger.debug(
+            'getRelativePath: target and collection in different dir, %r' % rel
+        )
         return os.path.join(rel, os.path.basename(targetPath))
 
 

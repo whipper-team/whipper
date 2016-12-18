@@ -29,7 +29,7 @@ import os
 import sys
 import time
 
-from morituri.common import common, log, mbngs, cache, path
+from morituri.common import common, mbngs, cache, path
 from morituri.program import cdrdao, cdparanoia
 from morituri.image import image
 from morituri.extern.task import task, gstreamer
@@ -507,8 +507,7 @@ class Program:
             # Jan and 1st if MM and DD are missing
             date = self.metadata.release
             if date:
-                log.debug('metadata',
-                    'Converting release date %r to structure', date)
+                logger.debug('Converting release date %r to structure', date)
                 if len(date) == 4:
                     date += '-01'
                 if len(date) == 7:
@@ -565,9 +564,8 @@ class Program:
                 raise
 
         ret = trackResult.testcrc == t.checksum
-        log.debug('program',
-            'verifyTrack: track result crc %r, file crc %r, result %r',
-            trackResult.testcrc, t.checksum, ret)
+        logger.debug('verifyTrack: track result crc %r, file crc %r, result %r',
+                     trackResult.testcrc, t.checksum, ret)
         return ret
 
     def ripTrack(self, runner, trackResult, offset, device, profile, taglist,

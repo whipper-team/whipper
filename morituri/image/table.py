@@ -28,7 +28,7 @@ import copy
 import urllib
 import urlparse
 
-from morituri.common import common, log
+from morituri.common import common
 from morituri.configure import configure
 
 import logging

@@ -22,8 +22,8 @@
 
 import os
 
-from morituri.common import log
-
+import logging
+logger = logging.getLogger(__name__)
 
 def _listify(listOrString):
     if type(listOrString) == str:
@@ -37,7 +37,7 @@ def getAllDevicePaths():
         # see https://savannah.gnu.org/bugs/index.php?38477
         return [str(dev) for dev in _getAllDevicePathsPyCdio()]
     except ImportError:
-        log.info('drive', 'Cannot import pycdio')
+        logger.info('Cannot import pycdio')
         return _getAllDevicePathsStatic()
 
 

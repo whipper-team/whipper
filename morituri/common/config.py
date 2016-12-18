@@ -27,7 +27,7 @@ import shutil
 import tempfile
 import urllib
 
-from morituri.common import directory, log
+from morituri.common import directory
 
 import logging
 logger = logging.getLogger(__name__)

@@ -25,7 +25,7 @@ import os
 import shutil
 import tempfile
 
-from morituri.common import common, log
+from morituri.common import common
 from morituri.common import gstreamer as cgstreamer
 from morituri.common import task as ctask
 

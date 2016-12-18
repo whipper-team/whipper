@@ -29,7 +29,7 @@ import subprocess
 import tempfile
 import time
 
-from morituri.common import log, common
+from morituri.common import common
 from morituri.common import task as ctask
 from morituri.extern import asyncsub
 from morituri.extern.task import task

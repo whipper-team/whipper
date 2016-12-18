@@ -26,7 +26,8 @@ Handles communication with the musicbrainz server using NGS.
 
 import urllib2
 
-from morituri.common import log
+import logging
+logger = logging.getLogger(__name__)
 
 
 VA_ID = "89ad4ac3-39f7-470e-963a-56509c546377" # Various Artists
@@ -93,7 +94,7 @@ def _record(record, which, name, what):
         handle = open(filename, 'w')
         handle.write(json.dumps(what))
         handle.close()
-        log.info('mbngs', 'Wrote %s %s to %s', which, name, filename)
+        logger.info('Wrote %s %s to %s', which, name, filename)
 
 # credit is of the form [dict, str, dict, ... ]
 # e.g. [
@@ -152,16 +153,16 @@ def _getMetadata(releaseShort, release, discid, country=None):
 
     @rtype: L{DiscMetadata} or None
     """
-    log.debug('program', 'getMetadata for release id %r',
+    logger.debug('getMetadata for release id %r',
         release['id'])
     if not release['id']:
-        log.warning('program', 'No id for release %r', release)
+        logger.warning('No id for release %r', release)
         return None
 
     assert release['id'], 'Release does not have an id'
 
     if 'country' in release and country and release['country'] != country:
-        log.warning('program', '%r was not released in %r', release, country)
+        logger.warning('%r was not released in %r', release, country)
         return None
 
     discMD = DiscMetadata()
@@ -176,7 +177,7 @@ def _getMetadata(releaseShort, release, discid, country=None):
 
 
     if len(discCredit) > 1:
-        log.debug('mbngs', 'artist-credit more than 1: %r', discCredit)
+        logger.debug('artist-credit more than 1: %r', discCredit)
 
     albumArtistName = discCredit.getName()
 
@@ -185,7 +186,7 @@ def _getMetadata(releaseShort, release, discid, country=None):
     discMD.sortName = discCredit.getSortName()
     # FIXME: is format str ?
     if not 'date' in release:
-        log.warning('mbngs', 'Release %r does not have date', release)
+        logger.warning('Release %r does not have date', release)
     else:
         discMD.release = release['date']
 
@@ -219,8 +220,8 @@ def _getMetadata(releaseShort, release, discid, country=None):
                     track = TrackMetadata()
                     trackCredit = _Credit(t['recording']['artist-credit'])
                     if len(trackCredit) > 1:
-                        log.debug('mbngs',
-                            'artist-credit more than 1: %r', trackCredit)
+                        logger.debug('artist-credit more than 1: %r',
+                                     trackCredit)
 
                     # FIXME: leftover comment, need an example
                     # various artists discs can have tracks with no artist
@@ -234,8 +235,7 @@ def _getMetadata(releaseShort, release, discid, country=None):
                     # FIXME: unit of duration ?
                     track.duration = int(t['recording'].get('length', 0))
                     if not track.duration:
-                        log.warning('getMetadata',
-                            'track %r (%r) does not have duration' % (
+                        logger.warning('track %r (%r) does not have duration' % (
                                 track.title, track.mbid))
                         tainted = True
                     else:
@@ -266,7 +266,7 @@ def musicbrainz(discid, country=None, record=False):
 
     @rtype: list of L{DiscMetadata}
     """
-    log.debug('musicbrainzngs', 'looking up results for discid %r', discid)
+    logger.debug('looking up results for discid %r', discid)
     import musicbrainzngs
 
     ret = []
@@ -279,14 +279,13 @@ def musicbrainz(discid, country=None, record=False):
             if e.cause.code == 404:
                 raise NotFoundException(e)
             else:
-                log.debug('musicbrainzngs',
-                          'received bad response from the server')
+                logger.debug('received bad response from the server')
 
         raise MusicBrainzException(e)
 
     # The result can either be a "disc" or a "cdstub"
     if result.get('disc'):
-        log.debug('musicbrainzngs', 'found %d releases for discid %r',
+        logger.debug('found %d releases for discid %r',
                   len(result['disc']['release-list']), discid)
         _record(record, 'releases', discid, result)
 
@@ -295,7 +294,7 @@ def musicbrainz(discid, country=None, record=False):
         import json
         for release in result['disc']['release-list']:
             formatted = json.dumps(release, sort_keys=False, indent=4)
-            log.debug('program', 'result %s: artist %r, title %r' % (
+            logger.debug('result %s: artist %r, title %r' % (
                 formatted, release['artist-credit-phrase'], release['title']))
 
             # to get titles of recordings, we need to query the release with
@@ -307,16 +306,16 @@ def musicbrainz(discid, country=None, record=False):
             _record(record, 'release', release['id'], res)
             releaseDetail = res['release']
             formatted = json.dumps(releaseDetail, sort_keys=False, indent=4)
-            log.debug('program', 'release %s' % formatted)
+            logger.debug('release %s' % formatted)
 
             md = _getMetadata(release, releaseDetail, discid, country)
             if md:
-                log.debug('program', 'duration %r', md.duration)
+                logger.debug('duration %r', md.duration)
                 ret.append(md)
 
         return ret
     elif result.get('cdstub'):
-        log.debug('musicbrainzngs', 'query returned cdstub: ignored')
+        logger.debug('query returned cdstub: ignored')
         return None
     else:
         return None

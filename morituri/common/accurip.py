@@ -26,7 +26,7 @@ import struct
 import urlparse
 import urllib2
 
-from morituri.common import log, directory
+from morituri.common import directory
 
 import logging
 logger = logging.getLogger(__name__)

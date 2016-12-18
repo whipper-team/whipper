@@ -26,10 +26,8 @@ import zlib
 
 import gst
 
-from morituri.common import common
+from morituri.common import common, task
 from morituri.common import gstreamer as cgstreamer
-from morituri.common import log
-from morituri.common import task
 
 from morituri.extern.task import gstreamer
 from morituri.extern.task import task as etask

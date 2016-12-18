@@ -6,7 +6,7 @@ from subprocess import check_call, Popen, PIPE, CalledProcessError
 from morituri.image.toc import TocFile
 
 import logging
-logger = logging.getName(__name__)
+logger = logging.getLogger(__name__)
 
 CDRDAO = 'cdrdao'
 

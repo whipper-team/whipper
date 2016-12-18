@@ -2,7 +2,7 @@ import os
 from subprocess import Popen, PIPE
 
 import logging
-logger = logging.getLagger(__name__)
+logger = logging.getLogger(__name__)
 
 SOX = 'sox'
 

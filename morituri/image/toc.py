@@ -29,7 +29,7 @@ The .toc file format is described in the man page of cdrdao
 import re
 import codecs
 
-from morituri.common import common, log
+from morituri.common import common
 from morituri.image import table
 
 import logging
