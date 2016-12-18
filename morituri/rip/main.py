@@ -7,9 +7,8 @@ import sys
 import pkg_resources
 import musicbrainzngs
 
-from morituri.common import logcommand, common, config, directory
+from morituri.common import command, common, config, directory
 from morituri.configure import configure
-from morituri.extern.command import command
 from morituri.extern.task import task
 from morituri.rip import cd, offset, drive, image, accurip, debug
 
@@ -51,7 +50,7 @@ def main():
         return 255
     return ret if ret else 0
 
-class Whipper(logcommand.Lager):
+class Whipper(command.BaseCommand):
     description = """whipper is a CD ripping utility focusing on accuracy over speed.
 
 whipper gives you a tree of subcommands to work with.

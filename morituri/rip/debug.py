@@ -20,15 +20,13 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
-from morituri.common import logcommand
 from morituri.result import result
-
-from morituri.common import task, cache
+from morituri.common import cache, command, task
 
 import logging
 logger = logging.getLogger(__name__)
 
-class RCCue(logcommand.Lager):
+class RCCue(command.BaseCommand):
     summary = "write a cue file for the cached result"
     description = summary
 
@@ -52,7 +50,7 @@ class RCCue(logcommand.Lager):
         self.stdout.write(persisted.object.table.cue().encode('utf-8'))
 
 
-class RCList(logcommand.Lager):
+class RCList(command.BaseCommand):
     summary = "list cached results"
     description = summary
 
@@ -76,7 +74,7 @@ class RCList(logcommand.Lager):
                 cddbid, artist.encode('utf-8'), title.encode('utf-8')))
 
 
-class RCLog(logcommand.Lager):
+class RCLog(command.BaseCommand):
     summary = "write a log file for the cached result"
     description = summary
     #formatter_class = argparse.
@@ -112,7 +110,7 @@ class RCLog(logcommand.Lager):
         self.stdout.write(logger.log(persisted.object).encode('utf-8'))
 
 
-class ResultCache(logcommand.Lager):
+class ResultCache(command.BaseCommand):
     summary = "debug result cache"
     description = summary
 
@@ -123,7 +121,7 @@ class ResultCache(logcommand.Lager):
     }
 
 
-class Checksum(logcommand.Lager):
+class Checksum(command.BaseCommand):
     summary = "run a checksum task"
     description = summary
 
@@ -143,7 +141,7 @@ class Checksum(logcommand.Lager):
             self.stdout.write('Checksum: %08x\n' % checksumtask.checksum)
 
 
-class Encode(logcommand.Lager):
+class Encode(command.BaseCommand):
     summary = "run an encode task"
     description = summary
 
@@ -193,7 +191,7 @@ class Encode(logcommand.Lager):
         self.stdout.write('Encoded to %s\n' % toPath.encode('utf-8'))
 
 
-class MaxSample(logcommand.Lager):
+class MaxSample(command.BaseCommand):
     summary = "run a max sample task"
     description = summary
     
@@ -218,7 +216,7 @@ class MaxSample(logcommand.Lager):
                 checksumtask.checksum)
 
 
-class Tag(logcommand.Lager):
+class Tag(command.BaseCommand):
     summary = "run a tag reading task"
     description = summary
 
@@ -245,7 +243,7 @@ class Tag(logcommand.Lager):
             self.stdout.write('%s: %r\n' % (key, tagtask.taglist[key]))
 
 
-class MusicBrainzNGS(logcommand.Lager):
+class MusicBrainzNGS(command.BaseCommand):
     summary = "examine MusicBrainz NGS info"
     description = """Look up a MusicBrainz disc id and output information.
 
@@ -286,7 +284,7 @@ Example disc id: KnpGsLhvH.lPrNc1PBL21lb9Bg4-"""
                     track.title.encode('utf-8')))
 
 
-class CDParanoia(logcommand.Lager):
+class CDParanoia(command.BaseCommand):
     summary = "show cdparanoia version"
     description = summary
 
@@ -296,7 +294,7 @@ class CDParanoia(logcommand.Lager):
         self.stdout.write("cdparanoia version: %s\n" % version)
 
 
-class CDRDAO(logcommand.Lager):
+class CDRDAO(command.BaseCommand):
     summary = "show cdrdao version"
     description = summary
 
@@ -306,7 +304,7 @@ class CDRDAO(logcommand.Lager):
         self.stdout.write("cdrdao version: %s\n" % version)
 
 
-class Version(logcommand.Lager):
+class Version(command.BaseCommand):
     summary = "debug version getting"
     description = summary
 
@@ -316,7 +314,7 @@ class Version(logcommand.Lager):
     }
 
 
-class Debug(logcommand.Lager):
+class Debug(command.BaseCommand):
     summary = "debug internals"
     description = "debug internals"
 

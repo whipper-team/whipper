@@ -27,7 +27,7 @@ import tempfile
 import gobject
 gobject.threads_init()
 
-from morituri.common import logcommand, accurip, drive, program, common
+from morituri.common import accurip, command, common, drive, program
 from morituri.common import task as ctask
 from morituri.program import cdrdao, cdparanoia
 
@@ -51,7 +51,7 @@ OFFSETS = "+6, +48, +102, +667, +12, +30, +618, +594, +738, -472, " + \
           "+1127"
 
 
-class Find(logcommand.Lager):
+class Find(command.BaseCommand):
     summary = "find drive read offset"
     description = """Find drive's read offset by ripping tracks from a
 CD in the AccurateRip database."""
@@ -233,7 +233,7 @@ CD in the AccurateRip database."""
             offset)
 
 
-class Offset(logcommand.Lager):
+class Offset(command.BaseCommand):
     summary = "handle drive offsets"
     description = """
 Drive offset detection utility.

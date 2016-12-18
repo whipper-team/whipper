@@ -20,11 +20,15 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
-from morituri.common import logcommand, accurip
 import argparse
 import sys
 
-class Show(logcommand.Lager):
+from morituri.common import accurip, command
+
+import logging
+logger = logging.getLogger(__name__)
+
+class Show(command.BaseCommand):
     summary = "show accuraterip data"
     description = """
 retrieves and display accuraterip data from the given URL
@@ -87,7 +91,7 @@ retrieves and display accuraterip data from the given URL
                     str(checksums[checksum])))
 
 
-class AccuRip(logcommand.Lager):
+class AccuRip(command.BaseCommand):
     summary = "handle AccurateRip information"
     description = """
 Handle AccurateRip information. Retrieves AccurateRip disc entries and

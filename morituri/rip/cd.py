@@ -31,13 +31,11 @@ import sys
 import gobject
 gobject.threads_init()
 
-from morituri.common import logcommand, common, accurip, gstreamer
+from morituri.common import accurip, command, common, gstreamer
 from morituri.common import drive, program, task
 from morituri.result import result
 from morituri.program import cdrdao, cdparanoia
 from morituri.rip import common as rcommon
-
-from morituri.extern.command import command
 
 import logging
 logger = logging.getLogger(__name__)
@@ -46,7 +44,7 @@ logger = logging.getLogger(__name__)
 SILENT = 1e-10
 MAX_TRIES = 5
 
-class _CD(logcommand.Lager):
+class _CD(command.BaseCommand):
 
     """
     @type program: L{program.Program}
@@ -286,10 +284,9 @@ Log files will log the path to tracks relative to this directory.
             try:
                 self.logger = result.getLoggers()[self.options.logger]()
             except KeyError:
-                sys.stderr.write("No logger named %s found!\n" % (
-                                 self.options.logger))
-                raise command.CommandError("No logger named %s" %
-                                           self.options.logger)
+                msg = "No logger named %s found!" % self.options.logger
+                logger.error(msg)
+                raise ValueError(msg)
 
 
     def doCommand(self):
@@ -566,7 +563,7 @@ Log files will log the path to tracks relative to this directory.
         self.program.ejectDevice(self.device)
 
 
-class CD(logcommand.Lager):
+class CD(command.BaseCommand):
     summary = "handle CDs"
     description = "Display and rip CD-DA and metadata."
     device_option = True

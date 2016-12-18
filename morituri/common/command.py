@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 # Why not argparse.parse_known_args()?
 # TODO investigation
 
-class Lager():
+class BaseCommand():
     """
     A base command class for whipper commands.
 

@@ -1,6 +1,3 @@
-[submodule "morituri/extern/python-command"]
-	path = morituri/extern/python-command
-	url = git://github.com/thomasvs/python-command.git
 [submodule "morituri/extern/flog"]
 	path = morituri/extern/flog
 	url = git://github.com/Flumotion/flog

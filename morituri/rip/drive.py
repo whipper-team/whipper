@@ -24,11 +24,13 @@ import argparse
 import os
 
 from morituri.extern.task import task
-
-from morituri.common import logcommand, drive
+from morituri.common import command, drive
 from morituri.program import cdparanoia
 
-class Analyze(logcommand.Lager):
+import logging
+logger = logging.getLogger(__name__)
+
+class Analyze(command.BaseCommand):
     summary = "analyze caching behaviour of drive"
     description = """Determine whether cdparanoia can defeat the audio cache of the drive."""
     device_option = True
@@ -61,7 +63,7 @@ class Analyze(logcommand.Lager):
             t.defeatsCache)
 
 
-class List(logcommand.Lager):
+class List(command.BaseCommand):
     summary = "list drives"
     description = """list available CD-DA drives"""
 
@@ -112,7 +114,7 @@ class List(logcommand.Lager):
             self.stdout.write('No drives found.\n')
 
 
-class Drive(logcommand.Lager):
+class Drive(command.BaseCommand):
     summary = "handle drives"
     description = """Drive utilities."""
     subcommands = {
