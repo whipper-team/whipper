@@ -1,11 +1,14 @@
 import os
 
-from morituri.common import log, common
+from morituri.common import common
 from morituri.common import task as ctask
+
+import logging
+logger = logging.getLogger(__name__)
 
 SOXI = 'soxi'
 
-class AudioLengthTask(ctask.PopenTask, log.Loggable):
+class AudioLengthTask(ctask.PopenTask):
     """
     I calculate the length of a track in audio samples.
 
@@ -42,5 +45,5 @@ class AudioLengthTask(ctask.PopenTask, log.Loggable):
 
     def done(self):
         if self._error:
-            self.warning("soxi reported on stderr: %s", "".join(self._error))
+            logger.warning("soxi reported on stderr: %s", "".join(self._error))
         self.length = int("".join(self._output))
