@@ -28,7 +28,6 @@ import math
 import subprocess
 
 from morituri.extern import asyncsub
-from morituri.extern.log import log
 
 import logging
 logger = logging.getLogger(__name__)

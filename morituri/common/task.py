@@ -6,7 +6,6 @@ import signal
 import subprocess
 
 from morituri.extern import asyncsub
-from morituri.extern.log import log
 from morituri.extern.task import task, gstreamer
 
 import logging

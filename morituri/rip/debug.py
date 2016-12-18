@@ -28,7 +28,7 @@ from morituri.common import task, cache
 import logging
 logger = logging.getLogger(__name__)
 
-class RCCue(logcommand.LogCommand):
+class RCCue(logcommand.Lager):
 
     name = "cue"
     summary = "write a cue file for the cached result"
@@ -53,7 +53,7 @@ class RCCue(logcommand.LogCommand):
         self.stdout.write(persisted.object.table.cue().encode('utf-8'))
 
 
-class RCList(logcommand.LogCommand):
+class RCList(logcommand.Lager):
 
     name = "list"
     summary = "list cached results"
@@ -78,7 +78,7 @@ class RCList(logcommand.LogCommand):
                 cddbid, artist.encode('utf-8'), title.encode('utf-8')))
 
 
-class RCLog(logcommand.LogCommand):
+class RCLog(logcommand.Lager):
 
     name = "log"
     summary = "write a log file for the cached result"
@@ -114,7 +114,7 @@ class RCLog(logcommand.LogCommand):
         self.stdout.write(logger.log(persisted.object).encode('utf-8'))
 
 
-class ResultCache(logcommand.LogCommand):
+class ResultCache(logcommand.Lager):
 
     summary = "debug result cache"
     aliases = ['rc', ]
@@ -122,7 +122,7 @@ class ResultCache(logcommand.LogCommand):
     subCommandClasses = [RCCue, RCList, RCLog, ]
 
 
-class Checksum(logcommand.LogCommand):
+class Checksum(logcommand.Lager):
 
     summary = "run a checksum task"
 
@@ -145,7 +145,7 @@ class Checksum(logcommand.LogCommand):
             self.stdout.write('Checksum: %08x\n' % checksumtask.checksum)
 
 
-class Encode(logcommand.LogCommand):
+class Encode(logcommand.Lager):
 
     summary = "run an encode task"
 
@@ -188,7 +188,7 @@ class Encode(logcommand.LogCommand):
         self.stdout.write('Encoded to %s\n' % toPath.encode('utf-8'))
 
 
-class MaxSample(logcommand.LogCommand):
+class MaxSample(logcommand.Lager):
 
     summary = "run a max sample task"
 
@@ -213,7 +213,7 @@ class MaxSample(logcommand.LogCommand):
                 checksumtask.checksum)
 
 
-class Tag(logcommand.LogCommand):
+class Tag(logcommand.Lager):
 
     summary = "run a tag reading task"
 
@@ -236,7 +236,7 @@ class Tag(logcommand.LogCommand):
             self.stdout.write('%s: %r\n' % (key, tagtask.taglist[key]))
 
 
-class MusicBrainzNGS(logcommand.LogCommand):
+class MusicBrainzNGS(logcommand.Lager):
 
     usage = "[MusicBrainz disc id]"
     summary = "examine MusicBrainz NGS info"
@@ -276,32 +276,40 @@ Example disc id: KnpGsLhvH.lPrNc1PBL21lb9Bg4-"""
                     track.title.encode('utf-8')))
 
 
-class CDParanoia(logcommand.LogCommand):
-
+class CDParanoia(logcommand.Lager):
     def do(self, args):
         from morituri.program import cdparanoia
         version = cdparanoia.getCdParanoiaVersion()
         self.stdout.write("cdparanoia version: %s\n" % version)
 
 
-class CDRDAO(logcommand.LogCommand):
-
+class CDRDAO(logcommand.Lager):
     def do(self, args):
         from morituri.program import cdrdao
         version = cdrdao.getCDRDAOVersion()
         self.stdout.write("cdrdao version: %s\n" % version)
 
 
-class Version(logcommand.LogCommand):
-
+class Version(logcommand.Lager):
     summary = "debug version getting"
 
-    subCommandClasses = [CDParanoia, CDRDAO]
+    subcommands = {
+        'cdparanoia': CDParanoia,
+        'cdrdao': CDRDAO,
+    }
 
 
-class Debug(logcommand.LogCommand):
-
+class Debug(logcommand.Lager):
     summary = "debug internals"
+    description = "debug internals"
 
-    subCommandClasses = [Checksum, Encode, MaxSample, Tag, MusicBrainzNGS,
-                         ResultCache, Version]
+    subcommands = {
+        'checksum':       Checksum,
+        'encode':         Encode,
+        'maxsample':      MaxSample,
+        'tag':            Tag,
+        'musicbrainzngs': MusicBrainzNGS,
+        'resultcache':    ResultCache,
+        'version':        Version,
+    }
+

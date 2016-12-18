@@ -29,8 +29,6 @@ import shutil
 from morituri.result import result
 from morituri.common import directory
 
-from morituri.extern.log import log
-
 import logging
 logger = logging.getLogger(__name__)
 

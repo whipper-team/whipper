@@ -25,7 +25,7 @@ Logging Command.
 """
 
 from morituri.extern.command import command
-from morituri.common import log, config, drive
+from morituri.common import config, drive
 import argparse
 import contextlib
 import logging
@@ -109,42 +109,3 @@ class Lager():
         for com in sorted(self.subcommands.keys()):
             s += "  %s %s\n" % (com.ljust(8), self.subcommands[com].summary)
         return s
-
-class LogCommand(command.Command, log.Loggable):
-
-    def __init__(self, parentCommand=None, **kwargs):
-        command.Command.__init__(self, parentCommand, **kwargs)
-        self.logCategory = self.name
-
-    def parse(self, argv):
-        cmd = self.getRootCommand()
-        if hasattr(cmd, 'config'):
-            config = cmd.config
-            # find section name
-            cmd = self
-            section = []
-            while cmd is not None:
-                section.insert(0, cmd.name)
-                cmd = cmd.parentCommand
-            section = '.'.join(section)
-            # get defaults from config
-            defaults = {}
-            for opt in self.parser.option_list:
-                if opt.dest is None:
-                    continue
-                if 'string' == opt.type:
-                    val = config.get(section, opt.dest)
-                elif opt.action in ('store_false', 'store_true'):
-                    val = config.getboolean(section, opt.dest)
-                else:
-                    val = None
-                if val is not None:
-                    defaults[opt.dest] = val
-            self.parser.set_defaults(**defaults)
-        command.Command.parse(self, argv)
-
-    # command.Command has a fake debug method, so choose the right one
-
-    def debug(self, format, *args):
-        kwargs = {}
-        log.Loggable.doLog(self, log.DEBUG, -2, format, *args, **kwargs)
