@@ -80,7 +80,7 @@ _ERROR_RE = re.compile("^scsi_read error:")
 # number of single-channel samples, ie. 2 bytes (word) per unit, and absolute
 
 
-class ProgressParser(log.Loggable):
+class ProgressParser:
     read = 0 # last [read] frame
     wrote = 0 # last [wrote] frame
     errors = 0 # count of number of scsi errors
@@ -204,7 +204,7 @@ class ProgressParser(log.Loggable):
 # FIXME: handle errors
 
 
-class ReadTrackTask(log.Loggable, task.Task):
+class ReadTrackTask(task.Task):
     """
     I am a task that reads a track using cdparanoia.
 
@@ -395,7 +395,7 @@ class ReadTrackTask(log.Loggable, task.Task):
         return
 
 
-class ReadVerifyTrackTask(log.Loggable, task.MultiSeparateTask):
+class ReadVerifyTrackTask(task.MultiSeparateTask):
     """
     I am a task that reads and verifies a track using cdparanoia.
     I also encode the track.
@@ -515,11 +515,11 @@ class ReadVerifyTrackTask(log.Loggable, task.MultiSeparateTask):
                 self.testchecksum = c1 = self.tasks[1].checksum
                 self.copychecksum = c2 = self.tasks[3].checksum
                 if c1 == c2:
-                    logging.info('Checksums match, %08x' % c1)
+                    logger.info('Checksums match, %08x' % c1)
                     self.checksum = self.testchecksum
                 else:
                     # FIXME: detect this before encoding
-                    logging.info('Checksums do not match, %08x %08x' % (
+                    logger.info('Checksums do not match, %08x %08x' % (
                         c1, c2))
                     self.exception = ChecksumException(
                         'read and verify failed: test checksum')

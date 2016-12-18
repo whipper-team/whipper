@@ -32,7 +32,7 @@ from morituri.common import directory, log
 import logging
 logger = logging.getLogger(__name__)
 
-class Config(log.Loggable):
+class Config:
 
     def __init__(self, path=None):
         self._path = path or directory.config_path()
@@ -47,7 +47,7 @@ class Config(log.Loggable):
             with codecs.open(self._path, 'r', encoding='utf-8') as f:
                 self._parser.readfp(f)
 
-        logging.info('Loaded %d sections from config file' %
+        logger.info('Loaded %d sections from config file' %
                      len(self._parser.sections()))
 
     def write(self):
@@ -123,12 +123,12 @@ class Config(log.Loggable):
             if not name.startswith('drive:'):
                 continue
 
-            logging.debug('Looking at section %r' % name)
+            logger.debug('Looking at section %r' % name)
             conf = {}
             for key in ['vendor', 'model', 'release']:
                 locals()[key] = locals()[key].strip()
                 conf[key] = self._parser.get(name, key)
-                logging.debug("%s: '%s' versus '%s'" % (
+                logger.debug("%s: '%s' versus '%s'" % (
                     key, locals()[key], conf[key]
                 ))
             if vendor.strip() != conf['vendor']:

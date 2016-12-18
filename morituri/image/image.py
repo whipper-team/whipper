@@ -34,7 +34,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class Image(object, log.Loggable):
+class Image(object):
     """
     @ivar table: The Table of Contents for this image.
     @type table: L{table.Table}
@@ -107,7 +107,7 @@ class Image(object, log.Loggable):
         logger.debug('setup image done')
 
 
-class AccurateRipChecksumTask(log.Loggable, task.MultiSeparateTask):
+class AccurateRipChecksumTask(task.MultiSeparateTask):
     """
     I calculate the AccurateRip checksums of all tracks.
     """
@@ -148,7 +148,7 @@ class AccurateRipChecksumTask(log.Loggable, task.MultiSeparateTask):
         task.MultiSeparateTask.stop(self)
 
 
-class AudioLengthTask(log.Loggable, gstreamer.GstPipelineTask):
+class AudioLengthTask(gstreamer.GstPipelineTask):
     """
     I calculate the length of a track in audio samples.
 
@@ -199,7 +199,7 @@ class AudioLengthTask(log.Loggable, gstreamer.GstPipelineTask):
         self.stop()
 
 
-class ImageVerifyTask(log.Loggable, task.MultiSeparateTask):
+class ImageVerifyTask(task.MultiSeparateTask):
     """
     I verify a disk image and get the necessary track lengths.
     """
@@ -261,7 +261,7 @@ class ImageVerifyTask(log.Loggable, task.MultiSeparateTask):
         task.MultiSeparateTask.stop(self)
 
 
-class ImageEncodeTask(log.Loggable, task.MultiSeparateTask):
+class ImageEncodeTask(task.MultiSeparateTask):
     """
     I encode a disk image to a different format.
     """

@@ -14,7 +14,7 @@ from morituri.extern.task import task
 from morituri.rip import cd, offset, drive, image, accurip, debug
 
 import logging
-logging.basicConfig(stream=sys.stderr, level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def main():
     # set user agent

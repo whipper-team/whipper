@@ -41,7 +41,7 @@ logger = logging.getLogger(__name__)
 # FIXME: should Program have a runner ?
 
 
-class Program(log.Loggable):
+class Program:
     """
     I maintain program state and functionality.
 

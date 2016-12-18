@@ -60,7 +60,7 @@ _INDEX_RE = re.compile(r"""
 """, re.VERBOSE)
 
 
-class CueFile(object, log.Loggable):
+class CueFile(object):
     """
     I represent a .cue file as an object.
 

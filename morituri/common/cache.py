@@ -34,7 +34,7 @@ from morituri.extern.log import log
 import logging
 logger = logging.getLogger(__name__)
 
-class Persister(log.Loggable):
+class Persister:
     """
     I wrap an optional pickle to persist an object to disk.
 
@@ -117,7 +117,7 @@ class Persister(log.Loggable):
         os.unlink(self._path)
 
 
-class PersistedCache(log.Loggable):
+class PersistedCache:
     """
     I wrap a directory of persisted objects.
     """
@@ -154,7 +154,7 @@ class PersistedCache(log.Loggable):
         return persister
 
 
-class ResultCache(log.Loggable):
+class ResultCache:
 
     def __init__(self, path=None):
         self._path = path or directory.cache_path('result')
@@ -190,7 +190,7 @@ class ResultCache(log.Loggable):
         return [os.path.splitext(os.path.basename(path))[0] for path in paths]
 
 
-class TableCache(log.Loggable):
+class TableCache:
 
     """
     I read and write entries to and from the cache of tables.

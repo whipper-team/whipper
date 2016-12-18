@@ -35,7 +35,7 @@ from morituri.program import sox
 import logging
 logger = logging.getLogger(__name__)
 
-class Profile(log.Loggable):
+class Profile:
 
     name = None
     extension = None

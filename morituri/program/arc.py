@@ -1,6 +1,8 @@
-import logging
-from subprocess import Popen, PIPE
 from os.path import exists
+from subprocess import Popen, PIPE
+
+import logging
+logger = logging.getLogger(__name__)
 
 ARB = 'accuraterip-checksum'
 FLAC = 'flac'
@@ -33,18 +35,18 @@ def accuraterip_checksum(f, track, tracks, wave=False, v2=False):
     arc_rc = arc.returncode
 
     if not wave and flac_rc != 0:
-        logging.warning('ARC calculation failed: flac return code is non zero')
+        logger.warning('ARC calculation failed: flac return code is non zero')
         return None
 
     if arc_rc != 0:
-        logging.warning('ARC calculation failed: arc return code is non zero')
+        logger.warning('ARC calculation failed: arc return code is non zero')
         return None
 
     out = out.strip()
     try:
         outh = int('0x%s' % out, base=16)
     except ValueError:
-        logging.warning('ARC output is not usable')
+        logger.warning('ARC output is not usable')
         return None
 
     return outh

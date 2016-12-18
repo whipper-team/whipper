@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 # checksums are not CRC's. a CRC is a specific type of checksum.
 
 
-class ChecksumTask(log.Loggable, gstreamer.GstPipelineTask):
+class ChecksumTask(gstreamer.GstPipelineTask):
     """
     I am a task that calculates a checksum of the decoded audio data.
 

@@ -94,7 +94,7 @@ _INDEX_RE = re.compile(r"""
 """, re.VERBOSE)
 
 
-class Sources(log.Loggable):
+class Sources:
     """
     I represent the list of sources used in the .toc file.
     Each SILENCE and each FILE is a source.
@@ -136,7 +136,7 @@ class Sources(log.Loggable):
         return self._sources[-1][1]
 
 
-class TocFile(object, log.Loggable):
+class TocFile(object):
 
     def __init__(self, path):
         """

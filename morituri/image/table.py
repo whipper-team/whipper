@@ -159,7 +159,7 @@ class Index:
             self.number, self.absolute, self.path, self.relative, self.counter)
 
 
-class Table(object, log.Loggable):
+class Table(object):
     """
     I represent a table of indexes on a CD.
 

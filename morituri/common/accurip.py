@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 _CACHE_DIR = directory.cache_path()
 
 
-class AccuCache(log.Loggable):
+class AccuCache:
 
     def __init__(self):
         if not os.path.exists(_CACHE_DIR):

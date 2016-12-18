@@ -12,24 +12,24 @@ from morituri.extern.task import task, gstreamer
 import logging
 logger = logging.getLogger(__name__)
 
-# log.Loggable first to get logging
 
-
-class SyncRunner(log.Loggable, task.SyncRunner):
+class SyncRunner(task.SyncRunner):
     pass
 
 
-class LoggableTask(log.Loggable, task.Task):
-    pass
-
-class LoggableMultiSeparateTask(log.Loggable, task.MultiSeparateTask):
-    pass
-
-class GstPipelineTask(log.Loggable, gstreamer.GstPipelineTask):
+class LoggableTask(task.Task):
     pass
 
 
-class PopenTask(log.Loggable, task.Task):
+class LoggableMultiSeparateTask(task.MultiSeparateTask):
+    pass
+
+
+class GstPipelineTask(gstreamer.GstPipelineTask):
+    pass
+
+
+class PopenTask(task.Task):
     """
     I am a task that runs a command using Popen.
     """
