@@ -8,10 +8,7 @@ import sys
 # twisted's unittests have skip support, standard unittest don't
 from twisted.trial import unittest
 
-from morituri.common import log
 from morituri.configure import configure
-
-log.init()
 
 # lifted from flumotion
 
@@ -44,7 +41,7 @@ def diffStrings(orig, new, desc='input'):
                  desc=desc)
 
 
-class TestCase(log.Loggable, unittest.TestCase):
+class TestCase(unittest.TestCase):
     # unittest.TestCase.failUnlessRaises does not return the exception,
     # and we'd like to check for the actual exception under TaskException,
     # so override the way twisted.trial.unittest does, without failure
@@ -55,13 +52,13 @@ class TestCase(log.Loggable, unittest.TestCase):
         except exception, inst:
             return inst
         except exception, e:
-            raise self.failureException('%s raised instead of %s:\n %s'
-                                        % (sys.exc_info()[0],
-                                           exception.__name__,
-                                           log.getExceptionMessage(e)))
+            raise Exception('%s raised instead of %s:\n %s' %
+                    (sys.exec_info()[0], exception.__name__, str(e))
+            )
         else:
-            raise self.failureException('%s not raised (%r returned)'
-                                        % (exception.__name__, result))
+            raise Exception('%s not raised (%r returned)' %
+                    (exception.__name__, result)
+            )
 
     assertRaises = failUnlessRaises
 
