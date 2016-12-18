@@ -111,7 +111,7 @@ is correct, while
 
 `whipper cd rip -d (device)`
 
-is not, because the `-d` argument applies to the whipper command.
+is not, because the `-d` argument applies to the `cd` command.
 
 ~~Check the man page (`whipper(1)`) for more information.~~ (currently not available as whipper's documentation is planned to be reworked ([Issue #73](https://github.com/JoeLametta/whipper/issues/73)).
 
