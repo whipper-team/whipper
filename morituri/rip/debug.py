@@ -29,9 +29,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 class RCCue(logcommand.Lager):
-
-    name = "cue"
     summary = "write a cue file for the cached result"
+    description = summary
 
     def do(self, args):
         self._cache = cache.ResultCache()
@@ -54,9 +53,8 @@ class RCCue(logcommand.Lager):
 
 
 class RCList(logcommand.Lager):
-
-    name = "list"
     summary = "list cached results"
+    description = summary
 
     def do(self, args):
         self._cache = cache.ResultCache()
@@ -79,19 +77,19 @@ class RCList(logcommand.Lager):
 
 
 class RCLog(logcommand.Lager):
-
-    name = "log"
     summary = "write a log file for the cached result"
+    description = summary
+    #formatter_class = argparse.
 
-    def addOptions(self):
+    def add_arguments(self):
         loggers = result.getLoggers().keys()
 
-        self.parser.add_option('-L', '--logger',
+        self.parser.add_argument(
+            '-L', '--logger',
             action="store", dest="logger",
             default='morituri',
-            help="logger to use "
-                "(default '%default', choose from '" +
-                    "', '".join(loggers) + "')")
+            help="logger to use (choose from '" + "', '".join(loggers) + "')"
+        )
 
     def do(self, args):
         self._cache = cache.ResultCache()
@@ -115,63 +113,70 @@ class RCLog(logcommand.Lager):
 
 
 class ResultCache(logcommand.Lager):
-
     summary = "debug result cache"
-    aliases = ['rc', ]
+    description = summary
 
-    subCommandClasses = [RCCue, RCList, RCLog, ]
+    subcommands = {
+        'cue':  RCCue,
+        'list': RCList,
+        'log':  RCLog,
+    }
 
 
 class Checksum(logcommand.Lager):
-
     summary = "run a checksum task"
+    description = summary
 
-    def do(self, args):
-        if not args:
-            self.stdout.write('Please specify one or more input files.\n')
-            return 3
+    def add_arguments(self):
+        self.parser.add_argument('files', nargs='+', action='store',
+                                 help="audio files to checksum")
 
+    def do(self):
         runner = task.SyncRunner()
         # here to avoid import gst eating our options
         from morituri.common import checksum
 
-        for arg in args:
-            fromPath = unicode(arg)
-
+        for f in self.options.files:
+            fromPath = unicode(f)
             checksumtask = checksum.CRC32Task(fromPath)
-
             runner.run(checksumtask)
-
             self.stdout.write('Checksum: %08x\n' % checksumtask.checksum)
 
 
 class Encode(logcommand.Lager):
-
     summary = "run an encode task"
+    description = summary
 
-    def addOptions(self):
+    def add_arguments(self):
         # here to avoid import gst eating our options
         from morituri.common import encode
 
         default = 'flac'
-        self.parser.add_option('', '--profile',
-            action="store", dest="profile",
+        # slated for deletion as flac will be the only encoder
+        self.parser.add_argument('--profile',
+            action="store",
+            dest="profile",
             help="profile for encoding (default '%s', choices '%s')" % (
                 default, "', '".join(encode.ALL_PROFILES.keys())),
             default=default)
+        self.parser.add_argument('input', action='store',
+                                 help="audio file to encode")
+        self.parser.add_argument('output', nargs='?', action='store',
+                                 help="output path")
 
-    def do(self, args):
+    def do(self):
         from morituri.common import encode
         profile = encode.ALL_PROFILES[self.options.profile]()
 
         try:
-            fromPath = unicode(args[0])
+            fromPath = unicode(self.options.input)
         except IndexError:
+            # unexercised after BaseCommand
             self.stdout.write('Please specify an input file.\n')
             return 3
 
         try:
-            toPath = unicode(args[1])
+            toPath = unicode(self.options.output)
         except IndexError:
             toPath = fromPath + '.' + profile.extension
 
@@ -189,19 +194,19 @@ class Encode(logcommand.Lager):
 
 
 class MaxSample(logcommand.Lager):
-
     summary = "run a max sample task"
+    description = summary
+    
+    def add_arguments(self):
+        self.parser.add_argument('files', nargs='+', action='store',
+                                 help="audio files to sample")
 
-    def do(self, args):
-        if not args:
-            self.stdout.write('Please specify one or more input files.\n')
-            return 3
-
+    def do(self):
         runner = task.SyncRunner()
         # here to avoid import gst eating our options
         from morituri.common import checksum
 
-        for arg in args:
+        for arg in self.options.files:
             fromPath = unicode(arg.decode('utf-8'))
 
             checksumtask = checksum.MaxSampleTask(fromPath)
@@ -214,12 +219,16 @@ class MaxSample(logcommand.Lager):
 
 
 class Tag(logcommand.Lager):
-
     summary = "run a tag reading task"
+    description = summary
 
-    def do(self, args):
+    def add_arguments(self):
+        self.parser.add_argument('file', action='store',
+                                 help="audio file to tag")
+
+    def do(self):
         try:
-            path = unicode(args[0])
+            path = unicode(self.options.file)
         except IndexError:
             self.stdout.write('Please specify an input file.\n')
             return 3
@@ -237,8 +246,6 @@ class Tag(logcommand.Lager):
 
 
 class MusicBrainzNGS(logcommand.Lager):
-
-    usage = "[MusicBrainz disc id]"
     summary = "examine MusicBrainz NGS info"
     description = """Look up a MusicBrainz disc id and output information.
 
@@ -246,16 +253,19 @@ You can get the MusicBrainz disc id with rip cd info.
 
 Example disc id: KnpGsLhvH.lPrNc1PBL21lb9Bg4-"""
 
-    def do(self, args):
+    def add_arguments(self):
+        self.parser.add_argument('mbdiscid', action='store',
+                                 help="MB disc id to look up")
+
+    def do(self):
         try:
-            discId = unicode(args[0])
+            discId = unicode(self.options.mbdiscid)
         except IndexError:
             self.stdout.write('Please specify a MusicBrainz disc id.\n')
             return 3
 
         from morituri.common import mbngs
-        metadatas = mbngs.musicbrainz(discId,
-            record=self.getRootCommand().record)
+        metadatas = mbngs.musicbrainz(discId, record=self.options.record)
 
         self.stdout.write('%d releases\n' % len(metadatas))
         for i, md in enumerate(metadatas):
@@ -277,14 +287,20 @@ Example disc id: KnpGsLhvH.lPrNc1PBL21lb9Bg4-"""
 
 
 class CDParanoia(logcommand.Lager):
-    def do(self, args):
+    summary = "show cdparanoia version"
+    description = summary
+
+    def do(self):
         from morituri.program import cdparanoia
         version = cdparanoia.getCdParanoiaVersion()
         self.stdout.write("cdparanoia version: %s\n" % version)
 
 
 class CDRDAO(logcommand.Lager):
-    def do(self, args):
+    summary = "show cdrdao version"
+    description = summary
+
+    def do(self):
         from morituri.program import cdrdao
         version = cdrdao.getCDRDAOVersion()
         self.stdout.write("cdrdao version: %s\n" % version)
@@ -292,6 +308,7 @@ class CDRDAO(logcommand.Lager):
 
 class Version(logcommand.Lager):
     summary = "debug version getting"
+    description = summary
 
     subcommands = {
         'cdparanoia': CDParanoia,
@@ -312,4 +329,3 @@ class Debug(logcommand.Lager):
         'resultcache':    ResultCache,
         'version':        Version,
     }
-
