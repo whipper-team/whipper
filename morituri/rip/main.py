@@ -45,7 +45,13 @@ def main():
             sys.stderr.write('rip: error: Could not create encoded file.\n')
             return 255
 
-        raise
+        # in python3 we can instead do `raise e.exception` as that would show
+        # the exception's original context
+        sys.stderr.write(e.exceptionMessage)
+        return 255
+    except command.CommandError, e:
+        sys.stderr.write('rip: error: %s\n' % e.output)
+        return e.status
     return ret if ret else 0
 
 class Whipper(logcommand.Lager):

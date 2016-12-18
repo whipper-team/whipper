@@ -28,7 +28,8 @@ import os
 
 from morituri.common import common
 from morituri.image import cue, table
-from morituri.extern.task import task, gstreamer
+from morituri.extern.task import task
+from morituri.program.soxi import AudioLengthTask
 
 import logging
 logger = logging.getLogger(__name__)
@@ -148,57 +149,6 @@ class AccurateRipChecksumTask(task.MultiSeparateTask):
         task.MultiSeparateTask.stop(self)
 
 
-class AudioLengthTask(gstreamer.GstPipelineTask):
-    """
-    I calculate the length of a track in audio samples.
-
-    @ivar  length: length of the decoded audio file, in audio samples.
-    """
-    logCategory = 'AudioLengthTask'
-    description = 'Getting length of audio track'
-    length = None
-
-    playing = False
-
-    def __init__(self, path):
-        """
-        @type  path: unicode
-        """
-        assert type(path) is unicode, "%r is not unicode" % path
-
-        self._path = path
-        self.logName = os.path.basename(path).encode('utf-8')
-
-    def getPipelineDesc(self):
-        return '''
-            filesrc location="%s" !
-            decodebin ! audio/x-raw-int !
-            fakesink name=sink''' % \
-                gstreamer.quoteParse(self._path).encode('utf-8')
-
-    def paused(self):
-        logger.debug('query duration')
-        sink = self.pipeline.get_by_name('sink')
-        assert sink, 'Error constructing pipeline'
-
-        try:
-            length, qformat = sink.query_duration(self.gst.FORMAT_DEFAULT)
-        except self.gst.QueryError, e:
-            logger.info('failed to query duration of %r' % self._path)
-            self.setException(e)
-            raise
-
-        # wavparse 0.10.14 returns in bytes
-        if qformat == self.gst.FORMAT_BYTES:
-            logger.debug('query returned in BYTES format')
-            length /= 4
-        logger.debug('total length of %r in samples: %d', self._path, length)
-        self.length = length
-
-        self.pipeline.set_state(self.gst.STATE_NULL)
-        self.stop()
-
-
 class ImageVerifyTask(task.MultiSeparateTask):
     """
     I verify a disk image and get the necessary track lengths.
@@ -252,6 +202,9 @@ class ImageVerifyTask(task.MultiSeparateTask):
                 self.setException(taskk.exception)
                 break
 
+            if taskk.length is None:
+                raise ValueError("Track length was not found; look for "
+                    "earlier errors in debug log (set RIP_DEBUG=4)")
             # print '%d has length %d' % (trackIndex, taskk.length)
             index = track.indexes[1]
             assert taskk.length % common.SAMPLES_PER_FRAME == 0
