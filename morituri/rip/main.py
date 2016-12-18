@@ -49,9 +49,6 @@ def main():
         # the exception's original context
         sys.stderr.write(e.exceptionMessage)
         return 255
-    except command.CommandError, e:
-        sys.stderr.write('rip: error: %s\n' % e.output)
-        return e.status
     return ret if ret else 0
 
 class Whipper(logcommand.Lager):

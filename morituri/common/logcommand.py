@@ -20,17 +20,14 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
-"""
-Logging Command.
-"""
-
-from morituri.extern.command import command
-from morituri.common import config, drive
 import argparse
-import contextlib
-import logging
-import sys
 import os
+import sys
+
+from morituri.common import config, drive
+
+import logging
+logger = logging.getLogger(__name__)
 
 # What about argparse.add_subparsers(), you ask?
 # Unfortunately add_subparsers() does not support specifying the
@@ -87,10 +84,28 @@ class Lager():
                                      help=argparse.SUPPRESS)
 
         if self.device_option:
-            with self.add_device_option(self.parser):
-                self.options = self.parser.parse_args(argv, namespace=opts)
-        else:
-            self.options = self.parser.parse_args(argv, namespace=opts)
+            # pick the first drive as default
+            drives = drive.getAllDevicePaths()
+            if not drives:
+                msg = 'No CD-DA drives found!'
+                logger.error(msg)
+                # morituri exited with return code 3 here
+                raise IOError(msg)
+            self.parser.add_argument('-d', '--device',
+                                     action="store",
+                                     dest="device",
+                                     default=drives[0],
+                                     help="CD-DA device")
+
+        self.options = self.parser.parse_args(argv, namespace=opts)
+
+        if self.device_option:
+            # this can be a symlink to another device
+            self.options.device = os.path.realpath(self.options.device)
+            if not os.path.exists(self.options.device):
+                msg = 'CD-DA device %s not found!' % self.options.device
+                logger.error(msg)
+                raise IOError(msg)
 
         self.handle_arguments()
 
@@ -134,25 +149,3 @@ class Lager():
         for com in sorted(self.subcommands.keys()):
             s += "  %s %s\n" % (com.ljust(8), self.subcommands[com].summary)
         return s
-
-    @contextlib.contextmanager
-    def add_device_option(self, parser):
-        """
-        Wrap self.options = parser.parse_args(...) to add --device param.
-        """
-        # pick the first drive as default
-        drives = drive.getAllDevicePaths()
-        if not drives:
-            msg = 'No CD-DA drives found!'
-            logger.error(msg)
-            # morituri exited with return code 3 here
-            raise Exception(msg)
-        parser.add_argument('-d', '--device',
-                            action="store",
-                            dest="device",
-                            default=drives[0],
-                            help="CD-DA device")
-        yield
-        # this can be a symlink to another device
-        self.options.device = os.path.realpath(self.options.device)
-        # FIXME should raise an error / exit if options.device does not exist.
