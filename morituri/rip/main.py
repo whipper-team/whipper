@@ -28,7 +28,7 @@ def main():
     try:
         ret = Whipper(sys.argv[1:], os.path.basename(sys.argv[0]), None).do()
     except SystemError, e:
-        sys.stderr.write('rip: error: %s\n' % e.args)
+        sys.stderr.write('whipper: error: %s\n' % e.args)
         return 255
     except ImportError, e:
         raise ImportError(e)
@@ -36,13 +36,13 @@ def main():
         if isinstance(e.exception, ImportError):
             raise ImportError(e.exception)
         elif isinstance(e.exception, common.MissingDependencyException):
-            sys.stderr.write('rip: error: missing dependency "%s"\n' %
+            sys.stderr.write('whipper: error: missing dependency "%s"\n' %
                              e.exception.dependency)
             return 255
 
         if isinstance(e.exception, common.EmptyError):
             logger.debug("EmptyError: %r", log.getExceptionMessage(e.exception))
-            sys.stderr.write('rip: error: Could not create encoded file.\n')
+            sys.stderr.write('whipper: error: Could not create encoded file.\n')
             return 255
 
         # in python3 we can instead do `raise e.exception` as that would show
