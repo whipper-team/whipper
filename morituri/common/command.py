@@ -88,7 +88,7 @@ class BaseCommand():
             drives = drive.getAllDevicePaths()
             if not drives:
                 msg = 'No CD-DA drives found!'
-                logger.error(msg)
+                logger.critical(msg)
                 # morituri exited with return code 3 here
                 raise IOError(msg)
             self.parser.add_argument('-d', '--device',
@@ -104,7 +104,7 @@ class BaseCommand():
             self.options.device = os.path.realpath(self.options.device)
             if not os.path.exists(self.options.device):
                 msg = 'CD-DA device %s not found!' % self.options.device
-                logger.error(msg)
+                logger.critical(msg)
                 raise IOError(msg)
 
         self.handle_arguments()

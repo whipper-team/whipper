@@ -285,7 +285,7 @@ Log files will log the path to tracks relative to this directory.
                 self.logger = result.getLoggers()[self.options.logger]()
             except KeyError:
                 msg = "No logger named %s found!" % self.options.logger
-                logger.error(msg)
+                logger.critical(msg)
                 raise ValueError(msg)
 
 
@@ -412,7 +412,7 @@ Log files will log the path to tracks relative to this directory.
 
 
                 if tries == MAX_TRIES:
-                    logger.error('Giving up on track %d after %d times' % (
+                    logger.critical('Giving up on track %d after %d times' % (
                         number, tries))
                     raise RuntimeError(
                         "track can't be ripped. "
