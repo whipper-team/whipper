@@ -259,14 +259,16 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
 Please use the [issue tracker](https://github.com/JoeLametta/whipper/issues) to report any bugs or file feature requests.
 
-When filing bug reports, please run the failing command with the environment variable `RIP_DEBUG` set. For example:
+When filing bug reports, please run the failing command with the environment variable `WHIPPER_DEBUG` set. For example:
 
 ```bash
-RIP_DEBUG=5 whipper offset find > whipper.log 2>&1
+WHIPPER_DEBUG=DEBUG WHIPPER_LOGFILE=whipper.log whipper offset find
 gzip whipper.log
 ```
 
 And attach the gzipped log file to your bug report.
+
+Without `WHIPPER_LOGFILE` set, logging messages will go to stderr. `WHIPPER_DEBUG` accepts a string of the [default python logging levels](https://docs.python.org/2/library/logging.html#logging-levels).
 
 ### Developing
 
