@@ -10,19 +10,19 @@ from morituri.common import config, drive
 import logging
 logger = logging.getLogger(__name__)
 
-# options and arguments shared between commands
-# What about argparse.add_subparsers(), you ask?
-# Unfortunately add_subparsers() does not support specifying the
+# Q: What about argparse.add_subparsers(), you ask?
+# A: Unfortunately add_subparsers() does not support specifying the
 # formatter_class of subparsers, nor does it support epilogs, so
-# unfortunately it does not quite fit our use case. Besides, using this
-# structure made the migration from python-command more straightforward.
+# it does not quite fit our use case.
 
-# Why not subclass ArgumentParser and extend/replace the relevant methods?
-# If this can be done in a simpler fashion than this current implementation,
-# by all means submit a patch.
+# Q: Why not subclass ArgumentParser and extend/replace the relevant
+# methods?
+# A: If this can be done in a simpler fashion than this current
+# implementation, by all means submit a patch.
 
-# Why not argparse.parse_known_args()?
-# TODO investigation
+# Q: Why not argparse.parse_known_args()?
+# A: The prefix matching prevents passing '-h' (and possibly other
+# options) to the child command.
 
 class BaseCommand():
     """
