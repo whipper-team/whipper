@@ -10,7 +10,7 @@ setup(
     packages=find_packages(),
     entry_points = {
         'console_scripts': [
-            'whipper = morituri.rip.main:main'
+            'whipper = morituri.command.main:main'
          ]
     }
 )

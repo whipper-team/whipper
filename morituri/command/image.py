@@ -24,9 +24,10 @@ import argparse
 import os
 import sys
 
-from morituri.common import accurip, command, config, program
+from morituri.common import accurip, config, program
 from morituri.image import image
 from morituri.result import result
+from morituri.command.basecommand import BaseCommand
 
 from morituri.extern.task import task
 
@@ -34,7 +35,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class Retag(command.BaseCommand):
+class Retag(BaseCommand):
     summary = "retag image files"
     description = """
 Retags the image from the given .cue files with tags obtained from MusicBrainz.
@@ -108,7 +109,7 @@ Retags the image from the given .cue files with tags obtained from MusicBrainz.
             print
 
 
-class Verify(command.BaseCommand):
+class Verify(BaseCommand):
     summary = "verify image"
     description = """
 Verifies the image from the given .cue files against the AccurateRip database.
@@ -144,7 +145,7 @@ Verifies the image from the given .cue files against the AccurateRip database.
             print "\n".join(prog.getAccurateRipResults()) + "\n"
 
 
-class Image(command.BaseCommand):
+class Image(BaseCommand):
     summary = "handle images"
     description = """
 Handle disc images.  Disc images are described by a .cue file.

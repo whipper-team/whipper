@@ -23,12 +23,13 @@
 import argparse
 import sys
 
-from morituri.common import accurip, command
+from morituri.common import accurip
+from morituri.command.basecommand import BaseCommand
 
 import logging
 logger = logging.getLogger(__name__)
 
-class Show(command.BaseCommand):
+class Show(BaseCommand):
     summary = "show accuraterip data"
     description = """
 retrieves and display accuraterip data from the given URL
@@ -91,7 +92,7 @@ retrieves and display accuraterip data from the given URL
                     str(checksums[checksum])))
 
 
-class AccuRip(command.BaseCommand):
+class AccuRip(BaseCommand):
     summary = "handle AccurateRip information"
     description = """
 Handle AccurateRip information. Retrieves AccurateRip disc entries and

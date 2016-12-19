@@ -31,11 +31,11 @@ import sys
 import gobject
 gobject.threads_init()
 
-from morituri.common import accurip, command, common, gstreamer
+from morituri.common import accurip, common, gstreamer
 from morituri.common import drive, program, task
 from morituri.result import result
 from morituri.program import cdrdao, cdparanoia
-from morituri.rip import common as rcommon
+from morituri.command.basecommand import BaseCommand
 
 import logging
 logger = logging.getLogger(__name__)
@@ -44,7 +44,33 @@ logger = logging.getLogger(__name__)
 SILENT = 1e-10
 MAX_TRIES = 5
 
-class _CD(command.BaseCommand):
+DEFAULT_TRACK_TEMPLATE = u'%r/%A - %d/%t. %a - %n'
+DEFAULT_DISC_TEMPLATE = u'%r/%A - %d/%A - %d'
+
+TEMPLATE_DESCRIPTION = '''
+Tracks are named according to the track template, filling in the variables
+and adding the file extension.  Variables exclusive to the track template are:
+ - %t: track number
+ - %a: track artist
+ - %n: track title
+ - %s: track sort name
+
+Disc files (.cue, .log, .m3u) are named according to the disc template,
+filling in the variables and adding the file extension. Variables for both
+disc and track template are:
+ - %A: album artist
+ - %S: album sort name
+ - %d: disc title
+ - %y: release year
+ - %r: release type, lowercase
+ - %R: Release type, normal case
+ - %x: audio extension, lowercase
+ - %X: audio extension, uppercase
+
+'''
+
+
+class _CD(BaseCommand):
 
     """
     @type program: L{program.Program}
@@ -209,7 +235,7 @@ relative to the directory of the disc files.
 
 All files will be created relative to the given output directory.
 Log files will log the path to tracks relative to this directory.
-""" % rcommon.TEMPLATE_DESCRIPTION
+""" % TEMPLATE_DESCRIPTION
     formatter_class = argparse.ArgumentDefaultsHelpFormatter
 
     # Requires opts.record
@@ -251,11 +277,11 @@ Log files will log the path to tracks relative to this directory.
                 "and files will be created relative to it when not absolute")
         self.parser.add_argument('--track-template',
             action="store", dest="track_template",
-            default=rcommon.DEFAULT_TRACK_TEMPLATE,
+            default=DEFAULT_TRACK_TEMPLATE,
             help="template for track file naming (default default)")
         self.parser.add_argument('--disc-template',
             action="store", dest="disc_template",
-            default=rcommon.DEFAULT_DISC_TEMPLATE,
+            default=DEFAULT_DISC_TEMPLATE,
             help="template for disc file naming (default default)")
         self.parser.add_argument('-U', '--unknown',
             action="store_true", dest="unknown",
@@ -563,7 +589,7 @@ Log files will log the path to tracks relative to this directory.
         self.program.ejectDevice(self.device)
 
 
-class CD(command.BaseCommand):
+class CD(BaseCommand):
     summary = "handle CDs"
     description = "Display and rip CD-DA and metadata."
     device_option = True

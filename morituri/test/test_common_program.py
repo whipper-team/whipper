@@ -9,7 +9,7 @@ import unittest
 
 from morituri.result import result
 from morituri.common import program, accurip, mbngs, config
-from morituri.rip import common as rcommon
+from morituri.command.cd import DEFAULT_DISC_TEMPLATE
 
 
 class TrackImageVerifyTestCase(unittest.TestCase):
@@ -89,7 +89,7 @@ class PathTestCase(unittest.TestCase):
     def testStandardTemplateEmpty(self):
         prog = program.Program(config.Config())
 
-        path = prog.getPath(u'/tmp', rcommon.DEFAULT_DISC_TEMPLATE,
+        path = prog.getPath(u'/tmp', DEFAULT_DISC_TEMPLATE,
             'mbdiscid', 0)
         self.assertEquals(path,
             u'/tmp/unknown/Unknown Artist - mbdiscid/Unknown Artist - mbdiscid')
@@ -101,7 +101,7 @@ class PathTestCase(unittest.TestCase):
         md.title = 'Grace'
         prog.metadata = md
 
-        path = prog.getPath(u'/tmp', rcommon.DEFAULT_DISC_TEMPLATE,
+        path = prog.getPath(u'/tmp', DEFAULT_DISC_TEMPLATE,
             'mbdiscid', 0)
         self.assertEquals(path,
             u'/tmp/unknown/Jeff Buckley - Grace/Jeff Buckley - Grace')
