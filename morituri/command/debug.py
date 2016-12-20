@@ -40,14 +40,14 @@ class RCCue(BaseCommand):
         try:
             discid = args[0]
         except IndexError:
-            self.stderr.write(
+            sys.stderr.write(
                 'Please specify a cddb disc id\n')
             return 3
 
         persisted = self._cache.getRipResult(discid, create=False)
 
         if not persisted:
-            self.stderr.write(
+            sys.stderr.write(
                 'Could not find a result for cddb disc id %s\n' % discid)
             return 3
 
@@ -99,14 +99,14 @@ class RCLog(BaseCommand):
         persisted = self._cache.getRipResult(args[0], create=False)
 
         if not persisted:
-            self.stderr.write(
+            sys.stderr.write(
                 'Could not find a result for cddb disc id %s\n' % args[0])
             return 3
 
         try:
             klazz = result.getLoggers()[self.options.logger]
         except KeyError:
-            self.stderr.write("No logger named %s found!\n" % (
+            sys.stderr.write("No logger named %s found!\n" % (
                 self.options.logger))
             return 3
 

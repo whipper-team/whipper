@@ -131,7 +131,7 @@ class Program:
             from pkg_resources import parse_version as V
             version = cdrdao.getCDRDAOVersion()
             if V(version) < V('1.2.3rc2'):
-                self.stdout.write('Warning: cdrdao older than 1.2.3 has a '
+                sys.stdout.write('Warning: cdrdao older than 1.2.3 has a '
                     'pre-gap length bug.\n'
                     'See http://sourceforge.net/tracker/?func=detail'
                     '&aid=604751&group_id=2171&atid=102171\n')
