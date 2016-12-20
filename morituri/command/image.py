@@ -63,19 +63,19 @@ Retags the image from the given .cue files with tags obtained from MusicBrainz.
         # here to avoid import gst eating our options
         from morituri.common import encode
 
-        prog = program.Program(self.config, stdout=self.stdout)
+        prog = program.Program(self.config, stdout=sys.stdout)
         runner = task.SyncRunner()
 
         for arg in self.options.cuefile:
-            self.stdout.write('Retagging image %r\n' % arg)
+            sys.stdout.write('Retagging image %r\n' % arg)
             arg = arg.decode('utf-8')
             cueImage = image.Image(arg)
             cueImage.setup(runner)
 
             mbdiscid = cueImage.table.getMusicBrainzDiscId()
-            self.stdout.write('MusicBrainz disc id is %s\n' % mbdiscid)
+            sys.stdout.write('MusicBrainz disc id is %s\n' % mbdiscid)
 
-            self.stdout.write("MusicBrainz lookup URL %s\n" %
+            sys.stdout.write("MusicBrainz lookup URL %s\n" %
                 cueImage.table.getMusicBrainzSubmitURL())
             prog.metadata = prog.getMusicBrainz(cueImage.table, mbdiscid,
                 release=self.options.release_id,

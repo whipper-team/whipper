@@ -45,19 +45,19 @@ retrieves and display accuraterip data from the given URL
 
         count = responses[0].trackCount
 
-        self.stdout.write("Found %d responses for %d tracks\n\n" % (
+        sys.stdout.write("Found %d responses for %d tracks\n\n" % (
             len(responses), count))
 
         for (i, r) in enumerate(responses):
             if r.trackCount != count:
-                self.stdout.write(
+                sys.stdout.write(
                     "Warning: response %d has %d tracks instead of %d\n" % (
                         i, r.trackCount, count))
 
 
         # checksum and confidence by track
         for track in range(count):
-            self.stdout.write("Track %d:\n" % (track + 1))
+            sys.stdout.write("Track %d:\n" % (track + 1))
             checksums = {}
 
             for (i, r) in enumerate(responses):
@@ -86,7 +86,7 @@ retrieves and display accuraterip data from the given URL
             sortedChecksums.reverse()
 
             for highest, checksum in sortedChecksums:
-                self.stdout.write("  %d result(s) for checksum %s: %s\n" % (
+                sys.stdout.write("  %d result(s) for checksum %s: %s\n" % (
                     len(checksums[checksum]), checksum,
                     str(checksums[checksum])))
 

@@ -22,6 +22,7 @@
 
 import argparse
 import os
+import sys
 import tempfile
 
 import gobject
@@ -85,7 +86,7 @@ CD in the AccurateRip database."""
         device = self.options.device
 
         # if necessary, load and unmount
-        self.stdout.write('Checking device %s\n' % device)
+        sys.stdout.write('Checking device %s\n' % device)
 
         prog.loadDevice(device)
         prog.unmountDevice(device)
@@ -107,7 +108,7 @@ CD in the AccurateRip database."""
             responses = accurip.getAccurateRipResponses(data)
         except urllib2.HTTPError, e:
             if e.code == 404:
-                self.stdout.write(
+                sys.stdout.write(
                     'Album not found in AccurateRip database.\n')
                 return 1
             else:
@@ -131,7 +132,7 @@ CD in the AccurateRip database."""
             return None, None
 
         for offset in self._offsets:
-            self.stdout.write('Trying read offset %d ...\n' % offset)
+            sys.stdout.write('Trying read offset %d ...\n' % offset)
             try:
                 archecksum = self._arcs(runner, table, 1, offset)
             except task.TaskException, e:
@@ -142,13 +143,13 @@ CD in the AccurateRip database."""
                     raise e
 
                 if isinstance(e.exception, cdparanoia.FileSizeError):
-                    self.stdout.write(
+                    sys.stdout.write(
                         'WARNING: cannot rip with offset %d...\n' % offset)
                     continue
 
                 logger.warning("Unknown task exception for offset %d: %r" % (
                     offset, e))
-                self.stdout.write(
+                sys.stdout.write(
                     'WARNING: cannot rip with offset %d...\n' % offset)
                 continue
 
@@ -158,7 +159,7 @@ CD in the AccurateRip database."""
             if c:
                 count = 1
                 logger.debug('MATCHED against response %d' % i)
-                self.stdout.write(
+                sys.stdout.write(
                     'Offset of device is likely %d, confirming ...\n' %
                         offset)
 
@@ -169,7 +170,7 @@ CD in the AccurateRip database."""
                         archecksum = self._arcs(runner, table, track, offset)
                     except task.TaskException, e:
                         if isinstance(e.exception, cdparanoia.FileSizeError):
-                            self.stdout.write(
+                            sys.stdout.write(
                                 'WARNING: cannot rip with offset %d...\n' %
                                 offset)
                             continue
@@ -184,12 +185,12 @@ CD in the AccurateRip database."""
                     self._foundOffset(device, offset)
                     return 0
                 else:
-                    self.stdout.write(
+                    sys.stdout.write(
                         'Only %d of %d tracks matched, continuing ...\n' % (
                         count, len(table.tracks)))
 
-        self.stdout.write('No matching offset found.\n')
-        self.stdout.write('Consider trying again with a different disc.\n')
+        sys.stdout.write('No matching offset found.\n')
+        sys.stdout.write('Consider trying again with a different disc.\n')
 
     # TODO MW: Update this further for ARv2 code
     def _arcs(self, runner, table, track, offset):
@@ -220,15 +221,15 @@ CD in the AccurateRip database."""
         return "%08x" % t.checksum
 
     def _foundOffset(self, device, offset):
-        self.stdout.write('\nRead offset of device is: %d.\n' %
+        sys.stdout.write('\nRead offset of device is: %d.\n' %
             offset)
 
         info = drive.getDeviceInfo(device)
         if not info:
-            self.stdout.write('Offset not saved: could not get device info (requires pycdio).\n')
+            sys.stdout.write('Offset not saved: could not get device info (requires pycdio).\n')
             return
 
-        self.stdout.write('Adding read offset to configuration file.\n')
+        sys.stdout.write('Adding read offset to configuration file.\n')
 
         self.getRootCommand().config.setReadOffset(info[0], info[1], info[2],
             offset)

@@ -98,13 +98,13 @@ class _CD(BaseCommand):
     def do(self):
         self.program = program.Program(self.config,
             record=self.options.record,
-            stdout=self.stdout)
+            stdout=sys.stdout)
         self.runner = task.SyncRunner()
 
         # if the device is mounted (data session), unmount it
         #self.device = self.parentCommand.options.device
         self.device = self.options.device
-        self.stdout.write('Checking device %s\n' % self.device)
+        sys.stdout.write('Checking device %s\n' % self.device)
 
         self.program.loadDevice(self.device)
         self.program.unmountDevice(self.device)
@@ -116,11 +116,11 @@ class _CD(BaseCommand):
 
         # already show us some info based on this
         self.program.getRipResult(self.ittoc.getCDDBDiscId())
-        self.stdout.write("CDDB disc id: %s\n" % self.ittoc.getCDDBDiscId())
+        sys.stdout.write("CDDB disc id: %s\n" % self.ittoc.getCDDBDiscId())
         self.mbdiscid = self.ittoc.getMusicBrainzDiscId()
-        self.stdout.write("MusicBrainz disc id %s\n" % self.mbdiscid)
+        sys.stdout.write("MusicBrainz disc id %s\n" % self.mbdiscid)
 
-        self.stdout.write("MusicBrainz lookup URL %s\n" %
+        sys.stdout.write("MusicBrainz lookup URL %s\n" %
             self.ittoc.getMusicBrainzSubmitURL())
 
         self.program.metadata = self.program.getMusicBrainz(self.ittoc,
@@ -134,7 +134,7 @@ class _CD(BaseCommand):
             cddbid = self.ittoc.getCDDBValues()
             cddbmd = self.program.getCDDB(cddbid)
             if cddbmd:
-                self.stdout.write('FreeDB identifies disc as %s\n' % cddbmd)
+                sys.stdout.write('FreeDB identifies disc as %s\n' % cddbmd)
 
             # also used by rip cd info
             if not getattr(self.options, 'unknown', False):
@@ -247,7 +247,7 @@ Log files will log the path to tracks relative to this directory.
         if info:
             try:
                 default_offset = self.config.getReadOffset(*info)
-                self.stdout.write("Using configured read offset %d\n" %
+                sys.stdout.write("Using configured read offset %d\n" %
                                   default_offset)
             except KeyError:
                 pass
@@ -340,11 +340,11 @@ Log files will log the path to tracks relative to this directory.
                 profile=profile, disambiguate=disambiguate)
             dirname = os.path.dirname(discName)
             if os.path.exists(dirname):
-                self.stdout.write("Output directory %s already exists\n" %
+                sys.stdout.write("Output directory %s already exists\n" %
                     dirname.encode('utf-8'))
                 logs = glob.glob(os.path.join(dirname, '*.log'))
                 if logs:
-                    self.stdout.write(
+                    sys.stdout.write(
                         "Output directory %s is a finished rip\n" %
                         dirname.encode('utf-8'))
                     if not disambiguate:
@@ -355,7 +355,7 @@ Log files will log the path to tracks relative to this directory.
                     break
 
             else:
-                self.stdout.write("Creating output directory %s\n" %
+                sys.stdout.write("Creating output directory %s\n" %
                     dirname.encode('utf-8'))
                 os.makedirs(dirname)
                 break
@@ -398,11 +398,11 @@ Log files will log the path to tracks relative to this directory.
                     logger.debug('previous result %r, expected %r' % (
                         trackResult.filename, path))
 
-                self.stdout.write('Verifying track %d of %d: %s\n' % (
+                sys.stdout.write('Verifying track %d of %d: %s\n' % (
                     number, len(self.itable.tracks),
                     os.path.basename(path).encode('utf-8')))
                 if not self.program.verifyTrack(self.runner, trackResult):
-                    self.stdout.write('Verification failed, reripping...\n')
+                    sys.stdout.write('Verification failed, reripping...\n')
                     os.unlink(path)
 
             if not os.path.exists(path):
@@ -416,7 +416,7 @@ Log files will log the path to tracks relative to this directory.
                     tries += 1
                     if tries > 1:
                         extra = " (try %d)" % tries
-                    self.stdout.write('Ripping track %d of %d%s: %s\n' % (
+                    sys.stdout.write('Ripping track %d of %d%s: %s\n' % (
                         number, len(self.itable.tracks), extra,
                         os.path.basename(path).encode('utf-8')))
                     try:
@@ -443,17 +443,17 @@ Log files will log the path to tracks relative to this directory.
                         "track can't be ripped. "
                         "Rip attempts number is equal to 'MAX_TRIES'")
                 if trackResult.testcrc == trackResult.copycrc:
-                    self.stdout.write('Checksums match for track %d\n' %
+                    sys.stdout.write('Checksums match for track %d\n' %
                         number)
                 else:
-                    self.stdout.write(
+                    sys.stdout.write(
                         'ERROR: checksums did not match for track %d\n' %
                         number)
                     raise
 
-                self.stdout.write('Peak level: {:.2%} \n'.format(trackResult.peak))
+                sys.stdout.write('Peak level: {:.2%} \n'.format(trackResult.peak))
 
-                self.stdout.write('Rip quality: {:.2%}\n'.format(trackResult.quality))
+                sys.stdout.write('Rip quality: {:.2%}\n'.format(trackResult.quality))
 
             # overlay this rip onto the Table
             if number == 0:
@@ -466,7 +466,7 @@ Log files will log the path to tracks relative to this directory.
                     logger.debug('Unlinking %r', trackResult.filename)
                     os.unlink(trackResult.filename)
                     trackResult.filename = None
-                    self.stdout.write('HTOA discarded, contains digital silence\n')
+                    sys.stdout.write('HTOA discarded, contains digital silence\n')
                 else:
                     self.itable.setFile(1, 0, trackResult.filename,
                         self.ittoc.getTrackStart(1), number)
@@ -482,7 +482,7 @@ Log files will log the path to tracks relative to this directory.
         htoa = self.program.getHTOA()
         if htoa:
             start, stop = htoa
-            self.stdout.write(
+            sys.stdout.write(
                 'Found Hidden Track One Audio from frame %d to %d\n' % (
                 start, stop))
 
@@ -493,7 +493,7 @@ Log files will log the path to tracks relative to this directory.
         for i, track in enumerate(self.itable.tracks):
             # FIXME: rip data tracks differently
             if not track.audio:
-                self.stdout.write(
+                sys.stdout.write(
                     'WARNING: skipping data track %d, not implemented\n' % (
                     i + 1, ))
                 # FIXME: make it work for now
@@ -546,7 +546,7 @@ Log files will log the path to tracks relative to this directory.
 
         # verify using accuraterip
         url = self.ittoc.getAccurateRipURL()
-        self.stdout.write("AccurateRip URL %s\n" % url)
+        sys.stdout.write("AccurateRip URL %s\n" % url)
 
         accucache = accurip.AccuCache()
         try:
@@ -554,7 +554,7 @@ Log files will log the path to tracks relative to this directory.
         except urllib2.URLError, e:
             if isinstance(e.args[0], socket.gaierror):
                 if e.args[0].errno == -2:
-                    self.stdout.write("Warning: network error: %r\n" % (
+                    sys.stdout.write("Warning: network error: %r\n" % (
                         e.args[0], ))
                     responses = None
                 else:
@@ -563,21 +563,21 @@ Log files will log the path to tracks relative to this directory.
                 raise
 
         if not responses:
-            self.stdout.write('Album not found in AccurateRip database\n')
+            sys.stdout.write('Album not found in AccurateRip database\n')
 
         if responses:
-            self.stdout.write('%d AccurateRip reponses found\n' %
+            sys.stdout.write('%d AccurateRip reponses found\n' %
                 len(responses))
 
             if responses[0].cddbDiscId != self.itable.getCDDBDiscId():
-                self.stdout.write(
+                sys.stdout.write(
                     "AccurateRip response discid different: %s\n" %
                     responses[0].cddbDiscId)
 
 
         self.program.verifyImage(self.runner, responses)
 
-        self.stdout.write("\n".join(
+        sys.stdout.write("\n".join(
             self.program.getAccurateRipResults()) + "\n")
 
         self.program.saveRipResult()

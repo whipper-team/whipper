@@ -33,7 +33,7 @@ class BaseCommand():
     and process arguments before & after argparse.parse_args().
 
     Provides self.epilog() formatting command for argparse.
-    Provides self.config, self.stdout objects for children.
+    Provides self.config object for children.
 
     device_option = True adds -d / --device option to current command
     no_add_help = True removes -h / --help option from current command
@@ -47,7 +47,6 @@ class BaseCommand():
     name.
     """
     config = config.Config()
-    stdout = sys.stdout
 
     device_option = False
     no_add_help = False  # for rip.main.Whipper
