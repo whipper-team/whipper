@@ -17,8 +17,8 @@ logger = logging.getLogger(__name__)
 
 def main():
     # set user agent
-    musicbrainzngs.set_useragent("morituri", configure.version,
-        'https://thomas.apestaart.org/morituri/trac')
+    musicbrainzngs.set_useragent("whipper", configure.version,
+                                 "https://github.com/JoeLametta/whipper")
     # register plugins with pkg_resources
     distributions, _ = pkg_resources.working_set.find_plugins(
         pkg_resources.Environment([directory.data_path('plugins')])
