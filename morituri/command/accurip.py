@@ -22,8 +22,8 @@
 
 import sys
 
-from morituri.common import accurip
 from morituri.command.basecommand import BaseCommand
+from morituri.common import accurip
 
 import logging
 logger = logging.getLogger(__name__)

@@ -30,11 +30,12 @@ import sys
 import gobject
 gobject.threads_init()
 
-from morituri.common import accurip, common, gstreamer
-from morituri.common import drive, program, task
-from morituri.result import result
-from morituri.program import cdrdao, cdparanoia
 from morituri.command.basecommand import BaseCommand
+from morituri.common import (
+    accurip, common, config, drive, gstreamer, program, task
+)
+from morituri.program import cdrdao, cdparanoia
+from morituri.result import result
 
 import logging
 logger = logging.getLogger(__name__)
@@ -96,6 +97,7 @@ class _CD(BaseCommand):
 
 
     def do(self):
+        self.config = config.Config()
         self.program = program.Program(self.config,
             record=self.options.record,
             stdout=sys.stdout)
@@ -246,7 +248,7 @@ Log files will log the path to tracks relative to this directory.
         info = drive.getDeviceInfo(self.opts.device)
         if info:
             try:
-                default_offset = self.config.getReadOffset(*info)
+                default_offset = config.Config().getReadOffset(*info)
                 sys.stdout.write("Using configured read offset %d\n" %
                                   default_offset)
             except KeyError:

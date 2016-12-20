@@ -22,10 +22,10 @@
 
 import sys
 
-from morituri.extern.task import task
-from morituri.common import drive
-from morituri.program import cdparanoia
 from morituri.command.basecommand import BaseCommand
+from morituri.common import config, drive
+from morituri.extern.task import task
+from morituri.program import cdparanoia
 
 import logging
 logger = logging.getLogger(__name__)
@@ -59,7 +59,7 @@ class Analyze(BaseCommand):
         sys.stdout.write(
             'Adding drive cache behaviour to configuration file.\n')
 
-        self.config.setDefeatsCache(info[0], info[1], info[2],
+        config.Config().setDefeatsCache(info[0], info[1], info[2],
             t.defeatsCache)
 
 
@@ -69,6 +69,7 @@ class List(BaseCommand):
 
     def do(self):
         paths = drive.getAllDevicePaths()
+        self.config = config.Config()
 
         if not paths:
             sys.stdout.write('No drives found.\n')

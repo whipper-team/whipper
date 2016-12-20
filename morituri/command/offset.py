@@ -28,10 +28,10 @@ import tempfile
 import gobject
 gobject.threads_init()
 
-from morituri.common import accurip, common, drive, program
+from morituri.command.basecommand import BaseCommand
+from morituri.common import accurip, common, config, drive, program
 from morituri.common import task as ctask
 from morituri.program import cdrdao, cdparanoia
-from morituri.command.basecommand import BaseCommand
 
 from morituri.extern.task import task
 
@@ -80,7 +80,7 @@ CD in the AccurateRip database."""
         logger.debug('Trying with offsets %r', self._offsets)
 
     def do(self):
-        prog = program.Program(self.config)
+        prog = program.Program(config.Config())
         runner = ctask.SyncRunner()
 
         device = self.options.device

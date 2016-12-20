@@ -5,7 +5,7 @@ import argparse
 import os
 import sys
 
-from morituri.common import config, drive
+from morituri.common import drive
 
 import logging
 logger = logging.getLogger(__name__)
@@ -33,7 +33,6 @@ class BaseCommand():
     and process arguments before & after argparse.parse_args().
 
     Provides self.epilog() formatting command for argparse.
-    Provides self.config object for children.
 
     device_option = True adds -d / --device option to current command
     no_add_help = True removes -h / --help option from current command
@@ -46,8 +45,6 @@ class BaseCommand():
     arguments, the current options namespace, and the full command path
     name.
     """
-    config = config.Config()
-
     device_option = False
     no_add_help = False  # for rip.main.Whipper
     formatter_class = argparse.RawDescriptionHelpFormatter

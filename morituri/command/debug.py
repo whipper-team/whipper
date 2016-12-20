@@ -23,9 +23,9 @@
 import argparse
 import sys
 
-from morituri.result import result
-from morituri.common import cache, task
 from morituri.command.basecommand import BaseCommand
+from morituri.common import cache, task
+from morituri.result import result
 
 import logging
 logger = logging.getLogger(__name__)

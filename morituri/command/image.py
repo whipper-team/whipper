@@ -23,12 +23,11 @@
 import os
 import sys
 
-from morituri.common import accurip, program
+from morituri.command.basecommand import BaseCommand
+from morituri.common import accurip, config, program
+from morituri.extern.task import task
 from morituri.image import image
 from morituri.result import result
-from morituri.command.basecommand import BaseCommand
-
-from morituri.extern.task import task
 
 import logging
 logger = logging.getLogger(__name__)
@@ -63,7 +62,7 @@ Retags the image from the given .cue files with tags obtained from MusicBrainz.
         # here to avoid import gst eating our options
         from morituri.common import encode
 
-        prog = program.Program(self.config, stdout=sys.stdout)
+        prog = program.Program(config.Config(), stdout=sys.stdout)
         runner = task.SyncRunner()
 
         for arg in self.options.cuefile:
@@ -119,7 +118,7 @@ Verifies the image from the given .cue files against the AccurateRip database.
                                  help="cue file to load rip image from")
 
     def do(self):
-        prog = program.Program(self.config)
+        prog = program.Program(config.Config())
         runner = task.SyncRunner()
         cache = accurip.AccuCache()
 
