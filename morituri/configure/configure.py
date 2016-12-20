@@ -7,7 +7,7 @@ from morituri.common import common
 
 config_dict = {
     'revision': common.getRevision(),
-    'version': '0.3.0',
+    'version': '0.4.0',
 }
 
 for key, value in config_dict.items():

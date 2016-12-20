@@ -26,16 +26,19 @@ import struct
 import urlparse
 import urllib2
 
-from morituri.common import log, directory
+from morituri.common import directory
+
+import logging
+logger = logging.getLogger(__name__)
 
 _CACHE_DIR = directory.cache_path()
 
 
-class AccuCache(log.Loggable):
+class AccuCache:
 
     def __init__(self):
         if not os.path.exists(_CACHE_DIR):
-            self.debug('Creating cache directory %s', _CACHE_DIR)
+            logger.debug('Creating cache directory %s', _CACHE_DIR)
             os.makedirs(_CACHE_DIR)
 
     def _getPath(self, url):
@@ -43,18 +46,18 @@ class AccuCache(log.Loggable):
         return os.path.join(_CACHE_DIR, urlparse.urlparse(url)[2][1:])
 
     def retrieve(self, url, force=False):
-        self.debug("Retrieving AccurateRip URL %s", url)
+        logger.debug("Retrieving AccurateRip URL %s", url)
         path = self._getPath(url)
-        self.debug("Cached path: %s", path)
+        logger.debug("Cached path: %s", path)
         if force:
-            self.debug("forced to download")
+            logger.debug("forced to download")
             self.download(url)
         elif not os.path.exists(path):
-            self.debug("%s does not exist, downloading", path)
+            logger.debug("%s does not exist, downloading", path)
             self.download(url)
 
         if not os.path.exists(path):
-            self.debug("%s does not exist, not in database", path)
+            logger.debug("%s does not exist, not in database", path)
             return None
 
         data = self._read(url)
@@ -81,8 +84,8 @@ class AccuCache(log.Loggable):
         try:
             os.makedirs(os.path.dirname(path))
         except OSError, e:
-            self.debug('Could not make dir %s: %r' % (
-                path, log.getExceptionMessage(e)))
+            logger.debug('Could not make dir %s: %r' % (
+                path, str(e)))
             if e.errno != errno.EEXIST:
                 raise
 
@@ -91,7 +94,7 @@ class AccuCache(log.Loggable):
         handle.close()
 
     def _read(self, url):
-        self.debug("Reading %s from cache", url)
+        logger.debug("Reading %s from cache", url)
         path = self._getPath(url)
         handle = open(path, 'rb')
         data = handle.read()

@@ -20,29 +20,57 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
+import argparse
 import os
-import math
 import glob
 import urllib2
 import socket
+import sys
 
 import gobject
 gobject.threads_init()
 
-from morituri.common import logcommand, common, accurip, gstreamer
-from morituri.common import drive, program, task
-from morituri.result import result
+from morituri.command.basecommand import BaseCommand
+from morituri.common import (
+    accurip, common, config, drive, gstreamer, program, task
+)
 from morituri.program import cdrdao, cdparanoia
-from morituri.rip import common as rcommon
+from morituri.result import result
 
-from morituri.extern.command import command
+import logging
+logger = logging.getLogger(__name__)
 
 
 SILENT = 1e-10
 MAX_TRIES = 5
 
+DEFAULT_TRACK_TEMPLATE = u'%r/%A - %d/%t. %a - %n'
+DEFAULT_DISC_TEMPLATE = u'%r/%A - %d/%A - %d'
 
-class _CD(logcommand.LogCommand):
+TEMPLATE_DESCRIPTION = '''
+Tracks are named according to the track template, filling in the variables
+and adding the file extension.  Variables exclusive to the track template are:
+ - %t: track number
+ - %a: track artist
+ - %n: track title
+ - %s: track sort name
+
+Disc files (.cue, .log, .m3u) are named according to the disc template,
+filling in the variables and adding the file extension. Variables for both
+disc and track template are:
+ - %A: album artist
+ - %S: album sort name
+ - %d: disc title
+ - %y: release year
+ - %r: release type, lowercase
+ - %R: Release type, normal case
+ - %x: audio extension, lowercase
+ - %X: audio extension, uppercase
+
+'''
+
+
+class _CD(BaseCommand):
 
     """
     @type program: L{program.Program}
@@ -51,31 +79,34 @@ class _CD(logcommand.LogCommand):
 
     eject = True
 
-    def addOptions(self):
+    @staticmethod
+    def add_arguments(parser):
         # FIXME: have a cache of these pickles somewhere
-        self.parser.add_option('-T', '--toc-pickle',
+        parser.add_argument('-T', '--toc-pickle',
             action="store", dest="toc_pickle",
             help="pickle to use for reading and writing the TOC")
-        self.parser.add_option('-R', '--release-id',
+        parser.add_argument('-R', '--release-id',
             action="store", dest="release_id",
             help="MusicBrainz release id to match to (if there are multiple)")
-        self.parser.add_option('-p', '--prompt',
+        parser.add_argument('-p', '--prompt',
             action="store_true", dest="prompt",
             help="Prompt if there are multiple matching releases")
-        self.parser.add_option('-c', '--country',
+        parser.add_argument('-c', '--country',
             action="store", dest="country",
             help="Filter releases by country")
 
 
-    def do(self, args):
-        self.program = program.Program(self.getRootCommand().config,
-            record=self.getRootCommand().record,
-            stdout=self.stdout)
+    def do(self):
+        self.config = config.Config()
+        self.program = program.Program(self.config,
+            record=self.options.record,
+            stdout=sys.stdout)
         self.runner = task.SyncRunner()
 
         # if the device is mounted (data session), unmount it
-        self.device = self.parentCommand.options.device
-        self.stdout.write('Checking device %s\n' % self.device)
+        #self.device = self.parentCommand.options.device
+        self.device = self.options.device
+        sys.stdout.write('Checking device %s\n' % self.device)
 
         self.program.loadDevice(self.device)
         self.program.unmountDevice(self.device)
@@ -87,11 +118,11 @@ class _CD(logcommand.LogCommand):
 
         # already show us some info based on this
         self.program.getRipResult(self.ittoc.getCDDBDiscId())
-        self.stdout.write("CDDB disc id: %s\n" % self.ittoc.getCDDBDiscId())
+        sys.stdout.write("CDDB disc id: %s\n" % self.ittoc.getCDDBDiscId())
         self.mbdiscid = self.ittoc.getMusicBrainzDiscId()
-        self.stdout.write("MusicBrainz disc id %s\n" % self.mbdiscid)
+        sys.stdout.write("MusicBrainz disc id %s\n" % self.mbdiscid)
 
-        self.stdout.write("MusicBrainz lookup URL %s\n" %
+        sys.stdout.write("MusicBrainz lookup URL %s\n" %
             self.ittoc.getMusicBrainzSubmitURL())
 
         self.program.metadata = self.program.getMusicBrainz(self.ittoc,
@@ -105,7 +136,7 @@ class _CD(logcommand.LogCommand):
             cddbid = self.ittoc.getCDDBValues()
             cddbmd = self.program.getCDDB(cddbid)
             if cddbmd:
-                self.stdout.write('FreeDB identifies disc as %s\n' % cddbmd)
+                sys.stdout.write('FreeDB identifies disc as %s\n' % cddbmd)
 
             # also used by rip cd info
             if not getattr(self.options, 'unknown', False):
@@ -113,12 +144,13 @@ class _CD(logcommand.LogCommand):
                     self.program.ejectDevice(self.device)
                 return -1
 
+        # FIXME ?????
         # Hackish fix for broken commit
         offset = 0
-        info = drive.getDeviceInfo(self.parentCommand.options.device)
+        info = drive.getDeviceInfo(self.device)
         if info:
             try:
-                offset = self.getRootCommand().config.getReadOffset(*info)
+                offset = self.config.getReadOffset(*info)
             except KeyError:
                 pass
 
@@ -148,13 +180,13 @@ class _CD(logcommand.LogCommand):
         self.program.result.cdrdaoVersion = cdrdao.getCDRDAOVersion()
         self.program.result.cdparanoiaVersion = \
             cdparanoia.getCdParanoiaVersion()
-        info = drive.getDeviceInfo(self.parentCommand.options.device)
+        info = drive.getDeviceInfo(self.device)
         if info:
             try:
                 self.program.result.cdparanoiaDefeatsCache = \
-                    self.getRootCommand().config.getDefeatsCache(*info)
+                    self.config.getDefeatsCache(*info)
             except KeyError, e:
-                self.debug('Got key error: %r' % (e, ))
+                logger.debug('Got key error: %r' % (e, ))
         self.program.result.artist = self.program.metadata \
             and self.program.metadata.artist \
             or 'Unknown Artist'
@@ -182,13 +214,17 @@ class _CD(logcommand.LogCommand):
 
 class Info(_CD):
     summary = "retrieve information about the currently inserted CD"
-
+    description = ("Display musicbrainz, CDDB/FreeDB, and AccurateRip"
+                   "information for the currently inserted CD.")
     eject = False
 
+    # Requires opts.device
+
+    def add_arguments(self):
+        _CD.add_arguments(self.parser)
 
 class Rip(_CD):
     summary = "rip CD"
-
     # see morituri.common.program.Program.getPath for expansion
     description = """
 Rips a CD.
@@ -200,76 +236,66 @@ relative to the directory of the disc files.
 
 All files will be created relative to the given output directory.
 Log files will log the path to tracks relative to this directory.
-""" % rcommon.TEMPLATE_DESCRIPTION
+""" % TEMPLATE_DESCRIPTION
+    formatter_class = argparse.ArgumentDefaultsHelpFormatter
 
-    def addOptions(self):
-        _CD.addOptions(self)
+    # Requires opts.record
+    # Requires opts.device
 
+    def add_arguments(self):
         loggers = result.getLoggers().keys()
+        default_offset = None
+        info = drive.getDeviceInfo(self.opts.device)
+        if info:
+            try:
+                default_offset = config.Config().getReadOffset(*info)
+                sys.stdout.write("Using configured read offset %d\n" %
+                                  default_offset)
+            except KeyError:
+                pass
 
-        self.parser.add_option('-L', '--logger',
-            action="store", dest="logger",
-            default='morituri',
-            help="logger to use "
-                "(default '%default', choose from '" +
-                    "', '".join(loggers) + "')")
+        _CD.add_arguments(self.parser)
+
+        self.parser.add_argument('-L', '--logger',
+            action="store", dest="logger", default='morituri',
+            help="logger to use (choose from '" + "', '".join(loggers) + "')")
         # FIXME: get from config
-        self.parser.add_option('-o', '--offset',
-            action="store", dest="offset",
-            help="sample read offset (defaults to configured value, or 0)")
-        self.parser.add_option('-x', '--force-overread',
-            action="store_true", dest="overread",
+        self.parser.add_argument('-o', '--offset',
+            action="store", dest="offset", default=default_offset,
+            help="sample read offset")
+        self.parser.add_argument('-x', '--force-overread',
+            action="store_true", dest="overread", default=False,
             help="Force overreading into the lead-out portion of the disc. "
                 "Works only if the patched cdparanoia package is installed "
-                "and the drive supports this feature. "
-                "The default value is: %default",
-            default=False)
-        self.parser.add_option('-O', '--output-directory',
+                "and the drive supports this feature. ")
+        self.parser.add_argument('-O', '--output-directory',
             action="store", dest="output_directory",
-            help="output directory; will be included in file paths in result "
-                "files "
-                "(defaults to absolute path to current directory; set to "
-                "empty if you want paths to be relative instead; "
-                "configured value: %default) ")
-        self.parser.add_option('-W', '--working-directory',
+            default=os.path.relpath(os.getcwd()),
+            help="output directory; will be included in file paths in log")
+        self.parser.add_argument('-W', '--working-directory',
             action="store", dest="working_directory",
             help="working directory; morituri will change to this directory "
-                "and files will be created relative to it when not absolute "
-                "(configured value: %default) ")
-
-        rcommon.addTemplate(self)
-
-        default = 'flac'
-
-        # here to avoid import gst eating our options
-        from morituri.common import encode
-
-        self.parser.add_option('', '--profile',
-            action="store", dest="profile",
-            help="profile for encoding (default '%%default', choices '%s')" % (
-                "', '".join(encode.PROFILES.keys())),
-            default=default)
-        self.parser.add_option('-U', '--unknown',
+                "and files will be created relative to it when not absolute")
+        self.parser.add_argument('--track-template',
+            action="store", dest="track_template",
+            default=DEFAULT_TRACK_TEMPLATE,
+            help="template for track file naming (default default)")
+        self.parser.add_argument('--disc-template',
+            action="store", dest="disc_template",
+            default=DEFAULT_DISC_TEMPLATE,
+            help="template for disc file naming (default default)")
+        self.parser.add_argument('-U', '--unknown',
             action="store_true", dest="unknown",
-            help="whether to continue ripping if the CD is unknown (%default)",
+            help="whether to continue ripping if the CD is unknown",
             default=False)
 
-    def handleOptions(self, options):
-        options.track_template = options.track_template.decode('utf-8')
-        options.disc_template = options.disc_template.decode('utf-8')
+    def handle_arguments(self):
+        self.options.output_directory = os.path.expanduser(self.options.output_directory)
 
-        if options.offset is None:
-            info = drive.getDeviceInfo(self.parentCommand.options.device)
-            if info:
-                try:
-                    options.offset = self.getRootCommand(
-                        ).config.getReadOffset(*info)
-                    self.stdout.write("Using configured read offset %d\n" %
-                        options.offset)
-                except KeyError:
-                    pass
+        self.options.track_template = self.options.track_template.decode('utf-8')
+        self.options.disc_template = self.options.disc_template.decode('utf-8')
 
-        if options.offset is None:
+        if self.options.offset is None:
             raise ValueError("Drive offset is unconfigured.\n"
                              "Please install pycdio and run 'rip offset "
                              "find' to detect your drive's offset or set it "
@@ -277,29 +303,23 @@ Log files will log the path to tracks relative to this directory.
                              "also be specified at runtime using the "
                              "'--offset=value' argument")
 
-        if self.options.output_directory is None:
-            self.options.output_directory = os.getcwd()
-        else:
-            self.options.output_directory = os.path.expanduser(self.options.output_directory)
 
         if self.options.working_directory is not None:
             self.options.working_directory = os.path.expanduser(self.options.working_directory)
 
         if self.options.logger:
             try:
-                klazz = result.getLoggers()[self.options.logger]
+                self.logger = result.getLoggers()[self.options.logger]()
             except KeyError:
-                self.stderr.write("No logger named %s found!\n" % (
-                    self.options.logger))
-                raise command.CommandError("No logger named %s" %
-                    self.options.logger)
+                msg = "No logger named %s found!" % self.options.logger
+                logger.critical(msg)
+                raise ValueError(msg)
 
-            self.logger = klazz()
 
     def doCommand(self):
         # here to avoid import gst eating our options
         from morituri.common import encode
-        profile = encode.PROFILES[self.options.profile]()
+        profile = encode.PROFILES['flac']()
         self.program.result.profileName = profile.name
         self.program.result.profilePipeline = profile.pipeline
         elementFactory = profile.pipeline.split(' ')[0]
@@ -322,11 +342,11 @@ Log files will log the path to tracks relative to this directory.
                 profile=profile, disambiguate=disambiguate)
             dirname = os.path.dirname(discName)
             if os.path.exists(dirname):
-                self.stdout.write("Output directory %s already exists\n" %
+                sys.stdout.write("Output directory %s already exists\n" %
                     dirname.encode('utf-8'))
                 logs = glob.glob(os.path.join(dirname, '*.log'))
                 if logs:
-                    self.stdout.write(
+                    sys.stdout.write(
                         "Output directory %s is a finished rip\n" %
                         dirname.encode('utf-8'))
                     if not disambiguate:
@@ -337,7 +357,7 @@ Log files will log the path to tracks relative to this directory.
                     break
 
             else:
-                self.stdout.write("Creating output directory %s\n" %
+                sys.stdout.write("Creating output directory %s\n" %
                     dirname.encode('utf-8'))
                 os.makedirs(dirname)
                 break
@@ -349,14 +369,14 @@ Log files will log the path to tracks relative to this directory.
         # FIXME: turn this into a method
 
         def ripIfNotRipped(number):
-            self.debug('ripIfNotRipped for track %d' % number)
+            logger.debug('ripIfNotRipped for track %d' % number)
             # we can have a previous result
             trackResult = self.program.result.getTrackResult(number)
             if not trackResult:
                 trackResult = result.TrackResult()
                 self.program.result.tracks.append(trackResult)
             else:
-                self.debug('ripIfNotRipped have trackresult, path %r' %
+                logger.debug('ripIfNotRipped have trackresult, path %r' %
                     trackResult.filename)
 
             path = self.program.getPath(self.program.outdir,
@@ -364,7 +384,7 @@ Log files will log the path to tracks relative to this directory.
                 self.mbdiscid, number,
                 profile=profile, disambiguate=disambiguate) \
                 + '.' + profile.extension
-            self.debug('ripIfNotRipped: path %r' % path)
+            logger.debug('ripIfNotRipped: path %r' % path)
             trackResult.number = number
 
             assert type(path) is unicode, "%r is not unicode" % path
@@ -377,18 +397,18 @@ Log files will log the path to tracks relative to this directory.
                 if path != trackResult.filename:
                     # the path is different (different name/template ?)
                     # but we can copy it
-                    self.debug('previous result %r, expected %r' % (
+                    logger.debug('previous result %r, expected %r' % (
                         trackResult.filename, path))
 
-                self.stdout.write('Verifying track %d of %d: %s\n' % (
+                sys.stdout.write('Verifying track %d of %d: %s\n' % (
                     number, len(self.itable.tracks),
                     os.path.basename(path).encode('utf-8')))
                 if not self.program.verifyTrack(self.runner, trackResult):
-                    self.stdout.write('Verification failed, reripping...\n')
+                    sys.stdout.write('Verification failed, reripping...\n')
                     os.unlink(path)
 
             if not os.path.exists(path):
-                self.debug('path %r does not exist, ripping...' % path)
+                logger.debug('path %r does not exist, ripping...' % path)
                 tries = 0
                 # we reset durations for test and copy here
                 trackResult.testduration = 0.0
@@ -398,15 +418,15 @@ Log files will log the path to tracks relative to this directory.
                     tries += 1
                     if tries > 1:
                         extra = " (try %d)" % tries
-                    self.stdout.write('Ripping track %d of %d%s: %s\n' % (
+                    sys.stdout.write('Ripping track %d of %d%s: %s\n' % (
                         number, len(self.itable.tracks), extra,
                         os.path.basename(path).encode('utf-8')))
                     try:
-                        self.debug('ripIfNotRipped: track %d, try %d',
+                        logger.debug('ripIfNotRipped: track %d, try %d',
                             number, tries)
                         self.program.ripTrack(self.runner, trackResult,
                             offset=int(self.options.offset),
-                            device=self.parentCommand.options.device,
+                            device=self.device,
                             profile=profile,
                             taglist=self.program.getTagList(number),
                             overread=self.options.overread,
@@ -414,41 +434,41 @@ Log files will log the path to tracks relative to this directory.
                                 number, len(self.itable.tracks), extra))
                         break
                     except Exception, e:
-                        self.debug('Got exception %r on try %d',
+                        logger.debug('Got exception %r on try %d',
                             e, tries)
 
 
                 if tries == MAX_TRIES:
-                    self.error('Giving up on track %d after %d times' % (
+                    logger.critical('Giving up on track %d after %d times' % (
                         number, tries))
                     raise RuntimeError(
                         "track can't be ripped. "
                         "Rip attempts number is equal to 'MAX_TRIES'")
                 if trackResult.testcrc == trackResult.copycrc:
-                    self.stdout.write('Checksums match for track %d\n' %
+                    sys.stdout.write('Checksums match for track %d\n' %
                         number)
                 else:
-                    self.stdout.write(
+                    sys.stdout.write(
                         'ERROR: checksums did not match for track %d\n' %
                         number)
                     raise
 
-                self.stdout.write('Peak level: {:.2%} \n'.format(trackResult.peak))
+                sys.stdout.write('Peak level: {:.2%} \n'.format(trackResult.peak))
 
-                self.stdout.write('Rip quality: {:.2%}\n'.format(trackResult.quality))
+                sys.stdout.write('Rip quality: {:.2%}\n'.format(trackResult.quality))
 
             # overlay this rip onto the Table
             if number == 0:
                 # HTOA goes on index 0 of track 1
                 # ignore silence in PREGAP
                 if trackResult.peak <= SILENT:
-                    self.debug('HTOA peak %r is below SILENT threshold, disregarding', trackResult.peak)
+                    logger.debug('HTOA peak %r is below SILENT threshold, disregarding', trackResult.peak)
                     self.itable.setFile(1, 0, None,
                         self.ittoc.getTrackStart(1), number)
-                    self.debug('Unlinking %r', trackResult.filename)
+                    logger.debug('Unlinking %r', trackResult.filename)
                     os.unlink(trackResult.filename)
                     trackResult.filename = None
-                    self.stdout.write('HTOA discarded, contains digital silence\n')
+                    sys.stdout.write('HTOA discarded, contains digital silence\n')
                 else:
                     self.itable.setFile(1, 0, trackResult.filename,
                         self.ittoc.getTrackStart(1), number)
@@ -464,7 +484,7 @@ Log files will log the path to tracks relative to this directory.
         htoa = self.program.getHTOA()
         if htoa:
             start, stop = htoa
-            self.stdout.write(
+            sys.stdout.write(
                 'Found Hidden Track One Audio from frame %d to %d\n' % (
                 start, stop))
 
@@ -475,7 +495,7 @@ Log files will log the path to tracks relative to this directory.
         for i, track in enumerate(self.itable.tracks):
             # FIXME: rip data tracks differently
             if not track.audio:
-                self.stdout.write(
+                sys.stdout.write(
                     'WARNING: skipping data track %d, not implemented\n' % (
                     i + 1, ))
                 # FIXME: make it work for now
@@ -492,11 +512,11 @@ Log files will log the path to tracks relative to this directory.
         if not os.path.exists(dirname):
             os.makedirs(dirname)
 
-        self.debug('writing cue file for %r', discName)
+        logger.debug('writing cue file for %r', discName)
         self.program.writeCue(discName)
 
         # write .m3u file
-        self.debug('writing m3u file for %r', discName)
+        logger.debug('writing m3u file for %r', discName)
         m3uPath = u'%s.m3u' % discName
         handle = open(m3uPath, 'w')
         handle.write(u'#EXTM3U\n')
@@ -528,7 +548,7 @@ Log files will log the path to tracks relative to this directory.
 
         # verify using accuraterip
         url = self.ittoc.getAccurateRipURL()
-        self.stdout.write("AccurateRip URL %s\n" % url)
+        sys.stdout.write("AccurateRip URL %s\n" % url)
 
         accucache = accurip.AccuCache()
         try:
@@ -536,7 +556,7 @@ Log files will log the path to tracks relative to this directory.
         except urllib2.URLError, e:
             if isinstance(e.args[0], socket.gaierror):
                 if e.args[0].errno == -2:
-                    self.stdout.write("Warning: network error: %r\n" % (
+                    sys.stdout.write("Warning: network error: %r\n" % (
                         e.args[0], ))
                     responses = None
                 else:
@@ -545,21 +565,21 @@ Log files will log the path to tracks relative to this directory.
                 raise
 
         if not responses:
-            self.stdout.write('Album not found in AccurateRip database\n')
+            sys.stdout.write('Album not found in AccurateRip database\n')
 
         if responses:
-            self.stdout.write('%d AccurateRip reponses found\n' %
+            sys.stdout.write('%d AccurateRip reponses found\n' %
                 len(responses))
 
             if responses[0].cddbDiscId != self.itable.getCDDBDiscId():
-                self.stdout.write(
+                sys.stdout.write(
                     "AccurateRip response discid different: %s\n" %
                     responses[0].cddbDiscId)
 
 
         self.program.verifyImage(self.runner, responses)
 
-        self.stdout.write("\n".join(
+        sys.stdout.write("\n".join(
             self.program.getAccurateRipResults()) + "\n")
 
         self.program.saveRipResult()
@@ -570,26 +590,12 @@ Log files will log the path to tracks relative to this directory.
         self.program.ejectDevice(self.device)
 
 
-class CD(logcommand.LogCommand):
+class CD(BaseCommand):
+    summary = "handle CDs"
+    description = "Display and rip CD-DA and metadata."
+    device_option = True
 
-    summary = "handle CD's"
-
-    subCommandClasses = [Info, Rip, ]
-
-    def addOptions(self):
-        self.parser.add_option('-d', '--device',
-            action="store", dest="device",
-            help="CD-DA device")
-
-    def handleOptions(self, options):
-        if not options.device:
-            drives = drive.getAllDevicePaths()
-            if not drives:
-                self.error('No CD-DA drives found!')
-                return 3
-
-            # pick the first
-            self.options.device = drives[0]
-
-        # this can be a symlink to another device
-        self.options.device = os.path.realpath(self.options.device)
+    subcommands = {
+        'info': Info,
+        'rip': Rip
+    }

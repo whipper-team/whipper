@@ -26,15 +26,16 @@ Wrap on-disk CD images based on the .cue file.
 
 import os
 
-from morituri.common import log, common
+from morituri.common import common
 from morituri.image import cue, table
-
 from morituri.extern.task import task
-
 from morituri.program.soxi import AudioLengthTask
 
+import logging
+logger = logging.getLogger(__name__)
 
-class Image(object, log.Loggable):
+
+class Image(object):
     """
     @ivar table: The Table of Contents for this image.
     @type table: L{table.Table}
@@ -71,11 +72,11 @@ class Image(object, log.Loggable):
         Do initial setup, like figuring out track lengths, and
         constructing the Table of Contents.
         """
-        self.debug('setup image start')
+        logger.debug('setup image start')
         verify = ImageVerifyTask(self)
-        self.debug('verifying image')
+        logger.debug('verifying image')
         runner.run(verify)
-        self.debug('verified image')
+        logger.debug('verified image')
 
         # calculate offset and length for each track
 
@@ -104,10 +105,10 @@ class Image(object, log.Loggable):
 
         self.table = table.Table(tracks)
         self.table.leadout = offset
-        self.debug('setup image done')
+        logger.debug('setup image done')
 
 
-class AccurateRipChecksumTask(log.Loggable, task.MultiSeparateTask):
+class AccurateRipChecksumTask(task.MultiSeparateTask):
     """
     I calculate the AccurateRip checksums of all tracks.
     """
@@ -122,14 +123,14 @@ class AccurateRipChecksumTask(log.Loggable, task.MultiSeparateTask):
         cue = image.cue
         self.checksums = []
 
-        self.debug('Checksumming %d tracks' % len(cue.table.tracks))
+        logger.debug('Checksumming %d tracks' % len(cue.table.tracks))
         for trackIndex, track in enumerate(cue.table.tracks):
             index = track.indexes[1]
             length = cue.getTrackLength(track)
             if length < 0:
-                self.debug('track %d has unknown length' % (trackIndex + 1, ))
+                logger.debug('track %d has unknown length' % (trackIndex + 1, ))
             else:
-                self.debug('track %d is %d samples long' % (
+                logger.debug('track %d is %d samples long' % (
                     trackIndex + 1, length))
 
             path = image.getRealPath(index.path)
@@ -148,7 +149,7 @@ class AccurateRipChecksumTask(log.Loggable, task.MultiSeparateTask):
         task.MultiSeparateTask.stop(self)
 
 
-class ImageVerifyTask(log.Loggable, task.MultiSeparateTask):
+class ImageVerifyTask(task.MultiSeparateTask):
     """
     I verify a disk image and get the necessary track lengths.
     """
@@ -171,32 +172,32 @@ class ImageVerifyTask(log.Loggable, task.MultiSeparateTask):
             track = cue.table.tracks[0]
             path = image.getRealPath(htoa.path)
             assert type(path) is unicode, "%r is not unicode" % path
-            self.debug('schedule scan of audio length of %r', path)
+            logger.debug('schedule scan of audio length of %r', path)
             taskk = AudioLengthTask(path)
             self.addTask(taskk)
             self._tasks.append((0, track, taskk))
         except (KeyError, IndexError):
-            self.debug('no htoa track')
+            logger.debug('no htoa track')
 
         for trackIndex, track in enumerate(cue.table.tracks):
-            self.debug('verifying track %d', trackIndex + 1)
+            logger.debug('verifying track %d', trackIndex + 1)
             index = track.indexes[1]
             length = cue.getTrackLength(track)
 
             if length == -1:
                 path = image.getRealPath(index.path)
                 assert type(path) is unicode, "%r is not unicode" % path
-                self.debug('schedule scan of audio length of %r', path)
+                logger.debug('schedule scan of audio length of %r', path)
                 taskk = AudioLengthTask(path)
                 self.addTask(taskk)
                 self._tasks.append((trackIndex + 1, track, taskk))
             else:
-                self.debug('track %d has length %d', trackIndex + 1, length)
+                logger.debug('track %d has length %d', trackIndex + 1, length)
 
     def stop(self):
         for trackIndex, track, taskk in self._tasks:
             if taskk.exception:
-                self.debug('subtask %r had exception %r, shutting down' % (
+                logger.debug('subtask %r had exception %r, shutting down' % (
                     taskk, taskk.exception))
                 self.setException(taskk.exception)
                 break
@@ -213,7 +214,7 @@ class ImageVerifyTask(log.Loggable, task.MultiSeparateTask):
         task.MultiSeparateTask.stop(self)
 
 
-class ImageEncodeTask(log.Loggable, task.MultiSeparateTask):
+class ImageEncodeTask(task.MultiSeparateTask):
     """
     I encode a disk image to a different format.
     """
@@ -235,23 +236,23 @@ class ImageEncodeTask(log.Loggable, task.MultiSeparateTask):
 
             path = image.getRealPath(index.path)
             assert type(path) is unicode, "%r is not unicode" % path
-            self.debug('schedule encode of %r', path)
+            logger.debug('schedule encode of %r', path)
             root, ext = os.path.splitext(os.path.basename(path))
             outpath = os.path.join(outdir, root + '.' + profile.extension)
-            self.debug('schedule encode to %r', outpath)
+            logger.debug('schedule encode to %r', outpath)
             taskk = encode.EncodeTask(path, os.path.join(outdir,
                 root + '.' + profile.extension), profile)
             self.addTask(taskk)
 
         try:
             htoa = cue.table.tracks[0].indexes[0]
-            self.debug('encoding htoa track')
+            logger.debug('encoding htoa track')
             add(htoa)
         except (KeyError, IndexError):
-            self.debug('no htoa track')
+            logger.debug('no htoa track')
             pass
 
         for trackIndex, track in enumerate(cue.table.tracks):
-            self.debug('encoding track %d', trackIndex + 1)
+            logger.debug('encoding track %d', trackIndex + 1)
             index = track.indexes[1]
             add(index)

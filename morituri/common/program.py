@@ -24,22 +24,24 @@
 Common functionality and class for all programs using morituri.
 """
 
+import musicbrainzngs
 import os
 import sys
 import time
 
-from morituri.common import common, log, mbngs, cache, path
+from morituri.common import common, mbngs, cache, path
 from morituri.program import cdrdao, cdparanoia
 from morituri.image import image
-
 from morituri.extern.task import task, gstreamer
-import musicbrainzngs
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 # FIXME: should Program have a runner ?
 
 
-class Program(log.Loggable):
+class Program:
     """
     I maintain program state and functionality.
 
@@ -85,7 +87,7 @@ class Program(log.Loggable):
 
     def setWorkingDirectory(self, workingDirectory):
         if workingDirectory:
-            self.info('Changing to working directory %s' % workingDirectory)
+            logger.info('Changing to working directory %s' % workingDirectory)
             os.chdir(workingDirectory)
 
     def loadDevice(self, device):
@@ -108,7 +110,7 @@ class Program(log.Loggable):
         If the given device is a symlink, the target will be checked.
         """
         device = os.path.realpath(device)
-        self.debug('possibly unmount real path %r' % device)
+        logger.debug('possibly unmount real path %r' % device)
         proc = open('/proc/mounts').read()
         if device in proc:
             print 'Device %s is mounted, unmounting' % device
@@ -129,7 +131,7 @@ class Program(log.Loggable):
             from pkg_resources import parse_version as V
             version = cdrdao.getCDRDAOVersion()
             if V(version) < V('1.2.3rc2'):
-                self.stdout.write('Warning: cdrdao older than 1.2.3 has a '
+                sys.stdout.write('Warning: cdrdao older than 1.2.3 has a '
                     'pre-gap length bug.\n'
                     'See http://sourceforge.net/tracker/?func=detail'
                     '&aid=604751&group_id=2171&atid=102171\n')
@@ -158,24 +160,24 @@ class Program(log.Loggable):
                 itable = tdict[offset]
 
         if not itable:
-            self.debug('getTable: cddbdiscid %s, mbdiscid %s not in cache for offset %s, '
+            logger.debug('getTable: cddbdiscid %s, mbdiscid %s not in cache for offset %s, '
                 'reading table' % (
                 cddbdiscid, mbdiscid, offset))
             t = cdrdao.ReadTableTask(device)
             itable = t.table
             tdict[offset] = itable
             ptable.persist(tdict)
-            self.debug('getTable: read table %r' % itable)
+            logger.debug('getTable: read table %r' % itable)
         else:
-            self.debug('getTable: cddbdiscid %s, mbdiscid %s in cache for offset %s' % (
+            logger.debug('getTable: cddbdiscid %s, mbdiscid %s in cache for offset %s' % (
                 cddbdiscid, mbdiscid, offset))
-            self.debug('getTable: loaded table %r' % itable)
+            logger.debug('getTable: loaded table %r' % itable)
 
         assert itable.hasTOC()
 
         self.result.table = itable
 
-        self.debug('getTable: returning table with mb id %s' %
+        logger.debug('getTable: returning table with mb id %s' %
             itable.getMusicBrainzDiscId())
         return itable
 
@@ -275,7 +277,7 @@ class Program(log.Loggable):
             elif self.metadata.barcode:
                 templateParts[-2] += ' (%s)' % self.metadata.barcode
             template = os.path.join(*templateParts)
-            self.debug('Disambiguated template to %r' % template)
+            logger.debug('Disambiguated template to %r' % template)
 
         import re
         template = re.sub(r'%(\w)', r'%(\1)s', template)
@@ -296,7 +298,7 @@ class Program(log.Loggable):
         import CDDB
         try:
             code, md = CDDB.query(cddbdiscid)
-            self.debug('CDDB query result: %r, %r', code, md)
+            logger.debug('CDDB query result: %r, %r', code, md)
             if code == 200:
                 return md['title']
 
@@ -317,7 +319,7 @@ class Program(log.Loggable):
         self._stdout.write('Disc duration: %s, %d audio tracks\n' % (
             common.formatTime(ittoc.duration() / 1000.0),
             ittoc.getAudioTracks()))
-        self.debug('MusicBrainz submit url: %r',
+        logger.debug('MusicBrainz submit url: %r',
             ittoc.getMusicBrainzSubmitURL())
         ret = None
 
@@ -385,7 +387,7 @@ class Program(log.Loggable):
 
             if release:
                 metadatas = [m for m in metadatas if m.url.endswith(release)]
-                self.debug('Asked for release %r, only kept %r',
+                logger.debug('Asked for release %r, only kept %r',
                     release, metadatas)
                 if len(metadatas) == 1:
                     self._stdout.write('\n')
@@ -410,11 +412,11 @@ class Program(log.Loggable):
                 releaseTitle = metadatas[0].releaseTitle
                 for i, metadata in enumerate(metadatas):
                     if not artist == metadata.artist:
-                        self.warning("artist 0: %r and artist %d: %r "
+                        logger.warning("artist 0: %r and artist %d: %r "
                             "are not the same" % (
                                 artist, i, metadata.artist))
                     if not releaseTitle == metadata.releaseTitle:
-                        self.warning("title 0: %r and title %d: %r "
+                        logger.warning("title 0: %r and title %d: %r "
                             "are not the same" % (
                                 releaseTitle, i, metadata.releaseTitle))
 
@@ -505,8 +507,7 @@ class Program(log.Loggable):
             # Jan and 1st if MM and DD are missing
             date = self.metadata.release
             if date:
-                log.debug('metadata',
-                    'Converting release date %r to structure', date)
+                logger.debug('Converting release date %r to structure', date)
                 if len(date) == 4:
                     date += '-01'
                 if len(date) == 7:
@@ -554,18 +555,17 @@ class Program(log.Loggable):
             runner.run(t)
         except task.TaskException, e:
             if isinstance(e.exception, common.MissingFrames):
-                self.warning('missing frames for %r' % trackResult.filename)
+                logger.warning('missing frames for %r' % trackResult.filename)
                 return False
             elif isinstance(e.exception, gstreamer.GstException):
-                self.warning('GstException %r' % (e.exception, ))
+                logger.warning('GstException %r' % (e.exception, ))
                 return False
             else:
                 raise
 
         ret = trackResult.testcrc == t.checksum
-        log.debug('program',
-            'verifyTrack: track result crc %r, file crc %r, result %r',
-            trackResult.testcrc, t.checksum, ret)
+        logger.debug('verifyTrack: track result crc %r, file crc %r, result %r',
+                     trackResult.testcrc, t.checksum, ret)
         return ret
 
     def ripTrack(self, runner, trackResult, offset, device, profile, taglist,
@@ -602,10 +602,10 @@ class Program(log.Loggable):
 
         runner.run(t)
 
-        self.debug('ripped track')
-        self.debug('test speed %.3f/%.3f seconds' % (
+        logger.debug('ripped track')
+        logger.debug('test speed %.3f/%.3f seconds' % (
             t.testspeed, t.testduration))
-        self.debug('copy speed %.3f/%.3f seconds' % (
+        logger.debug('copy speed %.3f/%.3f seconds' % (
             t.copyspeed, t.copyduration))
         trackResult.testcrc = t.testchecksum
         trackResult.copycrc = t.copychecksum
@@ -619,7 +619,7 @@ class Program(log.Loggable):
 
         if trackResult.filename != t.path:
             trackResult.filename = t.path
-            self.info('Filename changed to %r', trackResult.filename)
+            logger.info('Filename changed to %r', trackResult.filename)
 
     def retagImage(self, runner, taglists):
         cueImage = image.Image(self.cuePath)
@@ -634,7 +634,7 @@ class Program(log.Loggable):
         Will set accurip and friends on each TrackResult.
         """
 
-        self.debug('verifying Image against %d AccurateRip responses',
+        logger.debug('verifying Image against %d AccurateRip responses',
             len(responses or []))
 
         cueImage = image.Image(self.cuePath)
@@ -653,7 +653,7 @@ class Program(log.Loggable):
 
 
         if not responses:
-            self.warning('No AccurateRip responses, cannot verify.')
+            logger.warning('No AccurateRip responses, cannot verify.')
             return
 
         # now loop to match responses
@@ -667,7 +667,7 @@ class Program(log.Loggable):
             for j, r in enumerate(responses):
                 if "%08x" % csum == r.checksums[i]:
                     response = r
-                    self.debug(
+                    logger.debug(
                         "Track %02d matched response %d of %d in "
                         "AccurateRip database",
                         i + 1, j + 1, len(responses))
@@ -679,7 +679,7 @@ class Program(log.Loggable):
                     trackResult.ARDBConfidence = confidence
 
             if not trackResult.accurip:
-                self.warning("Track %02d: not matched in AccurateRip database",
+                logger.warning("Track %02d: not matched in AccurateRip database",
                     i + 1)
 
             # I have seen AccurateRip responses with 0 as confidence
@@ -691,11 +691,11 @@ class Program(log.Loggable):
                     maxConfidence = r.confidences[i]
                     maxResponse = r
 
-            self.debug('Track %02d: found max confidence %d' % (
+            logger.debug('Track %02d: found max confidence %d' % (
                 i + 1, maxConfidence))
             trackResult.ARDBMaxConfidence = maxConfidence
             if not response:
-                self.warning('Track %02d: none of the responses matched.',
+                logger.warning('Track %02d: none of the responses matched.',
                     i + 1)
                 trackResult.ARDBCRC = int(
                     maxResponse.checksums[i], 16)
@@ -743,7 +743,7 @@ class Program(log.Loggable):
     def writeCue(self, discName):
         assert self.result.table.canCue()
         cuePath = '%s.cue' % discName
-        self.debug('write .cue file to %s', cuePath)
+        logger.debug('write .cue file to %s', cuePath)
         handle = open(cuePath, 'w')
         # FIXME: do we always want utf-8 ?
         handle.write(self.result.table.cue(cuePath).encode('utf-8'))

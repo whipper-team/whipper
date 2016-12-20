@@ -6,27 +6,29 @@ import signal
 import subprocess
 
 from morituri.extern import asyncsub
-from morituri.extern.log import log
 from morituri.extern.task import task, gstreamer
 
-# log.Loggable first to get logging
+import logging
+logger = logging.getLogger(__name__)
 
 
-class SyncRunner(log.Loggable, task.SyncRunner):
+class SyncRunner(task.SyncRunner):
     pass
 
 
-class LoggableTask(log.Loggable, task.Task):
-    pass
-
-class LoggableMultiSeparateTask(log.Loggable, task.MultiSeparateTask):
-    pass
-
-class GstPipelineTask(log.Loggable, gstreamer.GstPipelineTask):
+class LoggableTask(task.Task):
     pass
 
 
-class PopenTask(log.Loggable, task.Task):
+class LoggableMultiSeparateTask(task.MultiSeparateTask):
+    pass
+
+
+class GstPipelineTask(gstreamer.GstPipelineTask):
+    pass
+
+
+class PopenTask(task.Task):
     """
     I am a task that runs a command using Popen.
     """
@@ -51,7 +53,7 @@ class PopenTask(log.Loggable, task.Task):
 
             raise
 
-        self.debug('Started %r with pid %d', self.command,
+        logger.debug('Started %r with pid %d', self.command,
             self._popen.pid)
 
         self.schedule(1.0, self._read, runner)
@@ -63,14 +65,14 @@ class PopenTask(log.Loggable, task.Task):
             ret = self._popen.recv()
 
             if ret:
-                self.log("read from stdout: %s", ret)
+                logger.debug("read from stdout: %s", ret)
                 self.readbytesout(ret)
                 read = True
 
             ret = self._popen.recv_err()
 
             if ret:
-                self.log("read from stderr: %s", ret)
+                logger.debug("read from stderr: %s", ret)
                 self.readbyteserr(ret)
                 read = True
 
@@ -89,8 +91,7 @@ class PopenTask(log.Loggable, task.Task):
 
             self._done()
         except Exception, e:
-            self.debug('exception during _read()')
-            self.debug(log.getExceptionMessage(e))
+            logger.debug('exception during _read(): %r', str(e))
             self.setException(e)
             self.stop()
 
@@ -98,9 +99,9 @@ class PopenTask(log.Loggable, task.Task):
             assert self._popen.returncode is not None, "No returncode"
 
             if self._popen.returncode >= 0:
-                self.debug('Return code was %d', self._popen.returncode)
+                logger.debug('Return code was %d', self._popen.returncode)
             else:
-                self.debug('Terminated with signal %d',
+                logger.debug('Terminated with signal %d',
                     -self._popen.returncode)
 
             self.setProgress(1.0)
@@ -114,7 +115,7 @@ class PopenTask(log.Loggable, task.Task):
             return
 
     def abort(self):
-        self.debug('Aborting, sending SIGTERM to %d', self._popen.pid)
+        logger.debug('Aborting, sending SIGTERM to %d', self._popen.pid)
         os.kill(self._popen.pid, signal.SIGTERM)
         # self.stop()
 

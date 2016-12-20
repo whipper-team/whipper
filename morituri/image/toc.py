@@ -29,8 +29,11 @@ The .toc file format is described in the man page of cdrdao
 import re
 import codecs
 
-from morituri.common import common, log
+from morituri.common import common
 from morituri.image import table
+
+import logging
+logger = logging.getLogger(__name__)
 
 # shared
 _CDTEXT_CANDIDATE_RE = re.compile(r'(?P<key>\w+) "(?P<value>.+)"')
@@ -91,7 +94,7 @@ _INDEX_RE = re.compile(r"""
 """, re.VERBOSE)
 
 
-class Sources(log.Loggable):
+class Sources:
     """
     I represent the list of sources used in the .toc file.
     Each SILENCE and each FILE is a source.
@@ -108,7 +111,7 @@ class Sources(log.Loggable):
         @type  counter: int
         @param offset:  the absolute disc offset where this source starts
         """
-        self.debug('Appending source, counter %d, abs offset %d, source %r' % (
+        logger.debug('Appending source, counter %d, abs offset %d, source %r' % (
             counter, offset, source))
         self._sources.append((counter, offset, source))
 
@@ -133,7 +136,7 @@ class Sources(log.Loggable):
         return self._sources[-1][1]
 
 
-class TocFile(object, log.Loggable):
+class TocFile(object):
 
     def __init__(self, path):
         """
@@ -151,7 +154,7 @@ class TocFile(object, log.Loggable):
         absolute = absoluteOffset + trackOffset
         # this may be in a new source, so calculate relative
         c, o, s = self._sources.get(absolute)
-        self.debug('at abs offset %d, we are in source %r' % (
+        logger.debug('at abs offset %d, we are in source %r' % (
             absolute, s))
         counterStart = self._sources.getCounterStart(c)
         relative = absolute - counterStart
@@ -160,7 +163,7 @@ class TocFile(object, log.Loggable):
             absolute=absolute,
             relative=relative,
             counter=c)
-        self.debug(
+        logger.debug(
             '[track %02d index %02d] trackOffset %r, added %r',
                 currentTrack.number, i, trackOffset,
                 currentTrack.getIndex(i))
@@ -207,11 +210,11 @@ class TocFile(object, log.Loggable):
                     # is a limitation of our parser approach
                     if state == 'HEADER':
                         self.table.cdtext[key] = value
-                        self.debug('Found disc CD-Text %s: %r', key, value)
+                        logger.debug('Found disc CD-Text %s: %r', key, value)
                     elif state == 'TRACK':
                         if key != 'ISRC' or not currentTrack \
                             or currentTrack.isrc is not None:
-                            self.debug('Found track CD-Text %s: %r',
+                            logger.debug('Found track CD-Text %s: %r',
                                 key, value)
                             currentTrack.cdtext[key] = value
 
@@ -219,7 +222,7 @@ class TocFile(object, log.Loggable):
             m = _CATALOG_RE.search(line)
             if m:
                 self.table.catalog = m.group('catalog')
-                self.debug("Found catalog number %s", self.table.catalog)
+                logger.debug("Found catalog number %s", self.table.catalog)
 
             # look for TRACK lines
             m = _TRACK_RE.search(line)
@@ -244,7 +247,7 @@ class TocFile(object, log.Loggable):
                 totalLength += currentLength
 
                 # FIXME: track mode
-                self.debug('found track %d, mode %s, at absoluteOffset %d',
+                logger.debug('found track %d, mode %s, at absoluteOffset %d',
                     trackNumber, trackMode, absoluteOffset)
 
                 # reset counters relative to a track
@@ -258,23 +261,23 @@ class TocFile(object, log.Loggable):
             m = _PRE_EMPHASIS_RE.search(line)
             if m:
                 currentTrack.pre_emphasis = True
-                self.debug('Track has PRE_EMPHASIS')
+                logger.debug('Track has PRE_EMPHASIS')
 
             # look for ISRC lines
             m = _ISRC_RE.search(line)
             if m:
                 isrc = m.group('isrc')
                 currentTrack.isrc = isrc
-                self.debug('Found ISRC code %s', isrc)
+                logger.debug('Found ISRC code %s', isrc)
 
             # look for SILENCE lines
             m = _SILENCE_RE.search(line)
             if m:
                 length = m.group('length')
-                self.debug('SILENCE of %r', length)
+                logger.debug('SILENCE of %r', length)
                 self._sources.append(counter, absoluteOffset, None)
                 if currentFile is not None:
-                    self.debug('SILENCE after FILE, increasing counter')
+                    logger.debug('SILENCE after FILE, increasing counter')
                     counter += 1
                     relativeOffset = 0
                     currentFile = None
@@ -284,7 +287,7 @@ class TocFile(object, log.Loggable):
             m = _ZERO_RE.search(line)
             if m:
                 if currentFile is not None:
-                    self.debug('ZERO after FILE, increasing counter')
+                    logger.debug('ZERO after FILE, increasing counter')
                     counter += 1
                     relativeOffset = 0
                     currentFile = None
@@ -297,13 +300,13 @@ class TocFile(object, log.Loggable):
                 filePath = m.group('name')
                 start = m.group('start')
                 length = m.group('length')
-                self.debug('FILE %s, start %r, length %r',
+                logger.debug('FILE %s, start %r, length %r',
                     filePath, common.msfToFrames(start),
                     common.msfToFrames(length))
                 if not currentFile or filePath != currentFile.path:
                     counter += 1
                     relativeOffset = 0
-                    self.debug('track %d, switched to new FILE, '
+                    logger.debug('track %d, switched to new FILE, '
                                'increased counter to %d',
                         trackNumber, counter)
                 currentFile = File(filePath, common.msfToFrames(start),
@@ -319,12 +322,12 @@ class TocFile(object, log.Loggable):
                 filePath = m.group('name')
                 length = m.group('length')
                 # print 'THOMAS', length
-                self.debug('FILE %s, length %r',
+                logger.debug('FILE %s, length %r',
                     filePath, common.msfToFrames(length))
                 if not currentFile or filePath != currentFile.path:
                     counter += 1
                     relativeOffset = 0
-                    self.debug('track %d, switched to new FILE, '
+                    logger.debug('track %d, switched to new FILE, '
                         'increased counter to %d',
                         trackNumber, counter)
                 # FIXME: assume that a MODE2_FORM_MIX track always starts at 0
@@ -345,7 +348,7 @@ class TocFile(object, log.Loggable):
 
                 length = common.msfToFrames(m.group('length'))
                 c, o, s = self._sources.get(absoluteOffset)
-                self.debug('at abs offset %d, we are in source %r' % (
+                logger.debug('at abs offset %d, we are in source %r' % (
                     absoluteOffset, s))
                 counterStart = self._sources.getCounterStart(c)
                 relativeOffset = absoluteOffset - counterStart
@@ -353,7 +356,7 @@ class TocFile(object, log.Loggable):
                 currentTrack.index(0, path=s and s.path or None,
                     absolute=absoluteOffset,
                     relative=relativeOffset, counter=c)
-                self.debug('[track %02d index 00] added %r',
+                logger.debug('[track %02d index 00] added %r',
                     currentTrack.number, currentTrack.getIndex(0))
                 # store the pregapLength to add it when we index 1 for this
                 # track on the next iteration
@@ -377,7 +380,7 @@ class TocFile(object, log.Loggable):
 
         # totalLength was added up to the penultimate track
         self.table.leadout = totalLength + currentLength
-        self.debug('parse: leadout: %r', self.table.leadout)
+        logger.debug('parse: leadout: %r', self.table.leadout)
 
     def message(self, number, message):
         """

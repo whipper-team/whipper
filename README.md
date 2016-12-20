@@ -81,9 +81,6 @@ Change to a directory where you want to put whipper source code (for example, `$
 ```bash
 git clone -b master --single-branch https://github.com/JoeLametta/whipper.git
 cd whipper
-# fetch bundled python dependencies
-git submodule init
-git submodule update
 ```
 
 ### Building the bundled dependencies
@@ -114,7 +111,7 @@ is correct, while
 
 `whipper cd rip -d (device)`
 
-is not, because the `-d` argument applies to the whipper command.
+is not, because the `-d` argument applies to the `cd` command.
 
 ~~Check the man page (`whipper(1)`) for more information.~~ (currently not available as whipper's documentation is planned to be reworked ([Issue #73](https://github.com/JoeLametta/whipper/issues/73)).
 
@@ -261,14 +258,16 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
 Please use the [issue tracker](https://github.com/JoeLametta/whipper/issues) to report any bugs or to file feature requests.
 
-When filing bug reports, please run the failing command with the environment variable `RIP_DEBUG` set. For example:
+When filing bug reports, please run the failing command with the environment variable `WHIPPER_DEBUG` set. For example:
 
 ```bash
-RIP_DEBUG=5 whipper offset find > whipper.log 2>&1
+WHIPPER_DEBUG=DEBUG WHIPPER_LOGFILE=whipper.log whipper offset find
 gzip whipper.log
 ```
 
 And attach the gzipped log file to your bug report.
+
+Without `WHIPPER_LOGFILE` set, logging messages will go to stderr. `WHIPPER_DEBUG` accepts a string of the [default python logging levels](https://docs.python.org/2/library/logging.html#logging-levels).
 
 ### Developing
 

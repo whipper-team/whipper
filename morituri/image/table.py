@@ -28,8 +28,11 @@ import copy
 import urllib
 import urlparse
 
-from morituri.common import common, log
+from morituri.common import common
 from morituri.configure import configure
+
+import logging
+logger = logging.getLogger(__name__)
 
 # FIXME: taken from libcdio, but no reference found for these
 
@@ -156,7 +159,7 @@ class Index:
             self.number, self.absolute, self.path, self.relative, self.counter)
 
 
-class Table(object, log.Loggable):
+class Table(object):
     """
     I represent a table of indexes on a CD.
 
@@ -188,7 +191,7 @@ class Table(object, log.Loggable):
 
     def unpickled(self):
         self.logName = "Table 0x%08x v%d" % (id(self), self.instanceVersion)
-        self.debug('set logName')
+        logger.debug('set logName')
 
     def getTrackStart(self, number):
         """
@@ -294,7 +297,7 @@ class Table(object, log.Loggable):
         # print 'THOMAS: disc leadout', self.leadout
         last = self.tracks[-1]
         leadout = self.getTrackEnd(last.number) + 1
-        self.debug('leadout LBA: %d', leadout)
+        logger.debug('leadout LBA: %d', leadout)
 
         # FIXME: we can't replace these calculations with the getFrameLength
         # call because the start and leadout in the algorithm get rounded
@@ -313,9 +316,9 @@ class Table(object, log.Loggable):
         result.insert(0, value)
 
         # compare this debug line to cd-discid output
-        self.debug('cddb values: %r', result)
+        logger.debug('cddb values: %r', result)
 
-        self.debug('cddb disc id debug: %s',
+        logger.debug('cddb disc id debug: %s',
             " ".join(["%08x" % value, ] + debug))
 
         return result
@@ -338,8 +341,8 @@ class Table(object, log.Loggable):
         @returns: the 28-character base64-encoded disc ID
         """
         if self.mbdiscid:
-            self.log('getMusicBrainzDiscId: returning cached %r'
-                     % self.mbdiscid)
+            logger.debug('getMusicBrainzDiscId: returning cached %r'
+                         % self.mbdiscid)
             return self.mbdiscid
         values = self._getMusicBrainzValues()
 
@@ -387,7 +390,7 @@ class Table(object, log.Loggable):
         assert len(result) == 28, \
             "Result should be 28 characters, not %d" % len(result)
 
-        self.log('getMusicBrainzDiscId: returning %r' % result)
+        logger.debug('getMusicBrainzDiscId: returning %r' % result)
         self.mbdiscid = result
         return result
 
@@ -419,7 +422,7 @@ class Table(object, log.Loggable):
             last = self.tracks[self.getAudioTracks() - 1]
 
         leadout = self.getTrackEnd(last.number) + 1
-        self.debug('leadout LBA: %d', leadout)
+        logger.debug('leadout LBA: %d', leadout)
         durationFrames = leadout - self.getTrackStart(1)
 
         return durationFrames
@@ -475,7 +478,7 @@ class Table(object, log.Loggable):
                 pass
 
 
-        self.log('Musicbrainz values: %r', result)
+        logger.debug('Musicbrainz values: %r', result)
         return result
 
     def getAccurateRipIds(self):
@@ -533,7 +536,7 @@ class Table(object, log.Loggable):
 
         @rtype: C{unicode}
         """
-        self.debug('generating .cue for cuePath %r', cuePath)
+        logger.debug('generating .cue for cuePath %r', cuePath)
 
         lines = []
 
@@ -541,7 +544,7 @@ class Table(object, log.Loggable):
             targetPath = common.getRelativePath(path, cuePath)
             line = 'FILE "%s" WAVE' % targetPath
             lines.append(line)
-            self.debug('writeFile: %r' % line)
+            logger.debug('writeFile: %r' % line)
 
         # header
         main = ['PERFORMER', 'TITLE']
@@ -582,11 +585,11 @@ class Table(object, log.Loggable):
             counter = index.counter
 
         if index.path:
-            self.debug('counter %d, writeFile' % counter)
+            logger.debug('counter %d, writeFile' % counter)
             writeFile(index.path)
 
         for i, track in enumerate(self.tracks):
-            self.debug('track i %r, track %r' % (i, track))
+            logger.debug('track i %r, track %r' % (i, track))
             # FIXME: skip data tracks for now
             if not track.audio:
                 continue
@@ -598,7 +601,7 @@ class Table(object, log.Loggable):
 
             for number in indexes:
                 index = track.indexes[number]
-                self.debug('index %r, %r' % (number, index))
+                logger.debug('index %r, %r' % (number, index))
 
                 # any time the source counter changes to a higher value,
                 # write a FILE statement
@@ -606,9 +609,9 @@ class Table(object, log.Loggable):
                 # at counter 0 here
                 if index.counter > counter:
                     if index.path:
-                        self.debug('counter %d, writeFile' % counter)
+                        logger.debug('counter %d, writeFile' % counter)
                         writeFile(index.path)
-                    self.debug('setting counter to index.counter %r' %
+                    logger.debug('setting counter to index.counter %r' %
                         index.counter)
                     counter = index.counter
 
@@ -617,7 +620,7 @@ class Table(object, log.Loggable):
                     wroteTrack = True
                     line = "  TRACK %02d %s" % (i + 1, 'AUDIO')
                     lines.append(line)
-                    self.debug('%r' % line)
+                    logger.debug('%r' % line)
 
                     for key in CDTEXT_FIELDS:
                         if key in track.cdtext:
@@ -667,11 +670,11 @@ class Table(object, log.Loggable):
         index = self.tracks[0].getFirstIndex()
         i = index.number
 
-        self.debug('clearing path')
+        logger.debug('clearing path')
         while True:
             track = self.tracks[t - 1]
             index = track.getIndex(i)
-            self.debug('Clearing path on track %d, index %d', t, i)
+            logger.debug('Clearing path on track %d, index %d', t, i)
             index.path = None
             index.relative = None
             try:
@@ -690,7 +693,7 @@ class Table(object, log.Loggable):
         @type  track: C{int}
         @type  index: C{int}
         """
-        self.debug('setFile: track %d, index %d, path %r, '
+        logger.debug('setFile: track %d, index %d, path %r, '
             'length %r, counter %r', track, index, path, length, counter)
 
         t = self.tracks[track - 1]
@@ -704,7 +707,7 @@ class Table(object, log.Loggable):
             i.path = path
             i.relative = i.absolute - start
             i.counter = counter
-            self.debug('Setting path %r, relative %r on '
+            logger.debug('Setting path %r, relative %r on '
                 'track %d, index %d, counter %r',
                 path, i.relative, track, index, counter)
             try:
@@ -726,19 +729,19 @@ class Table(object, log.Loggable):
         counter = index.counter
 
         #for t in self.tracks: print t, t.indexes
-        self.debug('absolutizing')
+        logger.debug('absolutizing')
         while True:
             track = self.tracks[t - 1]
             index = track.getIndex(i)
             assert track.number == t
             assert index.number == i
             if index.counter is None:
-                self.debug('Track %d, index %d has no counter', t, i)
+                logger.debug('Track %d, index %d has no counter', t, i)
                 break
             if index.counter != counter:
-                self.debug('Track %d, index %d has a different counter', t, i)
+                logger.debug('Track %d, index %d has a different counter', t, i)
                 break
-            self.debug('Setting absolute offset %d on track %d, index %d',
+            logger.debug('Setting absolute offset %d on track %d, index %d',
                 index.relative, t, i)
             if index.absolute is not None:
                 if index.absolute != index.relative:
@@ -772,16 +775,16 @@ class Table(object, log.Loggable):
             for i in t.indexes.values():
                 if i.absolute is not None:
                     i.absolute += self.leadout + gap
-                    self.debug('Fixing track %02d, index %02d, absolute %d' % (
+                    logger.debug('Fixing track %02d, index %02d, absolute %d' % (
                         t.number, i.number, i.absolute))
                 if i.counter is not None:
                     i.counter += sourceCounter
-                    self.debug('Fixing track %02d, index %02d, counter %d' % (
+                    logger.debug('Fixing track %02d, index %02d, counter %d' % (
                         t.number, i.number, i.counter))
             self.tracks.append(t)
 
         self.leadout += other.leadout + gap # FIXME
-        self.debug('Fixing leadout, now %d', self.leadout)
+        logger.debug('Fixing leadout, now %d', self.leadout)
 
     def _getSessionGap(self, session):
         # From cdrecord multi-session info:
@@ -836,15 +839,15 @@ class Table(object, log.Loggable):
         offsets, as well as the leadout.
         """
         if not self.leadout:
-            self.debug('no leadout, no TOC')
+            logger.debug('no leadout, no TOC')
             return False
 
         for t in self.tracks:
             if 1 not in t.indexes.keys():
-                self.debug('no index 1, no TOC')
+                logger.debug('no index 1, no TOC')
                 return False
             if t.indexes[1].absolute is None:
-                self.debug('no absolute index 1, no TOC')
+                logger.debug('no absolute index 1, no TOC')
                 return False
 
         return True
@@ -854,13 +857,13 @@ class Table(object, log.Loggable):
         Check if this table can be used to generate a .cue file
         """
         if not self.hasTOC():
-            self.debug('No TOC, cannot cue')
+            logger.debug('No TOC, cannot cue')
             return False
 
         for t in self.tracks:
             for i in t.indexes.values():
                 if i.relative is None:
-                    self.debug('Track %02d, Index %02d does not have relative',
+                    logger.debug('Track %02d, Index %02d does not have relative',
                         t.number, i.number)
                     return False
 

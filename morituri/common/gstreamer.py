@@ -23,13 +23,14 @@
 import re
 import commands
 
-from morituri.common import log
+import logging
+logger = logging.getLogger(__name__)
 
 # workaround for issue #64
 
 
 def removeAudioParsers():
-    log.debug('gstreamer', 'Removing buggy audioparsers plugin if needed')
+    logger.debug('Removing buggy audioparsers plugin if needed')
 
     import gst
     registry = gst.registry_get_default()
@@ -37,12 +38,12 @@ def removeAudioParsers():
     plugin = registry.find_plugin("audioparsersbad")
     if plugin:
         # always remove from bad
-        log.debug('gstreamer', 'removing audioparsersbad plugin from registry')
+        logger.debug('removing audioparsersbad plugin from registry')
         registry.remove_plugin(plugin)
 
     plugin = registry.find_plugin("audioparsers")
     if plugin:
-        log.debug('gstreamer', 'removing audioparsers plugin from %s %s',
+        logger.debug('removing audioparsers plugin from %s %s',
             plugin.get_source(), plugin.get_version())
 
         # the query bug was fixed after 0.10.30 and before 0.10.31

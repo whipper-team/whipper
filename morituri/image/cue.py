@@ -29,8 +29,11 @@ See http://digitalx.org/cuesheetsyntax.php
 import re
 import codecs
 
-from morituri.common import common, log
+from morituri.common import common
 from morituri.image import table
+
+import logging
+logger = logging.getLogger(__name__)
 
 _REM_RE = re.compile("^REM\s(\w+)\s(.*)$")
 _PERFORMER_RE = re.compile("^PERFORMER\s(.*)$")
@@ -57,7 +60,7 @@ _INDEX_RE = re.compile(r"""
 """, re.VERBOSE)
 
 
-class CueFile(object, log.Loggable):
+class CueFile(object):
     """
     I represent a .cue file as an object.
 
@@ -84,7 +87,7 @@ class CueFile(object, log.Loggable):
         currentTrack = None
         counter = 0
 
-        self.info('Parsing .cue file %r', self._path)
+        logger.info('Parsing .cue file %r', self._path)
         handle = codecs.open(self._path, 'r', 'utf-8')
 
         for number, line in enumerate(handle.readlines()):
@@ -120,7 +123,7 @@ class CueFile(object, log.Loggable):
                 trackNumber = int(m.group('track'))
                 #trackMode = m.group('mode')
 
-                self.debug('found track %d', trackNumber)
+                logger.debug('found track %d', trackNumber)
                 currentTrack = table.Track(trackNumber)
                 self.table.tracks.append(currentTrack)
                 continue
@@ -141,7 +144,7 @@ class CueFile(object, log.Loggable):
                     + seconds * common.FRAMES_PER_SECOND \
                     + minutes * common.FRAMES_PER_SECOND * 60
 
-                self.debug('found index %d of track %r in %r:%d',
+                logger.debug('found index %d of track %r in %r:%d',
                     indexNumber, currentTrack, currentFile.path, frameOffset)
                 # FIXME: what do we do about File's FORMAT ?
                 currentTrack.index(indexNumber,

@@ -1,10 +1,12 @@
-import logging
 import os
 import re
 import tempfile
 from subprocess import check_call, Popen, PIPE, CalledProcessError
 
 from morituri.image.toc import TocFile
+
+import logging
+logger = logging.getLogger(__name__)
 
 CDRDAO = 'cdrdao'
 
@@ -28,7 +30,7 @@ def read_toc(device, fast_toc=False):
     try:
         check_call(cmd, stdout=PIPE, stderr=PIPE)
     except CalledProcessError, e:
-        logging.warning('cdrdao read-toc failed: return code is non-zero: ' +
+        logger.warning('cdrdao read-toc failed: return code is non-zero: ' +
                         str(e.returncode))
         raise e
     toc = TocFile(tocfile)
@@ -43,14 +45,14 @@ def version():
     cdrdao = Popen(CDRDAO, stderr=PIPE)
     out, err = cdrdao.communicate()
     if cdrdao.returncode != 1:
-        logging.warning("cdrdao version detection failed: "
-                        "return code is " + str(cdrdao.returncode))
+        logger.warning("cdrdao version detection failed: "
+                       "return code is " + str(cdrdao.returncode))
         return None
     m = re.compile(r'^Cdrdao version (?P<version>.*) - \(C\)').search(
                    err.decode('utf-8'))
     if not m:
-        logging.warning("cdrdao version detection failed: "
-                + "could not find version")
+        logger.warning("cdrdao version detection failed: "
+                       "could not find version")
         return None
     return m.group('version')
 

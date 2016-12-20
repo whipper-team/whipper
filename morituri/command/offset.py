@@ -20,17 +20,23 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
+import argparse
 import os
+import sys
 import tempfile
 
 import gobject
 gobject.threads_init()
 
-from morituri.common import logcommand, accurip, drive, program, common
+from morituri.command.basecommand import BaseCommand
+from morituri.common import accurip, common, config, drive, program
 from morituri.common import task as ctask
 from morituri.program import cdrdao, cdparanoia
 
 from morituri.extern.task import task
+
+import logging
+logger = logging.getLogger(__name__)
 
 # see http://www.accuraterip.com/driveoffsets.htm
 # and misc/offsets.py
@@ -47,26 +53,23 @@ OFFSETS = "+6, +48, +102, +667, +12, +30, +618, +594, +738, -472, " + \
           "+1127"
 
 
-class Find(logcommand.LogCommand):
+class Find(BaseCommand):
     summary = "find drive read offset"
     description = """Find drive's read offset by ripping tracks from a
 CD in the AccurateRip database."""
+    formatter_class = argparse.ArgumentDefaultsHelpFormatter
+    device_option = True
 
-    def addOptions(self):
-        default = OFFSETS
-        self.parser.add_option('-o', '--offsets',
-            action="store", dest="offsets",
-            help="list of offsets, comma-separated, "
-                "colon-separated for ranges (defaults to %s)" % default,
-            default=default)
-        self.parser.add_option('-d', '--device',
-            action="store", dest="device",
-            help="CD-DA device")
+    def add_arguments(self):
+        self.parser.add_argument(
+            '-o', '--offsets',
+            action="store", dest="offsets", default=OFFSETS,
+            help="list of offsets, comma-separated, colon-separated for ranges"
+        )
 
-    def handleOptions(self, options):
-        self.options = options
+    def handle_arguments(self):
         self._offsets = []
-        blocks = options.offsets.split(',')
+        blocks = self.options.offsets.split(',')
         for b in blocks:
             if ':' in b:
                 a, b = b.split(':')
@@ -74,27 +77,16 @@ CD in the AccurateRip database."""
             else:
                 self._offsets.append(int(b))
 
-        self.debug('Trying with offsets %r', self._offsets)
+        logger.debug('Trying with offsets %r', self._offsets)
 
-        if not options.device:
-            drives = drive.getAllDevicePaths()
-            if not drives:
-                self.error('No CD-DA drives found!')
-                return 3
-
-            # pick the first
-            self.options.device = drives[0]
-
-        # this can be a symlink to another device
-
-    def do(self, args):
-        prog = program.Program(self.getRootCommand().config)
+    def do(self):
+        prog = program.Program(config.Config())
         runner = ctask.SyncRunner()
 
         device = self.options.device
 
         # if necessary, load and unmount
-        self.stdout.write('Checking device %s\n' % device)
+        sys.stdout.write('Checking device %s\n' % device)
 
         prog.loadDevice(device)
         prog.unmountDevice(device)
@@ -103,9 +95,9 @@ CD in the AccurateRip database."""
         t = cdrdao.ReadTOCTask(device)
         table = t.table
 
-        self.debug("CDDB disc id: %r", table.getCDDBDiscId())
+        logger.debug("CDDB disc id: %r", table.getCDDBDiscId())
         url = table.getAccurateRipURL()
-        self.debug("AccurateRip URL: %s", url)
+        logger.debug("AccurateRip URL: %s", url)
 
         # FIXME: download url as a task too
         responses = []
@@ -116,17 +108,17 @@ CD in the AccurateRip database."""
             responses = accurip.getAccurateRipResponses(data)
         except urllib2.HTTPError, e:
             if e.code == 404:
-                self.stdout.write(
+                sys.stdout.write(
                     'Album not found in AccurateRip database.\n')
                 return 1
             else:
                 raise
 
         if responses:
-            self.debug('%d AccurateRip responses found.' % len(responses))
+            logger.debug('%d AccurateRip responses found.' % len(responses))
 
             if responses[0].cddbDiscId != table.getCDDBDiscId():
-                self.warning("AccurateRip response discid different: %s",
+                logger.warning("AccurateRip response discid different: %s",
                     responses[0].cddbDiscId)
 
         # now rip the first track at various offsets, calculating AccurateRip
@@ -140,7 +132,7 @@ CD in the AccurateRip database."""
             return None, None
 
         for offset in self._offsets:
-            self.stdout.write('Trying read offset %d ...\n' % offset)
+            sys.stdout.write('Trying read offset %d ...\n' % offset)
             try:
                 archecksum = self._arcs(runner, table, 1, offset)
             except task.TaskException, e:
@@ -151,23 +143,23 @@ CD in the AccurateRip database."""
                     raise e
 
                 if isinstance(e.exception, cdparanoia.FileSizeError):
-                    self.stdout.write(
+                    sys.stdout.write(
                         'WARNING: cannot rip with offset %d...\n' % offset)
                     continue
 
-                self.warning("Unknown task exception for offset %d: %r" % (
+                logger.warning("Unknown task exception for offset %d: %r" % (
                     offset, e))
-                self.stdout.write(
+                sys.stdout.write(
                     'WARNING: cannot rip with offset %d...\n' % offset)
                 continue
 
-            self.debug('AR checksum calculated: %s' % archecksum)
+            logger.debug('AR checksum calculated: %s' % archecksum)
 
             c, i = match(archecksum, 1, responses)
             if c:
                 count = 1
-                self.debug('MATCHED against response %d' % i)
-                self.stdout.write(
+                logger.debug('MATCHED against response %d' % i)
+                sys.stdout.write(
                     'Offset of device is likely %d, confirming ...\n' %
                         offset)
 
@@ -178,14 +170,14 @@ CD in the AccurateRip database."""
                         archecksum = self._arcs(runner, table, track, offset)
                     except task.TaskException, e:
                         if isinstance(e.exception, cdparanoia.FileSizeError):
-                            self.stdout.write(
+                            sys.stdout.write(
                                 'WARNING: cannot rip with offset %d...\n' %
                                 offset)
                             continue
 
                     c, i = match(archecksum, track, responses)
                     if c:
-                        self.debug('MATCHED track %d against response %d' % (
+                        logger.debug('MATCHED track %d against response %d' % (
                             track, i))
                         count += 1
 
@@ -193,17 +185,17 @@ CD in the AccurateRip database."""
                     self._foundOffset(device, offset)
                     return 0
                 else:
-                    self.stdout.write(
+                    sys.stdout.write(
                         'Only %d of %d tracks matched, continuing ...\n' % (
                         count, len(table.tracks)))
 
-        self.stdout.write('No matching offset found.\n')
-        self.stdout.write('Consider trying again with a different disc.\n')
+        sys.stdout.write('No matching offset found.\n')
+        sys.stdout.write('Consider trying again with a different disc.\n')
 
     # TODO MW: Update this further for ARv2 code
     def _arcs(self, runner, table, track, offset):
         # rips the track with the given offset, return the arcs checksum
-        self.debug('Ripping track %r with offset %d ...', track, offset)
+        logger.debug('Ripping track %r with offset %d ...', track, offset)
 
         fd, path = tempfile.mkstemp(
             suffix=u'.track%02d.offset%d.morituri.wav' % (
@@ -229,21 +221,25 @@ CD in the AccurateRip database."""
         return "%08x" % t.checksum
 
     def _foundOffset(self, device, offset):
-        self.stdout.write('\nRead offset of device is: %d.\n' %
+        sys.stdout.write('\nRead offset of device is: %d.\n' %
             offset)
 
         info = drive.getDeviceInfo(device)
         if not info:
-            self.stdout.write('Offset not saved: could not get device info (requires pycdio).\n')
+            sys.stdout.write('Offset not saved: could not get device info (requires pycdio).\n')
             return
 
-        self.stdout.write('Adding read offset to configuration file.\n')
+        sys.stdout.write('Adding read offset to configuration file.\n')
 
-        self.getRootCommand().config.setReadOffset(info[0], info[1], info[2],
+        config.Config().setReadOffset(info[0], info[1], info[2],
             offset)
 
 
-class Offset(logcommand.LogCommand):
+class Offset(BaseCommand):
     summary = "handle drive offsets"
-
-    subCommandClasses = [Find, ]
+    description = """
+Drive offset detection utility.
+"""
+    subcommands = {
+        'find': Find,
+    }

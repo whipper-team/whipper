@@ -20,39 +20,44 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
-from morituri.common import logcommand, accurip
+import sys
 
+from morituri.command.basecommand import BaseCommand
+from morituri.common import accurip
 
-class Show(logcommand.LogCommand):
+import logging
+logger = logging.getLogger(__name__)
 
+class Show(BaseCommand):
     summary = "show accuraterip data"
+    description = """
+retrieves and display accuraterip data from the given URL
+"""
 
-    def do(self, args):
+    def add_arguments(self):
+        self.parser.add_argument('url', action='store',
+                                 help="accuraterip URL to load data from")
 
-        try:
-            url = args[0]
-        except IndexError:
-            self.stdout.write('Please specify an accuraterip URL.\n')
-            return 3
-
+    def do(self):
+        url = self.options.url
         cache = accurip.AccuCache()
         responses = cache.retrieve(url)
 
         count = responses[0].trackCount
 
-        self.stdout.write("Found %d responses for %d tracks\n\n" % (
+        sys.stdout.write("Found %d responses for %d tracks\n\n" % (
             len(responses), count))
 
         for (i, r) in enumerate(responses):
             if r.trackCount != count:
-                self.stdout.write(
+                sys.stdout.write(
                     "Warning: response %d has %d tracks instead of %d\n" % (
                         i, r.trackCount, count))
 
 
         # checksum and confidence by track
         for track in range(count):
-            self.stdout.write("Track %d:\n" % (track + 1))
+            sys.stdout.write("Track %d:\n" % (track + 1))
             checksums = {}
 
             for (i, r) in enumerate(responses):
@@ -81,12 +86,17 @@ class Show(logcommand.LogCommand):
             sortedChecksums.reverse()
 
             for highest, checksum in sortedChecksums:
-                self.stdout.write("  %d result(s) for checksum %s: %s\n" % (
+                sys.stdout.write("  %d result(s) for checksum %s: %s\n" % (
                     len(checksums[checksum]), checksum,
                     str(checksums[checksum])))
 
 
-class AccuRip(logcommand.LogCommand):
-    description = "Handle AccurateRip information."
-
-    subCommandClasses = [Show, ]
+class AccuRip(BaseCommand):
+    summary = "handle AccurateRip information"
+    description = """
+Handle AccurateRip information. Retrieves AccurateRip disc entries and
+displays diagnostic information.
+"""
+    subcommands = {
+        'show': Show
+    }
