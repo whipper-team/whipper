@@ -231,7 +231,7 @@ CD in the AccurateRip database."""
 
         sys.stdout.write('Adding read offset to configuration file.\n')
 
-        self.getRootCommand().config.setReadOffset(info[0], info[1], info[2],
+        config.Config().setReadOffset(info[0], info[1], info[2],
             offset)
 
 
