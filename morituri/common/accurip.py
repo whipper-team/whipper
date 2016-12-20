@@ -85,7 +85,7 @@ class AccuCache:
             os.makedirs(os.path.dirname(path))
         except OSError, e:
             logger.debug('Could not make dir %s: %r' % (
-                path, log.getExceptionMessage(e)))
+                path, str(e)))
             if e.errno != errno.EEXIST:
                 raise
 

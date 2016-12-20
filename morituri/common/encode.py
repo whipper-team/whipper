@@ -248,8 +248,7 @@ class EncodeTask(ctask.GstPipelineTask):
             try:
                 tagger.merge_tags(self._taglist, self.gst.TAG_MERGE_APPEND)
             except AttributeError, e:
-                logger.warning('Could not merge tags: %r',
-                    log.getExceptionMessage(e))
+                logger.warning('Could not merge tags: %r', str(e))
 
     def paused(self):
         # get length

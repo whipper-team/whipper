@@ -91,8 +91,7 @@ class PopenTask(task.Task):
 
             self._done()
         except Exception, e:
-            logger.debug('exception during _read()')
-            logger.debug(log.getExceptionMessage(e))
+            logger.debug('exception during _read(): %r', str(e))
             self.setException(e)
             self.stop()
 

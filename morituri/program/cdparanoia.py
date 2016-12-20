@@ -538,7 +538,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
                     except Exception, e:
                         logger.debug('Exception while moving to final path %r: '
                             '%r',
-                            self.path, log.getExceptionMessage(e))
+                            self.path, str(e))
                         self.exception = e
                 else:
                     os.unlink(self._tmppath)
