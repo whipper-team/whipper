@@ -22,7 +22,6 @@
 
 import argparse
 import os
-import math
 import glob
 import urllib2
 import socket

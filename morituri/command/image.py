@@ -20,11 +20,10 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
-import argparse
 import os
 import sys
 
-from morituri.common import accurip, config, program
+from morituri.common import accurip, program
 from morituri.image import image
 from morituri.result import result
 from morituri.command.basecommand import BaseCommand

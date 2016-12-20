@@ -1,13 +1,12 @@
 # -*- Mode: Python -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
-import argparse
 import os
 import sys
 import pkg_resources
 import musicbrainzngs
 
-from morituri.common import common, config, directory
+from morituri.common import common, directory
 from morituri.configure import configure
 from morituri.extern.task import task
 from morituri.command import cd, offset, drive, image, accurip, debug
@@ -41,7 +40,7 @@ def main():
             return 255
 
         if isinstance(e.exception, common.EmptyError):
-            logger.debug("EmptyError: %r", log.getExceptionMessage(e.exception))
+            logger.debug("EmptyError: %r", str(e.exception))
             sys.stderr.write('whipper: error: Could not create encoded file.\n')
             return 255
 

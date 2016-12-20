@@ -20,9 +20,6 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
-import argparse
-import os
-
 from morituri.extern.task import task
 from morituri.common import drive
 from morituri.program import cdparanoia

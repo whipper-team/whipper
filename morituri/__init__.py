@@ -1,6 +1,6 @@
-import sys
 import logging
 import os
+import sys
 
 level = logging.WARNING
 if 'WHIPPER_DEBUG' in os.environ:
