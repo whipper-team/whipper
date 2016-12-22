@@ -587,8 +587,6 @@ Log files will log the path to tracks relative to this directory.
         # write log file
         self.program.writeLog(discName, self.logger)
 
-        utils.eject_device(self.device)
-
 
 class CD(BaseCommand):
     summary = "handle CDs"
