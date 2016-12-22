@@ -140,8 +140,8 @@ class _CD(BaseCommand):
 
             # also used by rip cd info
             if not getattr(self.options, 'unknown', False):
-                if self.eject:
-                    utils.eject_device(self.device)
+                logger.critical("unable to retrieve disc metadata, "
+                                "--unknown not passed")
                 return -1
 
         # FIXME ?????
