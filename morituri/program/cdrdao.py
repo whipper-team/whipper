@@ -1,8 +1,9 @@
 import os
 import re
 import tempfile
-from subprocess import check_call, Popen, PIPE, CalledProcessError
+from subprocess import Popen, PIPE
 
+from morituri.common.common import EjectError
 from morituri.image.toc import TocFile
 
 import logging
@@ -27,12 +28,18 @@ def read_toc(device, fast_toc=False):
     cmd = [CDRDAO, 'read-toc'] + (['--fast-toc'] if fast_toc else []) + [
            '--device', device, tocfile]
     # PIPE is the closest to >/dev/null we can get
-    try:
-        check_call(cmd, stdout=PIPE, stderr=PIPE)
-    except CalledProcessError, e:
-        logger.warning('cdrdao read-toc failed: return code is non-zero: ' +
-                        str(e.returncode))
-        raise e
+    logger.debug("executing %r", cmd)
+    p = Popen(cmd, stdout=PIPE, stderr=PIPE)
+    _, stderr = p.communicate()
+    if p.returncode != 0:
+        msg = 'cdrdao read-toc failed: return code is non-zero: ' + \
+              str(p.returncode)
+        logger.critical(msg)
+        # Gracefully handle missing disc
+        if "ERROR: Unit not ready, giving up." in stderr:
+            raise EjectError(device, "no disc detected")
+        raise IOError(msg)
+
     toc = TocFile(tocfile)
     toc.parse()
     os.unlink(tocfile)

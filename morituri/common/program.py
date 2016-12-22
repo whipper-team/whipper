@@ -90,32 +90,6 @@ class Program:
             logger.info('Changing to working directory %s' % workingDirectory)
             os.chdir(workingDirectory)
 
-    def loadDevice(self, device):
-        """
-        Load the given device.
-        """
-        os.system('eject -t %s' % device)
-
-    def ejectDevice(self, device):
-        """
-        Eject the given device.
-        """
-        os.system('eject %s' % device)
-
-    def unmountDevice(self, device):
-        """
-        Unmount the given device if it is mounted, as happens with automounted
-        data tracks.
-
-        If the given device is a symlink, the target will be checked.
-        """
-        device = os.path.realpath(device)
-        logger.debug('possibly unmount real path %r' % device)
-        proc = open('/proc/mounts').read()
-        if device in proc:
-            print 'Device %s is mounted, unmounting' % device
-            os.system('umount %s' % device)
-
     def getFastToc(self, runner, toc_pickle, device):
         """
         Retrieve the normal TOC table from a toc pickle or the drive.

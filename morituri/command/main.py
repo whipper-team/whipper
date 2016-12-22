@@ -11,6 +11,7 @@ from morituri.command.basecommand import BaseCommand
 from morituri.common import common, directory
 from morituri.configure import configure
 from morituri.extern.task import task
+from morituri.program.utils import eject_device
 
 import logging
 logger = logging.getLogger(__name__)
@@ -27,7 +28,9 @@ def main():
     try:
         ret = Whipper(sys.argv[1:], os.path.basename(sys.argv[0]), None).do()
     except SystemError, e:
-        sys.stderr.write('whipper: error: %s\n' % e.args)
+        sys.stderr.write('whipper: error: %s\n' % e)
+        if type(e) is common.EjectError:
+            eject_device(e.device)
         return 255
     except ImportError, e:
         raise ImportError(e)

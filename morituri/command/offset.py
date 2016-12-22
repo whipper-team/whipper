@@ -31,7 +31,7 @@ gobject.threads_init()
 from morituri.command.basecommand import BaseCommand
 from morituri.common import accurip, common, config, drive, program
 from morituri.common import task as ctask
-from morituri.program import cdrdao, cdparanoia
+from morituri.program import cdrdao, cdparanoia, utils
 
 from morituri.extern.task import task
 
@@ -88,8 +88,8 @@ CD in the AccurateRip database."""
         # if necessary, load and unmount
         sys.stdout.write('Checking device %s\n' % device)
 
-        prog.loadDevice(device)
-        prog.unmountDevice(device)
+        utils.load_device(device)
+        utils.unmount_device(device)
 
         # first get the Table Of Contents of the CD
         t = cdrdao.ReadTOCTask(device)
