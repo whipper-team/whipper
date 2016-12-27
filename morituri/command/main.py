@@ -26,10 +26,12 @@ def main():
     )
     map(pkg_resources.working_set.add, distributions)
     try:
-        ret = Whipper(sys.argv[1:], os.path.basename(sys.argv[0]), None).do()
+        cmd = Whipper(sys.argv[1:], os.path.basename(sys.argv[0]), None)
+        ret = cmd.do()
     except SystemError, e:
         sys.stderr.write('whipper: error: %s\n' % e)
-        if type(e) is common.EjectError:
+        if (type(e) is common.EjectError and
+                cmd.options.eject in ('failure', 'always')):
             eject_device(e.device)
         return 255
     except ImportError, e:
@@ -79,6 +81,10 @@ You can get help on subcommands by using the -h option to the subcommand.
         self.parser.add_argument('-h', '--help',
                             action="store_true", dest="help",
                             help="show this help message and exit")
+        self.parser.add_argument('-e', '--eject',
+                            action="store", dest="eject", default="always",
+                            choices=('never', 'failure', 'success', 'always'),
+                            help="when to eject disc (default: always)")
 
     def handle_arguments(self):
         if self.options.help:
