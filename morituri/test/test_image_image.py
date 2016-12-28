@@ -46,7 +46,7 @@ class TrackSingleTestCase(tcommon.TestCase):
         self.assertEquals(self.image.table.getTrackLength(4), 4)
 
     def testCDDB(self):
-        self.assertEquals(self.image.table.getCDDBDiscId(), "08000004")
+        self.assertEquals(self.image.table.cddb_discid, "08000004")
 
     def testAccurateRip(self):
         self.assertEquals(self.image.table.getAccurateRipIds(), (
@@ -78,7 +78,7 @@ class TrackSeparateTestCase(tcommon.TestCase):
         self.assertEquals(self.image.table.getTrackLength(4), 10)
 
     def testCDDB(self):
-        self.assertEquals(self.image.table.getCDDBDiscId(), "08000004")
+        self.assertEquals(self.image.table.cddb_discid, "08000004")
 
     def testAccurateRip(self):
         self.assertEquals(self.image.table.getAccurateRipIds(), (

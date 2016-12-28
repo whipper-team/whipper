@@ -167,7 +167,7 @@ class BlocTestCase(common.TestCase):
         # ad0be00d 13 15370 35019 51532 69190 84292 96826 112527 132448
         # 148595 168072 185539 203331 222103 3244
 
-        self.assertEquals(self.toc.table.getCDDBDiscId(), 'ad0be00d')
+        self.assertEquals(self.toc.table.cddb_discid, 'ad0be00d')
 
     def testAccurateRip(self):
         # we verify it because it has failed in readdisc in the past
@@ -221,7 +221,7 @@ class LadyhawkeTestCase(common.TestCase):
 
     def testCDDBId(self):
         #self.toc.table.absolutize()
-        self.assertEquals(self.toc.table.getCDDBDiscId(), 'c60af50d')
+        self.assertEquals(self.toc.table.cddb_discid, 'c60af50d')
         # output from cd-discid:
         # c60af50d 13 150 15687 31841 51016 66616 81352 99559 116070 133243
         # 149997 161710 177832 207256 2807
@@ -270,7 +270,7 @@ class CapitalMergeTestCase(common.TestCase):
 
     def testCDDBId(self):
         #self.table.absolutize()
-        self.assertEquals(self.table.getCDDBDiscId(), 'b910140c')
+        self.assertEquals(self.table.cddb_discid, 'b910140c')
         # output from cd-discid:
         # b910140c 12 24320 44855 64090 77885 88095 104020 118245 129255 141765
         # 164487 181780 209250 4440
@@ -337,7 +337,7 @@ class TOTBLTestCase(common.TestCase):
 
     def testCDDBId(self):
         #self.toc.table.absolutize()
-        self.assertEquals(self.toc.table.getCDDBDiscId(), '810b7b0b')
+        self.assertEquals(self.toc.table.cddb_discid, '810b7b0b')
 
 
 # The Strokes - Someday has a 1 frame SILENCE marked as such in toc

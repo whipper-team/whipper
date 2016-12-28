@@ -49,7 +49,7 @@ class LadyhawkeTestCase(tcommon.TestCase):
         self.assertEquals(self.table.tracks[0].getPregap(), 0)
 
     def testCDDB(self):
-        self.assertEquals(self.table.getCDDBDiscId(), "c60af50d")
+        self.assertEquals(self.table.cddb_discid, "c60af50d")
 
     def testMusicBrainz(self):
         # output from mb-submit-disc:

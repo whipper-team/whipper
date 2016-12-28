@@ -117,8 +117,8 @@ class _CD(BaseCommand):
             self.device)
 
         # already show us some info based on this
-        self.program.getRipResult(self.ittoc.getCDDBDiscId())
-        sys.stdout.write("CDDB disc id: %s\n" % self.ittoc.getCDDBDiscId())
+        self.program.getRipResult(self.ittoc.cddb_discid)
+        sys.stdout.write("CDDB disc id: %s\n" % self.ittoc.cddb_discid)
         self.mbdiscid = self.ittoc.musicbrainz_discid
         sys.stdout.write("MusicBrainz disc id %s\n" % self.mbdiscid)
 
@@ -155,12 +155,12 @@ class _CD(BaseCommand):
 
         # now, read the complete index table, which is slower
         self.itable = self.program.getTable(self.runner,
-            self.ittoc.getCDDBDiscId(),
+            self.ittoc.cddb_discid,
             self.ittoc.musicbrainz_discid, self.device, offset)
 
-        assert self.itable.getCDDBDiscId() == self.ittoc.getCDDBDiscId(), \
+        assert self.itable.cddb_discid == self.ittoc.cddb_discid, \
             "full table's id %s differs from toc id %s" % (
-                self.itable.getCDDBDiscId(), self.ittoc.getCDDBDiscId())
+                self.itable.cddb_discid, self.ittoc.cddb_discid)
         assert self.itable.musicbrainz_discid == \
             self.ittoc.musicbrainz_discid, \
             "full table's mb id %s differs from toc id mb %s" % (
@@ -571,7 +571,7 @@ Log files will log the path to tracks relative to this directory.
             sys.stdout.write('%d AccurateRip reponses found\n' %
                 len(responses))
 
-            if responses[0].cddbDiscId != self.itable.getCDDBDiscId():
+            if responses[0].cddbDiscId != self.itable.cddb_discid:
                 sys.stdout.write(
                     "AccurateRip response discid different: %s\n" %
                     responses[0].cddbDiscId)

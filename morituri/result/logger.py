@@ -70,7 +70,7 @@ class MorituriLogger(result.Logger):
         # CD metadata
         lines.append("CD metadata:")
         lines.append("  Album: %s - %s" % (ripResult.artist, ripResult.title))
-        lines.append("  CDDB Disc ID: %s" % ripResult. table.getCDDBDiscId())
+        lines.append("  CDDB Disc ID: %s" % ripResult.table.cddb_discid)
         lines.append("  MusicBrainz Disc ID: %s" %
                      ripResult. table.musicbrainz_discid)
         lines.append("  MusicBrainz lookup url: %s" %

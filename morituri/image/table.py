@@ -324,7 +324,8 @@ class Table(object):
 
         return result
 
-    def getCDDBDiscId(self):
+    @common.lazy_property
+    def cddb_discid(self):
         """
         Calculate the CDDB disc ID.
 
@@ -341,7 +342,7 @@ class Table(object):
         @rtype:   str
         @returns: the 28-character base64-encoded disc ID
         """
-        values = self._getMusicBrainzValues()
+        values = self._musicbrainz_values
 
         # MusicBrainz disc id does not take into account data tracks
         # P2.3
@@ -395,7 +396,7 @@ class Table(object):
         host = 'musicbrainz.org'
 
         discid = self.musicbrainz_discid
-        values = self._getMusicBrainzValues()
+        values = self._musicbrainz_values
 
         query = urllib.urlencode({
             'id': discid,
@@ -430,7 +431,8 @@ class Table(object):
         """
         return int(self.getFrameLength() * 1000.0 / common.FRAMES_PER_SECOND)
 
-    def _getMusicBrainzValues(self):
+    @common.lazy_property
+    def _musicbrainz_values(self):
         """
         Get all MusicBrainz values needed to calculate disc id and submit URL.
 
@@ -521,7 +523,7 @@ class Table(object):
         return "http://www.accuraterip.com/accuraterip/" \
             "%s/%s/%s/dBAR-%.3d-%s-%s-%s.bin" % (
                 discId1[-1], discId1[-2], discId1[-3],
-                self.getAudioTracks(), discId1, discId2, self.getCDDBDiscId())
+                self.getAudioTracks(), discId1, discId2, self.cddb_discid)
 
     def cue(self, cuePath='', program='morituri'):
         """
@@ -551,7 +553,7 @@ class Table(object):
                     lines.append("    %s %s" % (key, self.cdtext[key]))
 
         assert self.hasTOC(), "Table does not represent a full CD TOC"
-        lines.append('REM DISCID %s' % self.getCDDBDiscId().upper())
+        lines.append('REM DISCID %s' % self.cddb_discid.upper())
         lines.append('REM COMMENT "%s %s"' % (program, configure.version))
 
         if self.catalog:

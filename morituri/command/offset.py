@@ -95,7 +95,7 @@ CD in the AccurateRip database."""
         t = cdrdao.ReadTOCTask(device)
         table = t.table
 
-        logger.debug("CDDB disc id: %r", table.getCDDBDiscId())
+        logger.debug("CDDB disc id: %r", table.cddb_discid)
         url = table.getAccurateRipURL()
         logger.debug("AccurateRip URL: %s", url)
 
@@ -117,7 +117,7 @@ CD in the AccurateRip database."""
         if responses:
             logger.debug('%d AccurateRip responses found.' % len(responses))
 
-            if responses[0].cddbDiscId != table.getCDDBDiscId():
+            if responses[0].cddbDiscId != table.cddb_discid:
                 logger.warning("AccurateRip response discid different: %s",
                     responses[0].cddbDiscId)
 
