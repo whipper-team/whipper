@@ -10,8 +10,6 @@ import morituri
 # twisted's unittests have skip support, standard unittest don't
 from twisted.trial import unittest
 
-from morituri.configure import configure
-
 # lifted from flumotion
 
 

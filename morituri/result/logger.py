@@ -4,7 +4,6 @@ import hashlib
 import morituri
 
 from morituri.common import common
-from morituri.configure import configure
 from morituri.result import result
 
 

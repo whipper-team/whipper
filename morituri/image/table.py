@@ -31,7 +31,6 @@ import urlparse
 import morituri
 
 from morituri.common import common
-from morituri.configure import configure
 
 import logging
 logger = logging.getLogger(__name__)

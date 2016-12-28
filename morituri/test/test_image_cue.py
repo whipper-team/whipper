@@ -8,10 +8,8 @@ import unittest
 import morituri
 
 from morituri.image import table, cue
-from morituri.configure import configure
 
 from morituri.test import common
-
 
 class KingsSingleTestCase(unittest.TestCase):
 

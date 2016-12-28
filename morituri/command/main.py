@@ -11,7 +11,6 @@ import morituri
 from morituri.command import cd, offset, drive, image, accurip, debug
 from morituri.command.basecommand import BaseCommand
 from morituri.common import common, directory
-from morituri.configure import configure
 from morituri.extern.task import task
 
 import logging
