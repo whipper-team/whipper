@@ -536,12 +536,12 @@ class Program:
         """
         track = self.result.table.tracks[0]
         try:
-            index = track.getIndex(0)
+            index = track.indexes[0]
         except KeyError:
             return None
 
         start = index.absolute
-        stop = track.getIndex(1).absolute - 1
+        stop = track.indexes[1].absolute - 1
         return (start, stop)
 
     def verifyTrack(self, runner, trackResult):

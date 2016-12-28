@@ -84,7 +84,7 @@ class MorituriLogger(result.Logger):
         # Test for HTOA presence
         htoa = None
         try:
-            htoa = table.tracks[0].getIndex(0)
+            htoa = table.tracks[0].indexes[0]
         except KeyError:
             pass
 
@@ -92,7 +92,7 @@ class MorituriLogger(result.Logger):
         if htoa and htoa.path:
             htoastart = htoa.absolute
             htoaend = table.getTrackEnd(0)
-            htoalength = table.tracks[0].getIndex(1).absolute - htoastart
+            htoalength = table.tracks[0].indexes[1].absolute - htoastart
             lines.append("  00:")
             lines.append("    Start: %s" % common.framesToMSF(htoastart))
             lines.append("    Length: %s" % common.framesToMSF(htoalength))
@@ -104,7 +104,7 @@ class MorituriLogger(result.Logger):
         for t in table.tracks:
             # FIXME: what happens to a track start over 60 minutes ?
             # Answer: tested empirically, everything seems OK
-            start = t.getIndex(1).absolute
+            start = t.indexes[1].absolute
             length = table.getTrackLength(t.number)
             end = table.getTrackEnd(t.number)
             lines.append("  %02d:" % t.number)

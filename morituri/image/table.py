@@ -205,7 +205,7 @@ class Table(object):
         @rtype:   int
         """
         track = self.tracks[number - 1]
-        return track.getIndex(1).absolute
+        return track.indexes[1].absolute
 
     def getTrackEnd(self, number):
         """
@@ -220,7 +220,7 @@ class Table(object):
 
         # if not last track, calculate it from the next track
         if number < len(self.tracks):
-            end = self.tracks[number].getIndex(1).absolute - 1
+            end = self.tracks[number].indexes[1].absolute - 1
 
             # if on a session border, subtract the session leadin
             thisTrack = self.tracks[number - 1]
@@ -463,7 +463,7 @@ class Table(object):
         # for the leadout
         if self.hasDataTracks():
             assert not self.tracks[-1].audio
-            leadout = self.tracks[-1].getIndex(1).absolute - 11250 - 150
+            leadout = self.tracks[-1].indexes[1].absolute - 11250 - 150
 
         # treat leadout offset as track 0 offset
         result.append(150 + leadout)
@@ -474,7 +474,7 @@ class Table(object):
                 track = self.tracks[i - 1]
                 if not track.audio:
                     continue
-                offset = track.getIndex(1).absolute + 150
+                offset = track.indexes[1].absolute + 150
                 result.append(offset)
             except IndexError:
                 pass
@@ -578,14 +578,14 @@ class Table(object):
         # statement before TRACK 01 and any possible PRE-GAP
         firstTrack = self.tracks[0]
         index = firstTrack.first_index
-        indexOne = firstTrack.getIndex(1)
+        indexOne = firstTrack.indexes[1]
         counter = index.counter
         track = firstTrack
 
         while not index.path:
             t, i = self.getNextTrackIndex(track.number, index.number)
             track = self.tracks[t - 1]
-            index = track.getIndex(i)
+            index = track.indexes[i]
             counter = index.counter
 
         if index.path:
@@ -677,7 +677,7 @@ class Table(object):
         logger.debug('clearing path')
         while True:
             track = self.tracks[t - 1]
-            index = track.getIndex(i)
+            index = track.indexes[i]
             logger.debug('Clearing path on track %d, index %d', t, i)
             index.path = None
             index.relative = None
@@ -736,7 +736,7 @@ class Table(object):
         logger.debug('absolutizing')
         while True:
             track = self.tracks[t - 1]
-            index = track.getIndex(i)
+            index = track.indexes[i]
             assert track.number == t
             assert index.number == i
             if index.counter is None:

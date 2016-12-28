@@ -37,12 +37,12 @@ class CureTestCase(common.TestCase):
         # FIXME: cdrdao seems to get length of FILE 1 frame too many,
         # and START value one frame less
         t = self.toc.table.tracks[1]
-        self.assertEquals(t.getIndex(0).relative, 28245)
-        self.assertEquals(t.getIndex(1).relative, 28324)
+        self.assertEquals(t.indexes[0].relative, 28245)
+        self.assertEquals(t.indexes[1].relative, 28324)
 
     def _getIndex(self, t, i):
         track = self.toc.table.tracks[t - 1]
-        return track.getIndex(i)
+        return track.indexes[i]
 
     def _assertAbsolute(self, t, i, value):
         index = self._getIndex(t, i)
@@ -130,24 +130,24 @@ class BlocTestCase(common.TestCase):
 
     def testIndexes(self):
         track01 = self.toc.table.tracks[0]
-        index00 = track01.getIndex(0)
+        index00 = track01.indexes[0]
         self.assertEquals(index00.absolute, 0)
         self.assertEquals(index00.relative, 0)
         self.assertEquals(index00.counter, 0)
 
-        index01 = track01.getIndex(1)
+        index01 = track01.indexes[1]
         self.assertEquals(index01.absolute, 15220)
         self.assertEquals(index01.relative, 0)
         self.assertEquals(index01.counter, 1)
 
         track05 = self.toc.table.tracks[4]
 
-        index00 = track05.getIndex(0)
+        index00 = track05.indexes[0]
         self.assertEquals(index00.absolute, 84070)
         self.assertEquals(index00.relative, 68850)
         self.assertEquals(index00.counter, 1)
 
-        index01 = track05.getIndex(1)
+        index01 = track05.indexes[1]
         self.assertEquals(index01.absolute, 84142)
         self.assertEquals(index01.relative, 68922)
         self.assertEquals(index01.counter, 1)
@@ -354,13 +354,13 @@ class StrokesTestCase(common.TestCase):
 
     def testIndexes(self):
         t = self.toc.table.tracks[0]
-        i0 = t.getIndex(0)
+        i0 = t.indexes[0]
         self.assertEquals(i0.relative, 0)
         self.assertEquals(i0.absolute, 0)
         self.assertEquals(i0.counter, 0)
         self.assertEquals(i0.path, None)
 
-        i1 = t.getIndex(1)
+        i1 = t.indexes[1]
         self.assertEquals(i1.relative, 0)
         self.assertEquals(i1.absolute, 1)
         self.assertEquals(i1.counter, 1)
@@ -418,13 +418,13 @@ class SurferRosaTestCase(common.TestCase):
         t = self.toc.table.tracks[0]
         self.assertEquals(len(t.indexes), 2)
 
-        i0 = t.getIndex(0)
+        i0 = t.indexes[0]
         self.assertEquals(i0.relative, 0)
         self.assertEquals(i0.absolute, 0)
         self.assertEquals(i0.path, None)
         self.assertEquals(i0.counter, 0)
 
-        i1 = t.getIndex(1)
+        i1 = t.indexes[1]
         self.assertEquals(i1.relative, 0)
         self.assertEquals(i1.absolute, 32)
         self.assertEquals(i1.path, 'data.wav')
@@ -436,10 +436,10 @@ class SurferRosaTestCase(common.TestCase):
         self.assertEquals(len(t.indexes), 2)
 
         # 32 frames of silence, and 1483 seconds of data.wav
-        self.assertEquals(t.getIndex(1).relative, 111225)
-        self.assertEquals(t.getIndex(1).absolute, 111257)
-        self.assertEquals(t.getIndex(2).relative, 111225 + 3370)
-        self.assertEquals(t.getIndex(2).absolute, 111257 + 3370)
+        self.assertEquals(t.indexes[1].relative, 111225)
+        self.assertEquals(t.indexes[1].absolute, 111257)
+        self.assertEquals(t.indexes[2].relative, 111225 + 3370)
+        self.assertEquals(t.indexes[2].absolute, 111257 + 3370)
 
 #        print self.toc.table.cue()
 
