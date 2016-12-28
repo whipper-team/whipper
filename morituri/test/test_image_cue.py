@@ -5,6 +5,8 @@ import os
 import tempfile
 import unittest
 
+import morituri
+
 from morituri.image import table, cue
 from morituri.configure import configure
 
@@ -85,5 +87,5 @@ FILE "track01.wav" WAVE
     INDEX 00 00:13:25
 FILE "track02.wav" WAVE
     INDEX 01 00:00:00
-""" % configure.version, it.cue())
+""" % morituri.__version__, it.cue())
         os.unlink(path)
