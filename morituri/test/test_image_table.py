@@ -46,7 +46,7 @@ class LadyhawkeTestCase(tcommon.TestCase):
         self.table.leadout = 210385
 
         self.failUnless(self.table.hasTOC())
-        self.assertEquals(self.table.tracks[0].getPregap(), 0)
+        self.assertEquals(self.table.tracks[0].pregap, 0)
 
     def testCDDB(self):
         self.assertEquals(self.table.cddb_discid, "c60af50d")
@@ -113,5 +113,5 @@ class PregapTestCase(tcommon.TestCase):
         t[1].index(0, offsets[1] - 200)
 
     def testPreGap(self):
-        self.assertEquals(self.table.tracks[0].getPregap(), 0)
-        self.assertEquals(self.table.tracks[1].getPregap(), 200)
+        self.assertEquals(self.table.tracks[0].pregap, 0)
+        self.assertEquals(self.table.tracks[1].pregap, 200)

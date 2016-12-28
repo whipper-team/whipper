@@ -390,7 +390,7 @@ Log files will log the path to tracks relative to this directory.
             assert type(path) is unicode, "%r is not unicode" % path
             trackResult.filename = path
             if number > 0:
-                trackResult.pregap = self.itable.tracks[number - 1].getPregap()
+                trackResult.pregap = self.itable.tracks[number - 1].pregap
 
             # FIXME: optionally allow overriding reripping
             if os.path.exists(path):

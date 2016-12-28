@@ -101,7 +101,8 @@ class Track:
     def getIndex(self, number):
         return self.indexes[number]
 
-    def getFirstIndex(self):
+    @common.lazy_property
+    def first_index(self):
         """
         Get the first chronological index for this track.
 
@@ -112,12 +113,14 @@ class Track:
         indexes.sort()
         return self.indexes[indexes[0]]
 
-    def getLastIndex(self):
+    @common.lazy_property
+    def last_index(self):
         indexes = self.indexes.keys()
         indexes.sort()
         return self.indexes[indexes[-1]]
 
-    def getPregap(self):
+    @common.lazy_property
+    def pregap(self):
         """
         Returns the length of the pregap for this track.
 
@@ -574,7 +577,7 @@ class Table(object):
         # add the first FILE line; EAC always puts the first FILE
         # statement before TRACK 01 and any possible PRE-GAP
         firstTrack = self.tracks[0]
-        index = firstTrack.getFirstIndex()
+        index = firstTrack.first_index
         indexOne = firstTrack.getIndex(1)
         counter = index.counter
         track = firstTrack
@@ -668,7 +671,7 @@ class Table(object):
         # FIXME: do a loop over track indexes better, with a pythonic
         # construct that allows you to do for t, i in ...
         t = self.tracks[0].number
-        index = self.tracks[0].getFirstIndex()
+        index = self.tracks[0].first_index
         i = index.number
 
         logger.debug('clearing path')
@@ -724,7 +727,7 @@ class Table(object):
         Only possible for as long as tracks draw from the same file.
         """
         t = self.tracks[0].number
-        index = self.tracks[0].getFirstIndex()
+        index = self.tracks[0].first_index
         i = index.number
         # the first cut is the deepest
         counter = index.counter
@@ -767,7 +770,7 @@ class Table(object):
         gap = self._getSessionGap(session)
 
         trackCount = len(self.tracks)
-        sourceCounter = self.tracks[-1].getLastIndex().counter
+        sourceCounter = self.tracks[-1].last_index.counter
 
         for track in other.tracks:
             t = copy.deepcopy(track)
