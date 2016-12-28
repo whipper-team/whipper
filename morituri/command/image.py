@@ -71,7 +71,7 @@ Retags the image from the given .cue files with tags obtained from MusicBrainz.
             cueImage = image.Image(arg)
             cueImage.setup(runner)
 
-            mbdiscid = cueImage.table.getMusicBrainzDiscId()
+            mbdiscid = cueImage.table.musicbrainz_discid
             sys.stdout.write('MusicBrainz disc id is %s\n' % mbdiscid)
 
             sys.stdout.write("MusicBrainz lookup URL %s\n" %

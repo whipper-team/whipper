@@ -367,3 +367,19 @@ def getRevision():
         return revision
 
     return '(unknown)'
+
+
+class lazy_property(object):
+    """
+    Decorator for properties that you want to compute, lazily, just once.
+
+    From http://stackoverflow.com/a/6849299
+    See also http://docs.python.org/3/howto/descriptor.html for reference.
+    """
+    def __init__(self, f):
+        self.f = f
+
+    def __get__(self, instance, cls):
+        result = self.f(instance)
+        setattr(instance, self.f.__name__, result)
+        return result

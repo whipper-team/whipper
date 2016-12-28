@@ -58,7 +58,7 @@ class LadyhawkeTestCase(tcommon.TestCase):
         # 177832&tracks=12&id=KnpGsLhvH.lPrNc1PBL21lb9Bg4-
         # however, not (yet) in musicbrainz database
 
-        self.assertEquals(self.table.getMusicBrainzDiscId(),
+        self.assertEquals(self.table.musicbrainz_discid,
             "KnpGsLhvH.lPrNc1PBL21lb9Bg4-")
 
     def testAccurateRip(self):
@@ -94,7 +94,7 @@ class MusicBrainzTestCase(tcommon.TestCase):
         self.failUnless(self.table.hasTOC())
 
     def testMusicBrainz(self):
-        self.assertEquals(self.table.getMusicBrainzDiscId(),
+        self.assertEquals(self.table.musicbrainz_discid,
             '49HHV7Eb8UKF3aQiNmu1GR8vKTY-')
 
 

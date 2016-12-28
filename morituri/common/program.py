@@ -178,7 +178,7 @@ class Program:
         self.result.table = itable
 
         logger.debug('getTable: returning table with mb id %s' %
-            itable.getMusicBrainzDiscId())
+            itable.musicbrainz_discid)
         return itable
 
     def getRipResult(self, cddbdiscid):

@@ -333,17 +333,14 @@ class Table(object):
         values = self.getCDDBValues()
         return "%08x" % values[0]
 
-    def getMusicBrainzDiscId(self):
+    @common.lazy_property
+    def musicbrainz_discid(self):
         """
         Calculate the MusicBrainz disc ID.
 
         @rtype:   str
         @returns: the 28-character base64-encoded disc ID
         """
-        if self.mbdiscid:
-            logger.debug('getMusicBrainzDiscId: returning cached %r'
-                         % self.mbdiscid)
-            return self.mbdiscid
         values = self._getMusicBrainzValues()
 
         # MusicBrainz disc id does not take into account data tracks
@@ -390,14 +387,13 @@ class Table(object):
         assert len(result) == 28, \
             "Result should be 28 characters, not %d" % len(result)
 
-        logger.debug('getMusicBrainzDiscId: returning %r' % result)
-        self.mbdiscid = result
+        logger.debug('mbdiscid: returning %r' % result)
         return result
 
     def getMusicBrainzSubmitURL(self):
         host = 'musicbrainz.org'
 
-        discid = self.getMusicBrainzDiscId()
+        discid = self.musicbrainz_discid
         values = self._getMusicBrainzValues()
 
         query = urllib.urlencode({

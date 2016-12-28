@@ -227,7 +227,7 @@ class LadyhawkeTestCase(common.TestCase):
         # 149997 161710 177832 207256 2807
 
     def testMusicBrainz(self):
-        self.assertEquals(self.toc.table.getMusicBrainzDiscId(),
+        self.assertEquals(self.toc.table.musicbrainz_discid,
             "KnpGsLhvH.lPrNc1PBL21lb9Bg4-")
         self.assertEquals(self.toc.table.getMusicBrainzSubmitURL(),
             "https://musicbrainz.org/cdtoc/attach?toc="
@@ -279,7 +279,7 @@ class CapitalMergeTestCase(common.TestCase):
         # URL to submit: https://musicbrainz.org/cdtoc/attach?toc=1+11+
         # 197850+24320+44855+64090+77885+88095+104020+118245+129255+141765+
         # 164487+181780&tracks=11&id=MAj3xXf6QMy7G.BIFOyHyq4MySE-
-        self.assertEquals(self.table.getMusicBrainzDiscId(),
+        self.assertEquals(self.table.musicbrainz_discid,
             "MAj3xXf6QMy7G.BIFOyHyq4MySE-")
 
     def testDuration(self):

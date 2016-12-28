@@ -119,7 +119,7 @@ class _CD(BaseCommand):
         # already show us some info based on this
         self.program.getRipResult(self.ittoc.getCDDBDiscId())
         sys.stdout.write("CDDB disc id: %s\n" % self.ittoc.getCDDBDiscId())
-        self.mbdiscid = self.ittoc.getMusicBrainzDiscId()
+        self.mbdiscid = self.ittoc.musicbrainz_discid
         sys.stdout.write("MusicBrainz disc id %s\n" % self.mbdiscid)
 
         sys.stdout.write("MusicBrainz lookup URL %s\n" %
@@ -157,23 +157,23 @@ class _CD(BaseCommand):
         # now, read the complete index table, which is slower
         self.itable = self.program.getTable(self.runner,
             self.ittoc.getCDDBDiscId(),
-            self.ittoc.getMusicBrainzDiscId(), self.device, offset)
+            self.ittoc.musicbrainz_discid, self.device, offset)
 
         assert self.itable.getCDDBDiscId() == self.ittoc.getCDDBDiscId(), \
             "full table's id %s differs from toc id %s" % (
                 self.itable.getCDDBDiscId(), self.ittoc.getCDDBDiscId())
-        assert self.itable.getMusicBrainzDiscId() == \
-            self.ittoc.getMusicBrainzDiscId(), \
+        assert self.itable.musicbrainz_discid == \
+            self.ittoc.musicbrainz_discid, \
             "full table's mb id %s differs from toc id mb %s" % (
-            self.itable.getMusicBrainzDiscId(),
-            self.ittoc.getMusicBrainzDiscId())
+            self.itable.musicbrainz_discid,
+            self.ittoc.musicbrainz_discid)
         assert self.itable.getAccurateRipURL() == \
             self.ittoc.getAccurateRipURL(), \
             "full table's AR URL %s differs from toc AR URL %s" % (
             self.itable.getAccurateRipURL(), self.ittoc.getAccurateRipURL())
 
         if self.program.metadata:
-            self.program.metadata.discid = self.ittoc.getMusicBrainzDiscId()
+            self.program.metadata.discid = self.ittoc.musicbrainz_discid
 
         # result
 
@@ -222,6 +222,7 @@ class Info(_CD):
 
     def add_arguments(self):
         _CD.add_arguments(self.parser)
+
 
 class Rip(_CD):
     summary = "rip CD"
