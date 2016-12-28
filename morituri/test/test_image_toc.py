@@ -229,7 +229,7 @@ class LadyhawkeTestCase(common.TestCase):
     def testMusicBrainz(self):
         self.assertEquals(self.toc.table.musicbrainz_discid,
             "KnpGsLhvH.lPrNc1PBL21lb9Bg4-")
-        self.assertEquals(self.toc.table.getMusicBrainzSubmitURL(),
+        self.assertEquals(self.toc.table.musicbrainz_submit_url,
             "https://musicbrainz.org/cdtoc/attach?toc="
             "1+12+195856+150+15687+31841+51016+66616+81352+99559+"
             "116070+133243+149997+161710+177832&"

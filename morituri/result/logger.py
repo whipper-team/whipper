@@ -74,7 +74,7 @@ class MorituriLogger(result.Logger):
         lines.append("  MusicBrainz Disc ID: %s" %
                      ripResult. table.musicbrainz_discid)
         lines.append("  MusicBrainz lookup url: %s" %
-                     ripResult. table.getMusicBrainzSubmitURL())
+                     ripResult. table.musicbrainz_submit_url)
         lines.append("")
 
         # TOC section

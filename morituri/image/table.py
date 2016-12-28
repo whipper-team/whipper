@@ -390,7 +390,8 @@ class Table(object):
         logger.debug('mbdiscid: returning %r' % result)
         return result
 
-    def getMusicBrainzSubmitURL(self):
+    @common.lazy_property
+    def musicbrainz_submit_url(self):
         host = 'musicbrainz.org'
 
         discid = self.musicbrainz_discid

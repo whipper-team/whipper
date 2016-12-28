@@ -123,7 +123,7 @@ class _CD(BaseCommand):
         sys.stdout.write("MusicBrainz disc id %s\n" % self.mbdiscid)
 
         sys.stdout.write("MusicBrainz lookup URL %s\n" %
-            self.ittoc.getMusicBrainzSubmitURL())
+            self.ittoc.musicbrainz_submit_url)
 
         self.program.metadata = self.program.getMusicBrainz(self.ittoc,
             self.mbdiscid,

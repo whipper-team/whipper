@@ -319,8 +319,7 @@ class Program:
         self._stdout.write('Disc duration: %s, %d audio tracks\n' % (
             common.formatTime(ittoc.duration() / 1000.0),
             ittoc.getAudioTracks()))
-        logger.debug('MusicBrainz submit url: %r',
-            ittoc.getMusicBrainzSubmitURL())
+        logger.debug('MusicBrainz submit url: %r', ittoc.musicbrainz_submit_url)
         ret = None
 
         metadatas = None
