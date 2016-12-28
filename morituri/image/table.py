@@ -480,7 +480,8 @@ class Table(object):
         logger.debug('Musicbrainz values: %r', result)
         return result
 
-    def getAccurateRipIds(self):
+    @common.lazy_property
+    def accuraterip_ids(self):
         """
         Calculate the two AccurateRip ID's.
 
@@ -519,7 +520,7 @@ class Table(object):
         @returns: the AccurateRip URL
         @rtype:   str
         """
-        discId1, discId2 = self.getAccurateRipIds()
+        discId1, discId2 = self.accuraterip_ids
 
         return "http://www.accuraterip.com/accuraterip/" \
             "%s/%s/%s/dBAR-%.3d-%s-%s-%s.bin" % (

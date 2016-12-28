@@ -49,7 +49,7 @@ class TrackSingleTestCase(tcommon.TestCase):
         self.assertEquals(self.image.table.cddb_discid, "08000004")
 
     def testAccurateRip(self):
-        self.assertEquals(self.image.table.getAccurateRipIds(), (
+        self.assertEquals(self.image.table.accuraterip_ids, (
             "00000016", "0000005b"))
 
 
@@ -81,5 +81,5 @@ class TrackSeparateTestCase(tcommon.TestCase):
         self.assertEquals(self.image.table.cddb_discid, "08000004")
 
     def testAccurateRip(self):
-        self.assertEquals(self.image.table.getAccurateRipIds(), (
+        self.assertEquals(self.image.table.accuraterip_ids, (
             "00000064", "00000191"))
