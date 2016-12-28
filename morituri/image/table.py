@@ -511,7 +511,8 @@ class Table(object):
 
         return ("%08x" % discId1, "%08x" % discId2)
 
-    def getAccurateRipURL(self):
+    @common.lazy_property
+    def accuraterip_url(self):
         """
         Return the full AccurateRip URL.
 

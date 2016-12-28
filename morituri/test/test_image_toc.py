@@ -92,7 +92,7 @@ class CureTestCase(common.TestCase):
         common.diffStrings(ref, cue)
 
         # we verify it because it has failed in readdisc in the past
-        self.assertEquals(self.toc.table.getAccurateRipURL(),
+        self.assertEquals(self.toc.table.accuraterip_url,
             'http://www.accuraterip.com/accuraterip/'
             '3/c/4/dBAR-013-0019d4c3-00fe8924-b90c650d.bin')
 
@@ -172,7 +172,7 @@ class BlocTestCase(common.TestCase):
     def testAccurateRip(self):
         # we verify it because it has failed in readdisc in the past
         # self.toc.table.absolutize()
-        self.assertEquals(self.toc.table.getAccurateRipURL(),
+        self.assertEquals(self.toc.table.accuraterip_url,
             'http://www.accuraterip.com/accuraterip/'
             'e/d/2/dBAR-013-001af2de-0105994e-ad0be00d.bin')
 

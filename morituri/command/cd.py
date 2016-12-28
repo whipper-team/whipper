@@ -166,10 +166,10 @@ class _CD(BaseCommand):
             "full table's mb id %s differs from toc id mb %s" % (
             self.itable.musicbrainz_discid,
             self.ittoc.musicbrainz_discid)
-        assert self.itable.getAccurateRipURL() == \
-            self.ittoc.getAccurateRipURL(), \
+        assert self.itable.accuraterip_url == \
+            self.ittoc.accuraterip_url, \
             "full table's AR URL %s differs from toc AR URL %s" % (
-            self.itable.getAccurateRipURL(), self.ittoc.getAccurateRipURL())
+            self.itable.accuraterip_url, self.ittoc.accuraterip_url)
 
         if self.program.metadata:
             self.program.metadata.discid = self.ittoc.musicbrainz_discid
@@ -547,7 +547,7 @@ Log files will log the path to tracks relative to this directory.
         handle.close()
 
         # verify using accuraterip
-        url = self.ittoc.getAccurateRipURL()
+        url = self.ittoc.accuraterip_url
         sys.stdout.write("AccurateRip URL %s\n" % url)
 
         accucache = accurip.AccuCache()

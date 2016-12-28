@@ -64,7 +64,7 @@ class LadyhawkeTestCase(tcommon.TestCase):
     def testAccurateRip(self):
         self.assertEquals(self.table.getAccurateRipIds(), (
             "0013bd5a", "00b8d489"))
-        self.assertEquals(self.table.getAccurateRipURL(),
+        self.assertEquals(self.table.accuraterip_url,
         "http://www.accuraterip.com/accuraterip/a/5/d/"
         "dBAR-012-0013bd5a-00b8d489-c60af50d.bin")
 

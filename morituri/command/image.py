@@ -127,8 +127,7 @@ Verifies the image from the given .cue files against the AccurateRip database.
             cueImage = image.Image(arg)
             cueImage.setup(runner)
 
-            url = cueImage.table.getAccurateRipURL()
-            responses = cache.retrieve(url)
+            responses = cache.retrieve(cueImage.table.accuraterip_url)
 
             # FIXME: this feels like we're poking at internals.
             prog.cuePath = arg
