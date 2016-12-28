@@ -98,9 +98,6 @@ class Track:
         i = Index(number, absolute, path, relative, counter)
         self.indexes[number] = i
 
-    def getIndex(self, number):
-        return self.indexes[number]
-
     @common.lazy_property
     def first_index(self):
         """
