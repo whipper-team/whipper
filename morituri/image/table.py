@@ -259,7 +259,8 @@ class Table(object):
 
         return ret
 
-    def getCDDBValues(self):
+    @common.lazy_property
+    def cddb_values(self):
         """
         Get all CDDB values needed to calculate disc id and lookup URL.
 
@@ -330,8 +331,7 @@ class Table(object):
         @rtype:   str
         @returns: the 8-character hexadecimal disc ID
         """
-        values = self.getCDDBValues()
-        return "%08x" % values[0]
+        return "%08x" % self.cddb_values[0]
 
     @common.lazy_property
     def musicbrainz_discid(self):

@@ -133,8 +133,7 @@ class _CD(BaseCommand):
 
         if not self.program.metadata:
             # fall back to FreeDB for lookup
-            cddbid = self.ittoc.getCDDBValues()
-            cddbmd = self.program.getCDDB(cddbid)
+            cddbmd = self.program.getCDDB(self.ittoc.cddb_values)
             if cddbmd:
                 sys.stdout.write('FreeDB identifies disc as %s\n' % cddbmd)
 
