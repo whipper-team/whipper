@@ -98,10 +98,8 @@ class Track:
         i = Index(number, absolute, path, relative, counter)
         self.indexes[number] = i
 
-    def getIndex(self, number):
-        return self.indexes[number]
-
-    def getFirstIndex(self):
+    @common.lazy_property
+    def first_index(self):
         """
         Get the first chronological index for this track.
 
@@ -112,12 +110,14 @@ class Track:
         indexes.sort()
         return self.indexes[indexes[0]]
 
-    def getLastIndex(self):
+    @common.lazy_property
+    def last_index(self):
         indexes = self.indexes.keys()
         indexes.sort()
         return self.indexes[indexes[-1]]
 
-    def getPregap(self):
+    @common.lazy_property
+    def pregap(self):
         """
         Returns the length of the pregap for this track.
 
@@ -202,7 +202,7 @@ class Table(object):
         @rtype:   int
         """
         track = self.tracks[number - 1]
-        return track.getIndex(1).absolute
+        return track.indexes[1].absolute
 
     def getTrackEnd(self, number):
         """
@@ -217,7 +217,7 @@ class Table(object):
 
         # if not last track, calculate it from the next track
         if number < len(self.tracks):
-            end = self.tracks[number].getIndex(1).absolute - 1
+            end = self.tracks[number].indexes[1].absolute - 1
 
             # if on a session border, subtract the session leadin
             thisTrack = self.tracks[number - 1]
@@ -259,7 +259,8 @@ class Table(object):
 
         return ret
 
-    def getCDDBValues(self):
+    @common.lazy_property
+    def cddb_values(self):
         """
         Get all CDDB values needed to calculate disc id and lookup URL.
 
@@ -323,28 +324,25 @@ class Table(object):
 
         return result
 
-    def getCDDBDiscId(self):
+    @common.lazy_property
+    def cddb_discid(self):
         """
         Calculate the CDDB disc ID.
 
         @rtype:   str
         @returns: the 8-character hexadecimal disc ID
         """
-        values = self.getCDDBValues()
-        return "%08x" % values[0]
+        return "%08x" % self.cddb_values[0]
 
-    def getMusicBrainzDiscId(self):
+    @common.lazy_property
+    def musicbrainz_discid(self):
         """
         Calculate the MusicBrainz disc ID.
 
         @rtype:   str
         @returns: the 28-character base64-encoded disc ID
         """
-        if self.mbdiscid:
-            logger.debug('getMusicBrainzDiscId: returning cached %r'
-                         % self.mbdiscid)
-            return self.mbdiscid
-        values = self._getMusicBrainzValues()
+        values = self._musicbrainz_values
 
         # MusicBrainz disc id does not take into account data tracks
         # P2.3
@@ -390,15 +388,15 @@ class Table(object):
         assert len(result) == 28, \
             "Result should be 28 characters, not %d" % len(result)
 
-        logger.debug('getMusicBrainzDiscId: returning %r' % result)
-        self.mbdiscid = result
+        logger.debug('mbdiscid: returning %r' % result)
         return result
 
-    def getMusicBrainzSubmitURL(self):
+    @common.lazy_property
+    def musicbrainz_submit_url(self):
         host = 'musicbrainz.org'
 
-        discid = self.getMusicBrainzDiscId()
-        values = self._getMusicBrainzValues()
+        discid = self.musicbrainz_discid
+        values = self._musicbrainz_values
 
         query = urllib.urlencode({
             'id': discid,
@@ -433,7 +431,8 @@ class Table(object):
         """
         return int(self.getFrameLength() * 1000.0 / common.FRAMES_PER_SECOND)
 
-    def _getMusicBrainzValues(self):
+    @common.lazy_property
+    def _musicbrainz_values(self):
         """
         Get all MusicBrainz values needed to calculate disc id and submit URL.
 
@@ -461,7 +460,7 @@ class Table(object):
         # for the leadout
         if self.hasDataTracks():
             assert not self.tracks[-1].audio
-            leadout = self.tracks[-1].getIndex(1).absolute - 11250 - 150
+            leadout = self.tracks[-1].indexes[1].absolute - 11250 - 150
 
         # treat leadout offset as track 0 offset
         result.append(150 + leadout)
@@ -472,7 +471,7 @@ class Table(object):
                 track = self.tracks[i - 1]
                 if not track.audio:
                     continue
-                offset = track.getIndex(1).absolute + 150
+                offset = track.indexes[1].absolute + 150
                 result.append(offset)
             except IndexError:
                 pass
@@ -481,7 +480,8 @@ class Table(object):
         logger.debug('Musicbrainz values: %r', result)
         return result
 
-    def getAccurateRipIds(self):
+    @common.lazy_property
+    def accuraterip_ids(self):
         """
         Calculate the two AccurateRip ID's.
 
@@ -512,19 +512,20 @@ class Table(object):
 
         return ("%08x" % discId1, "%08x" % discId2)
 
-    def getAccurateRipURL(self):
+    @common.lazy_property
+    def accuraterip_url(self):
         """
         Return the full AccurateRip URL.
 
         @returns: the AccurateRip URL
         @rtype:   str
         """
-        discId1, discId2 = self.getAccurateRipIds()
+        discId1, discId2 = self.accuraterip_ids
 
         return "http://www.accuraterip.com/accuraterip/" \
             "%s/%s/%s/dBAR-%.3d-%s-%s-%s.bin" % (
                 discId1[-1], discId1[-2], discId1[-3],
-                self.getAudioTracks(), discId1, discId2, self.getCDDBDiscId())
+                self.getAudioTracks(), discId1, discId2, self.cddb_discid)
 
     def cue(self, cuePath='', program='morituri'):
         """
@@ -554,7 +555,7 @@ class Table(object):
                     lines.append("    %s %s" % (key, self.cdtext[key]))
 
         assert self.hasTOC(), "Table does not represent a full CD TOC"
-        lines.append('REM DISCID %s' % self.getCDDBDiscId().upper())
+        lines.append('REM DISCID %s' % self.cddb_discid.upper())
         lines.append('REM COMMENT "%s %s"' % (program, configure.version))
 
         if self.catalog:
@@ -573,15 +574,15 @@ class Table(object):
         # add the first FILE line; EAC always puts the first FILE
         # statement before TRACK 01 and any possible PRE-GAP
         firstTrack = self.tracks[0]
-        index = firstTrack.getFirstIndex()
-        indexOne = firstTrack.getIndex(1)
+        index = firstTrack.first_index
+        indexOne = firstTrack.indexes[1]
         counter = index.counter
         track = firstTrack
 
         while not index.path:
             t, i = self.getNextTrackIndex(track.number, index.number)
             track = self.tracks[t - 1]
-            index = track.getIndex(i)
+            index = track.indexes[i]
             counter = index.counter
 
         if index.path:
@@ -667,13 +668,13 @@ class Table(object):
         # FIXME: do a loop over track indexes better, with a pythonic
         # construct that allows you to do for t, i in ...
         t = self.tracks[0].number
-        index = self.tracks[0].getFirstIndex()
+        index = self.tracks[0].first_index
         i = index.number
 
         logger.debug('clearing path')
         while True:
             track = self.tracks[t - 1]
-            index = track.getIndex(i)
+            index = track.indexes[i]
             logger.debug('Clearing path on track %d, index %d', t, i)
             index.path = None
             index.relative = None
@@ -723,7 +724,7 @@ class Table(object):
         Only possible for as long as tracks draw from the same file.
         """
         t = self.tracks[0].number
-        index = self.tracks[0].getFirstIndex()
+        index = self.tracks[0].first_index
         i = index.number
         # the first cut is the deepest
         counter = index.counter
@@ -732,7 +733,7 @@ class Table(object):
         logger.debug('absolutizing')
         while True:
             track = self.tracks[t - 1]
-            index = track.getIndex(i)
+            index = track.indexes[i]
             assert track.number == t
             assert index.number == i
             if index.counter is None:
@@ -766,7 +767,7 @@ class Table(object):
         gap = self._getSessionGap(session)
 
         trackCount = len(self.tracks)
-        sourceCounter = self.tracks[-1].getLastIndex().counter
+        sourceCounter = self.tracks[-1].last_index.counter
 
         for track in other.tracks:
             t = copy.deepcopy(track)

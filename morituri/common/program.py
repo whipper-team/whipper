@@ -178,7 +178,7 @@ class Program:
         self.result.table = itable
 
         logger.debug('getTable: returning table with mb id %s' %
-            itable.getMusicBrainzDiscId())
+            itable.musicbrainz_discid)
         return itable
 
     def getRipResult(self, cddbdiscid):
@@ -319,8 +319,7 @@ class Program:
         self._stdout.write('Disc duration: %s, %d audio tracks\n' % (
             common.formatTime(ittoc.duration() / 1000.0),
             ittoc.getAudioTracks()))
-        logger.debug('MusicBrainz submit url: %r',
-            ittoc.getMusicBrainzSubmitURL())
+        logger.debug('MusicBrainz submit url: %r', ittoc.musicbrainz_submit_url)
         ret = None
 
         metadatas = None
@@ -537,12 +536,12 @@ class Program:
         """
         track = self.result.table.tracks[0]
         try:
-            index = track.getIndex(0)
+            index = track.indexes[0]
         except KeyError:
             return None
 
         start = index.absolute
-        stop = track.getIndex(1).absolute - 1
+        stop = track.indexes[1].absolute - 1
         return (start, stop)
 
     def verifyTrack(self, runner, trackResult):

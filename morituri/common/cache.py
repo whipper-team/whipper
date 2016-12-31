@@ -214,9 +214,9 @@ class TableCache:
         if not ptable.object:
             ptable = self._pcache.get(cddbdiscid)
             if ptable.object:
-                if ptable.object.getMusicBrainzDiscId() != mbdiscid:
+                if ptable.object.musicbrainz_discid != mbdiscid:
                     logger.debug('cached table is for different mb id %r' % (
-                        ptable.object.getMusicBrainzDiscId()))
+                        ptable.object.musicbrainz_discid))
                 ptable.object = None
             else:
                 logger.debug('no valid cached table found for %r' %

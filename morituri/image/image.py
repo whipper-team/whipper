@@ -85,7 +85,7 @@ class Image(object):
         if verify.lengths.has_key(0):
             offset = verify.lengths[0]
         else:
-            offset = self.cue.table.tracks[0].getIndex(1).relative
+            offset = self.cue.table.tracks[0].indexes[1].relative
 
         tracks = []
 
@@ -98,7 +98,7 @@ class Image(object):
             # FIXME: this probably only works for non-compliant .CUE files
             # where pregap is put at end of previous file
             t.index(1, absolute=offset,
-                path=self.cue.table.tracks[i].getIndex(1).path,
+                path=self.cue.table.tracks[i].indexes[1].path,
                 relative=0)
 
             offset += length

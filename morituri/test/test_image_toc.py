@@ -37,12 +37,12 @@ class CureTestCase(common.TestCase):
         # FIXME: cdrdao seems to get length of FILE 1 frame too many,
         # and START value one frame less
         t = self.toc.table.tracks[1]
-        self.assertEquals(t.getIndex(0).relative, 28245)
-        self.assertEquals(t.getIndex(1).relative, 28324)
+        self.assertEquals(t.indexes[0].relative, 28245)
+        self.assertEquals(t.indexes[1].relative, 28324)
 
     def _getIndex(self, t, i):
         track = self.toc.table.tracks[t - 1]
-        return track.getIndex(i)
+        return track.indexes[i]
 
     def _assertAbsolute(self, t, i, value):
         index = self._getIndex(t, i)
@@ -92,7 +92,7 @@ class CureTestCase(common.TestCase):
         common.diffStrings(ref, cue)
 
         # we verify it because it has failed in readdisc in the past
-        self.assertEquals(self.toc.table.getAccurateRipURL(),
+        self.assertEquals(self.toc.table.accuraterip_url,
             'http://www.accuraterip.com/accuraterip/'
             '3/c/4/dBAR-013-0019d4c3-00fe8924-b90c650d.bin')
 
@@ -130,24 +130,24 @@ class BlocTestCase(common.TestCase):
 
     def testIndexes(self):
         track01 = self.toc.table.tracks[0]
-        index00 = track01.getIndex(0)
+        index00 = track01.indexes[0]
         self.assertEquals(index00.absolute, 0)
         self.assertEquals(index00.relative, 0)
         self.assertEquals(index00.counter, 0)
 
-        index01 = track01.getIndex(1)
+        index01 = track01.indexes[1]
         self.assertEquals(index01.absolute, 15220)
         self.assertEquals(index01.relative, 0)
         self.assertEquals(index01.counter, 1)
 
         track05 = self.toc.table.tracks[4]
 
-        index00 = track05.getIndex(0)
+        index00 = track05.indexes[0]
         self.assertEquals(index00.absolute, 84070)
         self.assertEquals(index00.relative, 68850)
         self.assertEquals(index00.counter, 1)
 
-        index01 = track05.getIndex(1)
+        index01 = track05.indexes[1]
         self.assertEquals(index01.absolute, 84142)
         self.assertEquals(index01.relative, 68922)
         self.assertEquals(index01.counter, 1)
@@ -167,12 +167,12 @@ class BlocTestCase(common.TestCase):
         # ad0be00d 13 15370 35019 51532 69190 84292 96826 112527 132448
         # 148595 168072 185539 203331 222103 3244
 
-        self.assertEquals(self.toc.table.getCDDBDiscId(), 'ad0be00d')
+        self.assertEquals(self.toc.table.cddb_discid, 'ad0be00d')
 
     def testAccurateRip(self):
         # we verify it because it has failed in readdisc in the past
         # self.toc.table.absolutize()
-        self.assertEquals(self.toc.table.getAccurateRipURL(),
+        self.assertEquals(self.toc.table.accuraterip_url,
             'http://www.accuraterip.com/accuraterip/'
             'e/d/2/dBAR-013-001af2de-0105994e-ad0be00d.bin')
 
@@ -221,15 +221,15 @@ class LadyhawkeTestCase(common.TestCase):
 
     def testCDDBId(self):
         #self.toc.table.absolutize()
-        self.assertEquals(self.toc.table.getCDDBDiscId(), 'c60af50d')
+        self.assertEquals(self.toc.table.cddb_discid, 'c60af50d')
         # output from cd-discid:
         # c60af50d 13 150 15687 31841 51016 66616 81352 99559 116070 133243
         # 149997 161710 177832 207256 2807
 
     def testMusicBrainz(self):
-        self.assertEquals(self.toc.table.getMusicBrainzDiscId(),
+        self.assertEquals(self.toc.table.musicbrainz_discid,
             "KnpGsLhvH.lPrNc1PBL21lb9Bg4-")
-        self.assertEquals(self.toc.table.getMusicBrainzSubmitURL(),
+        self.assertEquals(self.toc.table.musicbrainz_submit_url,
             "https://musicbrainz.org/cdtoc/attach?toc="
             "1+12+195856+150+15687+31841+51016+66616+81352+99559+"
             "116070+133243+149997+161710+177832&"
@@ -270,7 +270,7 @@ class CapitalMergeTestCase(common.TestCase):
 
     def testCDDBId(self):
         #self.table.absolutize()
-        self.assertEquals(self.table.getCDDBDiscId(), 'b910140c')
+        self.assertEquals(self.table.cddb_discid, 'b910140c')
         # output from cd-discid:
         # b910140c 12 24320 44855 64090 77885 88095 104020 118245 129255 141765
         # 164487 181780 209250 4440
@@ -279,7 +279,7 @@ class CapitalMergeTestCase(common.TestCase):
         # URL to submit: https://musicbrainz.org/cdtoc/attach?toc=1+11+
         # 197850+24320+44855+64090+77885+88095+104020+118245+129255+141765+
         # 164487+181780&tracks=11&id=MAj3xXf6QMy7G.BIFOyHyq4MySE-
-        self.assertEquals(self.table.getMusicBrainzDiscId(),
+        self.assertEquals(self.table.musicbrainz_discid,
             "MAj3xXf6QMy7G.BIFOyHyq4MySE-")
 
     def testDuration(self):
@@ -337,7 +337,7 @@ class TOTBLTestCase(common.TestCase):
 
     def testCDDBId(self):
         #self.toc.table.absolutize()
-        self.assertEquals(self.toc.table.getCDDBDiscId(), '810b7b0b')
+        self.assertEquals(self.toc.table.cddb_discid, '810b7b0b')
 
 
 # The Strokes - Someday has a 1 frame SILENCE marked as such in toc
@@ -354,13 +354,13 @@ class StrokesTestCase(common.TestCase):
 
     def testIndexes(self):
         t = self.toc.table.tracks[0]
-        i0 = t.getIndex(0)
+        i0 = t.indexes[0]
         self.assertEquals(i0.relative, 0)
         self.assertEquals(i0.absolute, 0)
         self.assertEquals(i0.counter, 0)
         self.assertEquals(i0.path, None)
 
-        i1 = t.getIndex(1)
+        i1 = t.indexes[1]
         self.assertEquals(i1.relative, 0)
         self.assertEquals(i1.absolute, 1)
         self.assertEquals(i1.counter, 1)
@@ -418,13 +418,13 @@ class SurferRosaTestCase(common.TestCase):
         t = self.toc.table.tracks[0]
         self.assertEquals(len(t.indexes), 2)
 
-        i0 = t.getIndex(0)
+        i0 = t.indexes[0]
         self.assertEquals(i0.relative, 0)
         self.assertEquals(i0.absolute, 0)
         self.assertEquals(i0.path, None)
         self.assertEquals(i0.counter, 0)
 
-        i1 = t.getIndex(1)
+        i1 = t.indexes[1]
         self.assertEquals(i1.relative, 0)
         self.assertEquals(i1.absolute, 32)
         self.assertEquals(i1.path, 'data.wav')
@@ -436,10 +436,10 @@ class SurferRosaTestCase(common.TestCase):
         self.assertEquals(len(t.indexes), 2)
 
         # 32 frames of silence, and 1483 seconds of data.wav
-        self.assertEquals(t.getIndex(1).relative, 111225)
-        self.assertEquals(t.getIndex(1).absolute, 111257)
-        self.assertEquals(t.getIndex(2).relative, 111225 + 3370)
-        self.assertEquals(t.getIndex(2).absolute, 111257 + 3370)
+        self.assertEquals(t.indexes[1].relative, 111225)
+        self.assertEquals(t.indexes[1].absolute, 111257)
+        self.assertEquals(t.indexes[2].relative, 111225 + 3370)
+        self.assertEquals(t.indexes[2].absolute, 111257 + 3370)
 
 #        print self.toc.table.cue()
 

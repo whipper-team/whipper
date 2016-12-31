@@ -117,13 +117,13 @@ class _CD(BaseCommand):
             self.device)
 
         # already show us some info based on this
-        self.program.getRipResult(self.ittoc.getCDDBDiscId())
-        sys.stdout.write("CDDB disc id: %s\n" % self.ittoc.getCDDBDiscId())
-        self.mbdiscid = self.ittoc.getMusicBrainzDiscId()
+        self.program.getRipResult(self.ittoc.cddb_discid)
+        sys.stdout.write("CDDB disc id: %s\n" % self.ittoc.cddb_discid)
+        self.mbdiscid = self.ittoc.musicbrainz_discid
         sys.stdout.write("MusicBrainz disc id %s\n" % self.mbdiscid)
 
         sys.stdout.write("MusicBrainz lookup URL %s\n" %
-            self.ittoc.getMusicBrainzSubmitURL())
+            self.ittoc.musicbrainz_submit_url)
 
         self.program.metadata = self.program.getMusicBrainz(self.ittoc,
             self.mbdiscid,
@@ -133,8 +133,7 @@ class _CD(BaseCommand):
 
         if not self.program.metadata:
             # fall back to FreeDB for lookup
-            cddbid = self.ittoc.getCDDBValues()
-            cddbmd = self.program.getCDDB(cddbid)
+            cddbmd = self.program.getCDDB(self.ittoc.cddb_values)
             if cddbmd:
                 sys.stdout.write('FreeDB identifies disc as %s\n' % cddbmd)
 
@@ -156,24 +155,24 @@ class _CD(BaseCommand):
 
         # now, read the complete index table, which is slower
         self.itable = self.program.getTable(self.runner,
-            self.ittoc.getCDDBDiscId(),
-            self.ittoc.getMusicBrainzDiscId(), self.device, offset)
+            self.ittoc.cddb_discid,
+            self.ittoc.musicbrainz_discid, self.device, offset)
 
-        assert self.itable.getCDDBDiscId() == self.ittoc.getCDDBDiscId(), \
+        assert self.itable.cddb_discid == self.ittoc.cddb_discid, \
             "full table's id %s differs from toc id %s" % (
-                self.itable.getCDDBDiscId(), self.ittoc.getCDDBDiscId())
-        assert self.itable.getMusicBrainzDiscId() == \
-            self.ittoc.getMusicBrainzDiscId(), \
+                self.itable.cddb_discid, self.ittoc.cddb_discid)
+        assert self.itable.musicbrainz_discid == \
+            self.ittoc.musicbrainz_discid, \
             "full table's mb id %s differs from toc id mb %s" % (
-            self.itable.getMusicBrainzDiscId(),
-            self.ittoc.getMusicBrainzDiscId())
-        assert self.itable.getAccurateRipURL() == \
-            self.ittoc.getAccurateRipURL(), \
+            self.itable.musicbrainz_discid,
+            self.ittoc.musicbrainz_discid)
+        assert self.itable.accuraterip_url == \
+            self.ittoc.accuraterip_url, \
             "full table's AR URL %s differs from toc AR URL %s" % (
-            self.itable.getAccurateRipURL(), self.ittoc.getAccurateRipURL())
+            self.itable.accuraterip_url, self.ittoc.accuraterip_url)
 
         if self.program.metadata:
-            self.program.metadata.discid = self.ittoc.getMusicBrainzDiscId()
+            self.program.metadata.discid = self.ittoc.musicbrainz_discid
 
         # result
 
@@ -222,6 +221,7 @@ class Info(_CD):
 
     def add_arguments(self):
         _CD.add_arguments(self.parser)
+
 
 class Rip(_CD):
     summary = "rip CD"
@@ -390,7 +390,7 @@ Log files will log the path to tracks relative to this directory.
             assert type(path) is unicode, "%r is not unicode" % path
             trackResult.filename = path
             if number > 0:
-                trackResult.pregap = self.itable.tracks[number - 1].getPregap()
+                trackResult.pregap = self.itable.tracks[number - 1].pregap
 
             # FIXME: optionally allow overriding reripping
             if os.path.exists(path):
@@ -547,7 +547,7 @@ Log files will log the path to tracks relative to this directory.
         handle.close()
 
         # verify using accuraterip
-        url = self.ittoc.getAccurateRipURL()
+        url = self.ittoc.accuraterip_url
         sys.stdout.write("AccurateRip URL %s\n" % url)
 
         accucache = accurip.AccuCache()
@@ -571,7 +571,7 @@ Log files will log the path to tracks relative to this directory.
             sys.stdout.write('%d AccurateRip reponses found\n' %
                 len(responses))
 
-            if responses[0].cddbDiscId != self.itable.getCDDBDiscId():
+            if responses[0].cddbDiscId != self.itable.cddb_discid:
                 sys.stdout.write(
                     "AccurateRip response discid different: %s\n" %
                     responses[0].cddbDiscId)

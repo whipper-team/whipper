@@ -46,10 +46,10 @@ class LadyhawkeTestCase(tcommon.TestCase):
         self.table.leadout = 210385
 
         self.failUnless(self.table.hasTOC())
-        self.assertEquals(self.table.tracks[0].getPregap(), 0)
+        self.assertEquals(self.table.tracks[0].pregap, 0)
 
     def testCDDB(self):
-        self.assertEquals(self.table.getCDDBDiscId(), "c60af50d")
+        self.assertEquals(self.table.cddb_discid, "c60af50d")
 
     def testMusicBrainz(self):
         # output from mb-submit-disc:
@@ -58,13 +58,13 @@ class LadyhawkeTestCase(tcommon.TestCase):
         # 177832&tracks=12&id=KnpGsLhvH.lPrNc1PBL21lb9Bg4-
         # however, not (yet) in musicbrainz database
 
-        self.assertEquals(self.table.getMusicBrainzDiscId(),
+        self.assertEquals(self.table.musicbrainz_discid,
             "KnpGsLhvH.lPrNc1PBL21lb9Bg4-")
 
     def testAccurateRip(self):
-        self.assertEquals(self.table.getAccurateRipIds(), (
+        self.assertEquals(self.table.accuraterip_ids, (
             "0013bd5a", "00b8d489"))
-        self.assertEquals(self.table.getAccurateRipURL(),
+        self.assertEquals(self.table.accuraterip_url,
         "http://www.accuraterip.com/accuraterip/a/5/d/"
         "dBAR-012-0013bd5a-00b8d489-c60af50d.bin")
 
@@ -94,7 +94,7 @@ class MusicBrainzTestCase(tcommon.TestCase):
         self.failUnless(self.table.hasTOC())
 
     def testMusicBrainz(self):
-        self.assertEquals(self.table.getMusicBrainzDiscId(),
+        self.assertEquals(self.table.musicbrainz_discid,
             '49HHV7Eb8UKF3aQiNmu1GR8vKTY-')
 
 
@@ -113,5 +113,5 @@ class PregapTestCase(tcommon.TestCase):
         t[1].index(0, offsets[1] - 200)
 
     def testPreGap(self):
-        self.assertEquals(self.table.tracks[0].getPregap(), 0)
-        self.assertEquals(self.table.tracks[1].getPregap(), 200)
+        self.assertEquals(self.table.tracks[0].pregap, 0)
+        self.assertEquals(self.table.tracks[1].pregap, 200)

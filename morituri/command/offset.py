@@ -95,21 +95,19 @@ CD in the AccurateRip database."""
         t = cdrdao.ReadTOCTask(device)
         table = t.table
 
-        logger.debug("CDDB disc id: %r", table.getCDDBDiscId())
-        url = table.getAccurateRipURL()
-        logger.debug("AccurateRip URL: %s", url)
+        logger.debug("CDDB disc id: %r", table.cddb_discid)
+        logger.debug("AccurateRip URL: %s", table.accuraterip_url)
 
         # FIXME: download url as a task too
         responses = []
         import urllib2
         try:
-            handle = urllib2.urlopen(url)
+            handle = urllib2.urlopen(table.accuraterip_url)
             data = handle.read()
             responses = accurip.getAccurateRipResponses(data)
         except urllib2.HTTPError, e:
             if e.code == 404:
-                sys.stdout.write(
-                    'Album not found in AccurateRip database.\n')
+                sys.stdout.write('Album not found in AccurateRip database.\n')
                 return 1
             else:
                 raise
@@ -117,7 +115,7 @@ CD in the AccurateRip database."""
         if responses:
             logger.debug('%d AccurateRip responses found.' % len(responses))
 
-            if responses[0].cddbDiscId != table.getCDDBDiscId():
+            if responses[0].cddbDiscId != table.cddb_discid:
                 logger.warning("AccurateRip response discid different: %s",
                     responses[0].cddbDiscId)
 

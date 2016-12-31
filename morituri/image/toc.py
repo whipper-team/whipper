@@ -166,7 +166,7 @@ class TocFile(object):
         logger.debug(
             '[track %02d index %02d] trackOffset %r, added %r',
                 currentTrack.number, i, trackOffset,
-                currentTrack.getIndex(i))
+                currentTrack.indexes[i])
 
 
     def parse(self):
@@ -357,7 +357,7 @@ class TocFile(object):
                     absolute=absoluteOffset,
                     relative=relativeOffset, counter=c)
                 logger.debug('[track %02d index 00] added %r',
-                    currentTrack.number, currentTrack.getIndex(0))
+                    currentTrack.number, currentTrack.indexes[0])
                 # store the pregapLength to add it when we index 1 for this
                 # track on the next iteration
                 pregapLength = length
