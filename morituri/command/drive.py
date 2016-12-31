@@ -98,7 +98,7 @@ class List(BaseCommand):
                     "       Configured read offset: %d\n" % offset)
             except KeyError:
                 sys.stdout.write(
-                    "       No read offset found.  Run 'rip offset find'\n")
+                    "       No read offset found.  Run 'whipper offset find'\n")
 
             try:
                 defeats = self.config.getDefeatsCache(
@@ -108,7 +108,7 @@ class List(BaseCommand):
             except KeyError:
                 sys.stdout.write(
                     "       Unknown whether audio cache can be defeated. "
-                    "Run 'rip drive analyze'\n")
+                    "Run 'whipper drive analyze'\n")
 
 
         if not paths:
