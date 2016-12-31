@@ -9,7 +9,7 @@ from morituri.common import config
 from morituri.test import common as tcommon
 
 
-class OffsetTestCase(tcommon.TestCase):
+class ConfigTestCase(tcommon.TestCase):
 
     def setUp(self):
         fd, self._path = tempfile.mkstemp(suffix=u'.morituri.test.config')
@@ -50,3 +50,19 @@ class OffsetTestCase(tcommon.TestCase):
         offset = self._config.getReadOffset(
             'Slimtype', 'eSAU208   2     ', 'ML03')
         self.assertEquals(offset, 6)
+
+    def testDefeatsCache(self):
+        self.assertRaises(KeyError, self._config.getDefeatsCache,
+            'PLEXTOR ', 'DVDR   PX-L890SA', '1.05')
+
+        self._config.setDefeatsCache(
+            'PLEXTOR ', 'DVDR   PX-L890SA', '1.05', False)
+        defeats = self._config.getDefeatsCache(
+            'PLEXTOR ', 'DVDR   PX-L890SA', '1.05')
+        self.assertEquals(defeats, False)
+
+        self._config.setDefeatsCache(
+            'PLEXTOR ', 'DVDR   PX-L890SA', '1.05', True)
+        defeats = self._config.getDefeatsCache(
+            'PLEXTOR ', 'DVDR   PX-L890SA', '1.05')
+        self.assertEquals(defeats, True)
