@@ -5,10 +5,10 @@ import re
 import os
 import sys
 
+import morituri
+
 # twisted's unittests have skip support, standard unittest don't
 from twisted.trial import unittest
-
-from morituri.configure import configure
 
 # lifted from flumotion
 
@@ -71,7 +71,7 @@ class TestCase(unittest.TestCase):
             ).decode('utf-8')
         ret = re.sub(
             'REM COMMENT "Morituri.*',
-            'REM COMMENT "Morituri %s"' % (configure.version),
+            'REM COMMENT "Morituri %s"' % (morituri.__version__),
             ret, re.MULTILINE)
 
         return ret

@@ -2,6 +2,8 @@ import logging
 import os
 import sys
 
+__version__ = '0.4.0'
+
 level = logging.WARNING
 if 'WHIPPER_DEBUG' in os.environ:
     level = os.environ['WHIPPER_DEBUG'].upper()

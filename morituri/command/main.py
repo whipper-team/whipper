@@ -6,10 +6,11 @@ import sys
 import pkg_resources
 import musicbrainzngs
 
+import morituri
+
 from morituri.command import cd, offset, drive, image, accurip, debug
 from morituri.command.basecommand import BaseCommand
 from morituri.common import common, directory
-from morituri.configure import configure
 from morituri.extern.task import task
 
 import logging
@@ -17,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 def main():
     # set user agent
-    musicbrainzngs.set_useragent("whipper", configure.version,
+    musicbrainzngs.set_useragent("whipper", morituri.__version__,
                                  "https://github.com/JoeLametta/whipper")
     # register plugins with pkg_resources
     distributions, _ = pkg_resources.working_set.find_plugins(
@@ -82,5 +83,5 @@ You can get help on subcommands by using the -h option to the subcommand.
             self.parser.print_help()
             sys.exit(0)
         if self.options.version:
-            print "whipper %s" % configure.version
+            print "whipper %s" % morituri.__version__
             sys.exit(0)

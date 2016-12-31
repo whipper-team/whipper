@@ -28,8 +28,9 @@ import copy
 import urllib
 import urlparse
 
+import morituri
+
 from morituri.common import common
-from morituri.configure import configure
 
 import logging
 logger = logging.getLogger(__name__)
@@ -555,7 +556,7 @@ class Table(object):
 
         assert self.hasTOC(), "Table does not represent a full CD TOC"
         lines.append('REM DISCID %s' % self.getCDDBDiscId().upper())
-        lines.append('REM COMMENT "%s %s"' % (program, configure.version))
+        lines.append('REM COMMENT "%s %s"' % (program, morituri.__version__))
 
         if self.catalog:
             lines.append("CATALOG %s" % self.catalog)

@@ -1,8 +1,9 @@
 import time
 import hashlib
 
+import morituri
+
 from morituri.common import common
-from morituri.configure import configure
 from morituri.result import result
 
 
@@ -26,7 +27,7 @@ class MorituriLogger(result.Logger):
         # Ripper version
         # Only implemented in whipper (ripResult.logger)
         lines.append("Log created by: whipper %s (%s logger)" % (
-                    configure.version, ripResult.logger))
+                    morituri.__version__, ripResult.logger))
 
         # Rip date
         date = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(epoch)).strip()
