@@ -39,6 +39,19 @@ WORDS_PER_FRAME = SAMPLES_PER_FRAME * 2
 BYTES_PER_FRAME = SAMPLES_PER_FRAME * 4
 
 
+class EjectError(SystemError):
+    """
+    Possibly ejects the drive in command.main.
+    """
+    def __init__(self, device, *args):
+        """
+        args is a tuple used by BaseException.__str__
+        device is the device path to eject
+        """
+        self.args = args
+        self.device = device
+
+
 def msfToFrames(msf):
     """
     Converts a string value in MM:SS:FF to frames.

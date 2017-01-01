@@ -34,7 +34,7 @@ from morituri.command.basecommand import BaseCommand
 from morituri.common import (
     accurip, common, config, drive, gstreamer, program, task
 )
-from morituri.program import cdrdao, cdparanoia
+from morituri.program import cdrdao, cdparanoia, utils
 from morituri.result import result
 
 import logging
@@ -108,8 +108,8 @@ class _CD(BaseCommand):
         self.device = self.options.device
         sys.stdout.write('Checking device %s\n' % self.device)
 
-        self.program.loadDevice(self.device)
-        self.program.unmountDevice(self.device)
+        utils.load_device(self.device)
+        utils.unmount_device(self.device)
 
         # first, read the normal TOC, which is fast
         self.ittoc = self.program.getFastToc(self.runner,
@@ -140,8 +140,8 @@ class _CD(BaseCommand):
 
             # also used by rip cd info
             if not getattr(self.options, 'unknown', False):
-                if self.eject:
-                    self.program.ejectDevice(self.device)
+                logger.critical("unable to retrieve disc metadata, "
+                                "--unknown not passed")
                 return -1
 
         # FIXME ?????
@@ -205,8 +205,8 @@ class _CD(BaseCommand):
 
         self.doCommand()
 
-        if self.eject:
-            self.program.ejectDevice(self.device)
+        if self.options.eject in ('success', 'always'):
+            utils.eject_device(self.device)
 
     def doCommand(self):
         pass
@@ -586,8 +586,6 @@ Log files will log the path to tracks relative to this directory.
 
         # write log file
         self.program.writeLog(discName, self.logger)
-
-        self.program.ejectDevice(self.device)
 
 
 class CD(BaseCommand):
