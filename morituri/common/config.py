@@ -113,7 +113,7 @@ class Config:
         section = self._findDriveSection(vendor, model, release)
 
         try:
-            return bool(self._parser.get(section, 'defeats_cache'))
+            return self._parser.get(section, 'defeats_cache') == 'True'
         except ConfigParser.NoOptionError:
             raise KeyError("Could not find defeats_cache for %s/%s/%s" % (
                 vendor, model, release))
