@@ -54,7 +54,7 @@ See [CHANGELOG.md](https://github.com/JoeLametta/whipper/blob/master/CHANGELOG.m
 For detailed information, please check the commit history.
 
 ## Installation
-With the exception of an [AUR package for Arch Linux](https://aur.archlinux.org/packages/whipper-git), whipper isn't currently available in a prepackaged form so, in order to use it, it must be built from its source code.
+With the exception of an [AUR package for Arch Linux](https://aur.archlinux.org/packages/whipper), whipper isn't currently available in a prepackaged form so, in order to use it, it must be built from its source code.
 
 If you are building from a source tarball or checkout, you can choose to use whipper installed or uninstalled _but first install all the required dependencies_.
 
@@ -288,6 +288,7 @@ Thanks to:
 You can find us and talk about the project on IRC: [freenode](https://webchat.freenode.net/?channels=%23whipper), **#whipper** channel.
 
 - [PassTheHeadphones thread (official)](https://passtheheadphones.me/forums.php?action=viewthread&threadid=150)
-- [Arch Linux whipper AUR package](https://aur.archlinux.org/packages/whipper-git/)
+- [Arch Linux whipper AUR package](https://aur.archlinux.org/packages/whipper/)
+- [Arch Linux whipper-git AUR package](https://aur.archlinux.org/packages/whipper-git/)
 - [Unattended ripping using whipper (script by Thomas McWork)](https://github.com/thomas-mc-work/most-possible-unattended-rip)
 
