@@ -8,7 +8,7 @@ setup(
     author=['Thomas Vander Stichele', 'Joe Lametta', 'Samantha Baldwin'],
     maintainer=['Joe Lametta', 'Samantha Baldwin'],
     packages=find_packages(),
-    entry_points = {
+    entry_points={
         'console_scripts': [
             'whipper = morituri.command.main:main'
          ]
