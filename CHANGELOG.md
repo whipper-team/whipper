@@ -2,10 +2,37 @@
 
 ## [Unreleased](https://github.com/JoeLametta/whipper/tree/HEAD)
 
-[Full Changelog](https://github.com/JoeLametta/whipper/compare/v0.4.0...HEAD)
+[Full Changelog](https://github.com/JoeLametta/whipper/compare/v0.4.1...HEAD)
+
+**Implemented enhancements:**
+
+- Whipper attempts to rip with no CD inserted [\#81](https://github.com/JoeLametta/whipper/issues/81)
+
+**Closed issues:**
+
+- 0.4.1 Release created but version number in code not bumped [\#105](https://github.com/JoeLametta/whipper/issues/105)
 
 **Merged pull requests:**
 
+- Update links to Arch Linux AUR packages in README. [\#103](https://github.com/JoeLametta/whipper/pull/103) ([Freso](https://github.com/Freso))
+
+## [v0.4.1](https://github.com/JoeLametta/whipper/tree/v0.4.1) (2017-01-06)
+[Full Changelog](https://github.com/JoeLametta/whipper/compare/v0.4.0...v0.4.1)
+
+**Implemented enhancements:**
+
+- Fixed README broken links and added a better changelog [\#90](https://github.com/JoeLametta/whipper/pull/90) ([JoeLametta](https://github.com/JoeLametta))
+
+**Merged pull requests:**
+
+- Small cleanups of setup.py [\#102](https://github.com/JoeLametta/whipper/pull/102) ([Freso](https://github.com/Freso))
+- Persist False value for defeats\_cache correctly [\#98](https://github.com/JoeLametta/whipper/pull/98) ([ribbons](https://github.com/ribbons))
+- Update suggested commands given by `drive list` [\#97](https://github.com/JoeLametta/whipper/pull/97) ([ribbons](https://github.com/ribbons))
+- add url and license to setup.py [\#96](https://github.com/JoeLametta/whipper/pull/96) ([RecursiveForest](https://github.com/RecursiveForest))
+- remove configure.configure, use \_\_version\_\_, remove getRevision\(\) [\#94](https://github.com/JoeLametta/whipper/pull/94) ([RecursiveForest](https://github.com/RecursiveForest))
+- cdrdao no-disc ejection & --eject [\#93](https://github.com/JoeLametta/whipper/pull/93) ([RecursiveForest](https://github.com/RecursiveForest))
+- argparse & logging [\#92](https://github.com/JoeLametta/whipper/pull/92) ([RecursiveForest](https://github.com/RecursiveForest))
+- Update README.md [\#91](https://github.com/JoeLametta/whipper/pull/91) ([pierrrrrrre](https://github.com/pierrrrrrre))
 - soxi: remove self.\_path unused variable, mark dep as 'soxi' [\#89](https://github.com/JoeLametta/whipper/pull/89) ([RecursiveForest](https://github.com/RecursiveForest))
 - Fix spelling mistake in README.md [\#86](https://github.com/JoeLametta/whipper/pull/86) ([takeshibaconsuzuki](https://github.com/takeshibaconsuzuki))
 - Error reporting enhancements \(conditional-raise-instead-of-assert version\) [\#80](https://github.com/JoeLametta/whipper/pull/80) ([chrysn](https://github.com/chrysn))
@@ -58,6 +85,7 @@
 - Don't allow ripping without an explicit offset, and make pycdio a required dependency [\#23](https://github.com/JoeLametta/whipper/issues/23)
 - Delete stale branches [\#7](https://github.com/JoeLametta/whipper/issues/7)
 - get rid of the gstreamer-0.10 dependency [\#2](https://github.com/JoeLametta/whipper/issues/2)
+- Merge 'fork' into 'master' [\#1](https://github.com/JoeLametta/whipper/issues/1)
 
 **Fixed bugs:**
 
@@ -71,7 +99,6 @@
 **Closed issues:**
 
 - Minimal makedepends for building [\#17](https://github.com/JoeLametta/whipper/issues/17)
-- Merge 'fork' into 'master' [\#1](https://github.com/JoeLametta/whipper/issues/1)
 
 **Merged pull requests:**
 
