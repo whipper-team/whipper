@@ -1,12 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/JoeLametta/whipper/tree/HEAD)
+## [v0.4.2](https://github.com/JoeLametta/whipper/tree/v0.4.2)
 
-[Full Changelog](https://github.com/JoeLametta/whipper/compare/v0.4.1...HEAD)
-
-**Implemented enhancements:**
-
-- Whipper attempts to rip with no CD inserted [\#81](https://github.com/JoeLametta/whipper/issues/81)
+[Full Changelog](https://github.com/JoeLametta/whipper/compare/v0.4.1...v0.4.2)
 
 **Closed issues:**
 
@@ -14,6 +10,7 @@
 
 **Merged pull requests:**
 
+- Amend previous tagged release [\#107](https://github.com/JoeLametta/whipper/pull/107) ([JoeLametta](https://github.com/JoeLametta))
 - Update links to Arch Linux AUR packages in README. [\#103](https://github.com/JoeLametta/whipper/pull/103) ([Freso](https://github.com/Freso))
 
 ## [v0.4.1](https://github.com/JoeLametta/whipper/tree/v0.4.1) (2017-01-06)
@@ -22,6 +19,7 @@
 **Implemented enhancements:**
 
 - Fixed README broken links and added a better changelog [\#90](https://github.com/JoeLametta/whipper/pull/90) ([JoeLametta](https://github.com/JoeLametta))
+- Whipper attempts to rip with no CD inserted [\#81](https://github.com/JoeLametta/whipper/issues/81)
 
 **Merged pull requests:**
 
