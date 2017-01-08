@@ -1,5 +1,6 @@
 # Whipper
-[![License: GPLv3+](https://img.shields.io/badge/license-GPLv3+-blue.svg)](https://github.com/JoeLametta/whipper/blob/master/LICENSE) [![Build Status](https://travis-ci.org/JoeLametta/whipper.svg?branch=master)](https://travis-ci.org/JoeLametta/whipper) [![Current version number](https://img.shields.io/badge/version-0.4.1-red.svg)](https://github.com/JoeLametta/whipper/releases/latest) [![IRC](https://img.shields.io/badge/irc-%23whipper%40freenode-008000.svg)](https://webchat.freenode.net/?channels=%23whipper) [![GitHub Stars](https://img.shields.io/github/stars/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/stargazers) [![GitHub Issues](https://img.shields.io/github/issues/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/issues)
+
+[![License: GPLv3](https://img.shields.io/badge/license-GPLv3-CC7722.svg)](https://github.com/JoeLametta/whipper/blob/master/LICENSE) [![Build Status](https://travis-ci.org/JoeLametta/whipper.svg?branch=master)](https://travis-ci.org/JoeLametta/whipper) [![Current version number](https://img.shields.io/badge/version-0.4.2-blue.svg)](https://github.com/JoeLametta/whipper/releases/latest) [![IRC](https://img.shields.io/badge/irc-%23whipper%40freenode-brightgreen.svg)](https://webchat.freenode.net/?channels=%23whipper) [![GitHub Stars](https://img.shields.io/github/stars/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/stargazers) [![GitHub Issues](https://img.shields.io/github/issues/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/issues)
 
 Whipper is a Python 2 CD-DA ripper, fork of the morituri project (_CDDA ripper for *nix systems aiming for accuracy over speed_). It improves morituri which development seems to have halted merging old ignored pull requests, improving it with bugfixes and new features.
 
@@ -8,6 +9,7 @@ Whipper is developed and tested _only_ on Linux distributions but _may_ work fin
 In order to track whipper's current development it's advised to check its commit history (README **isn't** still complete).
 
 ## Table of content
+
 - [Rationale](#rationale)
 - [Features](#features)
 - [Changelog](#changelog)
@@ -30,22 +32,24 @@ In order to track whipper's current development it's advised to check its commit
 - [Links](#links)
 
 ## Rationale
+
 For a detailed description, see morituri's wiki page: [The Art of the Rip](
 https://web.archive.org/web/20160528213242/https://thomas.apestaart.org/thomas/trac/wiki/DAD/Rip).
 
 ## Features
-* Detects correct read offset (in samples)
-* Has ability to defeat cache of drives
-* Performs Test & Copy rips
-* Verifies rip accuracy using the [AccurateRip database](http://www.accuraterip.com/)
-* Uses [MusicBrainz](https://musicbrainz.org/doc/About) for metadata lookup
-* Supports reading the [pre-emphasis](http://wiki.hydrogenaud.io/index.php?title=Pre-emphasis) flag embedded into some CDs (and correctly tags the resulting rip)
-* Detects and rips _non digitally silent_ [Hidden Track One Audio](http://wiki.hydrogenaud.io/index.php?title=HTOA) (HTOA)
-* Provides batch ripping capabilities
-* Provides templates for file and directory naming
-* Supports lossless encoding of ripped audio tracks
-* Allows re-tagging of already completed rips
-* Allows extensibility through external logger plugins
+
+- Detects correct read offset (in samples)
+- Has ability to defeat cache of drives
+- Performs Test & Copy rips
+- Verifies rip accuracy using the [AccurateRip database](http://www.accuraterip.com/)
+- Uses [MusicBrainz](https://musicbrainz.org/doc/About) for metadata lookup
+- Supports reading the [pre-emphasis](http://wiki.hydrogenaud.io/index.php?title=Pre-emphasis) flag embedded into some CDs (and correctly tags the resulting rip)
+- Detects and rips _non digitally silent_ [Hidden Track One Audio](http://wiki.hydrogenaud.io/index.php?title=HTOA) (HTOA)
+- Provides batch ripping capabilities
+- Provides templates for file and directory naming
+- Supports lossless encoding of ripped audio tracks
+- Allows re-tagging of already completed rips
+- Allows extensibility through external logger plugins
 
 ## Changelog
 
@@ -54,12 +58,15 @@ See [CHANGELOG.md](https://github.com/JoeLametta/whipper/blob/master/CHANGELOG.m
 For detailed information, please check the commit history.
 
 ## Installation
-With the exception of an [AUR package for Arch Linux](https://aur.archlinux.org/packages/whipper), whipper isn't currently available in a prepackaged form so, in order to use it, it must be built from its source code.
+
+With the exception of an [AUR package for Arch Linux](https://aur.archlinux.org/packages/whipper) and a [Copr repository for Fedora](https://copr.fedorainfracloud.org/coprs/mruszczyk/whipper/), whipper isn't currently available in a prepackaged form so, in order to use it, it must be built from its source code.
 
 If you are building from a source tarball or checkout, you can choose to use whipper installed or uninstalled _but first install all the required dependencies_.
 
 ### Required dependencies
+
 Whipper relies on the following packages in order to run correctly and provide all the supported features:
+
 - [cdparanoia](https://www.xiph.org/paranoia/), for the actual ripping
 - [cdrdao](http://cdrdao.sourceforge.net/), for session, TOC, pre-gap, and ISRC extraction
 - [GStreamer](https://gstreamer.freedesktop.org/) and its python bindings, for encoding (it's going to be removed soon™)
@@ -76,6 +83,7 @@ Whipper relies on the following packages in order to run correctly and provide a
 - [sox](http://sox.sourceforge.net/), for track peak detection
 
 ### Fetching the source code
+
 Change to a directory where you want to put whipper source code (for example, `$HOME/dev/ext` or `$HOME/prefix/src`)
 
 ```bash
@@ -84,6 +92,7 @@ cd whipper
 ```
 
 ### Building the bundled dependencies
+
 Whipper uses and packages a slightly different version of the `accuraterip-checksum` tool:
 
 You can edit the install path in `config.mk`
@@ -96,9 +105,11 @@ cd ..
 ```
 
 ### Finalizing the installation
+
 Install whipper: `python2 setup.py install`
 
 ## Usage
+
 Whipper currently only has a command-line interface called `whipper` which is self-documenting: `whipper -h` gives you the basic instructions.
 
 Whipper implements a tree of commands: for example, the top-level `whipper` command has a number of sub-commands.
@@ -116,6 +127,7 @@ is not, because the `-d` argument applies to the `cd` command.
 ~~Check the man page (`whipper(1)`) for more information.~~ (currently not available as whipper's documentation is planned to be reworked ([Issue #73](https://github.com/JoeLametta/whipper/issues/73)).
 
 ## Getting started
+
 The simplest way to get started making accurate rips is:
 
 1. Pick a relatively popular CD that has a good chance of being in the AccurateRip database
@@ -140,6 +152,7 @@ The simplest way to get started making accurate rips is:
    `whipper cd rip`
 
 ## Configuration file documentation
+
 The configuration file is stored according to the [XDG Base Directory Specification](
 http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html)
 when possible.
@@ -162,7 +175,7 @@ The possible sections are:
 
 Example section to configure `whipper cd rip` defaults:
 
-```
+```Python
 [rip.cd.rip]
 unknown = True
 output_directory = ~/My Music
@@ -174,37 +187,40 @@ profile = flac
 Note: to get a literal `%` character it must be doubled.
 
 ## Backward incompatible changes
-* Whipper executable name changed: from `rip` to `whipper` ([PR #70](https://github.com/JoeLametta/whipper/pull/70))
-* Whipper has adopted new config/cache/state file paths ([PR #42](https://github.com/JoeLametta/whipper/pull/42))
-  * Now always follows XDG specifications
 
-    * Paths used when XDG environment variables are available:
-      * `$XDG_CONFIG_HOME/whipper`
-      * `$XDG_CACHE_HOME/whipper`
-      * `$XDG_DATA_HOME/whipper`
+- Dropped external git submodules ([PR #31](https://github.com/JoeLametta/whipper/pull/31), [PR #92](https://github.com/JoeLametta/whipper/pull/92))
+- Whipper executable name changed: from `rip` to `whipper` ([PR #70](https://github.com/JoeLametta/whipper/pull/70))
+- Whipper has adopted new config/cache/state file paths ([PR #42](https://github.com/JoeLametta/whipper/pull/42))
+  - Now always follows XDG specifications
 
-    * Paths used when XDG environment variables are **NOT** available:
-      * `$HOME/.config/whipper`
-      * `$HOME/.cache/whipper`
-      * `$HOME/.local/share/whipper`
+    - Paths used when XDG environment variables are available:
+      - `$XDG_CONFIG_HOME/whipper`
+      - `$XDG_CACHE_HOME/whipper`
+      - `$XDG_DATA_HOME/whipper`
 
-  * Configuration file information:
-    * `.moriturirc`, `morituri.conf` aren't used anymore
+    - Paths used when XDG environment variables are **NOT** available:
+      - `$HOME/.config/whipper`
+      - `$HOME/.cache/whipper`
+      - `$HOME/.local/share/whipper`
 
-    * When XDG environment variables are available it's located in:
-      * `$XDG_CONFIG_HOME/whipper/whipper.conf`
+  - Configuration file information:
+    - `.moriturirc`, `morituri.conf` aren't used anymore
 
-    * When XDG environment variables are **NOT** available it's located in:
-      * `$HOME/.config/whipper/whipper.conf`
+    - When XDG environment variables are available it's located in:
+      - `$XDG_CONFIG_HOME/whipper/whipper.conf`
 
-  * Plugins folder path:
-    * When XDG environment variables are available it's located in:
-      * `$XDG_DATA_HOME/whipper/plugins`
+    - When XDG environment variables are **NOT** available it's located in:
+      - `$HOME/.config/whipper/whipper.conf`
 
-    * When XDG environment variables are **NOT** available it's located in:
-      * `$HOME/.local/share/whipper/plugins`
+  - Plugins folder path:
+    - When XDG environment variables are available it's located in:
+      - `$XDG_DATA_HOME/whipper/plugins`
+
+    - When XDG environment variables are **NOT** available it's located in:
+      - `$HOME/.local/share/whipper/plugins`
 
 ## Running uninstalled
+
 To make it easier for developers, you can run whipper straight from the
 source checkout:
 
@@ -214,6 +230,7 @@ whipper -h
 ```
 
 ## Logger plugins
+
 Whipper supports using external logger plugins to write rip `.log` files.
 
 List available plugins with `whipper cd rip -h`. Specify a logger to rip with by passing `-L loggername`:
@@ -224,15 +241,15 @@ whipper cd rip -L what
 
 ### Official loggers
 
-* [morituri-yamlloger](https://github.com/JoeLametta/morituri-yamllogger) - default whipper logger (provided as external logger for compatibility with morituri), yaml format
-* [morituri-eaclogger](https://github.com/JoeLametta/morituri-eaclogger) - eac-like logger attempting to maintain strict compatiility with EAC
-* [morituri-whatlogger](https://github.com/RecursiveForest/morituri-whatlogger) - eac-like logger containing the informational enhancements of the yamllogger, originally designed for use on What.CD
+- [morituri-yamlloger](https://github.com/JoeLametta/morituri-yamllogger) - default whipper logger (provided as external logger for compatibility with morituri), yaml format
+- [morituri-eaclogger](https://github.com/JoeLametta/morituri-eaclogger) - eac-like logger attempting to maintain strict compatiility with EAC
+- [morituri-whatlogger](https://github.com/RecursiveForest/morituri-whatlogger) - eac-like logger containing the informational enhancements of the yamllogger, originally designed for use on What.CD
 
 ## License
 
 Licensed under the [GNU GPLv3 license](http://www.gnu.org/licenses/gpl-3.0).
 
-```
+```Text
 Copyright (C) 2009 Thomas Vander Stichele
 Copyright (C) 2016 JoeLametta
 
@@ -250,7 +267,6 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 ```
-
 
 ## Contributing
 
@@ -285,10 +301,11 @@ Thanks to:
 - [Samantha Baldwin](https://github.com/RecursiveForest)
 
 ## Links
+
 You can find us and talk about the project on IRC: [freenode](https://webchat.freenode.net/?channels=%23whipper), **#whipper** channel.
 
 - [PassTheHeadphones thread (official)](https://passtheheadphones.me/forums.php?action=viewthread&threadid=150)
 - [Arch Linux whipper AUR package](https://aur.archlinux.org/packages/whipper/)
 - [Arch Linux whipper-git AUR package](https://aur.archlinux.org/packages/whipper-git/)
+- [Fedora Copr repository for whipper](https://copr.fedorainfracloud.org/coprs/mruszczyk/whipper/)
 - [Unattended ripping using whipper (script by Thomas McWork)](https://github.com/thomas-mc-work/most-possible-unattended-rip)
-
