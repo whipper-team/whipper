@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 def encode(infile, outfile):
     """
     Encodes infile to outfile, with flac.
-    Uses '-f' because morituri already creates the file.
+    Uses '-f' because whipper already creates the file.
     """
     try:
         # TODO: Replace with Popen so that we can catch stderr and write it to

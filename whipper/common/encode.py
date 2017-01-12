@@ -65,7 +65,7 @@ class FlacEncodeTask(task.Task):
 
 # TODO: Wizzup: Do we really want this as 'Task'...?
 # I only made it a task for now because that it's easier to integrate in
-# program/cdparanoia.py - where morituri currently does the tagging.
+# program/cdparanoia.py - where whipper currently does the tagging.
 # We should just move the tagging to a more sensible place.
 class TaggingTask(task.Task):
     description = 'Writing tags to FLAC'

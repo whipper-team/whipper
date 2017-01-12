@@ -67,7 +67,7 @@ class BaseCommand():
             if not drives:
                 msg = 'No CD-DA drives found!'
                 logger.critical(msg)
-                # morituri exited with return code 3 here
+                # whipper exited with return code 3 here
                 raise IOError(msg)
             self.parser.add_argument('-d', '--device',
                                      action="store",

@@ -274,7 +274,7 @@ Log files will log the path to tracks relative to this directory.
             help="output directory; will be included in file paths in log")
         self.parser.add_argument('-W', '--working-directory',
             action="store", dest="working_directory",
-            help="working directory; morituri will change to this directory "
+            help="working directory; whipper will change to this directory "
                 "and files will be created relative to it when not absolute")
         self.parser.add_argument('--track-template',
             action="store", dest="track_template",

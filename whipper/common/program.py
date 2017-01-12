@@ -21,7 +21,7 @@
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-Common functionality and class for all programs using morituri.
+Common functionality and class for all programs using whipper.
 """
 
 import musicbrainzngs
