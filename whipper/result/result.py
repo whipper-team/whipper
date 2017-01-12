@@ -153,7 +153,7 @@ class EntryPoint(object):
 
     def load(self):
         from whipper.result import logger
-        return logger.MorituriLogger
+        return logger.WhipperLogger
 
 
 def getLoggers():

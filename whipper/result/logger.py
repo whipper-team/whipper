@@ -7,7 +7,7 @@ from whipper.common import common
 from whipper.result import result
 
 
-class MorituriLogger(result.Logger):
+class WhipperLogger(result.Logger):
 
     _accuratelyRipped = 0
     _inARDatabase = 0

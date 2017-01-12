@@ -89,7 +89,7 @@ class RCLog(BaseCommand):
         self.parser.add_argument(
             '-L', '--logger',
             action="store", dest="logger",
-            default='morituri',
+            default='whipper',
             help="logger to use (choose from '" + "', '".join(loggers) + "')"
         )
 

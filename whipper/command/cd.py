@@ -257,7 +257,7 @@ Log files will log the path to tracks relative to this directory.
         _CD.add_arguments(self.parser)
 
         self.parser.add_argument('-L', '--logger',
-            action="store", dest="logger", default='morituri',
+            action="store", dest="logger", default='whipper',
             help="logger to use (choose from '" + "', '".join(loggers) + "')")
         # FIXME: get from config
         self.parser.add_argument('-o', '--offset',
