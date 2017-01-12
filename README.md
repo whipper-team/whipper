@@ -82,6 +82,21 @@ Whipper relies on the following packages in order to run correctly and provide a
 - [flac](https://xiph.org/flac/), for reading flac files
 - [sox](http://sox.sourceforge.net/), for track peak detection
 
+#### Getting dependencies
+
+##### Ubuntu
+
+```
+# Prerequisites
+sudo apt install build-essential python-dev python-pip libcdio-dev libiso9660-dev swig pkg-config
+
+# Core components
+sudo apt install  cdparanoia cdrdao libgstreamer1.0 python-musicbrainzngs python-setuptools python-cddb libsndfile1 flac sox
+
+# Pip components
+sudo pip install pycdio
+```
+
 ### Fetching the source code
 
 Change to a directory where you want to put whipper source code (for example, `$HOME/dev/ext` or `$HOME/prefix/src`)
