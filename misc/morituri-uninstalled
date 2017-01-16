@@ -27,7 +27,7 @@ PROJECT=`basename $self | sed s/-.*//g`
 VERSION=`basename $self | sed s/.*-//g`
 COMMAND=$PROJECT
 # override if the command line name to be completed is different
-COMMAND=rip
+COMMAND=whipper
 
 options=
 

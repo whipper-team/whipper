@@ -251,7 +251,7 @@ class MusicBrainzNGS(BaseCommand):
     summary = "examine MusicBrainz NGS info"
     description = """Look up a MusicBrainz disc id and output information.
 
-You can get the MusicBrainz disc id with rip cd info.
+You can get the MusicBrainz disc id with whipper cd info.
 
 Example disc id: KnpGsLhvH.lPrNc1PBL21lb9Bg4-"""
 

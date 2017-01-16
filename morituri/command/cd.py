@@ -297,7 +297,7 @@ Log files will log the path to tracks relative to this directory.
 
         if self.options.offset is None:
             raise ValueError("Drive offset is unconfigured.\n"
-                             "Please install pycdio and run 'rip offset "
+                             "Please install pycdio and run 'whipper offset "
                              "find' to detect your drive's offset or set it "
                              "manually in the configuration file. It can "
                              "also be specified at runtime using the "
