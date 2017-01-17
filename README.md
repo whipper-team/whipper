@@ -91,7 +91,7 @@ Whipper relies on the following packages in order to run correctly and provide a
 sudo apt install build-essential python-dev python-pip libcdio-dev libiso9660-dev swig pkg-config
 
 # Core components
-sudo apt install  cdparanoia cdrdao libgstreamer1.0 python-musicbrainzngs python-setuptools python-cddb libsndfile1-dev flac sox
+sudo apt install  cdparanoia cdrdao libgstreamer1.0 python-gst0.10 python-musicbrainzngs python-setuptools python-cddb libsndfile1-dev flac sox
 
 # Pip components
 pip install pycdio --user
