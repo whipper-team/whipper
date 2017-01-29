@@ -450,58 +450,29 @@ class Program:
                 # htoa defaults to disc's artist
                 title = 'Hidden Track One Audio'
 
-        # here to avoid import gst eating our options
-        import gst
+        tags = {}
 
-        ret = gst.TagList()
-
-        # gst-python 0.10.15.1 does not handle unicode -> utf8 string
-        # conversion
-        # see http://bugzilla.gnome.org/show_bug.cgi?id=584445
         if self.metadata and not self.metadata.various:
-            ret["album-artist"] = albumArtist.encode('utf-8')
-        ret[gst.TAG_ARTIST] = trackArtist.encode('utf-8')
-        ret[gst.TAG_TITLE] = title.encode('utf-8')
-        ret[gst.TAG_ALBUM] = disc.encode('utf-8')
+            tags['ALBUMARTIST'] = albumArtist.encode('utf-8')
+        tags['ARTIST'] = trackArtist.encode('utf-8')
+        tags['TITLE'] = title.encode('utf-8')
+        tags['DISC'] = disc.encode('utf-8')
 
-        # gst-python 0.10.15.1 does not handle tags that are UINT
-        # see gst-python commit 26fa6dd184a8d6d103eaddf5f12bd7e5144413fb
-        # FIXME: no way to compare against 'master' version after 0.10.15
-        if gst.pygst_version >= (0, 10, 15):
-            ret[gst.TAG_TRACK_NUMBER] = number
+        tags['TRACKNUMBER'] = u'%s' % number
+
         if self.metadata:
-            # works, but not sure we want this
-            # if gst.pygst_version >= (0, 10, 15):
-            #     ret[gst.TAG_TRACK_COUNT] = len(self.metadata.tracks)
-            # hack to get a GstDate which we cannot instantiate directly in
-            # 0.10.15.1
-            # FIXME: The dates are strings and must have the format 'YYYY',
-            # 'YYYY-MM' or 'YYYY-MM-DD'.
-            # GstDate expects a full date, so default to
-            # Jan and 1st if MM and DD are missing
-            date = self.metadata.release
-            if date:
-                logger.debug('Converting release date %r to structure', date)
-                if len(date) == 4:
-                    date += '-01'
-                if len(date) == 7:
-                    date += '-01'
+            tags['DATE'] = self.metadata.release
 
-                s = gst.structure_from_string('hi,date=(GstDate)%s' %
-                    str(date))
-                ret[gst.TAG_DATE] = s['date']
-
-            # no musicbrainz info for htoa tracks
             if number > 0:
-                ret["musicbrainz-trackid"] = mbidTrack
-                ret["musicbrainz-artistid"] = mbidTrackArtist
-                ret["musicbrainz-albumid"] = mbidAlbum
-                ret["musicbrainz-albumartistid"] = mbidTrackAlbum
-                ret["musicbrainz-discid"] = mbDiscId
+                tags['musicbrainz-trackid'] = mbidTrack
+                tags['musicbrainz-artistid'] = mbidTrackArtist
+                tags['musicbrainz-albumid'] = mbidAlbum
+                tags['musicbrainz-albumartistid'] = mbidTrackAlbum
+                tags['musicbrainz-discid'] = mbDiscId
 
-        # FIXME: gst.TAG_ISRC
+        # TODO/FIXME: ISRC tag
 
-        return ret
+        return tags
 
     def getHTOA(self):
         """

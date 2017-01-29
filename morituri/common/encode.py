@@ -25,6 +25,8 @@ import os
 import shutil
 import tempfile
 
+from mutagen.flac import FLAC
+
 from morituri.common import common
 from morituri.common import gstreamer as cgstreamer
 from morituri.common import task as ctask
@@ -198,6 +200,31 @@ class FlacEncodeTask(task.Task):
 
     def _flac_encode(self):
         self.new_path = flac.encode(self.track_path, self.track_out_path)
+        self.stop()
+
+# TODO: Wizzup: Do we really want this as 'Task'...?
+# I only made it a task for now because that it's easier to integrate in
+# program/cdparanoia.py - where morituri currently does the tagging.
+# We should just move the tagging to a more sensible place.
+class TaggingTask(task.Task):
+    description = 'Writing tags to FLAC'
+
+    def __init__(self, track_path, tags):
+        self.track_path = track_path
+        self.tags = tags
+
+    def start(self, runner):
+        task.Task.start(self, runner)
+        self.schedule(0.0, self._tag)
+
+    def _tag(self):
+        w = FLAC(self.track_path)
+
+        for k, v in self.tags.items():
+            w[k] = v
+
+        w.save()
+
         self.stop()
 
 class EncodeTask(ctask.GstPipelineTask):

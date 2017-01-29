@@ -499,6 +499,9 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         self.tasks.append(checksum.CRC32Task(tmppath))
         self.tasks.append(encode.SoxPeakTask(tmppath))
 
+        # TODO: Move tagging outside of cdparanoia
+        self.tasks.append(encode.TaggingTask(tmpoutpath, taglist))
+
         self.checksum = None
 
     def stop(self):
