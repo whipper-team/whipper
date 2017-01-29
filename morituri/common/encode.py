@@ -31,6 +31,7 @@ from morituri.common import task as ctask
 
 from morituri.extern.task import task, gstreamer
 from morituri.program import sox
+from morituri.program import flac
 
 import logging
 logger = logging.getLogger(__name__)
@@ -180,6 +181,23 @@ class SoxPeakTask(task.Task):
 
     def _sox_peak(self):
         self.peak = sox.peak_level(self.track_path)
+        self.stop()
+
+class FlacEncodeTask(task.Task):
+    description = 'Encoding to FLAC'
+
+    def __init__(self, track_path, track_out_path, what="track"):
+        self.track_path = track_path
+        self.track_out_path = track_out_path
+        self.new_path = None
+        self.description = 'Encoding %s to FLAC' % what
+
+    def start(self, runner):
+        task.Task.start(self, runner)
+        self.schedule(0.0, self._flac_encode)
+
+    def _flac_encode(self):
+        self.new_path = flac.encode(self.track_path, self.track_out_path)
         self.stop()
 
 class EncodeTask(ctask.GstPipelineTask):

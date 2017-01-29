@@ -490,10 +490,13 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         # here to avoid import gst eating our options
         from morituri.common import encode
 
-        self.tasks.append(encode.EncodeTask(tmppath, tmpoutpath, profile,
-            taglist=taglist, what=what))
+        self.tasks.append(encode.FlacEncodeTask(tmppath, tmpoutpath))
+
+        # MerlijnWajer: XXX: We run the CRC32Task on the wav file, because it's
+        # in general stupid to run the CRC32 on the flac file since it already
+        # has --verify. We should just get rid of this CRC32 step.
         # make sure our encoding is accurate
-        self.tasks.append(checksum.CRC32Task(tmpoutpath))
+        self.tasks.append(checksum.CRC32Task(tmppath))
         self.tasks.append(encode.SoxPeakTask(tmppath))
 
         self.checksum = None
