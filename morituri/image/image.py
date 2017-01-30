@@ -26,7 +26,9 @@ Wrap on-disk CD images based on the .cue file.
 
 import os
 
+from morituri.common import encode
 from morituri.common import common
+from morituri.common import checksum
 from morituri.image import cue, table
 from morituri.extern.task import task
 from morituri.program.soxi import AudioLengthTask
@@ -135,8 +137,6 @@ class AccurateRipChecksumTask(task.MultiSeparateTask):
 
             path = image.getRealPath(index.path)
 
-            # here to avoid import gst eating our options
-            from morituri.common import checksum
 
             checksumTask = checksum.FastAccurateRipChecksumTask(path,
                 trackNumber=trackIndex + 1, trackCount=len(cue.table.tracks),
@@ -221,27 +221,24 @@ class ImageEncodeTask(task.MultiSeparateTask):
 
     description = "Encoding tracks"
 
-    def __init__(self, image, profile, outdir):
+    def __init__(self, image, outdir):
         task.MultiSeparateTask.__init__(self)
 
         self._image = image
-        self._profile = profile
         cue = image.cue
         self._tasks = []
         self.lengths = {}
 
         def add(index):
-            # here to avoid import gst eating our options
-            from morituri.common import encode
 
             path = image.getRealPath(index.path)
             assert type(path) is unicode, "%r is not unicode" % path
             logger.debug('schedule encode of %r', path)
             root, ext = os.path.splitext(os.path.basename(path))
-            outpath = os.path.join(outdir, root + '.' + profile.extension)
+            outpath = os.path.join(outdir, root + '.' + 'flac')
             logger.debug('schedule encode to %r', outpath)
             taskk = encode.EncodeTaskFlac(path, os.path.join(outdir,
-                root + '.' + profile.extension))
+                root + '.' + 'flac'))
             self.addTask(taskk)
 
         try:

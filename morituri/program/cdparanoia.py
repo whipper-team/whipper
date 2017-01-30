@@ -430,7 +430,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
     _tmppath = None
 
     def __init__(self, path, table, start, stop, overread, offset=0,
-                 device=None, profile=None, taglist=None, what="track"):
+                 device=None, taglist=None, what="track"):
         """
         @param path:    where to store the ripped track
         @type  path:    str
@@ -444,10 +444,8 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         @type  offset:  int
         @param device:  the device to rip from
         @type  device:  str
-        @param profile: the encoding profile
-        @type  profile: L{encode.Profile}
-        @param taglist: a list of tags
-        @param taglist: L{gst.TagList}
+        @param taglist: a dict of tags
+        @type  taglist: dict
         """
         task.MultiSeparateTask.__init__(self)
 
@@ -461,7 +459,6 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         os.close(fd)
         self._tmpwavpath = tmppath
 
-        # here to avoid import gst eating our options
         from morituri.common import checksum
 
         self.tasks = []
@@ -487,7 +484,6 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         self._tmppath = tmpoutpath
         self.path = path
 
-        # here to avoid import gst eating our options
         from morituri.common import encode
 
         self.tasks.append(encode.FlacEncodeTask(tmppath, tmpoutpath))

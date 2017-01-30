@@ -30,9 +30,10 @@ import sys
 import time
 
 from morituri.common import common, mbngs, cache, path
+from morituri.common import checksum
 from morituri.program import cdrdao, cdparanoia
 from morituri.image import image
-from morituri.extern.task import task, gstreamer
+from morituri.extern.task import task
 
 import logging
 logger = logging.getLogger(__name__)
@@ -172,8 +173,7 @@ class Program:
     def saveRipResult(self):
         self._presult.persist()
 
-    def getPath(self, outdir, template, mbdiscid, i, profile=None,
-        disambiguate=False):
+    def getPath(self, outdir, template, mbdiscid, i, disambiguate=False):
         """
         Based on the template, get a complete path for the given track,
         minus extension.
@@ -185,7 +185,6 @@ class Program:
         @type  template: unicode
         @param i:        track number (0 for HTOA, or for disc)
         @type  i:        int
-        @type  profile:  L{morituri.common.encode.Profile}
 
         @rtype: unicode
         """
@@ -208,7 +207,7 @@ class Program:
         v['R'] = 'Unknown'
         v['B'] = '' # barcode
         v['C'] = '' # catalog number
-        v['x'] = profile and profile.extension or 'unknown'
+        v['x'] = 'flac'
         v['X'] = v['x'].upper()
         v['y'] = '0000'
 
@@ -416,12 +415,12 @@ class Program:
 
     def getTagList(self, number):
         """
-        Based on the metadata, get a gst.TagList for the given track.
+        Based on the metadata, get a dict of tags for the given track.
 
         @param number:   track number (0 for HTOA)
         @type  number:   int
 
-        @rtype: L{gst.TagList}
+        @rtype: dict
         """
         trackArtist = u'Unknown Artist'
         albumArtist = u'Unknown Artist'
@@ -491,8 +490,6 @@ class Program:
         return (start, stop)
 
     def verifyTrack(self, runner, trackResult):
-        # here to avoid import gst eating our options
-        from morituri.common import checksum
 
         t = checksum.CRC32Task(trackResult.filename)
 
@@ -502,9 +499,6 @@ class Program:
             if isinstance(e.exception, common.MissingFrames):
                 logger.warning('missing frames for %r' % trackResult.filename)
                 return False
-            elif isinstance(e.exception, gstreamer.GstException):
-                logger.warning('GstException %r' % (e.exception, ))
-                return False
             else:
                 raise
 
@@ -513,7 +507,7 @@ class Program:
                      trackResult.testcrc, t.checksum, ret)
         return ret
 
-    def ripTrack(self, runner, trackResult, offset, device, profile, taglist,
+    def ripTrack(self, runner, trackResult, offset, device, taglist,
         overread, what=None):
         """
         Ripping the track may change the track's filename as stored in
@@ -541,7 +535,6 @@ class Program:
             self.result.table, start, stop, overread,
             offset=offset,
             device=device,
-            profile=profile,
             taglist=taglist,
             what=what)
 

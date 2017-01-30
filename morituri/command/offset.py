@@ -32,6 +32,7 @@ from morituri.command.basecommand import BaseCommand
 from morituri.common import accurip, common, config, drive, program
 from morituri.common import task as ctask
 from morituri.program import cdrdao, cdparanoia, utils
+from morituri.common import checksum
 
 from morituri.extern.task import task
 
@@ -209,8 +210,6 @@ CD in the AccurateRip database."""
             track, offset)
         runner.run(t)
 
-        # here to avoid import gst eating our options
-        from morituri.common import checksum
 
         # TODO MW: Update this to also use the v2 checksum(s)
         t = checksum.FastAccurateRipChecksumTask(path, trackNumber=track,

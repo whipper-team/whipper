@@ -195,31 +195,6 @@ class Encode(BaseCommand):
         sys.stdout.write('Encoded to %s\n' % toPath.encode('utf-8'))
 
 
-class MaxSample(BaseCommand):
-    summary = "run a max sample task"
-    description = summary
-    
-    def add_arguments(self):
-        self.parser.add_argument('files', nargs='+', action='store',
-                                 help="audio files to sample")
-
-    def do(self):
-        runner = task.SyncRunner()
-        # here to avoid import gst eating our options
-        from morituri.common import checksum
-
-        for arg in self.options.files:
-            fromPath = unicode(arg.decode('utf-8'))
-
-            checksumtask = checksum.MaxSampleTask(fromPath)
-
-            runner.run(checksumtask)
-
-            sys.stdout.write('%s\n' % arg)
-            sys.stdout.write('Biggest absolute sample: %04x\n' %
-                checksumtask.checksum)
-
-
 class Tag(BaseCommand):
     summary = "run a tag reading task"
     description = summary
@@ -325,7 +300,6 @@ class Debug(BaseCommand):
     subcommands = {
         'checksum':       Checksum,
         'encode':         Encode,
-        'maxsample':      MaxSample,
         'tag':            Tag,
         'musicbrainzngs': MusicBrainzNGS,
         'resultcache':    ResultCache,

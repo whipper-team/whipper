@@ -6,7 +6,7 @@ import signal
 import subprocess
 
 from morituri.extern import asyncsub
-from morituri.extern.task import task, gstreamer
+from morituri.extern.task import task
 
 import logging
 logger = logging.getLogger(__name__)
@@ -21,10 +21,6 @@ class LoggableTask(task.Task):
 
 
 class LoggableMultiSeparateTask(task.MultiSeparateTask):
-    pass
-
-
-class GstPipelineTask(gstreamer.GstPipelineTask):
     pass
 
 

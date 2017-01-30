@@ -31,8 +31,9 @@ import gobject
 gobject.threads_init()
 
 from morituri.command.basecommand import BaseCommand
+from morituri.common import encode
 from morituri.common import (
-    accurip, common, config, drive, gstreamer, program, task
+    accurip, common, config, drive, program, task
 )
 from morituri.program import cdrdao, cdparanoia, utils
 from morituri.result import result
@@ -317,17 +318,6 @@ Log files will log the path to tracks relative to this directory.
 
 
     def doCommand(self):
-        # here to avoid import gst eating our options
-        from morituri.common import encode
-        profile = encode.PROFILES['flac']()
-        self.program.result.profileName = profile.name
-        self.program.result.profilePipeline = profile.pipeline
-        elementFactory = profile.pipeline.split(' ')[0]
-        self.program.result.gstreamerVersion = gstreamer.gstreamerVersion()
-        self.program.result.gstPythonVersion = gstreamer.gstPythonVersion()
-        self.program.result.encoderVersion = gstreamer.elementFactoryVersion(
-            elementFactory)
-
         self.program.setWorkingDirectory(self.options.working_directory)
         self.program.outdir = self.options.output_directory.decode('utf-8')
         self.program.result.offset = int(self.options.offset)
@@ -339,7 +329,7 @@ Log files will log the path to tracks relative to this directory.
         while True:
             discName = self.program.getPath(self.program.outdir,
                 self.options.disc_template, self.mbdiscid, 0,
-                profile=profile, disambiguate=disambiguate)
+                disambiguate=disambiguate)
             dirname = os.path.dirname(discName)
             if os.path.exists(dirname):
                 sys.stdout.write("Output directory %s already exists\n" %
@@ -382,8 +372,8 @@ Log files will log the path to tracks relative to this directory.
             path = self.program.getPath(self.program.outdir,
                 self.options.track_template,
                 self.mbdiscid, number,
-                profile=profile, disambiguate=disambiguate) \
-                + '.' + profile.extension
+                disambiguate=disambiguate) \
+                + '.' + 'flac'
             logger.debug('ripIfNotRipped: path %r' % path)
             trackResult.number = number
 
@@ -429,7 +419,6 @@ Log files will log the path to tracks relative to this directory.
                         self.program.ripTrack(self.runner, trackResult,
                             offset=int(self.options.offset),
                             device=self.device,
-                            profile=profile,
                             taglist=self.program.getTagList(number),
                             overread=self.options.overread,
                             what='track %d of %d%s' % (
@@ -509,7 +498,7 @@ Log files will log the path to tracks relative to this directory.
         ### write disc files
         discName = self.program.getPath(self.program.outdir,
             self.options.disc_template, self.mbdiscid, 0,
-            profile=profile, disambiguate=disambiguate)
+            disambiguate=disambiguate)
         dirname = os.path.dirname(discName)
         if not os.path.exists(dirname):
             os.makedirs(dirname)
@@ -541,8 +530,7 @@ Log files will log the path to tracks relative to this directory.
 
             path = self.program.getPath(self.program.outdir,
                 self.options.track_template, self.mbdiscid, i + 1,
-                profile=profile,
-                disambiguate=disambiguate) + '.' + profile.extension
+                disambiguate=disambiguate) + '.' + 'flac'
             writeFile(handle, path,
                 self.itable.getTrackLength(i + 1) / common.FRAMES_PER_SECOND)
 
