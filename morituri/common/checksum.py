@@ -23,6 +23,8 @@
 import os
 import struct
 import zlib
+import binascii
+import wave
 
 import gst
 
@@ -262,8 +264,7 @@ class ChecksumTask(gstreamer.GstPipelineTask):
         logger.debug('eos, scheduling stop')
         self.schedule(0, self.stop)
 
-
-class CRC32Task(ChecksumTask):
+class CRC32TaskOld(ChecksumTask):
     """
     I do a simple CRC32 check.
     """
@@ -272,6 +273,24 @@ class CRC32Task(ChecksumTask):
 
     def do_checksum_buffer(self, buf, checksum):
         return zlib.crc32(buf, checksum)
+
+class CRC32Task(etask.Task):
+    # TODO: Support sampleStart, sampleLength later on (should be trivial, just
+    # add change the read part in _crc32 to skip some samples and/or not
+    # read too far)
+    def __init__(self, path, sampleStart=0, sampleLength=-1):
+        self.path = path
+
+    def start(self, runner):
+        etask.Task.start(self, runner)
+        self.schedule(0.0, self._crc32)
+
+    def _crc32(self):
+        w = wave.open(self.path)
+        d = w._data_chunk.read()
+
+        self.checksum = binascii.crc32(d) & 0xffffffff
+        self.stop()
 
 
 class FastAccurateRipChecksumTask(etask.Task):
