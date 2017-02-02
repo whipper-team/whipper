@@ -453,10 +453,10 @@ class Program:
         tags = {}
 
         if self.metadata and not self.metadata.various:
-            tags['ALBUMARTIST'] = albumArtist.encode('utf-8')
-        tags['ARTIST'] = trackArtist.encode('utf-8')
-        tags['TITLE'] = title.encode('utf-8')
-        tags['DISC'] = disc.encode('utf-8')
+            tags['ALBUMARTIST'] = albumArtist
+        tags['ARTIST'] = trackArtist
+        tags['TITLE'] = title
+        tags['ALBUM'] = disc
 
         tags['TRACKNUMBER'] = u'%s' % number
 
@@ -464,11 +464,11 @@ class Program:
             tags['DATE'] = self.metadata.release
 
             if number > 0:
-                tags['musicbrainz-trackid'] = mbidTrack
-                tags['musicbrainz-artistid'] = mbidTrackArtist
-                tags['musicbrainz-albumid'] = mbidAlbum
-                tags['musicbrainz-albumartistid'] = mbidTrackAlbum
-                tags['musicbrainz-discid'] = mbDiscId
+                tags['MUSICBRAINZ_TRACKID'] = mbidTrack
+                tags['MUSICBRAINZ_ARTISTID'] = mbidTrackArtist
+                tags['MUSICBRAINZ_ALBUMID'] = mbidAlbum
+                tags['MUSICBRAINZ_ALBUMARTISTID'] = mbidTrackAlbum
+                tags['MUSICBRAINZ_DISCID'] = mbDiscId
 
         # TODO/FIXME: ISRC tag
 
