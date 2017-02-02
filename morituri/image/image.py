@@ -240,8 +240,8 @@ class ImageEncodeTask(task.MultiSeparateTask):
             root, ext = os.path.splitext(os.path.basename(path))
             outpath = os.path.join(outdir, root + '.' + profile.extension)
             logger.debug('schedule encode to %r', outpath)
-            taskk = encode.EncodeTask(path, os.path.join(outdir,
-                root + '.' + profile.extension), profile)
+            taskk = encode.EncodeTaskFlac(path, os.path.join(outdir,
+                root + '.' + profile.extension))
             self.addTask(taskk)
 
         try:

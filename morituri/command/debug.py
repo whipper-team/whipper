@@ -187,7 +187,7 @@ class Encode(BaseCommand):
         logger.debug('Encoding %s to %s',
             fromPath.encode('utf-8'),
             toPath.encode('utf-8'))
-        encodetask = encode.EncodeTask(fromPath, toPath, profile)
+        encodetask = encode.FlacEncodeTask(fromPath, toPath)
 
         runner.run(encodetask)
 
