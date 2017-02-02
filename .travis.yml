@@ -11,7 +11,7 @@ install:
 
     # Testing dependencies
     - sudo apt-get install -qq gstreamer0.10-tools python-gst0.10
-    - sudo pip install twisted
+    - sudo pip install twisted mutagen
 
     # Build bundled C utils
     - cd src
