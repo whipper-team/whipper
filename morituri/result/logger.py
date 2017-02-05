@@ -25,9 +25,8 @@ class MorituriLogger(result.Logger):
         lines = []
 
         # Ripper version
-        # Only implemented in whipper (ripResult.logger)
-        lines.append("Log created by: whipper %s (%s logger)" % (
-                    morituri.__version__, ripResult.logger))
+        lines.append("Log created by: whipper %s (internal logger)" %
+                     morituri.__version__)
 
         # Rip date
         date = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(epoch)).strip()
@@ -181,6 +180,14 @@ class MorituriLogger(result.Logger):
         # Peak level
         peak = trackResult.peak
         lines.append("    Peak level: %.6f" % peak)
+
+        # Pre-emphasis status
+        # Only implemented in whipper (t.pre_emphasis)
+        if t.pre_emphasis:
+            preEmph = "Yes"
+        else:
+            preEmph = "No"
+        lines.append("    Pre-emphasis: %s" % preEmph)
 
         # Extraction speed
         if trackResult.copyspeed:
