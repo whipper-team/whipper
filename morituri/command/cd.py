@@ -392,6 +392,8 @@ Log files will log the path to tracks relative to this directory.
             if number > 0:
                 trackResult.pregap = self.itable.tracks[number - 1].getPregap()
 
+                trackResult.pre_emphasis = self.itable.tracks[number - 1].pre_emphasis
+
             # FIXME: optionally allow overriding reripping
             if os.path.exists(path):
                 if path != trackResult.filename:

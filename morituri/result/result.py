@@ -57,6 +57,7 @@ class TrackResult:
     number = None
     filename = None
     pregap = 0 # in frames
+    pre_emphasis = None
 
     peak = 0.0
     quality = 0.0

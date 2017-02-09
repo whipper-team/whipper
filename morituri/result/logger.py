@@ -182,8 +182,8 @@ class MorituriLogger(result.Logger):
         lines.append("    Peak level: %.6f" % peak)
 
         # Pre-emphasis status
-        # Only implemented in whipper (t.pre_emphasis)
-        if t.pre_emphasis:
+        # Only implemented in whipper (trackResult.pre_emphasis)
+        if trackResult.pre_emphasis:
             preEmph = "Yes"
         else:
             preEmph = "No"
