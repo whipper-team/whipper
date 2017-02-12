@@ -4,14 +4,13 @@ language: bash
 
 install:
     # Dependencies
-    - sudo apt-get update -qq
-    - sudo pip install --upgrade pip
-    - sudo apt-get install -qq cdparanoia cdrdao gstreamer0.10-plugins-base gstreamer0.10-plugins-good libcdio-dev libiso9660-dev libsndfile1-dev python-cddb python-gobject swig python-dev python-xdg sox
-    - sudo pip install musicbrainzngs pycdio
+    - sudo apt-get -qq update
+    - sudo pip install --upgrade -qq pip
+    - sudo apt-get -qq install cdparanoia cdrdao flac gstreamer0.10-plugins-base gstreamer0.10-plugins-good libcdio-dev libiso9660-dev libsndfile1-dev python-cddb python-gst0.10 python-gobject python-musicbrainzngs python-mutagen python-setuptools sox swig
+    - sudo pip install pycdio
 
     # Testing dependencies
-    - sudo apt-get install -qq gstreamer0.10-tools python-gst0.10
-    - sudo pip install twisted mutagen
+    - sudo apt-get -qq install gstreamer0.10-tools python-twisted-core
 
     # Build bundled C utils
     - cd src
