@@ -184,9 +184,9 @@ def _getMetadata(releaseShort, release, discid, country=None):
     # getUniqueName gets disambiguating names like Muse (UK rock band)
     discMD.artist = albumArtistName
     discMD.sortName = discCredit.getSortName()
-    # FIXME: is format str ?
-    if not 'date' in release:
-        logger.warning('Release %r does not have date', release)
+    if 'date' not in release:
+        logger.warning("Release with ID '%s' (%s - %s) does not have a date",
+                       release['id'], discMD.artist, release['title'])
     else:
         discMD.release = release['date']
 
