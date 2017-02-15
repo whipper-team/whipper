@@ -305,6 +305,7 @@ class Program:
                 metadatas = mbngs.musicbrainz(mbdiscid,
                     country=country,
                     record=self._record)
+                break
             except mbngs.NotFoundException, e:
                 break
             except musicbrainzngs.NetworkError, e:
