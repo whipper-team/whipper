@@ -248,29 +248,6 @@ class Program:
         template = re.sub(r'%(\w)', r'%(\1)s', template)
         return os.path.join(outdir, template % v)
 
-    def getCDDB(self, cddbdiscid):
-        """
-        @param cddbdiscid: list of id, tracks, offsets, seconds
-
-        @rtype: str
-        """
-        # FIXME: convert to nonblocking?
-        import CDDB
-        try:
-            code, md = CDDB.query(cddbdiscid)
-            logger.debug('CDDB query result: %r, %r', code, md)
-            if code == 200:
-                return md['title']
-
-        except IOError, e:
-            # FIXME: for some reason errno is a str ?
-            if e.errno == 'socket error':
-                self._stdout.write("Warning: network error: %r\n" % (e, ))
-            else:
-                raise
-
-        return None
-
     def getMusicBrainz(self, ittoc, mbdiscid, release=None, country=None,
                        prompt=False):
         """

@@ -27,7 +27,7 @@ import logging
 import gobject
 from whipper.command.basecommand import BaseCommand
 from whipper.common import (
-    accurip, config, drive, program, task
+    accurip, config, drive, program, task, simplefreedb
 )
 from whipper.program import cdrdao, cdparanoia, utils
 from whipper.result import result
@@ -126,8 +126,14 @@ class _CD(BaseCommand):
         if not self.program.metadata:
             # fall back to FreeDB for lookup
             cddbid = self.ittoc.getCDDBValues()
-            cddbmd = self.program.getCDDB(cddbid)
-            if cddbmd:
+
+            sfdb = simplefreedb.SimpleFreeDB()
+            discid, ntrks = cddbid[0], cddbid[1]
+            offsets, nsecs = cddbid[2:-1], cddbid[-1]
+            matches = sfdb.query(discid, ntrks, offsets, nsecs)
+            if matches:
+                match = matches[0]
+                cddbmd = match['artist_title']
                 sys.stdout.write('FreeDB identifies disc as %s\n' % cddbmd)
 
             # also used by rip cd info

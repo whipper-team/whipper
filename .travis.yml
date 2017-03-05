@@ -10,7 +10,7 @@ install:
     # Dependencies
     - sudo apt-get -qq update
     - sudo pip install --upgrade -qq pip
-    - sudo apt-get -qq install cdparanoia cdrdao flac libcdio-dev libiso9660-dev libsndfile1-dev python-cddb python-gobject python-musicbrainzngs python-mutagen python-setuptools sox swig
+    - sudo apt-get -qq install cdparanoia cdrdao flac libcdio-dev libiso9660-dev libsndfile1-dev python-gobject python-musicbrainzngs python-mutagen python-setuptools sox swig
     - sudo pip install pycdio requests
 
     # Testing dependencies
