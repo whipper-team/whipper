@@ -132,10 +132,21 @@ class _CD(BaseCommand):
             offsets, nsecs = cddbid[2:-1], cddbid[-1]
             matches = sfdb.query(discid, ntrks, offsets, nsecs)
             if matches:
-                match = matches[0]
+                match = matches[0]  # TODO: honor --prompt
                 cddbmd = match['artist_title']
                 sys.stdout.write('FreeDB identifies disc as %s\n' % cddbmd)
 
+                if self.options.allow_freedb:
+                    logger.warning('Using FreeDB metadata, which is not '
+                                   'recommended due to its very low quality '
+                                   'standards.')
+                    logger.warning('You are strongly encouraged to submit CD '
+                                   'information to the MusicBrainz database.')
+                    fdb_data = sfdb.read(match['category'], match['discid'])
+                    self.program.metadata = \
+                        self.program.craftMusicBrainzFromFreeDB(fdb_data)
+
+        if not self.program.metadata:
             # also used by rip cd info
             if not getattr(self.options, 'unknown', False):
                 logger.critical("unable to retrieve disc metadata, "
@@ -288,6 +299,11 @@ Log files will log the path to tracks relative to this directory.
                                  action="store_true", dest="unknown",
                                  help="whether to continue ripping if "
                                  "the CD is unknown", default=False)
+        self.parser.add_argument('--allow-freedb',
+                                 action="store_true", dest="allow_freedb",
+                                 help="whether to allow relying on low "
+                                 "quality CDDB/FreeDB metadata if nothing "
+                                 "else is available", default=False)
         self.parser.add_argument('--cdr',
                                  action="store_true", dest="cdr",
                                  help="whether to continue ripping if "
