@@ -462,7 +462,8 @@ class Program:
         tags['TRACKNUMBER'] = u'%s' % number
 
         if self.metadata:
-            tags['DATE'] = self.metadata.release
+            if self.metadata.release is not None:
+                tags['DATE'] = self.metadata.release
 
             if number > 0:
                 tags['MUSICBRAINZ_TRACKID'] = mbidTrack
