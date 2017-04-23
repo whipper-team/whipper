@@ -515,8 +515,6 @@ class Program:
 
         @param trackResult: the object to store information in.
         @type  trackResult: L{result.TrackResult}
-        @param number:      track number (1-based)
-        @type  number:      int
         """
         if trackResult.number == 0:
             start, stop = self.getHTOA()

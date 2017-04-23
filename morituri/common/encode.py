@@ -20,15 +20,9 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
-import math
-import os
-import shutil
-import tempfile
 
 from mutagen.flac import FLAC
 
-from morituri.common import common
-from morituri.common import task as ctask
 from morituri.extern.task import task
 
 from morituri.program import sox

@@ -81,7 +81,6 @@ CD in the AccurateRip database."""
         logger.debug('Trying with offsets %r', self._offsets)
 
     def do(self):
-        prog = program.Program(config.Config())
         runner = ctask.SyncRunner()
 
         device = self.options.device

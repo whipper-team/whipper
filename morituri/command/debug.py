@@ -153,14 +153,6 @@ class Encode(BaseCommand):
         # here to avoid import gst eating our options
         from morituri.common import encode
 
-        default = 'flac'
-        # slated for deletion as flac will be the only encoder
-        self.parser.add_argument('--profile',
-            action="store",
-            dest="profile",
-            help="profile for encoding (default '%s', choices '%s')" % (
-                default, "', '".join(encode.ALL_PROFILES.keys())),
-            default=default)
         self.parser.add_argument('input', action='store',
                                  help="audio file to encode")
         self.parser.add_argument('output', nargs='?', action='store',
@@ -168,7 +160,6 @@ class Encode(BaseCommand):
 
     def do(self):
         from morituri.common import encode
-        profile = encode.ALL_PROFILES[self.options.profile]()
 
         try:
             fromPath = unicode(self.options.input)
@@ -180,7 +171,7 @@ class Encode(BaseCommand):
         try:
             toPath = unicode(self.options.output)
         except IndexError:
-            toPath = fromPath + '.' + profile.extension
+            toPath = fromPath + '.flac'
 
         runner = task.SyncRunner()
 

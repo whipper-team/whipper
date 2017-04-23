@@ -20,14 +20,10 @@
 # You should have received a copy of the GNU General Public License
 # along with morituri.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-import struct
-import zlib
 import binascii
 import wave
 
 
-from morituri.common import common, task
 from morituri.extern.task import task as etask
 
 from morituri.program.arc import accuraterip_checksum

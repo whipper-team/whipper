@@ -31,7 +31,6 @@ import gobject
 gobject.threads_init()
 
 from morituri.command.basecommand import BaseCommand
-from morituri.common import encode
 from morituri.common import (
     accurip, common, config, drive, program, task
 )
@@ -510,7 +509,8 @@ Log files will log the path to tracks relative to this directory.
         logger.debug('writing m3u file for %r', discName)
         m3uPath = u'%s.m3u' % discName
         handle = open(m3uPath, 'w')
-        handle.write(u'#EXTM3U\n')
+        u = u'#EXTM3U\n'
+        handle.write(u.encode('utf-8'))
 
         def writeFile(handle, path, length):
             targetPath = common.getRelativePath(path, m3uPath)
