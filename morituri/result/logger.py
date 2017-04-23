@@ -56,17 +56,6 @@ class MorituriLogger(result.Logger):
         lines.append("  Gap detection: cdrdao %s" % ripResult.cdrdaoVersion)
         lines.append("")
 
-        # Rip encoding settings
-        lines.append("Encoding phase information:")
-        lines.append("  Used output format: %s" % ripResult.profileName)
-        lines.append("  GStreamer:")
-        lines.append("    Pipeline: %s" % ripResult.profilePipeline)
-        lines.append("    Version: %s" % ripResult.gstreamerVersion)
-        lines.append("    Python version: %s" % ripResult.gstPythonVersion)
-        lines.append("    Encoder plugin version: %s" %
-                     ripResult.encoderVersion)
-        lines.append("")
-
         # CD metadata
         lines.append("CD metadata:")
         lines.append("  Album: %s - %s" % (ripResult.artist, ripResult.title))

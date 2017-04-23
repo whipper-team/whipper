@@ -69,10 +69,6 @@ Whipper relies on the following packages in order to run correctly and provide a
 
 - [cdparanoia](https://www.xiph.org/paranoia/), for the actual ripping
 - [cdrdao](http://cdrdao.sourceforge.net/), for session, TOC, pre-gap, and ISRC extraction
-- [GStreamer](https://gstreamer.freedesktop.org/) and its python bindings, for encoding (it's going to be removed soon™)
-  - `gstreamer0.10-base-plugins` (or `gstreamer0.10-plugins-base` depending on Linux distro) >= **0.10.22** for appsink
-  - `gstreamer0.10-good-plugins` (or `gstreamer0.10-plugins-good`) for wav encoding (it depends on the Linux distro used)
-  - `python-gst0.10` (GStreamer Python bindings)
 - [python-musicbrainzngs](https://github.com/alastair/python-musicbrainzngs), for metadata lookup
 - [python-setuptools](https://pypi.python.org/pypi/setuptools), for installation, plugins support
 - [python-cddb](http://cddb-py.sourceforge.net/), for showing but not using metadata if disc not available in the MusicBrainz DB

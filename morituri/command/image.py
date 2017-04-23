@@ -25,6 +25,7 @@ import sys
 
 from morituri.command.basecommand import BaseCommand
 from morituri.common import accurip, config, program
+from morituri.common import encode
 from morituri.extern.task import task
 from morituri.image import image
 from morituri.result import result
@@ -59,8 +60,6 @@ Retags the image from the given .cue files with tags obtained from MusicBrainz.
         )
 
     def do(self):
-        # here to avoid import gst eating our options
-        from morituri.common import encode
 
         prog = program.Program(config.Config(), stdout=sys.stdout)
         runner = task.SyncRunner()

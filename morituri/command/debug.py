@@ -153,14 +153,6 @@ class Encode(BaseCommand):
         # here to avoid import gst eating our options
         from morituri.common import encode
 
-        default = 'flac'
-        # slated for deletion as flac will be the only encoder
-        self.parser.add_argument('--profile',
-            action="store",
-            dest="profile",
-            help="profile for encoding (default '%s', choices '%s')" % (
-                default, "', '".join(encode.ALL_PROFILES.keys())),
-            default=default)
         self.parser.add_argument('input', action='store',
                                  help="audio file to encode")
         self.parser.add_argument('output', nargs='?', action='store',
@@ -168,7 +160,6 @@ class Encode(BaseCommand):
 
     def do(self):
         from morituri.common import encode
-        profile = encode.ALL_PROFILES[self.options.profile]()
 
         try:
             fromPath = unicode(self.options.input)
@@ -180,7 +171,7 @@ class Encode(BaseCommand):
         try:
             toPath = unicode(self.options.output)
         except IndexError:
-            toPath = fromPath + '.' + profile.extension
+            toPath = fromPath + '.flac'
 
         runner = task.SyncRunner()
 
@@ -191,33 +182,14 @@ class Encode(BaseCommand):
 
         runner.run(encodetask)
 
-        sys.stdout.write('Peak level: %r\n' % encodetask.peak)
+        # I think we want this to be
+        # fromPath, not toPath, since the sox peak task, afaik, works on wave
+        # files
+        peaktask = encode.SoxPeakTask(fromPath)
+        runner.run(peaktask)
+
+        sys.stdout.write('Peak level: %r\n' % peaktask.peak)
         sys.stdout.write('Encoded to %s\n' % toPath.encode('utf-8'))
-
-
-class MaxSample(BaseCommand):
-    summary = "run a max sample task"
-    description = summary
-    
-    def add_arguments(self):
-        self.parser.add_argument('files', nargs='+', action='store',
-                                 help="audio files to sample")
-
-    def do(self):
-        runner = task.SyncRunner()
-        # here to avoid import gst eating our options
-        from morituri.common import checksum
-
-        for arg in self.options.files:
-            fromPath = unicode(arg.decode('utf-8'))
-
-            checksumtask = checksum.MaxSampleTask(fromPath)
-
-            runner.run(checksumtask)
-
-            sys.stdout.write('%s\n' % arg)
-            sys.stdout.write('Biggest absolute sample: %04x\n' %
-                checksumtask.checksum)
 
 
 class Tag(BaseCommand):
@@ -325,7 +297,6 @@ class Debug(BaseCommand):
     subcommands = {
         'checksum':       Checksum,
         'encode':         Encode,
-        'maxsample':      MaxSample,
         'tag':            Tag,
         'musicbrainzngs': MusicBrainzNGS,
         'resultcache':    ResultCache,
