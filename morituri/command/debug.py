@@ -182,7 +182,13 @@ class Encode(BaseCommand):
 
         runner.run(encodetask)
 
-        sys.stdout.write('Peak level: %r\n' % encodetask.peak)
+        # I think we want this to be
+        # fromPath, not toPath, since the sox peak task, afaik, works on wave
+        # files
+        peaktask = encode.SoxPeakTask(fromPath)
+        runner.run(peaktask)
+
+        sys.stdout.write('Peak level: %r\n' % peaktask.peak)
         sys.stdout.write('Encoded to %s\n' % toPath.encode('utf-8'))
 
 
