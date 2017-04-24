@@ -1,5 +1,5 @@
 REM DISCID AD0BE00D
-REM COMMENT "morituri 0.4.2"
+REM COMMENT "morituri 0.5.1"
 FILE "data.wav" WAVE
   TRACK 01 AUDIO
     PREGAP 03:22:70
