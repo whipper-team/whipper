@@ -2,7 +2,15 @@
 
 ## [Unreleased](https://github.com/JoeLametta/whipper/tree/HEAD)
 
-[Full Changelog](https://github.com/JoeLametta/whipper/compare/v0.5.0...HEAD)
+[Full Changelog](https://github.com/JoeLametta/whipper/compare/v0.5.1...HEAD)
+
+## [v0.5.1](https://github.com/JoeLametta/whipper/tree/v0.5.1) (2017-04-24)
+
+[Full Changelog](https://github.com/JoeLametta/whipper/compare/v0.5.0...v0.5.1)
+
+**Fixed bugs:**
+
+- 0.5.0 Release init.py version number not updated [\#147](https://github.com/JoeLametta/whipper/issues/147)
 
 ## [v0.5.0](https://github.com/JoeLametta/whipper/tree/v0.5.0) (2017-04-24)
 

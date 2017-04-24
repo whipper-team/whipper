@@ -1,0 +1,53 @@
+Coverage.py 4.3.4 text report against whipper v0.5.1
+
+$ coverage run --source=morituri --omit='morituri/test/*' -m unittest discover
+$ coverage report -m
+
+Name                               Stmts   Miss  Cover   Missing
+----------------------------------------------------------------
+morituri/__init__.py                  10      2    80%   9, 11
+morituri/command/__init__.py           0      0   100%
+morituri/command/accurip.py           46     46     0%   23-100
+morituri/command/basecommand.py       58     42    28%   53-98, 105-114, 117, 120, 123, 126-129
+morituri/command/cd.py               273    232    15%   85-94, 100-209, 212, 224, 246-287, 293-316, 320-578
+morituri/command/debug.py            168    168     0%   23-297
+morituri/command/drive.py             62     62     0%   23-121
+morituri/command/image.py             74     74     0%   23-152
+morituri/command/main.py              55     55     0%   4-96
+morituri/command/offset.py           121    121     0%   23-241
+morituri/common/__init__.py            0      0   100%
+morituri/common/accurip.py            88     43    51%   40-42, 46, 49-65, 69-80, 83-94, 97-102
+morituri/common/cache.py             104     49    53%   67-91, 97, 100, 108-111, 114-115, 131, 143-148, 171-178, 202-207, 212-229
+morituri/common/checksum.py           33     18    45%   42, 45-46, 49-53, 60-65, 68-69, 72-76
+morituri/common/common.py            134     15    89%   51-52, 119-120, 142-143, 165, 259-265, 301-305
+morituri/common/config.py             85      9    89%   72, 97-98, 117-118, 124, 135, 137, 139
+morituri/common/directory.py          21      8    62%   30, 39, 43-50
+morituri/common/drive.py              31     20    35%   36-41, 45-51, 55-61, 65-73
+morituri/common/encode.py             44     23    48%   38-39, 42-43, 46-47, 53-56, 59-60, 63-64, 74-75, 78-79, 82-89
+morituri/common/mbngs.py             157     52    67%   39-40, 46, 91-97, 159-160, 165-166, 211, 214, 217, 238-240, 249, 269-321
+morituri/common/path.py               24      0   100%
+morituri/common/program.py           391    262    33%   90-92, 101-117, 125-157, 166-171, 174, 218, 230-231, 233-240, 247-253, 271-285, 292-415, 426-476, 484-492, 496-510, 521-560, 563-565, 575-584, 594-595, 664, 682-692, 695-703
+morituri/common/renamer.py           102      2    98%   138, 161
+morituri/common/task.py               77     19    75%   45-50, 85-86, 89-92, 100, 114-115, 122, 128, 134, 140, 147
+morituri/extern/__init__.py            0      0   100%
+morituri/extern/asyncsub.py          130     71    45%   15-17, 32, 37-38, 47-84, 89-102, 115, 122, 133, 144, 150, 155-159, 162-174
+morituri/extern/task/__init__.py       0      0   100%
+morituri/extern/task/task.py         272    114    58%   49, 53, 80, 83, 86, 153-154, 171-173, 181-197, 215-217, 238-239, 279-280, 283-289, 303-304, 312-314, 323-330, 336-352, 356, 359, 366-383, 394-395, 398-401, 405, 408, 422, 425-427, 442, 454, 498-503, 513-518, 529-537, 540-549, 552-553, 561, 565-567
+morituri/image/__init__.py             0      0   100%
+morituri/image/cue.py                 91      9    90%   101, 118-119, 135-137, 161, 189, 207
+morituri/image/image.py              138    110    20%   52-60, 68-70, 77-110, 122-145, 148-149, 163-195, 198-214, 225-255
+morituri/image/table.py              403     22    95%   240, 355-356, 555, 635, 718-719, 740-741, 749-752, 756-757, 802, 848-849, 851-852, 861-862, 867-869
+morituri/image/toc.py                204     15    93%   136, 263-264, 280-283, 345-347, 369-371, 391, 415
+morituri/program/__init__.py           0      0   100%
+morituri/program/arc.py               35     28    20%   11-52
+morituri/program/cdparanoia.py       312    183    41%   50-52, 61-62, 126-128, 167-170, 243-257, 260-310, 313-351, 354-358, 361-395, 450-501, 506-552, 584-587, 590, 597, 603, 608-613
+morituri/program/cdrdao.py            44     23    48%   24-46, 55-57, 61-63, 70, 76
+morituri/program/flac.py               9      5    44%   11-18
+morituri/program/sox.py               15      4    73%   17-18, 22-23
+morituri/program/soxi.py              28      2    93%   35, 48
+morituri/program/utils.py             16     10    38%   11-12, 19-20, 30-35
+morituri/result/__init__.py            0      0   100%
+morituri/result/logger.py            137    137     0%   1-224
+morituri/result/result.py             57     10    82%   127, 145, 155-156, 165-172
+----------------------------------------------------------------
+TOTAL                               4049   2065    49%
