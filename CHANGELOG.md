@@ -1,7 +1,43 @@
 # Change Log
 
-## [v0.4.2](https://github.com/JoeLametta/whipper/tree/v0.4.2)
+## [Unreleased](https://github.com/JoeLametta/whipper/tree/HEAD)
 
+[Full Changelog](https://github.com/JoeLametta/whipper/compare/v0.5.0...HEAD)
+
+## [v0.5.0](https://github.com/JoeLametta/whipper/tree/v0.5.0) (2017-04-24)
+
+[Full Changelog](https://github.com/JoeLametta/whipper/compare/v0.4.2...v0.5.0)
+
+**Implemented enhancements:**
+
+- overly verbose warning logging [\#131](https://github.com/JoeLametta/whipper/issues/131)
+- Check that whipper deals properly with CD pre-emphasis [\#120](https://github.com/JoeLametta/whipper/issues/120)
+- Remove gstreamer dependency [\#29](https://github.com/JoeLametta/whipper/issues/29)
+
+**Fixed bugs:**
+
+- Fails to rip if MB Release doesn't have a release date/year [\#133](https://github.com/JoeLametta/whipper/issues/133)
+- fb271f08cdee877795091065c344dcc902d1dcbf breaks HEAD [\#129](https://github.com/JoeLametta/whipper/issues/129)
+- 'whipper drive list' returns a suggestion to run 'rip offset find' [\#112](https://github.com/JoeLametta/whipper/issues/112)
+- EmptyError\('not a single buffer gotten',\) [\#101](https://github.com/JoeLametta/whipper/issues/101)
+- Julie Roberts bug [\#74](https://github.com/JoeLametta/whipper/issues/74)
+
+**Closed issues:**
+
+- Final track rip failure due to file size mismatch [\#146](https://github.com/JoeLametta/whipper/issues/146)
+
+**Merged pull requests:**
+
+- Remove notes related to GStreamer flacparse [\#140](https://github.com/JoeLametta/whipper/pull/140) ([Freso](https://github.com/Freso))
+- Prevent a crash if MusicBrainz release date is missing [\#139](https://github.com/JoeLametta/whipper/pull/139) ([ribbons](https://github.com/ribbons))
+- program: do not fetch 4 times musicbrainz metadata [\#134](https://github.com/JoeLametta/whipper/pull/134) ([ubitux](https://github.com/ubitux))
+- Fix Travis CI build failures [\#132](https://github.com/JoeLametta/whipper/pull/132) ([JoeLametta](https://github.com/JoeLametta))
+- Rip out all code that uses gstreamer [\#130](https://github.com/JoeLametta/whipper/pull/130) ([MerlijnWajer](https://github.com/MerlijnWajer))
+- Add pre-emphasis status reporting to whipper's logfiles [\#124](https://github.com/JoeLametta/whipper/pull/124) ([JoeLametta](https://github.com/JoeLametta))
+- Add gstreamer-less flac encoder and tagging [\#121](https://github.com/JoeLametta/whipper/pull/121) ([MerlijnWajer](https://github.com/MerlijnWajer))
+- Replace rip command suggestions with 'whipper' [\#114](https://github.com/JoeLametta/whipper/pull/114) ([JoeLametta](https://github.com/JoeLametta))
+
+## [v0.4.2](https://github.com/JoeLametta/whipper/tree/v0.4.2) (2017-01-08)
 [Full Changelog](https://github.com/JoeLametta/whipper/compare/v0.4.1...v0.4.2)
 
 **Closed issues:**

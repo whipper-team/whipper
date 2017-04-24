@@ -1,6 +1,6 @@
 # Whipper
 
-[![License: GPLv3](https://img.shields.io/badge/license-GPLv3-CC7722.svg)](https://github.com/JoeLametta/whipper/blob/master/LICENSE) [![Build Status](https://travis-ci.org/JoeLametta/whipper.svg?branch=master)](https://travis-ci.org/JoeLametta/whipper) [![Current version number](https://img.shields.io/badge/version-0.4.2-blue.svg)](https://github.com/JoeLametta/whipper/releases/latest) [![IRC](https://img.shields.io/badge/irc-%23whipper%40freenode-brightgreen.svg)](https://webchat.freenode.net/?channels=%23whipper) [![GitHub Stars](https://img.shields.io/github/stars/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/stargazers) [![GitHub Issues](https://img.shields.io/github/issues/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/issues)
+[![License: GPLv3](https://img.shields.io/badge/license-GPLv3-CC7722.svg)](https://github.com/JoeLametta/whipper/blob/master/LICENSE) [![Build Status](https://travis-ci.org/JoeLametta/whipper.svg?branch=master)](https://travis-ci.org/JoeLametta/whipper) [![Current version number](https://img.shields.io/badge/version-0.5.0-blue.svg)](https://github.com/JoeLametta/whipper/releases/latest) [![IRC](https://img.shields.io/badge/irc-%23whipper%40freenode-brightgreen.svg)](https://webchat.freenode.net/?channels=%23whipper) [![GitHub Stars](https://img.shields.io/github/stars/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/stargazers) [![GitHub Issues](https://img.shields.io/github/issues/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/issues)
 
 Whipper is a Python 2 CD-DA ripper, fork of the morituri project (_CDDA ripper for *nix systems aiming for accuracy over speed_). It improves morituri which development seems to have halted merging old ignored pull requests, improving it with bugfixes and new features.
 
@@ -48,7 +48,6 @@ https://web.archive.org/web/20160528213242/https://thomas.apestaart.org/thomas/t
 - Provides batch ripping capabilities
 - Provides templates for file and directory naming
 - Supports lossless encoding of ripped audio tracks
-- Allows re-tagging of already completed rips
 - Allows extensibility through external logger plugins
 
 ## Changelog
@@ -69,7 +68,9 @@ Whipper relies on the following packages in order to run correctly and provide a
 
 - [cdparanoia](https://www.xiph.org/paranoia/), for the actual ripping
 - [cdrdao](http://cdrdao.sourceforge.net/), for session, TOC, pre-gap, and ISRC extraction
+- [python-gobject-2](https://packages.debian.org/en/jessie/python-gobject-2), required by `task.py`
 - [python-musicbrainzngs](https://github.com/alastair/python-musicbrainzngs), for metadata lookup
+- [python-mutagen](https://pypi.python.org/pypi/mutagen), for tagging support
 - [python-setuptools](https://pypi.python.org/pypi/setuptools), for installation, plugins support
 - [python-cddb](http://cddb-py.sourceforge.net/), for showing but not using metadata if disc not available in the MusicBrainz DB
 - [pycdio](https://pypi.python.org/pypi/pycdio/) (to avoid bugs please use `pycdio` **0.20** & `libcdio` >= **0.90** or, with previous `libcdio` versions, `pycdio` **0.17**), for drive identification
@@ -135,13 +136,15 @@ The simplest way to get started making accurate rips is:
 
    Consult the [AccurateRip's CD Drive Offset database](http://www.accuraterip.com/driveoffsets.htm) for your drive. Drive information can be retrieved with `whipper drive list`.
 
-   `whipper offset find -o OFFSET`
+   `whipper offset find -o insert-numeric-value-here`
 
    If you omit the `-o` argument, whipper will try a long, popularity-sorted list of drive offsets.
 
    If you can not confirm your drive offset value but wish to set a default regardless, set `read_offset = insert-numeric-value-here` in `whipper.conf`.
 
    Offsets confirmed with `whipper offset find` are automatically written to the configuration file.
+
+   If specifying the offset manually, please note that: if positive it must be written as a number without sign (ex: `+102` -> `102`), if negative it must include the sign too (ex: `-102` -> `-102`).
 
 4. Rip the disc by running
 
@@ -184,6 +187,8 @@ Note: to get a literal `%` character it must be doubled.
 
 ## Backward incompatible changes
 
+- The image retag feature has been knowingly broken since [PR #130](https://github.com/JoeLametta/whipper/pull/130)
+- Structural changes broke compatibility with existing logger plugins ([PR #94]https://github.com/JoeLametta/whipper/pull/94))
 - Dropped external git submodules ([PR #31](https://github.com/JoeLametta/whipper/pull/31), [PR #92](https://github.com/JoeLametta/whipper/pull/92))
 - Whipper executable name changed: from `rip` to `whipper` ([PR #70](https://github.com/JoeLametta/whipper/pull/70))
 - Whipper has adopted new config/cache/state file paths ([PR #42](https://github.com/JoeLametta/whipper/pull/42))
@@ -300,7 +305,7 @@ Thanks to:
 
 You can find us and talk about the project on IRC: [freenode](https://webchat.freenode.net/?channels=%23whipper), **#whipper** channel.
 
-- [PassTheHeadphones thread (official)](https://passtheheadphones.me/forums.php?action=viewthread&threadid=150)
+- [Redacted thread (official)](https://redacted.ch/forums.php?action=viewthread&threadid=150)
 - [Arch Linux whipper AUR package](https://aur.archlinux.org/packages/whipper/)
 - [Arch Linux whipper-git AUR package](https://aur.archlinux.org/packages/whipper-git/)
 - [Fedora Copr repository for whipper](https://copr.fedorainfracloud.org/coprs/mruszczyk/whipper/)

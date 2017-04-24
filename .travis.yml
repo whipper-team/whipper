@@ -6,11 +6,11 @@ install:
     # Dependencies
     - sudo apt-get -qq update
     - sudo pip install --upgrade -qq pip
-    - sudo apt-get -qq install cdparanoia cdrdao flac gstreamer0.10-plugins-base gstreamer0.10-plugins-good libcdio-dev libiso9660-dev libsndfile1-dev python-cddb python-gst0.10 python-gobject python-musicbrainzngs python-mutagen python-setuptools sox swig
+    - sudo apt-get -qq install cdparanoia cdrdao flac libcdio-dev libiso9660-dev libsndfile1-dev python-cddb python-gst0.10 python-gobject python-musicbrainzngs python-mutagen python-setuptools sox swig
     - sudo pip install pycdio
 
     # Testing dependencies
-    - sudo apt-get -qq install gstreamer0.10-tools python-twisted-core
+    - sudo apt-get -qq install python-twisted-core
 
     # Build bundled C utils
     - cd src
