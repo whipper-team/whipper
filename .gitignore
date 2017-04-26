@@ -7,3 +7,8 @@ REVISION
 # For Python development using Eclipse IDE
 .project
 .pydevproject
+
+# setup.py install generated files
+build/
+dist/
+whipper.egg-info/
