@@ -37,12 +37,12 @@ class AudioLengthPathTestCase(tcommon.TestCase):
 class NormalAudioLengthPathTestCase(AudioLengthPathTestCase):
 
     def testSingleQuote(self):
-        self._testSuffix(u"morituri.test.Guns 'N Roses.flac")
+        self._testSuffix(u"whipper.test.Guns 'N Roses.flac")
 
     def testDoubleQuote(self):
         # This test makes sure we can checksum files with double quote in
         # their name
-        self._testSuffix(u'morituri.test.12" edit.flac')
+        self._testSuffix(u'whipper.test.12" edit.flac')
 
 
 class UnicodeAudioLengthPathTestCase(AudioLengthPathTestCase,
@@ -50,7 +50,7 @@ class UnicodeAudioLengthPathTestCase(AudioLengthPathTestCase,
 
     def testUnicodePath(self):
         # this test makes sure we can checksum a unicode path
-        self._testSuffix(u'morituri.test.B\xeate Noire.empty.flac')
+        self._testSuffix(u'whipper.test.B\xeate Noire.empty.flac')
 
 class AbsentFileAudioLengthPathTestCase(AudioLengthPathTestCase):
     def testAbsentFile(self):

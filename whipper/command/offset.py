@@ -198,7 +198,7 @@ CD in the AccurateRip database."""
         logger.debug('Ripping track %r with offset %d ...', track, offset)
 
         fd, path = tempfile.mkstemp(
-            suffix=u'.track%02d.offset%d.morituri.wav' % (
+            suffix=u'.track%02d.offset%d.whipper.wav' % (
                 track, offset))
         os.close(fd)
 

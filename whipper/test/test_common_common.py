@@ -12,7 +12,7 @@ from whipper.test import common as tcommon
 class ShrinkTestCase(tcommon.TestCase):
 
     def testSufjan(self):
-        path = (u'morituri/Sufjan Stevens - Illinois/02. Sufjan Stevens - '
+        path = (u'whipper/Sufjan Stevens - Illinois/02. Sufjan Stevens - '
                  'The Black Hawk War, or, How to Demolish an Entire '
                  'Civilization and Still Feel Good About Yourself in the '
                  'Morning, or, We Apologize for the Inconvenience but '

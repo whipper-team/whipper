@@ -98,7 +98,7 @@ class CureTestCase(common.TestCase):
 
     def testGetRealPath(self):
         self.assertRaises(KeyError, self.toc.getRealPath, u'track01.wav')
-        (fd, path) = tempfile.mkstemp(suffix=u'.morituri.test.wav')
+        (fd, path) = tempfile.mkstemp(suffix=u'.whipper.test.wav')
         self.assertEquals(self.toc.getRealPath(path), path)
 
         winpath = path.replace('/', '\\')

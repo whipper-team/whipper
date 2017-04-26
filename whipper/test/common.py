@@ -80,7 +80,7 @@ class UnicodeTestMixin:
     # A helper mixin to skip tests if we're not in a UTF-8 locale
 
     try:
-        os.stat(u'morituri.test.B\xeate Noire.empty')
+        os.stat(u'whipper.test.B\xeate Noire.empty')
     except UnicodeEncodeError:
         skip = 'No UTF-8 locale'
     except OSError:

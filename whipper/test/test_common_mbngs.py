@@ -14,7 +14,7 @@ class MetadataTestCase(unittest.TestCase):
     # Generated with rip -R cd info
     def testJeffEverybodySingle(self):
         path = os.path.join(os.path.dirname(__file__),
-            'morituri.release.3451f29c-9bb8-4cc5-bfcc-bd50104b94f8.json')
+            'whipper.release.3451f29c-9bb8-4cc5-bfcc-bd50104b94f8.json')
         handle = open(path, "rb")
         response = json.loads(handle.read())
         handle.close()
@@ -27,7 +27,7 @@ class MetadataTestCase(unittest.TestCase):
     def test2MeterSessies10(self):
         # various artists, multiple artists per track
         path = os.path.join(os.path.dirname(__file__),
-            'morituri.release.a76714e0-32b1-4ed4-b28e-f86d99642193.json')
+            'whipper.release.a76714e0-32b1-4ed4-b28e-f86d99642193.json')
         handle = open(path, "rb")
         response = json.loads(handle.read())
         handle.close()
@@ -55,7 +55,7 @@ class MetadataTestCase(unittest.TestCase):
     def testBalladOfTheBrokenSeas(self):
         # various artists disc
         path = os.path.join(os.path.dirname(__file__),
-            'morituri.release.e32ae79a-336e-4d33-945c-8c5e8206dbd3.json')
+            'whipper.release.e32ae79a-336e-4d33-945c-8c5e8206dbd3.json')
         handle = open(path, "rb")
         response = json.loads(handle.read())
         handle.close()
@@ -88,7 +88,7 @@ class MetadataTestCase(unittest.TestCase):
         # single artist disc, but with multiple artists tracks
         # see https://github.com/thomasvs/morituri/issues/19
         path = os.path.join(os.path.dirname(__file__),
-            'morituri.release.61c6fd9b-18f8-4a45-963a-ba3c5d990cae.json')
+            'whipper.release.61c6fd9b-18f8-4a45-963a-ba3c5d990cae.json')
         handle = open(path, "rb")
         response = json.loads(handle.read())
         handle.close()

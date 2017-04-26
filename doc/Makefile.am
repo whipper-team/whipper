@@ -1,4 +1,4 @@
-EXTRA_DIST = morituri.rss2 morituri.ics $(man_MANS)
+EXTRA_DIST = whipper.rss2 whipper.ics $(man_MANS)
 DISTCLEANFILES = $(man_MANS)
 
 all-local: feeds reference
@@ -12,14 +12,14 @@ reference:
 endif
 
 # generate feeds
-feeds: morituri.rss2 morituri.ics
+feeds: whipper.rss2 whipper.ics
 
 # don't fail fatally if user does not have RDF
-morituri.rss2: $(top_srcdir)/morituri.doap
-	-moap doap -f $(top_srcdir)/morituri.doap rss > morituri.rss2
+whipper.rss2: $(top_srcdir)/whipper.doap
+	-moap doap -f $(top_srcdir)/whipper.doap rss > whipper.rss2
 
-morituri.ics: $(top_srcdir)/morituri.doap
-	-moap doap -f $(top_srcdir)/morituri.doap ical > morituri.ics
+whipper.ics: $(top_srcdir)/whipper.doap
+	-moap doap -f $(top_srcdir)/whipper.doap ical > whipper.ics
 
 man_MANS = rip.1
 

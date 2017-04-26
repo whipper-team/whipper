@@ -454,7 +454,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         if taglist:
             logger.debug('read and verify with taglist %r', taglist)
         # FIXME: choose a dir on the same disk/dir as the final path
-        fd, tmppath = tempfile.mkstemp(suffix='.morituri.wav')
+        fd, tmppath = tempfile.mkstemp(suffix='.whipper.wav')
         tmppath = unicode(tmppath)
         os.close(fd)
         self._tmpwavpath = tmppath
@@ -581,7 +581,7 @@ class AnalyzeTask(ctask.PopenTask):
 
     def __init__(self, device=None):
         # cdparanoia -A *always* writes cdparanoia.log
-        self.cwd = tempfile.mkdtemp(suffix='.morituri.cache')
+        self.cwd = tempfile.mkdtemp(suffix='.whipper.cache')
         self.command = ['cdparanoia', '-A']
         if device:
             self.command += ['-d', device]

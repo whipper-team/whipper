@@ -12,7 +12,7 @@ from whipper.test import common as tcommon
 class ConfigTestCase(tcommon.TestCase):
 
     def setUp(self):
-        fd, self._path = tempfile.mkstemp(suffix=u'.morituri.test.config')
+        fd, self._path = tempfile.mkstemp(suffix=u'.whipper.test.config')
         os.close(fd)
         self._config = config.Config(self._path)
 

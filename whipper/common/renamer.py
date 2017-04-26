@@ -201,7 +201,7 @@ class RenameInFile(Operation):
 
     def do(self):
         with open(self._path) as handle:
-            (fd, name) = tempfile.mkstemp(suffix='.morituri')
+            (fd, name) = tempfile.mkstemp(suffix='.whipper')
 
             for s in handle:
                 os.write(fd, s.replace(self._source, self._destination))

@@ -90,7 +90,7 @@ def _record(record, which, name, what):
     # optionally record to disc as a JSON serialization
     if record:
         import json
-        filename = 'morituri.%s.%s.json' % (which, name)
+        filename = 'whipper.%s.%s.json' % (which, name)
         handle = open(filename, 'w')
         handle.write(json.dumps(what))
         handle.close()

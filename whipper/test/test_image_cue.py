@@ -59,7 +59,7 @@ class KanyeMixedTestCase(unittest.TestCase):
 class WriteCueFileTestCase(unittest.TestCase):
 
     def testWrite(self):
-        fd, path = tempfile.mkstemp(suffix=u'.morituri.test.cue')
+        fd, path = tempfile.mkstemp(suffix=u'.whipper.test.cue')
         os.close(fd)
 
         it = table.Table()

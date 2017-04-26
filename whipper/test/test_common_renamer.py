@@ -12,7 +12,7 @@ from whipper.common import renamer
 class RenameInFileTestcase(unittest.TestCase):
 
     def setUp(self):
-        (fd, self._path) = tempfile.mkstemp(suffix='.morituri.renamer.infile')
+        (fd, self._path) = tempfile.mkstemp(suffix='.whipper.renamer.infile')
         os.write(fd, 'This is a test\nThis is another\n')
         os.close(fd)
 
@@ -42,11 +42,11 @@ class RenameInFileTestcase(unittest.TestCase):
 class RenameFileTestcase(unittest.TestCase):
 
     def setUp(self):
-        (fd, self._source) = tempfile.mkstemp(suffix='.morituri.renamer.file')
+        (fd, self._source) = tempfile.mkstemp(suffix='.whipper.renamer.file')
         os.write(fd, 'This is a test\nThis is another\n')
         os.close(fd)
         (fd, self._destination) = tempfile.mkstemp(
-            suffix='.morituri.renamer.file')
+            suffix='.whipper.renamer.file')
         os.close(fd)
         os.unlink(self._destination)
         self._operation = renamer.RenameFile(self._source, self._destination)
@@ -82,15 +82,15 @@ class RenameFileTestcase(unittest.TestCase):
 class OperatorTestCase(unittest.TestCase):
 
     def setUp(self):
-        self._statePath = tempfile.mkdtemp(suffix='.morituri.renamer.operator')
+        self._statePath = tempfile.mkdtemp(suffix='.whipper.renamer.operator')
         self._operator = renamer.Operator(self._statePath, 'test')
 
         (fd, self._source) = tempfile.mkstemp(
-            suffix='.morituri.renamer.operator')
+            suffix='.whipper.renamer.operator')
         os.write(fd, 'This is a test\nThis is another\n')
         os.close(fd)
         (fd, self._destination) = tempfile.mkstemp(
-            suffix='.morituri.renamer.operator')
+            suffix='.whipper.renamer.operator')
         os.close(fd)
         os.unlink(self._destination)
         self._operator.addOperation(

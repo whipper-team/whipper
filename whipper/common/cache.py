@@ -81,7 +81,7 @@ class Persister:
 
         # pickle
         self.object = obj
-        (fd, path) = tempfile.mkstemp(suffix='.morituri.pickle')
+        (fd, path) = tempfile.mkstemp(suffix='.whipper.pickle')
         handle = os.fdopen(fd, 'wb')
         import pickle
         pickle.dump(obj, handle, 2)

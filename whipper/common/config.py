@@ -51,7 +51,7 @@ class Config:
                      len(self._parser.sections()))
 
     def write(self):
-        fd, path = tempfile.mkstemp(suffix=u'.moriturirc')
+        fd, path = tempfile.mkstemp(suffix=u'.whipperrc')
         handle = os.fdopen(fd, 'w')
         self._parser.write(handle)
         handle.close()
