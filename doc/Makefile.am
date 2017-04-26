@@ -4,8 +4,8 @@ DISTCLEANFILES = $(man_MANS)
 all-local: feeds reference
 
 if HAVE_EPYDOC
-reference: $(top_srcdir)/morituri/*.py feeds
-	epydoc -o reference $(top_srcdir)/morituri
+reference: $(top_srcdir)/whipper/*.py feeds
+	epydoc -o reference $(top_srcdir)/whipper
 else
 reference:
 	@true
@@ -23,8 +23,8 @@ morituri.ics: $(top_srcdir)/morituri.doap
 
 man_MANS = rip.1
 
-rip.1: $(top_srcdir)/morituri/extern/python-command/scripts/help2man $(top_srcdir)/morituri
-	PYTHONPATH=$(top_srcdir) $(PYTHON) $(top_srcdir)/morituri/extern/python-command/scripts/help2man morituri.rip.main.Rip rip > rip.1
+rip.1: $(top_srcdir)/whipper/extern/python-command/scripts/help2man $(top_srcdir)/whipper
+	PYTHONPATH=$(top_srcdir) $(PYTHON) $(top_srcdir)/whipper/extern/python-command/scripts/help2man whipper.rip.main.Rip rip > rip.1
 
 clean-local:
 	@rm -rf reference
