@@ -1,8 +1,6 @@
 # -*- Mode: Python; test-case-name: whipper.test.test_common_path -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
-# Morituri - for those about to RIP
-
 # Copyright (C) 2009 Thomas Vander Stichele
 
 # This file is part of whipper.
