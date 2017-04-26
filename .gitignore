@@ -12,3 +12,6 @@ REVISION
 build/
 dist/
 whipper.egg-info/
+
+# From coverage report
+.coverage
