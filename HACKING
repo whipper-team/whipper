@@ -44,7 +44,7 @@ unicode
 - Use asserts liberally to ensure this so we catch problems earlier.
 - All gst.parse_launch() pipelines should be passed as utf-8; use
   encode('utf-8')
-- morituri.extern.log.log is not unicode-safe; don't pass it unicode objects;
+- whipper.extern.log.log is not unicode-safe; don't pass it unicode objects;
   for example, always use %r to log paths
 - run with RIP_DEBUG=5 once in a while to catch unicode/logging errors.
 - Also use unicode prefix/suffix in tempfile.* methods; to force unicode.

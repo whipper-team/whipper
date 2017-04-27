@@ -182,7 +182,7 @@ blacklist = [
 #warning: couldn't find real module for class xml.parsers.expat.ExpatError (module name: xml.parsers.expat)
     'xml.parsers.expat',
     'unittest',
-    'morituri.extern.log.log',
+    'whipper.extern.log.log',
 ]
 
 # ignore global variables not used if name is one of these values

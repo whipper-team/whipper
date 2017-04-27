@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
-from morituri import __version__ as morituri_version
+from whipper import __version__ as whipper_version
 
 setup(
     name="whipper",
-    version=morituri_version,
+    version=whipper_version,
     description="a secure cd ripper preferring accuracy over speed",
     author=['Thomas Vander Stichele', 'Joe Lametta', 'Samantha Baldwin'],
     maintainer=['Joe Lametta', 'Samantha Baldwin'],
@@ -12,7 +12,7 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'whipper = morituri.command.main:main'
+            'whipper = whipper.command.main:main'
          ]
     }
 )
