@@ -82,7 +82,7 @@ class Image(object):
 
         # CD's have a standard lead-in time of 2 seconds;
         # checksums that use it should add it there
-        if verify.lengths.has_key(0):
+        if 0 in verify.lengths:
             offset = verify.lengths[0]
         else:
             offset = self.cue.table.tracks[0].getIndex(1).relative
