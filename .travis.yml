@@ -31,4 +31,4 @@ install:
 
 script:
     - if [ ! "$FLAKE8" = true ]; then python -m unittest discover; fi
-    - if [ "$FLAKE8" = true ]; then flake8; fi
+    - if [ "$FLAKE8" = true ]; then flake8 --benchmark --statistics; fi
