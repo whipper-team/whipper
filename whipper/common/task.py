@@ -145,5 +145,3 @@ class PopenTask(task.Task):
         Called when the command is missing.
         """
         pass
-
-
