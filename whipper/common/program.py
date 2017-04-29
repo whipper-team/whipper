@@ -243,10 +243,13 @@ class Program:
         # when disambiguating, use catalogNumber then barcode
         if disambiguate:
             templateParts = list(os.path.split(template))
-            if self.metadata.catalogNumber:
-                templateParts[-2] += ' (%s)' % self.metadata.catalogNumber
-            elif self.metadata.barcode:
-                templateParts[-2] += ' (%s)' % self.metadata.barcode
+            # Find the section of the template with the release name
+            for i, part in enumerate(templateParts):
+                if "%d" in part:
+                    if self.metadata.catalogNumber:
+                        templateParts[i] += ' (%s)' % self.metadata.catalogNumber
+                    elif self.metadata.barcode:
+                        templateParts[i] += ' (%s)' % self.metadata.barcode
             template = os.path.join(*templateParts)
             logger.debug('Disambiguated template to %r' % template)
 
