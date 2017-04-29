@@ -251,6 +251,12 @@ class Program:
                     elif self.metadata.barcode:
                         templateParts[i] += ' (%s)' % self.metadata.barcode
                     break
+            else:
+                # No parts of the template contain the release
+                if self.metadata.catalogNumber:
+                    templateParts[-1] += ' (%s)' % self.metadata.catalogNumber
+                elif self.metadata.barcode:
+                    templateParts[-1] += ' (%s)' % self.metadata.barcode
             template = os.path.join(*templateParts)
             logger.debug('Disambiguated template to %r' % template)
 
