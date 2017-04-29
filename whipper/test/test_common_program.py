@@ -179,3 +179,25 @@ class PathTestCase(unittest.TestCase):
         for template, expected_path in templates.iteritems():
             path = prog.getPath(u'/tmp', template, 'mbdiscid', 0, disambiguate=True)
             self.assertEquals(path, u'/tmp/' + expected_path)
+
+    def testAddDisambiguationUnitTest(self):
+        """Unit test for Program.addDisambiguation()."""
+        prog = program.Program(config.Config())
+        md = mbngs.DiscMetadata()
+
+        # No relevant disambiguation metadata
+        self.assertEquals(
+            prog.addDisambiguation(u'Test', md),
+            u'Test')
+
+        # Only barcode available
+        md.barcode = '033651008927'
+        self.assertEquals(
+            prog.addDisambiguation(u'Test', md),
+            u'Test (033651008927)')
+
+        # Both catalog number and barcode available
+        md.catalogNumber = 'RHR CD 89'
+        self.assertEquals(
+            prog.addDisambiguation(u'Test', md),
+            u'Test (RHR CD 89)')
