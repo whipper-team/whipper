@@ -250,6 +250,7 @@ class Program:
                         templateParts[i] += ' (%s)' % self.metadata.catalogNumber
                     elif self.metadata.barcode:
                         templateParts[i] += ' (%s)' % self.metadata.barcode
+                    break
             template = os.path.join(*templateParts)
             logger.debug('Disambiguated template to %r' % template)
 
