@@ -159,3 +159,23 @@ class PathTestCase(unittest.TestCase):
         path = prog.getPath(u'/tmp', template, 'mbdiscid', 0, disambiguate=True)
         self.assertEquals(path,
             u'/tmp/Guy Davis/Call Down the Thunder - 1996 (RHR CD 89)/Call Down the Thunder/Call Down the Thunder')
+
+    def testDisambiguateOnNoReleaseTitle(self):
+        """Test that disambiguation gets added even if there's no release title in the template."""
+        prog = program.Program(config.Config())
+        md = mbngs.DiscMetadata()
+        md.artist = 'Guy Davis'
+        md.sortName = 'Davis, Guy'
+        md.title = 'Call Down the Thunder'
+        md.release = '1996'
+        md.catalogNumber = 'RHR CD 89'
+        prog.metadata = md
+        templates = {
+            u'%A/%y': u'Guy Davis/1996 (RHR CD 89)',
+            u'%A - %y': u'Guy Davis - 1996 (RHR CD 89)',
+            u'%y/%A': u'1996/Guy Davis (RHR CD 89)',
+        }
+
+        for template, expected_path in templates.iteritems():
+            path = prog.getPath(u'/tmp', template, 'mbdiscid', 0, disambiguate=True)
+            self.assertEquals(path, u'/tmp/' + expected_path)
