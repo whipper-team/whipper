@@ -119,3 +119,21 @@ class PathTestCase(unittest.TestCase):
         path = prog.getPath(u'/tmp', u'%A/%d', 'mbdiscid', 0)
         self.assertEquals(path,
                           u'/tmp/Jeff Buckley/Grace')
+
+    def testDisambiguateOnRelease(self):
+        """Test that disambiguation gets placed in the same part of the path as the release name.
+
+        See https://github.com/JoeLametta/whipper/issues/127"""
+        prog = program.Program(config.Config())
+        md = mbngs.DiscMetadata()
+        md.artist = 'Guy Davis'
+        md.sortName = 'Davis, Guy'
+        md.title = 'Call Down the Thunder'
+        md.release = '1996'
+        md.catalogNumber = 'RHR CD 89'
+        template = u'%A/%d - %y'
+        prog.metadata = md
+
+        path = prog.getPath(u'/tmp', template, 'mbdiscid', 0, disambiguate=True)
+        self.assertEquals(path,
+                          u'/tmp/Guy Davis/Call Down the Thunder - 1996 (RHR CD 89)')
