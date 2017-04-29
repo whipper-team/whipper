@@ -143,3 +143,19 @@ class PathTestCase(unittest.TestCase):
         for template, expected_path in templates.iteritems():
             path = prog.getPath(u'/tmp', template, 'mbdiscid', 0, disambiguate=True)
             self.assertEquals(path, u'/tmp/' + expected_path)
+
+    def testDisambiguateOnReleaseOnlyOnce(self):
+        """Test that disambiguation gets added only once."""
+        prog = program.Program(config.Config())
+        md = mbngs.DiscMetadata()
+        md.artist = 'Guy Davis'
+        md.sortName = 'Davis, Guy'
+        md.title = 'Call Down the Thunder'
+        md.release = '1996'
+        md.catalogNumber = 'RHR CD 89'
+        prog.metadata = md
+        template = u'%A/%d - %y/%d/%d'
+
+        path = prog.getPath(u'/tmp', template, 'mbdiscid', 0, disambiguate=True)
+        self.assertEquals(path,
+            u'/tmp/Guy Davis/Call Down the Thunder - 1996 (RHR CD 89)/Call Down the Thunder/Call Down the Thunder')
