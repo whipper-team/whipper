@@ -131,9 +131,15 @@ class PathTestCase(unittest.TestCase):
         md.title = 'Call Down the Thunder'
         md.release = '1996'
         md.catalogNumber = 'RHR CD 89'
-        template = u'%A/%d - %y'
         prog.metadata = md
+        templates = {
+            u'%A/%d - %y': u'Guy Davis/Call Down the Thunder - 1996 (RHR CD 89)',
+            u'%A - %d - %y': u'Guy Davis - Call Down the Thunder - 1996 (RHR CD 89)',
+            u'%A/%y/%d': u'Guy Davis/1996/Call Down the Thunder (RHR CD 89)',
+            u'%y/%d/%A': u'1996/Call Down the Thunder (RHR CD 89)/Guy Davis',
+            u'%d/%A/%y': u'Call Down the Thunder (RHR CD 89)/Guy Davis/1996',
+        }
 
-        path = prog.getPath(u'/tmp', template, 'mbdiscid', 0, disambiguate=True)
-        self.assertEquals(path,
-                          u'/tmp/Guy Davis/Call Down the Thunder - 1996 (RHR CD 89)')
+        for template, expected_path in templates.iteritems():
+            path = prog.getPath(u'/tmp', template, 'mbdiscid', 0, disambiguate=True)
+            self.assertEquals(path, u'/tmp/' + expected_path)
