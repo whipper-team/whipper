@@ -242,7 +242,7 @@ class Program:
 
         # when disambiguating, use catalogNumber then barcode
         if disambiguate:
-            templateParts = list(os.path.split(template))
+            templateParts = template.split(os.sep)
             # Find the section of the template with the release name
             for i, part in enumerate(templateParts):
                 if "%d" in part:
