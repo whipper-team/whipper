@@ -339,6 +339,8 @@ class Program:
                 if metadata.catalogNumber:
                     self._stdout.write("Cat no  : %s\n" %
                                        metadata.catalogNumber)
+                if metadata.mediumFormat:
+                    self._stdout.write("Format  : %s\n" % metadata.mediumFormat)
 
                 delta = abs(metadata.duration - ittoc.duration())
                 if delta not in deltas:

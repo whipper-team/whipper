@@ -79,6 +79,7 @@ class DiscMetadata(object):
 
     catalogNumber = None
     barcode = None
+    mediumFormat = None
 
     def __init__(self):
         self.tracks = []
@@ -194,6 +195,9 @@ def _getMetadata(releaseShort, release, discid, country=None):
     lil = release.get('label-info-list', [{}])
     if lil:
         discMD.catalogNumber = lil[0].get('catalog-number')
+    ml = release.get('medium-list', [{}])
+    if ml:
+        discMD.mediumFormat = ml[0].get('format', None)
     tainted = False
     duration = 0
 
