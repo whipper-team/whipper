@@ -143,8 +143,8 @@ class _CD(BaseCommand):
                                 "--unknown not passed")
                 return -1
 
-        is_cdr = cdrdao.ReadDiscInfo(self.device)
-        if is_cdr and not getattr(self.options, 'cdr', False):
+        self.program.result.isCdr = cdrdao.DetectCdr(self.device)
+        if self.program.result.isCdr and not getattr(self.options, 'cdr', False):
             logger.critical("inserted disc seems to be a CD-R, "
                             "--cdr not passed")
             return -1

@@ -47,7 +47,7 @@ def read_toc(device, fast_toc=False):
     return toc
 
 
-def ReadDiscInfo(device):
+def DetectCdr(device):
     """
     Return whether cdrdao detects a CD-R for 'device'.
     """
