@@ -91,4 +91,3 @@ class CacheTestCase(common.TestCase):
         t = AnalyzeFileTask(path)
         self.runner.run(t)
         self.failUnless(t.defeatsCache)
-

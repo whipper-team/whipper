@@ -114,5 +114,3 @@ class MetadataTestCase(unittest.TestCase):
             ';ec07a209-55ff-4084-bc41-9d4d1764e075'
             ';f626b92e-07b1-4a19-ad13-c09d690db66c'
         )
-
-

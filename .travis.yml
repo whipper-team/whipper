@@ -2,6 +2,14 @@ sudo: required
 
 language: bash
 
+env:
+    - FLAKE8=false
+    - FLAKE8=true
+
+matrix:
+    allow_failures:
+        - env: FLAKE8=true
+
 install:
     # Dependencies
     - sudo apt-get -qq update
@@ -11,6 +19,7 @@ install:
 
     # Testing dependencies
     - sudo apt-get -qq install python-twisted-core
+    - sudo pip install flake8
 
     # Build bundled C utils
     - cd src
@@ -21,4 +30,5 @@ install:
     - sudo python setup.py install
 
 script:
-    - python -m unittest discover
+    - if [ ! "$FLAKE8" = true ]; then python -m unittest discover; fi
+    - if [ "$FLAKE8" = true ]; then flake8 --benchmark --statistics; fi

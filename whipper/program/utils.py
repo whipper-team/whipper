@@ -18,8 +18,8 @@ def load_device(device):
     """
     logger.debug("loading (eject -t) device %s", device)
     os.system('eject -t %s' % device)
-    
-    
+
+
 def unmount_device(device):
     """
     Unmount the given device if it is mounted, as happens with automounted

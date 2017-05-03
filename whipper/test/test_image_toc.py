@@ -442,4 +442,3 @@ class SurferRosaTestCase(common.TestCase):
         self.assertEquals(t.getIndex(2).absolute, 111257 + 3370)
 
 #        print self.toc.table.cue()
-
