@@ -23,6 +23,7 @@ import os
 import logging
 logger = logging.getLogger(__name__)
 
+
 def _listify(listOrString):
     if type(listOrString) == str:
         return [listOrString, ]
@@ -62,8 +63,11 @@ def _getAllDevicePathsStatic():
 def getDeviceInfo(path):
     try:
         import cdio
+    # TODO: Remove this identical dependency check included in other files
     except ImportError:
-        return None
+        raise ImportError("Pycdio module import failed.\n"
+                          "This is a hard dependency: if not "
+                          "available please install it")
 
     device = cdio.Device(path)
     ok, vendor, model, release = device.get_hwinfo()

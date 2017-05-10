@@ -52,8 +52,8 @@ class Image(object):
         self._path = path
         self.cue = cue.CueFile(path)
         self.cue.parse()
-        self._offsets = [] # 0 .. trackCount - 1
-        self._lengths = [] # 0 .. trackCount - 1
+        self._offsets = []  # 0 .. trackCount - 1
+        self._lengths = []  # 0 .. trackCount - 1
 
         self.table = None
 
@@ -98,8 +98,8 @@ class Image(object):
             # FIXME: this probably only works for non-compliant .CUE files
             # where pregap is put at end of previous file
             t.index(1, absolute=offset,
-                path=self.cue.table.tracks[i].getIndex(1).path,
-                relative=0)
+                    path=self.cue.table.tracks[i].getIndex(1).path,
+                    relative=0)
 
             offset += length
 
@@ -128,17 +128,19 @@ class AccurateRipChecksumTask(task.MultiSeparateTask):
             index = track.indexes[1]
             length = cue.getTrackLength(track)
             if length < 0:
-                logger.debug('track %d has unknown length' % (trackIndex + 1, ))
+                logger.debug('track %d has unknown length' %
+                             (trackIndex + 1, ))
             else:
                 logger.debug('track %d is %d samples long' % (
                     trackIndex + 1, length))
 
             path = image.getRealPath(index.path)
 
-
-            checksumTask = checksum.FastAccurateRipChecksumTask(path,
-                trackNumber=trackIndex + 1, trackCount=len(cue.table.tracks),
-                wave=True, v2=False)
+            checksumTask = checksum.FastAccurateRipChecksumTask(
+                                path,
+                                trackNumber=trackIndex + 1,
+                                trackCount=len(cue.table.tracks),
+                                wave=True, v2=False)
 
             self.addTask(checksumTask)
 
@@ -202,7 +204,8 @@ class ImageVerifyTask(task.MultiSeparateTask):
 
             if taskk.length is None:
                 raise ValueError("Track length was not found; look for "
-                    "earlier errors in debug log (set RIP_DEBUG=4)")
+                                 "earlier errors in debug log "
+                                 "(set RIP_DEBUG=4)")
             # print '%d has length %d' % (trackIndex, taskk.length)
             index = track.indexes[1]
             assert taskk.length % common.SAMPLES_PER_FRAME == 0
@@ -235,8 +238,9 @@ class ImageEncodeTask(task.MultiSeparateTask):
             root, ext = os.path.splitext(os.path.basename(path))
             outpath = os.path.join(outdir, root + '.' + 'flac')
             logger.debug('schedule encode to %r', outpath)
-            taskk = encode.FlacEncodeTask(path, os.path.join(outdir,
-                root + '.' + 'flac'))
+            taskk = encode.FlacEncodeTask(path,
+                                          os.path.join(outdir,
+                                                       root + '.' + 'flac'))
             self.addTask(taskk)
 
         try:

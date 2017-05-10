@@ -13,12 +13,12 @@ class ShrinkTestCase(tcommon.TestCase):
 
     def testSufjan(self):
         path = (u'whipper/Sufjan Stevens - Illinois/02. Sufjan Stevens - '
-                 'The Black Hawk War, or, How to Demolish an Entire '
-                 'Civilization and Still Feel Good About Yourself in the '
-                 'Morning, or, We Apologize for the Inconvenience but '
-                 'You\'re Going to Have to Leave Now, or, "I Have Fought '
-                 'the Big Knives and Will Continue to Fight Them Until They '
-                 'Are Off Our Lands!".flac')
+                'The Black Hawk War, or, How to Demolish an Entire '
+                'Civilization and Still Feel Good About Yourself in the '
+                'Morning, or, We Apologize for the Inconvenience but '
+                'You\'re Going to Have to Leave Now, or, "I Have Fought '
+                'the Big Knives and Will Continue to Fight Them Until They '
+                'Are Off Our Lands!".flac')
 
         shorter = common.shrinkPath(path)
         self.failUnless(os.path.splitext(path)[0].startswith(
@@ -46,7 +46,7 @@ class GetRelativePathTestCase(tcommon.TestCase):
         track = './' + directory + '/01. Placebo - Taste in Men.flac'
 
         self.assertEquals(common.getRelativePath(track, cue),
-            '01. Placebo - Taste in Men.flac')
+                          '01. Placebo - Taste in Men.flac')
 
 
 class GetRealPathTestCase(tcommon.TestCase):
@@ -56,12 +56,12 @@ class GetRealPathTestCase(tcommon.TestCase):
         refPath = os.path.join(os.path.dirname(path), 'fake.cue')
 
         self.assertEquals(common.getRealPath(refPath, path),
-            path)
+                          path)
 
         # same path, but with wav extension, will point to flac file
         wavPath = path[:-4] + 'wav'
         self.assertEquals(common.getRealPath(refPath, wavPath),
-            path)
+                          path)
 
         os.close(fd)
         os.unlink(path)

@@ -67,8 +67,9 @@ class FastAccurateRipChecksumTask(etask.Task):
         self.schedule(0.0, self._arc)
 
     def _arc(self):
-        arc = accuraterip_checksum(self.path, self.trackNumber, self.trackCount,
-                self._wave, self._v2)
+        arc = accuraterip_checksum(self.path, self.trackNumber,
+                                   self.trackCount,
+                                   self._wave, self._v2)
         self.checksum = arc
 
         self.stop()

@@ -72,11 +72,12 @@ Retags the image from the given .cue files with tags obtained from MusicBrainz.
             sys.stdout.write('MusicBrainz disc id is %s\n' % mbdiscid)
 
             sys.stdout.write("MusicBrainz lookup URL %s\n" %
-                cueImage.table.getMusicBrainzSubmitURL())
+                             cueImage.table.getMusicBrainzSubmitURL())
             prog.metadata = prog.getMusicBrainz(cueImage.table, mbdiscid,
-                release=self.options.release_id,
-                country=self.options.country,
-                prompt=self.options.prompt)
+                                                release=(
+                                                    self.options.release_id),
+                                                country=self.options.country,
+                                                prompt=self.options.prompt)
 
             if not prog.metadata:
                 print 'Not in MusicBrainz database, skipping'
