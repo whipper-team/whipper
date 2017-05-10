@@ -28,7 +28,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-VA_ID = "89ad4ac3-39f7-470e-963a-56509c546377" # Various Artists
+VA_ID = "89ad4ac3-39f7-470e-963a-56509c546377"  # Various Artists
 
 
 class MusicBrainzException(Exception):
@@ -47,7 +47,7 @@ class NotFoundException(MusicBrainzException):
 class TrackMetadata(object):
     artist = None
     title = None
-    duration = None # in ms
+    duration = None  # in ms
     mbid = None
     sortName = None
     mbidArtist = None
@@ -131,7 +131,6 @@ class _Credit(list):
 
         return "".join(res)
 
-
     def getSortName(self):
         return self.joiner(lambda i: i.get('artist').get('sort-name', None))
 
@@ -140,7 +139,7 @@ class _Credit(list):
 
     def getIds(self):
         return self.joiner(lambda i: i.get('artist').get('id', None),
-            joinString=";")
+                           joinString=";")
 
 
 def _getMetadata(releaseShort, release, discid, country=None):
@@ -152,7 +151,7 @@ def _getMetadata(releaseShort, release, discid, country=None):
     @rtype: L{DiscMetadata} or None
     """
     logger.debug('getMetadata for release id %r',
-        release['id'])
+                 release['id'])
     if not release['id']:
         logger.warning('No id for release %r', release)
         return None
@@ -172,7 +171,6 @@ def _getMetadata(releaseShort, release, discid, country=None):
     discMD.various = False
     if discCredit[0]['artist']['id'] == VA_ID:
         discMD.various = True
-
 
     if len(discCredit) > 1:
         logger.debug('artist-credit more than 1: %r', discCredit)
@@ -233,8 +231,9 @@ def _getMetadata(releaseShort, release, discid, country=None):
                     # FIXME: unit of duration ?
                     track.duration = int(t['recording'].get('length', 0))
                     if not track.duration:
-                        logger.warning('track %r (%r) does not have duration' % (
-                                track.title, track.mbid))
+                        logger.warning('track %r (%r) does not '
+                                       'have duration' % (track.title,
+                                                          track.mbid))
                         tainted = True
                     else:
                         duration += track.duration
@@ -270,8 +269,12 @@ def musicbrainz(discid, country=None, record=False):
     ret = []
 
     try:
-        result = musicbrainzngs.get_releases_by_discid(discid,
-            includes=["artists", "recordings", "release-groups"])
+        result = (
+            musicbrainzngs.get_releases_by_discid(discid,
+                                                  includes=["artists",
+                                                            "recordings",
+                                                            "release-groups"])
+        )
     except musicbrainzngs.ResponseError, e:
         if isinstance(e.cause, urllib2.HTTPError):
             if e.cause.code == 404:
@@ -284,7 +287,7 @@ def musicbrainz(discid, country=None, record=False):
     # The result can either be a "disc" or a "cdstub"
     if result.get('disc'):
         logger.debug('found %d releases for discid %r',
-                  len(result['disc']['release-list']), discid)
+                     len(result['disc']['release-list']), discid)
         _record(record, 'releases', discid, result)
 
         # Display the returned results to the user.

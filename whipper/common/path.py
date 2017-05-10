@@ -51,12 +51,13 @@ class PathFilter(object):
         # change all fancy single/double quotes to normal quotes
         if self._quotes:
             path = re.sub(ur'[\xc2\xb4\u2018\u2019\u201b]', "'", path,
-                re.UNICODE)
+                          re.UNICODE)
             path = re.sub(ur'[\u201c\u201d\u201f]', '"', path, re.UNICODE)
 
         if self._special:
             path = separators(path)
-            path = re.sub(r'[\*\?&!\'\"\$\(\)`{}\[\]<>]', '_', path, re.UNICODE)
+            path = re.sub(r'[\*\?&!\'\"\$\(\)`{}\[\]<>]',
+                          '_', path, re.UNICODE)
 
         if self._fat:
             path = separators(path)

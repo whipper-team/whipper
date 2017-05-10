@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 CDRDAO = 'cdrdao'
 
+
 def read_toc(device, fast_toc=False):
     """
     Return cdrdao-generated table of contents for 'device'.
@@ -26,7 +27,7 @@ def read_toc(device, fast_toc=False):
     os.unlink(tocfile)
 
     cmd = [CDRDAO, 'read-toc'] + (['--fast-toc'] if fast_toc else []) + [
-           '--device', device, tocfile]
+        '--device', device, tocfile]
     # PIPE is the closest to >/dev/null we can get
     logger.debug("executing %r", cmd)
     p = Popen(cmd, stdout=PIPE, stderr=PIPE)
@@ -45,6 +46,7 @@ def read_toc(device, fast_toc=False):
     os.unlink(tocfile)
     return toc
 
+
 def version():
     """
     Return cdrdao version as a string.
@@ -56,12 +58,13 @@ def version():
                        "return code is " + str(cdrdao.returncode))
         return None
     m = re.compile(r'^Cdrdao version (?P<version>.*) - \(C\)').search(
-                   err.decode('utf-8'))
+        err.decode('utf-8'))
     if not m:
         logger.warning("cdrdao version detection failed: "
                        "could not find version")
         return None
     return m.group('version')
+
 
 def ReadTOCTask(device):
     """
@@ -69,11 +72,13 @@ def ReadTOCTask(device):
     """
     return read_toc(device, fast_toc=True)
 
+
 def ReadTableTask(device):
     """
     stopgap morituri-insanity compatibility layer
     """
     return read_toc(device)
+
 
 def getCDRDAOVersion():
     """

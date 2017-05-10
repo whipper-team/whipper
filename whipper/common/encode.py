@@ -29,6 +29,7 @@ from whipper.program import flac
 import logging
 logger = logging.getLogger(__name__)
 
+
 class SoxPeakTask(task.Task):
     description = 'Calculating peak level'
 
@@ -43,6 +44,7 @@ class SoxPeakTask(task.Task):
     def _sox_peak(self):
         self.peak = sox.peak_level(self.track_path)
         self.stop()
+
 
 class FlacEncodeTask(task.Task):
     description = 'Encoding to FLAC'
@@ -65,6 +67,8 @@ class FlacEncodeTask(task.Task):
 # I only made it a task for now because that it's easier to integrate in
 # program/cdparanoia.py - where whipper currently does the tagging.
 # We should just move the tagging to a more sensible place.
+
+
 class TaggingTask(task.Task):
     description = 'Writing tags to FLAC'
 

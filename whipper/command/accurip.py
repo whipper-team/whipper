@@ -26,6 +26,7 @@ from whipper.common import accurip
 import logging
 logger = logging.getLogger(__name__)
 
+
 class Show(BaseCommand):
     summary = "show accuraterip data"
     description = """
@@ -51,7 +52,6 @@ retrieves and display accuraterip data from the given URL
                 sys.stdout.write(
                     "Warning: response %d has %d tracks instead of %d\n" % (
                         i, r.trackCount, count))
-
 
         # checksum and confidence by track
         for track in range(count):

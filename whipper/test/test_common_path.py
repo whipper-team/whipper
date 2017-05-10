@@ -22,9 +22,9 @@ class FilterTestCase(common.TestCase):
     def testSpecial(self):
         part = u'<<< $&*!\' "()`{}[]spaceship>>>'
         self.assertEquals(self._filter.filter(part),
-               u'___ _____ ________spaceship___')
+                          u'___ _____ ________spaceship___')
 
     def testGreatest(self):
         part = u'Greatest Ever! Soul: The Definitive Collection'
         self.assertEquals(self._filter.filter(part),
-               u'Greatest Ever_ Soul - The Definitive Collection')
+                          u'Greatest Ever_ Soul - The Definitive Collection')

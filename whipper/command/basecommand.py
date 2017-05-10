@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 # A: The prefix matching prevents passing '-h' (and possibly other
 # options) to the child command.
 
+
 class BaseCommand():
     """
     A base command class for whipper commands.

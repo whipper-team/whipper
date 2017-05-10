@@ -24,10 +24,8 @@ import glob
 import urllib2
 import socket
 import sys
-
+import logging
 import gobject
-gobject.threads_init()
-
 from whipper.command.basecommand import BaseCommand
 from whipper.common import (
     accurip, common, config, drive, program, task
@@ -35,7 +33,8 @@ from whipper.common import (
 from whipper.program import cdrdao, cdparanoia, utils
 from whipper.result import result
 
-import logging
+gobject.threads_init()
+
 logger = logging.getLogger(__name__)
 
 
@@ -81,28 +80,30 @@ class _CD(BaseCommand):
     def add_arguments(parser):
         # FIXME: have a cache of these pickles somewhere
         parser.add_argument('-T', '--toc-pickle',
-            action="store", dest="toc_pickle",
-            help="pickle to use for reading and writing the TOC")
+                            action="store", dest="toc_pickle",
+                            help="pickle to use for reading and "
+                            "writing the TOC")
         parser.add_argument('-R', '--release-id',
-            action="store", dest="release_id",
-            help="MusicBrainz release id to match to (if there are multiple)")
+                            action="store", dest="release_id",
+                            help="MusicBrainz release id to match to "
+                            "(if there are multiple)")
         parser.add_argument('-p', '--prompt',
-            action="store_true", dest="prompt",
-            help="Prompt if there are multiple matching releases")
+                            action="store_true", dest="prompt",
+                            help="Prompt if there are multiple "
+                            "matching releases")
         parser.add_argument('-c', '--country',
-            action="store", dest="country",
-            help="Filter releases by country")
-
+                            action="store", dest="country",
+                            help="Filter releases by country")
 
     def do(self):
         self.config = config.Config()
         self.program = program.Program(self.config,
-            record=self.options.record,
-            stdout=sys.stdout)
+                                       record=self.options.record,
+                                       stdout=sys.stdout)
         self.runner = task.SyncRunner()
 
         # if the device is mounted (data session), unmount it
-        #self.device = self.parentCommand.options.device
+        # self.device = self.parentCommand.options.device
         self.device = self.options.device
         sys.stdout.write('Checking device %s\n' % self.device)
 
@@ -111,8 +112,8 @@ class _CD(BaseCommand):
 
         # first, read the normal TOC, which is fast
         self.ittoc = self.program.getFastToc(self.runner,
-            self.options.toc_pickle,
-            self.device)
+                                             self.options.toc_pickle,
+                                             self.device)
 
         # already show us some info based on this
         self.program.getRipResult(self.ittoc.getCDDBDiscId())
@@ -121,13 +122,14 @@ class _CD(BaseCommand):
         sys.stdout.write("MusicBrainz disc id %s\n" % self.mbdiscid)
 
         sys.stdout.write("MusicBrainz lookup URL %s\n" %
-            self.ittoc.getMusicBrainzSubmitURL())
+                         self.ittoc.getMusicBrainzSubmitURL())
 
-        self.program.metadata = self.program.getMusicBrainz(self.ittoc,
-            self.mbdiscid,
-            release=self.options.release_id,
-            country=self.options.country,
-            prompt=self.options.prompt)
+        self.program.metadata = (
+            self.program.getMusicBrainz(self.ittoc, self.mbdiscid,
+                                        release=self.options.release_id,
+                                        country=self.options.country,
+                                        prompt=self.options.prompt)
+        )
 
         if not self.program.metadata:
             # fall back to FreeDB for lookup
@@ -154,8 +156,9 @@ class _CD(BaseCommand):
 
         # now, read the complete index table, which is slower
         self.itable = self.program.getTable(self.runner,
-            self.ittoc.getCDDBDiscId(),
-            self.ittoc.getMusicBrainzDiscId(), self.device, offset)
+                                            self.ittoc.getCDDBDiscId(),
+                                            self.ittoc.getMusicBrainzDiscId(),
+                                            self.device, offset)
 
         assert self.itable.getCDDBDiscId() == self.ittoc.getCDDBDiscId(), \
             "full table's id %s differs from toc id %s" % (
@@ -221,6 +224,7 @@ class Info(_CD):
     def add_arguments(self):
         _CD.add_arguments(self.parser)
 
+
 class Rip(_CD):
     summary = "rip CD"
     # see whipper.common.program.Program.getPath for expansion
@@ -248,49 +252,62 @@ Log files will log the path to tracks relative to this directory.
             try:
                 default_offset = config.Config().getReadOffset(*info)
                 sys.stdout.write("Using configured read offset %d\n" %
-                                  default_offset)
+                                 default_offset)
             except KeyError:
                 pass
 
         _CD.add_arguments(self.parser)
 
         self.parser.add_argument('-L', '--logger',
-            action="store", dest="logger", default='whipper',
-            help="logger to use (choose from '" + "', '".join(loggers) + "')")
+                                 action="store", dest="logger",
+                                 default='whipper',
+                                 help="logger to use (choose from '"
+                                 "', '".join(loggers) + "')")
         # FIXME: get from config
         self.parser.add_argument('-o', '--offset',
-            action="store", dest="offset", default=default_offset,
-            help="sample read offset")
+                                 action="store", dest="offset",
+                                 default=default_offset,
+                                 help="sample read offset")
         self.parser.add_argument('-x', '--force-overread',
-            action="store_true", dest="overread", default=False,
-            help="Force overreading into the lead-out portion of the disc. "
-                "Works only if the patched cdparanoia package is installed "
-                "and the drive supports this feature. ")
+                                 action="store_true", dest="overread",
+                                 default=False,
+                                 help="Force overreading into the "
+                                 "lead-out portion of the disc. Works only "
+                                 "if the patched cdparanoia package is "
+                                 "installed and the drive "
+                                 "supports this feature. ")
         self.parser.add_argument('-O', '--output-directory',
-            action="store", dest="output_directory",
-            default=os.path.relpath(os.getcwd()),
-            help="output directory; will be included in file paths in log")
+                                 action="store", dest="output_directory",
+                                 default=os.path.relpath(os.getcwd()),
+                                 help="output directory; will be included "
+                                 "in file paths in log")
         self.parser.add_argument('-W', '--working-directory',
-            action="store", dest="working_directory",
-            help="working directory; whipper will change to this directory "
-                "and files will be created relative to it when not absolute")
+                                 action="store", dest="working_directory",
+                                 help="working directory; whipper will "
+                                 "change to this directory "
+                                 "and files will be created relative to "
+                                 "it when not absolute")
         self.parser.add_argument('--track-template',
-            action="store", dest="track_template",
-            default=DEFAULT_TRACK_TEMPLATE,
-            help="template for track file naming (default default)")
+                                 action="store", dest="track_template",
+                                 default=DEFAULT_TRACK_TEMPLATE,
+                                 help="template for track file naming "
+                                 "(default default)")
         self.parser.add_argument('--disc-template',
-            action="store", dest="disc_template",
-            default=DEFAULT_DISC_TEMPLATE,
-            help="template for disc file naming (default default)")
+                                 action="store", dest="disc_template",
+                                 default=DEFAULT_DISC_TEMPLATE,
+                                 help="template for disc file naming "
+                                 "(default default)")
         self.parser.add_argument('-U', '--unknown',
-            action="store_true", dest="unknown",
-            help="whether to continue ripping if the CD is unknown",
-            default=False)
+                                 action="store_true", dest="unknown",
+                                 help="whether to continue ripping if "
+                                 "the CD is unknown", default=False)
 
     def handle_arguments(self):
-        self.options.output_directory = os.path.expanduser(self.options.output_directory)
+        self.options.output_directory = os.path.expanduser(
+            self.options.output_directory)
 
-        self.options.track_template = self.options.track_template.decode('utf-8')
+        self.options.track_template = self.options.track_template.decode(
+            'utf-8')
         self.options.disc_template = self.options.disc_template.decode('utf-8')
 
         if self.options.offset is None:
@@ -301,9 +318,9 @@ Log files will log the path to tracks relative to this directory.
                              "also be specified at runtime using the "
                              "'--offset=value' argument")
 
-
         if self.options.working_directory is not None:
-            self.options.working_directory = os.path.expanduser(self.options.working_directory)
+            self.options.working_directory = os.path.expanduser(
+                self.options.working_directory)
 
         if self.options.logger:
             try:
@@ -313,7 +330,6 @@ Log files will log the path to tracks relative to this directory.
                 logger.critical(msg)
                 raise ValueError(msg)
 
-
     def doCommand(self):
         self.program.setWorkingDirectory(self.options.working_directory)
         self.program.outdir = self.options.output_directory.decode('utf-8')
@@ -321,16 +337,17 @@ Log files will log the path to tracks relative to this directory.
         self.program.result.overread = self.options.overread
         self.program.result.logger = self.options.logger
 
-        ### write disc files
+        # write disc files
         disambiguate = False
         while True:
             discName = self.program.getPath(self.program.outdir,
-                self.options.disc_template, self.mbdiscid, 0,
-                disambiguate=disambiguate)
+                                            self.options.disc_template,
+                                            self.mbdiscid, 0,
+                                            disambiguate=disambiguate)
             dirname = os.path.dirname(discName)
             if os.path.exists(dirname):
                 sys.stdout.write("Output directory %s already exists\n" %
-                    dirname.encode('utf-8'))
+                                 dirname.encode('utf-8'))
                 logs = glob.glob(os.path.join(dirname, '*.log'))
                 if logs:
                     sys.stdout.write(
@@ -345,13 +362,12 @@ Log files will log the path to tracks relative to this directory.
 
             else:
                 sys.stdout.write("Creating output directory %s\n" %
-                    dirname.encode('utf-8'))
+                                 dirname.encode('utf-8'))
                 os.makedirs(dirname)
                 break
 
         # FIXME: say when we're continuing a rip
         # FIXME: disambiguate if the pre-existing rip is different
-
 
         # FIXME: turn this into a method
 
@@ -364,12 +380,12 @@ Log files will log the path to tracks relative to this directory.
                 self.program.result.tracks.append(trackResult)
             else:
                 logger.debug('ripIfNotRipped have trackresult, path %r' %
-                    trackResult.filename)
+                             trackResult.filename)
 
             path = self.program.getPath(self.program.outdir,
-                self.options.track_template,
-                self.mbdiscid, number,
-                disambiguate=disambiguate) \
+                                        self.options.track_template,
+                                        self.mbdiscid, number,
+                                        disambiguate=disambiguate) \
                 + '.' + 'flac'
             logger.debug('ripIfNotRipped: path %r' % path)
             trackResult.number = number
@@ -379,7 +395,9 @@ Log files will log the path to tracks relative to this directory.
             if number > 0:
                 trackResult.pregap = self.itable.tracks[number - 1].getPregap()
 
-                trackResult.pre_emphasis = self.itable.tracks[number - 1].pre_emphasis
+                trackResult.pre_emphasis = (
+                    self.itable.tracks[number - 1].pre_emphasis
+                )
 
             # FIXME: optionally allow overriding reripping
             if os.path.exists(path):
@@ -412,19 +430,21 @@ Log files will log the path to tracks relative to this directory.
                         os.path.basename(path).encode('utf-8')))
                     try:
                         logger.debug('ripIfNotRipped: track %d, try %d',
-                            number, tries)
+                                     number, tries)
                         self.program.ripTrack(self.runner, trackResult,
-                            offset=int(self.options.offset),
-                            device=self.device,
-                            taglist=self.program.getTagList(number),
-                            overread=self.options.overread,
-                            what='track %d of %d%s' % (
-                                number, len(self.itable.tracks), extra))
+                                              offset=int(self.options.offset),
+                                              device=self.device,
+                                              taglist=self.program.getTagList(
+                                                  number),
+                                              overread=self.options.overread,
+                                              what='track %d of %d%s' % (
+                                                  number,
+                                                  len(self.itable.tracks),
+                                                  extra))
                         break
                     except Exception, e:
                         logger.debug('Got exception %r on try %d',
-                            e, tries)
-
+                                     e, tries)
 
                 if tries == MAX_TRIES:
                     logger.critical('Giving up on track %d after %d times' % (
@@ -434,38 +454,42 @@ Log files will log the path to tracks relative to this directory.
                         "Rip attempts number is equal to 'MAX_TRIES'")
                 if trackResult.testcrc == trackResult.copycrc:
                     sys.stdout.write('Checksums match for track %d\n' %
-                        number)
+                                     number)
                 else:
                     sys.stdout.write(
                         'ERROR: checksums did not match for track %d\n' %
                         number)
                     raise
 
-                sys.stdout.write('Peak level: {:.2%} \n'.format(trackResult.peak))
+                sys.stdout.write(
+                    'Peak level: {:.2%} \n'.format(trackResult.peak))
 
-                sys.stdout.write('Rip quality: {:.2%}\n'.format(trackResult.quality))
+                sys.stdout.write(
+                    'Rip quality: {:.2%}\n'.format(trackResult.quality))
 
             # overlay this rip onto the Table
             if number == 0:
                 # HTOA goes on index 0 of track 1
                 # ignore silence in PREGAP
                 if trackResult.peak <= SILENT:
-                    logger.debug('HTOA peak %r is below SILENT threshold, disregarding', trackResult.peak)
+                    logger.debug(
+                        'HTOA peak %r is below SILENT '
+                        'threshold, disregarding', trackResult.peak)
                     self.itable.setFile(1, 0, None,
-                        self.ittoc.getTrackStart(1), number)
+                                        self.ittoc.getTrackStart(1), number)
                     logger.debug('Unlinking %r', trackResult.filename)
                     os.unlink(trackResult.filename)
                     trackResult.filename = None
-                    sys.stdout.write('HTOA discarded, contains digital silence\n')
+                    sys.stdout.write(
+                        'HTOA discarded, contains digital silence\n')
                 else:
                     self.itable.setFile(1, 0, trackResult.filename,
-                        self.ittoc.getTrackStart(1), number)
+                                        self.ittoc.getTrackStart(1), number)
             else:
                 self.itable.setFile(number, 1, trackResult.filename,
-                    self.ittoc.getTrackLength(number), number)
+                                    self.ittoc.getTrackLength(number), number)
 
             self.program.saveRipResult()
-
 
         # check for hidden track one audio
         htoapath = None
@@ -474,7 +498,7 @@ Log files will log the path to tracks relative to this directory.
             start, stop = htoa
             sys.stdout.write(
                 'Found Hidden Track One Audio from frame %d to %d\n' % (
-                start, stop))
+                    start, stop))
 
             # rip it
             ripIfNotRipped(0)
@@ -485,17 +509,18 @@ Log files will log the path to tracks relative to this directory.
             if not track.audio:
                 sys.stdout.write(
                     'WARNING: skipping data track %d, not implemented\n' % (
-                    i + 1, ))
+                        i + 1, ))
                 # FIXME: make it work for now
                 track.indexes[1].relative = 0
                 continue
 
             ripIfNotRipped(i + 1)
 
-        ### write disc files
+        # write disc files
         discName = self.program.getPath(self.program.outdir,
-            self.options.disc_template, self.mbdiscid, 0,
-            disambiguate=disambiguate)
+                                        self.options.disc_template,
+                                        self.mbdiscid, 0,
+                                        disambiguate=disambiguate)
         dirname = os.path.dirname(discName)
         if not os.path.exists(dirname):
             os.makedirs(dirname)
@@ -517,20 +542,22 @@ Log files will log the path to tracks relative to this directory.
             u = '%s\n' % targetPath
             handle.write(u.encode('utf-8'))
 
-
         if htoapath:
             writeFile(handle, htoapath,
-                self.itable.getTrackStart(1) / common.FRAMES_PER_SECOND)
+                      self.itable.getTrackStart(1) / common.FRAMES_PER_SECOND)
 
         for i, track in enumerate(self.itable.tracks):
             if not track.audio:
                 continue
 
             path = self.program.getPath(self.program.outdir,
-                self.options.track_template, self.mbdiscid, i + 1,
-                disambiguate=disambiguate) + '.' + 'flac'
+                                        self.options.track_template,
+                                        self.mbdiscid, i + 1,
+                                        disambiguate=disambiguate
+                                        ) + '.' + 'flac'
             writeFile(handle, path,
-                self.itable.getTrackLength(i + 1) / common.FRAMES_PER_SECOND)
+                      (self.itable.getTrackLength(i + 1) /
+                       common.FRAMES_PER_SECOND))
 
         handle.close()
 
@@ -557,13 +584,12 @@ Log files will log the path to tracks relative to this directory.
 
         if responses:
             sys.stdout.write('%d AccurateRip reponses found\n' %
-                len(responses))
+                             len(responses))
 
             if responses[0].cddbDiscId != self.itable.getCDDBDiscId():
                 sys.stdout.write(
                     "AccurateRip response discid different: %s\n" %
                     responses[0].cddbDiscId)
-
 
         self.program.verifyImage(self.runner, responses)
 
