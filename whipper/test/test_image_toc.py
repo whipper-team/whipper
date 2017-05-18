@@ -284,7 +284,7 @@ class CapitalMergeTestCase(common.TestCase):
 
     def testDuration(self):
         # this matches track 11 end sector - track 1 start sector on
-        # musicbrainz
+        # MusicBrainz
         # compare to 3rd and 4th value in URL above
         self.assertEquals(self.table.getFrameLength(), 173530)
         self.assertEquals(self.table.duration(), 2313733)

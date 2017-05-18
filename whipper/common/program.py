@@ -286,7 +286,7 @@ class Program:
         """
         @type  ittoc: L{whipper.image.table.Table}
         """
-        # look up disc on musicbrainz
+        # look up disc on MusicBrainz
         self._stdout.write('Disc duration: %s, %d audio tracks\n' % (
             common.formatTime(ittoc.duration() / 1000.0),
             ittoc.getAudioTracks()))
@@ -395,7 +395,7 @@ class Program:
                 if (not release and len(deltas.keys()) > 1):
                     self._stdout.write('\n')
                     self._stdout.write('Picked closest match in duration.\n')
-                    self._stdout.write('Others may be wrong in musicbrainz, '
+                    self._stdout.write('Others may be wrong in MusicBrainz, '
                         'please correct.\n')
                     self._stdout.write('Artist : %s\n' %
                         artist.encode('utf-8'))

@@ -477,7 +477,7 @@ class Table(object):
                 pass
 
 
-        logger.debug('Musicbrainz values: %r', result)
+        logger.debug('MusicBrainz values: %r', result)
         return result
 
     def getAccurateRipIds(self):

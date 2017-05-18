@@ -212,7 +212,7 @@ class _CD(BaseCommand):
 
 class Info(_CD):
     summary = "retrieve information about the currently inserted CD"
-    description = ("Display musicbrainz, CDDB/FreeDB, and AccurateRip"
+    description = ("Display MusicBrainz, CDDB/FreeDB, and AccurateRip"
                    "information for the currently inserted CD.")
     eject = False
 

@@ -19,7 +19,7 @@
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-Handles communication with the musicbrainz server using NGS.
+Handles communication with the MusicBrainz server using NGS.
 """
 
 import urllib2
@@ -113,7 +113,7 @@ def _record(record, which, name, what):
 
 class _Credit(list):
     """
-    I am a representation of an artist-credit in musicbrainz for a disc
+    I am a representation of an artist-credit in MusicBrainz for a disc
     or track.
     """
 
