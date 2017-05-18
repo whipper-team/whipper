@@ -125,7 +125,7 @@ class Program:
         itable = None
         tdict = {}
 
-        # Ingore old cache, since we do not know what offset it used.
+        # Ignore old cache, since we do not know what offset it used.
         if type(ptable.object) is dict:
             tdict = ptable.object
 
