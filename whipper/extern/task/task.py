@@ -543,7 +543,6 @@ class SyncRunner(TaskRunner, ITaskListener):
             sys.stdout.write('\n')
         sys.stdout.flush()
         if len(what) > self._longest:
-            #print; print 'setting longest', self._longest; print
             self._longest = len(what)
 
     def described(self, task, description):

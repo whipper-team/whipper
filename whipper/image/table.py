@@ -281,8 +281,6 @@ class Table(object):
         # CD's have a standard lead-in time of 2 seconds
         # which gets added for CDDB disc id's
         delta = 2 * common.FRAMES_PER_SECOND
-        #if self.getTrackStart(1) > 0:
-        #    delta = 0
 
         debug = [str(len(self.tracks))]
         for track in self.tracks:
@@ -293,7 +291,6 @@ class Table(object):
             n += self._cddbSum(seconds)
 
         # the 'real' leadout, not offset by 150 frames
-        # print 'THOMAS: disc leadout', self.leadout
         last = self.tracks[-1]
         leadout = self.getTrackEnd(last.number) + 1
         logger.debug('leadout LBA: %d', leadout)
@@ -369,7 +366,6 @@ class Table(object):
             try:
                 offset = values[2 + i]
             except IndexError:
-                #print 'track', i - 1, '0 offset'
                 offset = 0
             sha.update("%08X" % offset)
 
@@ -727,7 +723,6 @@ class Table(object):
         # the first cut is the deepest
         counter = index.counter
 
-        #for t in self.tracks: print t, t.indexes
         logger.debug('absolutizing')
         while True:
             track = self.tracks[t - 1]
