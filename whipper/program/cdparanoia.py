@@ -121,8 +121,9 @@ class ProgressParser:
 
     def _parse_read(self, wordOffset):
         if wordOffset % common.WORDS_PER_FRAME != 0:
-            print 'THOMAS: not a multiple of %d: %d' % (
-                common.WORDS_PER_FRAME, wordOffset)
+            logger.debug(
+                'THOMAS: not a multiple of %d: %d' % (
+                common.WORDS_PER_FRAME, wordOffset))
             return
 
         frameOffset = wordOffset / common.WORDS_PER_FRAME
@@ -144,8 +145,6 @@ class ProgressParser:
         if frameOffset > self.read:
             delta = frameOffset - self.read
             if self._nframes and delta != self._nframes:
-                # print 'THOMAS: Read %d frames more, not %d' % (
-                # delta, self._nframes)
                 # my drive either reads 7 or 13 frames
                 pass
 

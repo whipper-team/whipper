@@ -102,7 +102,6 @@ class _CD(BaseCommand):
         self.runner = task.SyncRunner()
 
         # if the device is mounted (data session), unmount it
-        #self.device = self.parentCommand.options.device
         self.device = self.options.device
         sys.stdout.write('Checking device %s\n' % self.device)
 
@@ -212,7 +211,7 @@ class _CD(BaseCommand):
 
 class Info(_CD):
     summary = "retrieve information about the currently inserted CD"
-    description = ("Display musicbrainz, CDDB/FreeDB, and AccurateRip"
+    description = ("Display MusicBrainz, CDDB/FreeDB, and AccurateRip"
                    "information for the currently inserted CD.")
     eject = False
 

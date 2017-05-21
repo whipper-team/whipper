@@ -311,7 +311,6 @@ class TocFile(object):
                     common.msfToFrames(length))
                 self._sources.append(counter, absoluteOffset + currentLength,
                     currentFile)
-                #absoluteOffset += common.msfToFrames(start)
                 currentLength += common.msfToFrames(length)
 
             # look for DATAFILE lines
@@ -319,7 +318,6 @@ class TocFile(object):
             if m:
                 filePath = m.group('name')
                 length = m.group('length')
-                # print 'THOMAS', length
                 logger.debug('FILE %s, length %r',
                     filePath, common.msfToFrames(length))
                 if not currentFile or filePath != currentFile.path:
@@ -332,7 +330,6 @@ class TocFile(object):
                 currentFile = File(filePath, 0, common.msfToFrames(length))
                 self._sources.append(counter, absoluteOffset + currentLength,
                     currentFile)
-                #absoluteOffset += common.msfToFrames(start)
                 currentLength += common.msfToFrames(length)
 
 
