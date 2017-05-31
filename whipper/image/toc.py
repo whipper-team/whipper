@@ -171,16 +171,21 @@ class TocFile(object):
         currentTrack = None
 
         state = 'HEADER'
-        counter = 0  # counts sources for audio data; SILENCE/ZERO/FILE
+        # counts sources for audio data; SILENCE/ZERO/FILE
+        counter = 0
         trackNumber = 0
         indexNumber = 0
-        absoluteOffset = 0  # running absolute offset: where each track starts
-        relativeOffset = 0  # running relative offset, relative to counter src
+        # running absolute offset: where each track starts
+        absoluteOffset = 0
+        # running relative offset, relative to counter src
+        relativeOffset = 0
         # currentLength is accrued during TRACK record parsing length
         # of current track as parsed so far reset on each TRACK statement
         currentLength = 0
-        totalLength = 0  # accrued during TRACK record parsing, total disc
-        pregapLength = 0  # length of the pre-gap, current track in for loop
+        # accrued during TRACK record parsing, total disc
+        totalLength = 0
+        # length of the pre-gap, current track in for loop
+        pregapLength = 0
 
         # the first track's INDEX 1 can only be gotten from the .toc
         # file once the first pregap is calculated; so we add INDEX 1
