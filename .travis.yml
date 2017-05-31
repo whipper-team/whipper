@@ -6,10 +6,6 @@ env:
     - FLAKE8=false
     - FLAKE8=true
 
-matrix:
-    allow_failures:
-        - env: FLAKE8=true
-
 install:
     # Dependencies
     - sudo apt-get -qq update
