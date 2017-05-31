@@ -22,12 +22,13 @@ import sys
 
 import gobject
 
+
 class TaskException(Exception):
     """
     I wrap an exception that happened during task execution.
     """
 
-    exception = None # original exception
+    exception = None  # original exception
 
     def __init__(self, exception, message=None):
         self.exception = exception
@@ -35,6 +36,8 @@ class TaskException(Exception):
         self.args = (exception, message, )
 
 # lifted from flumotion log module
+
+
 def _getExceptionMessage(exception, frame=-1, filename=None):
     """
     Return a short message based on an exception, useful for debugging.
@@ -67,7 +70,7 @@ class LogStub(object):
     I am a stub for a log interface.
     """
 
-    ### log stubs
+    # log stubs
     def log(self, message, *args):
         pass
 
@@ -112,8 +115,7 @@ class Task(LogStub):
 
     _listeners = None
 
-
-    ### subclass methods
+    # subclass methods
     def start(self, runner):
         """
         Start the task.
@@ -149,18 +151,20 @@ class Task(LogStub):
         self.running = False
         if not self.runner:
             print 'ERROR: stopping task which is already stopped'
-            import traceback; traceback.print_stack()
+            import traceback
+            traceback.print_stack()
         self.runner = None
         self.debug('reset runner to None')
         self._notifyListeners('stopped')
 
-    ### base class methods
+    # base class methods
     def setProgress(self, value):
         """
         Notify about progress changes bigger than the increment.
         Called by subclass implementations as the task progresses.
         """
-        if value - self.progress > self.increment or value >= 1.0 or value == 0.0:
+        if (value - self.progress > self.increment or
+                value >= 1.0 or value == 0.0):
             self.progress = value
             self._notifyListeners('progressed', value)
             self.log('notifying progress: %r on %r', value, self.description)
@@ -186,8 +190,8 @@ class Task(LogStub):
         # for now
         if str(exception):
             msg = ": %s" % str(exception)
-        line = "exception %(exc)s at %(filename)s:%(line)s: %(func)s()%(msg)s" \
-            % locals()
+        line = "exception %(exc)s at %(filename)s:%(line)s: "
+        "%(func)s()%(msg)s" % locals()
 
         self.exception = exception
         self.exceptionMessage = line
@@ -211,10 +215,10 @@ class Task(LogStub):
     def schedule(self, delta, callable, *args, **kwargs):
         if not self.runner:
             print "ERROR: scheduling on a task that's altready stopped"
-            import traceback; traceback.print_stack()
+            import traceback
+            traceback.print_stack()
             return
         self.runner.schedule(self, delta, callable, *args, **kwargs)
-
 
     def addListener(self, listener):
         """
@@ -236,12 +240,14 @@ class Task(LogStub):
                 except Exception, e:
                     self.setException(e)
 
+
 # FIXME: should this become a real interface, like in zope ?
 class ITaskListener(object):
     """
     I am an interface for objects listening to tasks.
     """
-    ### listener callbacks
+    # listener callbacks
+
     def progressed(self, task, value):
         """
         Implement me to be informed about progress.
@@ -270,7 +276,6 @@ class ITaskListener(object):
         """
 
 
-
 # this is a Dummy task that can be used to test if this works at all
 class DummyTask(Task):
     def start(self, runner):
@@ -285,6 +290,7 @@ class DummyTask(Task):
             return
 
         self.schedule(1.0, self._wind)
+
 
 class BaseMultiTask(Task, ITaskListener):
     """
@@ -336,20 +342,20 @@ class BaseMultiTask(Task, ITaskListener):
             task = self.tasks[self._task]
             self._task += 1
             self.debug('BaseMultiTask.next(): starting task %d of %d: %r',
-                self._task, len(self.tasks), task)
+                       self._task, len(self.tasks), task)
             self.setDescription("%s (%d of %d) ..." % (
                 task.description, self._task, len(self.tasks)))
             task.addListener(self)
             task.start(self.runner)
             self.debug('BaseMultiTask.next(): started task %d of %d: %r',
-                self._task, len(self.tasks), task)
+                       self._task, len(self.tasks), task)
         except Exception, e:
             self.setException(e)
             self.debug('Got exception during next: %r', self.exceptionMessage)
             self.stop()
             return
 
-    ### ITaskListener methods
+    # ITaskListener methods
     def started(self, task):
         pass
 
@@ -362,10 +368,10 @@ class BaseMultiTask(Task, ITaskListener):
         They should fall through to chaining up if there is an exception.
         """
         self.log('BaseMultiTask.stopped: task %r (%d of %d)',
-            task, self.tasks.index(task) + 1, len(self.tasks))
+                 task, self.tasks.index(task) + 1, len(self.tasks))
         if task.exception:
             self.log('BaseMultiTask.stopped: exception %r',
-                task.exceptionMessage)
+                     task.exceptionMessage)
             self.exception = task.exception
             self.exceptionMessage = task.exceptionMessage
             self.stop()
@@ -395,16 +401,17 @@ class MultiSeparateTask(BaseMultiTask):
     def next(self):
         self.debug('MultiSeparateTask.next()')
         # start next task
-        self.progress = 0.0 # reset progress for each task
+        self.progress = 0.0  # reset progress for each task
         BaseMultiTask.next(self)
 
-    ### ITaskListener methods
+    # ITaskListener methods
     def progressed(self, task, value):
         self.setProgress(value)
 
     def described(self, description):
         self.setDescription("%s (%d of %d) ..." % (
             description, self._task, len(self.tasks)))
+
 
 class MultiCombinedTask(BaseMultiTask):
     """
@@ -415,7 +422,7 @@ class MultiCombinedTask(BaseMultiTask):
     description = 'Doing various tasks combined'
     _stopped = 0
 
-    ### ITaskListener methods
+    # ITaskListener methods
     def progressed(self, task, value):
         self.setProgress(float(self._stopped + value) / len(self.tasks))
 
@@ -423,6 +430,7 @@ class MultiCombinedTask(BaseMultiTask):
         self._stopped += 1
         self.setProgress(float(self._stopped) / len(self.tasks))
         BaseMultiTask.stopped(self, task)
+
 
 class TaskRunner(LogStub):
     """
@@ -439,7 +447,7 @@ class TaskRunner(LogStub):
         """
         raise NotImplementedError
 
-    ### methods for tasks to call
+    # methods for tasks to call
     def schedule(self, delta, callable, *args, **kwargs):
         """
         Schedule a single future call.
@@ -456,9 +464,10 @@ class SyncRunner(TaskRunner, ITaskListener):
     """
     I run the task synchronously in a gobject MainLoop.
     """
+
     def __init__(self, verbose=True):
         self._verbose = verbose
-        self._longest = 0 # longest string shown; for clearing
+        self._longest = 0  # longest string shown; for clearing
 
     def run(self, task, verbose=None, skip=False):
         self.debug('run task %r', task)
@@ -500,26 +509,25 @@ class SyncRunner(TaskRunner, ITaskListener):
             self.debug('exception during start: %r', task.exceptionMessage)
             self.stopped(task)
 
-
     def schedule(self, task, delta, callable, *args, **kwargs):
         def c():
             try:
                 self.log('schedule: calling %r(*args=%r, **kwargs=%r)',
-                    callable, args, kwargs)
+                         callable, args, kwargs)
                 callable(*args, **kwargs)
                 return False
             except Exception, e:
                 self.debug('exception when calling scheduled callable %r',
-                    callable)
+                           callable)
                 task.setException(e)
                 self.stopped(task)
                 raise
         self.log('schedule: scheduling %r(*args=%r, **kwargs=%r)',
-            callable, args, kwargs)
+                 callable, args, kwargs)
 
         gobject.timeout_add(int(delta * 1000L), c)
 
-    ### ITaskListener methods
+    # ITaskListener methods
     def progressed(self, task, value):
         if not self._verboseRun:
             return
@@ -543,7 +551,6 @@ class SyncRunner(TaskRunner, ITaskListener):
             sys.stdout.write('\n')
         sys.stdout.flush()
         if len(what) > self._longest:
-            #print; print 'setting longest', self._longest; print
             self._longest = len(what)
 
     def described(self, task, description):
@@ -558,6 +565,7 @@ class SyncRunner(TaskRunner, ITaskListener):
     def _report(self):
         self._output('%s %3d %%' % (
             self._task.description, self._task.progress * 100.0))
+
 
 if __name__ == '__main__':
     task = DummyTask()

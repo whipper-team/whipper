@@ -22,19 +22,17 @@ import argparse
 import os
 import sys
 import tempfile
-
+import logging
 import gobject
-gobject.threads_init()
-
 from whipper.command.basecommand import BaseCommand
-from whipper.common import accurip, common, config, drive, program
+from whipper.common import accurip, common, config, drive
 from whipper.common import task as ctask
 from whipper.program import cdrdao, cdparanoia, utils
 from whipper.common import checksum
-
 from whipper.extern.task import task
 
-import logging
+gobject.threads_init()
+
 logger = logging.getLogger(__name__)
 
 # see http://www.accuraterip.com/driveoffsets.htm
@@ -117,7 +115,7 @@ CD in the AccurateRip database."""
 
             if responses[0].cddbDiscId != table.getCDDBDiscId():
                 logger.warning("AccurateRip response discid different: %s",
-                    responses[0].cddbDiscId)
+                               responses[0].cddbDiscId)
 
         # now rip the first track at various offsets, calculating AccurateRip
         # CRC, and matching it against the retrieved ones
@@ -137,7 +135,7 @@ CD in the AccurateRip database."""
 
                 # let MissingDependency fall through
                 if isinstance(e.exception,
-                    common.MissingDependencyException):
+                              common.MissingDependencyException):
                     raise e
 
                 if isinstance(e.exception, cdparanoia.FileSizeError):
@@ -159,7 +157,7 @@ CD in the AccurateRip database."""
                 logger.debug('MATCHED against response %d' % i)
                 sys.stdout.write(
                     'Offset of device is likely %d, confirming ...\n' %
-                        offset)
+                    offset)
 
                 # now try and rip all other tracks as well, except for the
                 # last one (to avoid readers that can't do overread
@@ -185,7 +183,7 @@ CD in the AccurateRip database."""
                 else:
                     sys.stdout.write(
                         'Only %d of %d tracks matched, continuing ...\n' % (
-                        count, len(table.tracks)))
+                            count, len(table.tracks)))
 
         sys.stdout.write('No matching offset found.\n')
         sys.stdout.write('Consider trying again with a different disc.\n')
@@ -201,16 +199,19 @@ CD in the AccurateRip database."""
         os.close(fd)
 
         t = cdparanoia.ReadTrackTask(path, table,
-            table.getTrackStart(track), table.getTrackEnd(track),
-            overread=False, offset=offset, device=self.options.device)
+                                     table.getTrackStart(
+                                         track), table.getTrackEnd(track),
+                                     overread=False, offset=offset,
+                                     device=self.options.device)
         t.description = 'Ripping track %d with read offset %d' % (
             track, offset)
         runner.run(t)
 
-
         # TODO MW: Update this to also use the v2 checksum(s)
-        t = checksum.FastAccurateRipChecksumTask(path, trackNumber=track,
-            trackCount=len(table.tracks), wave=True, v2=False)
+        t = checksum.FastAccurateRipChecksumTask(path,
+                                                 trackNumber=track,
+                                                 trackCount=len(table.tracks),
+                                                 wave=True, v2=False)
         runner.run(t)
 
         os.unlink(path)
@@ -218,17 +219,19 @@ CD in the AccurateRip database."""
 
     def _foundOffset(self, device, offset):
         sys.stdout.write('\nRead offset of device is: %d.\n' %
-            offset)
+                         offset)
 
         info = drive.getDeviceInfo(device)
         if not info:
-            sys.stdout.write('Offset not saved: could not get device info (requires pycdio).\n')
+            sys.stdout.write(
+                'Offset not saved: could not get '
+                'device info (requires pycdio).\n')
             return
 
         sys.stdout.write('Adding read offset to configuration file.\n')
 
         config.Config().setReadOffset(info[0], info[1], info[2],
-            offset)
+                                      offset)
 
 
 class Offset(BaseCommand):

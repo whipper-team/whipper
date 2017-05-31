@@ -19,15 +19,16 @@ class TrackImageVerifyTestCase(unittest.TestCase):
 
     def testVerify(self):
         path = os.path.join(os.path.dirname(__file__),
-            'dBAR-020-002e5023-029d8e49-040eaa14.bin')
+                            'dBAR-020-002e5023-029d8e49-040eaa14.bin')
         data = open(path, "rb").read()
         responses = accurip.getAccurateRipResponses(data)
 
         # these crc's were calculated from an actual rip
         checksums = [1644890007, 2945205445, 3983436658, 1528082495,
-        1203704270, 1163423644, 3649097244, 100524219, 1583356174, 373652058,
-        1842579359, 2850056507, 1329730252, 2526965856, 2525886806, 209743350,
-        3184062337, 2099956663, 2943874164, 2321637196]
+                     1203704270, 1163423644, 3649097244, 100524219,
+                     1583356174, 373652058, 1842579359, 2850056507,
+                     1329730252, 2526965856, 2525886806, 209743350,
+                     3184062337, 2099956663, 2943874164, 2321637196]
 
         prog = program.Program(config.Config())
         prog.result = result.RipResult()
@@ -59,21 +60,21 @@ class TrackImageVerifyTestCase(unittest.TestCase):
 
         res = prog.getAccurateRipResults()
         self.assertEquals(res[1 - 1],
-            "Track  1: rip NOT accurate (not found)             "
-            "[620b0797], DB [notfound]")
+                          "Track  1: rip NOT accurate (not found)             "
+                          "[620b0797], DB [notfound]")
         self.assertEquals(res[2 - 1],
-            "Track  2: rip accurate     (max confidence      2) "
-            "[af8c44c5], DB [af8c44c5]")
+                          "Track  2: rip accurate     (max confidence      2) "
+                          "[af8c44c5], DB [af8c44c5]")
         self.assertEquals(res[10 - 1],
-            "Track 10: rip NOT accurate (max confidence      2) "
-            "[16457a5a], DB [eb6e55b4]")
+                          "Track 10: rip NOT accurate (max confidence      2) "
+                          "[16457a5a], DB [eb6e55b4]")
 
 
 class HTOATestCase(unittest.TestCase):
 
     def setUp(self):
         path = os.path.join(os.path.dirname(__file__),
-            'silentalarm.result.pickle')
+                            'silentalarm.result.pickle')
         self._tracks = pickle.load(open(path, 'rb'))
 
     def testGetAccurateRipResults(self):
@@ -90,9 +91,10 @@ class PathTestCase(unittest.TestCase):
         prog = program.Program(config.Config())
 
         path = prog.getPath(u'/tmp', DEFAULT_DISC_TEMPLATE,
-            'mbdiscid', 0)
+                            'mbdiscid', 0)
         self.assertEquals(path,
-            u'/tmp/unknown/Unknown Artist - mbdiscid/Unknown Artist - mbdiscid')
+                          unicode('/tmp/unknown/Unknown Artist - mbdiscid/'
+                                  'Unknown Artist - mbdiscid'))
 
     def testStandardTemplateFilled(self):
         prog = program.Program(config.Config())
@@ -102,9 +104,10 @@ class PathTestCase(unittest.TestCase):
         prog.metadata = md
 
         path = prog.getPath(u'/tmp', DEFAULT_DISC_TEMPLATE,
-            'mbdiscid', 0)
+                            'mbdiscid', 0)
         self.assertEquals(path,
-            u'/tmp/unknown/Jeff Buckley - Grace/Jeff Buckley - Grace')
+                          unicode('/tmp/unknown/Jeff Buckley - Grace/'
+                                  'Jeff Buckley - Grace'))
 
     def testIssue66TemplateFilled(self):
         prog = program.Program(config.Config())
@@ -115,4 +118,4 @@ class PathTestCase(unittest.TestCase):
 
         path = prog.getPath(u'/tmp', u'%A/%d', 'mbdiscid', 0)
         self.assertEquals(path,
-            u'/tmp/Jeff Buckley/Grace')
+                          u'/tmp/Jeff Buckley/Grace')

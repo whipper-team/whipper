@@ -30,6 +30,7 @@ from whipper.common import directory
 import logging
 logger = logging.getLogger(__name__)
 
+
 class Persister:
     """
     I wrap an optional pickle to persist an object to disk.
@@ -125,7 +126,7 @@ class PersistedCache:
         try:
             os.makedirs(self.path)
         except OSError, e:
-            if e.errno != 17: # FIXME
+            if e.errno != 17:  # FIXME
                 raise
 
     def _getPath(self, key):
@@ -176,7 +177,7 @@ class ResultCache:
             presult.persist(presult.object)
         else:
             logger.debug('result for cddbdiscid %r found in cache, reusing',
-                cddbdiscid)
+                         cddbdiscid)
 
         return presult
 
@@ -218,7 +219,7 @@ class TableCache:
                 ptable.object = None
             else:
                 logger.debug('no valid cached table found for %r' %
-                    cddbdiscid)
+                             cddbdiscid)
 
         if not ptable.object:
             # get an empty persistable from the writable location

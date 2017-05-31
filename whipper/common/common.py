@@ -21,7 +21,6 @@
 
 import os
 import os.path
-import commands
 import math
 import subprocess
 
@@ -32,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 FRAMES_PER_SECOND = 75
 
-SAMPLES_PER_FRAME = 588 # a sample is 2 16-bit values, left and right channel
+SAMPLES_PER_FRAME = 588  # a sample is 2 16-bit values, left and right channel
 WORDS_PER_FRAME = SAMPLES_PER_FRAME * 2
 BYTES_PER_FRAME = SAMPLES_PER_FRAME * 4
 
@@ -41,6 +40,7 @@ class EjectError(SystemError):
     """
     Possibly ejects the drive in command.main.
     """
+
     def __init__(self, device, *args):
         """
         args is a tuple used by BaseException.__str__
@@ -60,7 +60,7 @@ def msfToFrames(msf):
     @rtype:   int
     @returns: number of frames
     """
-    if not ':' in msf:
+    if ':' not in msf:
         return int(msf)
 
     m, s, f = msf.split(':')
@@ -133,6 +133,7 @@ def formatTime(seconds, fractional=3):
 
     return " ".join(chunks)
 
+
 class MissingDependencyException(Exception):
     dependency = None
 
@@ -143,6 +144,7 @@ class MissingDependencyException(Exception):
 
 class EmptyError(Exception):
     pass
+
 
 class MissingFrames(Exception):
     """
@@ -289,8 +291,8 @@ class VersionGetter(object):
 
         try:
             p = asyncsub.Popen(self._args,
-                    stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE, close_fds=True)
+                               stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE, close_fds=True)
             p.wait()
             output = asyncsub.recv_some(p, e=0, stderr=1)
             vre = self._regexp.search(output)

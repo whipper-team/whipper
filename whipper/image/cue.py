@@ -119,7 +119,6 @@ class CueFile(object):
                 state = 'TRACK'
 
                 trackNumber = int(m.group('track'))
-                #trackMode = m.group('mode')
 
                 logger.debug('found track %d', trackNumber)
                 currentTrack = table.Track(trackNumber)
@@ -143,11 +142,12 @@ class CueFile(object):
                     + minutes * common.FRAMES_PER_SECOND * 60
 
                 logger.debug('found index %d of track %r in %r:%d',
-                    indexNumber, currentTrack, currentFile.path, frameOffset)
+                             indexNumber, currentTrack, currentFile.path,
+                             frameOffset)
                 # FIXME: what do we do about File's FORMAT ?
                 currentTrack.index(indexNumber,
-                    path=currentFile.path, relative=frameOffset,
-                    counter=counter)
+                                   path=currentFile.path, relative=frameOffset,
+                                   counter=counter)
                 continue
 
     def message(self, number, message):
@@ -167,8 +167,8 @@ class CueFile(object):
             # last track, so no length known
             return -1
 
-        thisIndex = track.indexes[1] # FIXME: could be more
-        nextIndex = self.table.tracks[i + 1].indexes[1] # FIXME: could be 0
+        thisIndex = track.indexes[1]  # FIXME: could be more
+        nextIndex = self.table.tracks[i + 1].indexes[1]  # FIXME: could be 0
 
         c = thisIndex.counter
         if c is not None and c == nextIndex.counter:

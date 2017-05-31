@@ -5,6 +5,7 @@ import os
 from whipper.program import sox
 from whipper.test import common
 
+
 class PeakLevelTestCase(common.TestCase):
     def setUp(self):
         self.path = os.path.join(os.path.dirname(__file__), 'track.flac')

@@ -1,4 +1,3 @@
-from os.path import exists
 from subprocess import Popen, PIPE
 
 import logging
@@ -6,6 +5,7 @@ logger = logging.getLogger(__name__)
 
 ARB = 'accuraterip-checksum'
 FLAC = 'flac'
+
 
 def accuraterip_checksum(f, track, tracks, wave=False, v2=False):
     v = '--accuraterip-v1'
