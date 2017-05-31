@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 SOXI = 'soxi'
 
+
 class AudioLengthTask(ctask.PopenTask):
     """
     I calculate the length of a track in audio samples.
@@ -41,7 +42,7 @@ class AudioLengthTask(ctask.PopenTask):
         self._error.append(bytes)
 
     def failed(self):
-        self.setException(Exception("soxi failed: %s"%"".join(self._error)))
+        self.setException(Exception("soxi failed: %s" % "".join(self._error)))
 
     def done(self):
         if self._error:

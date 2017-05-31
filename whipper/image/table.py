@@ -169,9 +169,9 @@ class Table(object):
     @type cdtext:  dict of str -> str
     """
 
-    tracks = None # list of Track
-    leadout = None # offset where the leadout starts
-    catalog = None # catalog number; FIXME: is this UPC ?
+    tracks = None  # list of Track
+    leadout = None  # offset where the leadout starts
+    catalog = None  # catalog number; FIXME: is this UPC ?
     cdtext = None
     mbdiscid = None
 
@@ -305,7 +305,7 @@ class Table(object):
         # duration = durationFrames / common.FRAMES_PER_SECOND
         # assert t == duration, "%r != %r" % (t, duration)
 
-        debug.append(str(leadoutSeconds + 2)) # 2 is the 150 frame cddb offset
+        debug.append(str(leadoutSeconds + 2))  # 2 is the 150 frame cddb offset
         result.append(leadoutSeconds)
 
         value = (n % 0xff) << 24 | t << 8 | len(self.tracks)
@@ -315,7 +315,7 @@ class Table(object):
         logger.debug('cddb values: %r', result)
 
         logger.debug('cddb disc id debug: %s',
-            " ".join(["%08x" % value, ] + debug))
+                     " ".join(["%08x" % value, ] + debug))
 
         return result
 
@@ -472,7 +472,6 @@ class Table(object):
             except IndexError:
                 pass
 
-
         logger.debug('MusicBrainz values: %r', result)
         return result
 
@@ -545,8 +544,8 @@ class Table(object):
         main = ['PERFORMER', 'TITLE']
 
         for key in CDTEXT_FIELDS:
-                if key not in main and key in self.cdtext:
-                    lines.append("    %s %s" % (key, self.cdtext[key]))
+            if key not in main and key in self.cdtext:
+                lines.append("    %s %s" % (key, self.cdtext[key]))
 
         assert self.hasTOC(), "Table does not represent a full CD TOC"
         lines.append('REM DISCID %s' % self.getCDDBDiscId().upper())
@@ -607,7 +606,7 @@ class Table(object):
                         logger.debug('counter %d, writeFile' % counter)
                         writeFile(index.path)
                     logger.debug('setting counter to index.counter %r' %
-                        index.counter)
+                                 index.counter)
                     counter = index.counter
 
                 # any time we hit the first index, write a TRACK statement
@@ -636,23 +635,25 @@ class Table(object):
                             if not index00.path:
                                 length = indexOne.absolute - index00.absolute
                                 lines.append("    PREGAP %s" %
-                                    common.framesToMSF(length))
+                                             common.framesToMSF(length))
                                 continue
 
                         # handle any other INDEX 00 after its TRACK
-                        lines.append("    INDEX %02d %s" % (0,
-                            common.framesToMSF(index00.relative)))
+                        lines.append("    INDEX "
+                                     "%02d %s" % (0, common.framesToMSF(
+                                                        index00.relative)))
 
                 if number > 0:
                     # index 00 is output after TRACK up above
                     lines.append("    INDEX %02d %s" % (number,
-                        common.framesToMSF(index.relative)))
+                                                        common.framesToMSF(
+                                                            index.relative)))
 
         lines.append("")
 
         return "\n".join(lines)
 
-    ### methods that modify the table
+    # methods that modify the table
 
     def clearFiles(self):
         """
@@ -689,13 +690,14 @@ class Table(object):
         @type  index: C{int}
         """
         logger.debug('setFile: track %d, index %d, path %r, '
-            'length %r, counter %r', track, index, path, length, counter)
+                     'length %r, counter %r', track, index, path, length,
+                     counter)
 
         t = self.tracks[track - 1]
         i = t.indexes[index]
         start = i.absolute
         assert start is not None, "index %r is missing absolute offset" % i
-        end = start + length - 1 # last sector that should come from this file
+        end = start + length - 1  # last sector that should come from this file
 
         # FIXME: check border conditions here, esp. wrt. toc's off-by-one bug
         while i.absolute <= end:
@@ -703,8 +705,8 @@ class Table(object):
             i.relative = i.absolute - start
             i.counter = counter
             logger.debug('Setting path %r, relative %r on '
-                'track %d, index %d, counter %r',
-                path, i.relative, track, index, counter)
+                         'track %d, index %d, counter %r',
+                         path, i.relative, track, index, counter)
             try:
                 track, index = self.getNextTrackIndex(track, index)
                 t = self.tracks[track - 1]
@@ -733,10 +735,11 @@ class Table(object):
                 logger.debug('Track %d, index %d has no counter', t, i)
                 break
             if index.counter != counter:
-                logger.debug('Track %d, index %d has a different counter', t, i)
+                logger.debug(
+                    'Track %d, index %d has a different counter', t, i)
                 break
             logger.debug('Setting absolute offset %d on track %d, index %d',
-                index.relative, t, i)
+                         index.relative, t, i)
             if index.absolute is not None:
                 if index.absolute != index.relative:
                     msg = 'Track %d, index %d had absolute %d,' \
@@ -769,15 +772,17 @@ class Table(object):
             for i in t.indexes.values():
                 if i.absolute is not None:
                     i.absolute += self.leadout + gap
-                    logger.debug('Fixing track %02d, index %02d, absolute %d' % (
-                        t.number, i.number, i.absolute))
+                    logger.debug('Fixing track %02d, index %02d, '
+                                 'absolute %d' % (
+                                     t.number, i.number, i.absolute))
                 if i.counter is not None:
                     i.counter += sourceCounter
-                    logger.debug('Fixing track %02d, index %02d, counter %d' % (
-                        t.number, i.number, i.counter))
+                    logger.debug('Fixing track %02d, index %02d, '
+                                 'counter %d' % (
+                                     t.number, i.number, i.counter))
             self.tracks.append(t)
 
-        self.leadout += other.leadout + gap # FIXME
+        self.leadout += other.leadout + gap  # FIXME
         logger.debug('Fixing leadout, now %d', self.leadout)
 
     def _getSessionGap(self, session):
@@ -795,7 +800,7 @@ class Table(object):
             gap = 6900
         return gap
 
-    ### lookups
+    # lookups
 
     def getNextTrackIndex(self, track, index):
         """
@@ -857,8 +862,8 @@ class Table(object):
         for t in self.tracks:
             for i in t.indexes.values():
                 if i.relative is None:
-                    logger.debug('Track %02d, Index %02d does not have relative',
-                        t.number, i.number)
+                    logger.debug('Track %02d, Index %02d does not '
+                                 'have relative', t.number, i.number)
                     return False
 
         return True

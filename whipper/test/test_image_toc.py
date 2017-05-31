@@ -14,8 +14,7 @@ from whipper.test import common
 class CureTestCase(common.TestCase):
 
     def setUp(self):
-        self.path = os.path.join(os.path.dirname(__file__),
-            u'cure.toc')
+        self.path = os.path.join(os.path.dirname(__file__), u'cure.toc')
         self.toc = toc.TocFile(self.path)
         self.toc.parse()
         self.assertEquals(len(self.toc.table.tracks), 13)
@@ -26,7 +25,7 @@ class CureTestCase(common.TestCase):
         # its length is all of track 1 from .toc, plus the INDEX 00 length
         # of track 2
         self.assertEquals(self.toc.getTrackLength(t),
-            (((6 * 60) + 16) * 75 + 45) + ((1 * 75) + 4))
+                          (((6 * 60) + 16) * 75 + 45) + ((1 * 75) + 4))
         # last track has unknown length
         t = self.toc.table.tracks[-1]
         self.assertEquals(self.toc.getTrackLength(t), -1)
@@ -91,8 +90,7 @@ class CureTestCase(common.TestCase):
 
         # we verify it because it has failed in readdisc in the past
         self.assertEquals(self.toc.table.getAccurateRipURL(),
-            'http://www.accuraterip.com/accuraterip/'
-            '3/c/4/dBAR-013-0019d4c3-00fe8924-b90c650d.bin')
+                          'http://www.accuraterip.com/accuraterip/3/c/4/dBAR-013-0019d4c3-00fe8924-b90c650d.bin')  # noqa: E501
 
     def testGetRealPath(self):
         self.assertRaises(KeyError, self.toc.getRealPath, u'track01.wav')
@@ -110,8 +108,7 @@ class CureTestCase(common.TestCase):
 class BlocTestCase(common.TestCase):
 
     def setUp(self):
-        self.path = os.path.join(os.path.dirname(__file__),
-            u'bloc.toc')
+        self.path = os.path.join(os.path.dirname(__file__), u'bloc.toc')
         self.toc = toc.TocFile(self.path)
         self.toc.parse()
         self.assertEquals(len(self.toc.table.tracks), 13)
@@ -168,8 +165,7 @@ class BlocTestCase(common.TestCase):
     def testAccurateRip(self):
         # we verify it because it has failed in readdisc in the past
         self.assertEquals(self.toc.table.getAccurateRipURL(),
-            'http://www.accuraterip.com/accuraterip/'
-            'e/d/2/dBAR-013-001af2de-0105994e-ad0be00d.bin')
+            'http://www.accuraterip.com/accuraterip/e/d/2/dBAR-013-001af2de-0105994e-ad0be00d.bin')  # noqa: E501
 
 # The Breeders - Mountain Battles has CDText
 
@@ -177,8 +173,7 @@ class BlocTestCase(common.TestCase):
 class BreedersTestCase(common.TestCase):
 
     def setUp(self):
-        self.path = os.path.join(os.path.dirname(__file__),
-            u'breeders.toc')
+        self.path = os.path.join(os.path.dirname(__file__), u'breeders.toc')
         self.toc = toc.TocFile(self.path)
         self.toc.parse()
         self.assertEquals(len(self.toc.table.tracks), 13)
@@ -194,7 +189,6 @@ class BreedersTestCase(common.TestCase):
         self.assertEquals(cdt['TITLE'], 'OVERGLAZED')
 
     def testConvertCue(self):
-        # self.toc.table.absolutize()
         self.failUnless(self.toc.table.hasTOC())
         cue = self.toc.table.cue()
         ref = self.readCue('breeders.cue')
@@ -206,8 +200,7 @@ class BreedersTestCase(common.TestCase):
 class LadyhawkeTestCase(common.TestCase):
 
     def setUp(self):
-        self.path = os.path.join(os.path.dirname(__file__),
-            u'ladyhawke.toc')
+        self.path = os.path.join(os.path.dirname(__file__), u'ladyhawke.toc')
         self.toc = toc.TocFile(self.path)
         self.toc.parse()
         self.assertEquals(len(self.toc.table.tracks), 13)
@@ -221,12 +214,9 @@ class LadyhawkeTestCase(common.TestCase):
 
     def testMusicBrainz(self):
         self.assertEquals(self.toc.table.getMusicBrainzDiscId(),
-            "KnpGsLhvH.lPrNc1PBL21lb9Bg4-")
+                          "KnpGsLhvH.lPrNc1PBL21lb9Bg4-")
         self.assertEquals(self.toc.table.getMusicBrainzSubmitURL(),
-            "https://musicbrainz.org/cdtoc/attach?toc="
-            "1+12+195856+150+15687+31841+51016+66616+81352+99559+"
-            "116070+133243+149997+161710+177832&"
-            "tracks=12&id=KnpGsLhvH.lPrNc1PBL21lb9Bg4-")
+            "https://musicbrainz.org/cdtoc/attach?toc=1+12+195856+150+15687+31841+51016+66616+81352+99559+116070+133243+149997+161710+177832&tracks=12&id=KnpGsLhvH.lPrNc1PBL21lb9Bg4-")  # noqa: E501
 
     # FIXME: I don't trust this toc, but I can't find the CD anymore
 
@@ -247,13 +237,13 @@ class CapitalMergeTestCase(common.TestCase):
 
     def setUp(self):
         self.toc1 = toc.TocFile(os.path.join(os.path.dirname(__file__),
-            u'capital.1.toc'))
+                                             u'capital.1.toc'))
         self.toc1.parse()
         self.assertEquals(len(self.toc1.table.tracks), 11)
         self.failUnless(self.toc1.table.tracks[-1].audio)
 
         self.toc2 = toc.TocFile(os.path.join(os.path.dirname(__file__),
-            u'capital.2.toc'))
+                                             u'capital.2.toc'))
         self.toc2.parse()
         self.assertEquals(len(self.toc2.table.tracks), 1)
         self.failIf(self.toc2.table.tracks[-1].audio)
@@ -272,7 +262,7 @@ class CapitalMergeTestCase(common.TestCase):
         # 197850+24320+44855+64090+77885+88095+104020+118245+129255+141765+
         # 164487+181780&tracks=11&id=MAj3xXf6QMy7G.BIFOyHyq4MySE-
         self.assertEquals(self.table.getMusicBrainzDiscId(),
-            "MAj3xXf6QMy7G.BIFOyHyq4MySE-")
+                          "MAj3xXf6QMy7G.BIFOyHyq4MySE-")
 
     def testDuration(self):
         # this matches track 11 end sector - track 1 start sector on
@@ -321,8 +311,7 @@ class UnicodeTestCase(common.TestCase, common.UnicodeTestMixin):
 class TOTBLTestCase(common.TestCase):
 
     def setUp(self):
-        self.path = os.path.join(os.path.dirname(__file__),
-            u'totbl.fast.toc')
+        self.path = os.path.join(os.path.dirname(__file__), u'totbl.fast.toc')
         self.toc = toc.TocFile(self.path)
         self.toc.parse()
         self.assertEquals(len(self.toc.table.tracks), 11)
@@ -338,7 +327,7 @@ class StrokesTestCase(common.TestCase):
 
     def setUp(self):
         self.path = os.path.join(os.path.dirname(__file__),
-            u'strokes-someday.toc')
+                                 u'strokes-someday.toc')
         self.toc = toc.TocFile(self.path)
         self.toc.parse()
         self.assertEquals(len(self.toc.table.tracks), 1)
@@ -358,14 +347,16 @@ class StrokesTestCase(common.TestCase):
         self.assertEquals(i1.path, u'data.wav')
 
         cue = self._filterCue(self.toc.table.cue())
-        ref = self._filterCue(open(os.path.join(os.path.dirname(__file__),
-            'strokes-someday.eac.cue')).read()).decode('utf-8')
+        ref = self._filterCue(
+            open(os.path.join(
+                os.path.dirname(__file__),
+                'strokes-someday.eac.cue')).read()).decode('utf-8')
         common.diffStrings(ref, cue)
 
     def _filterCue(self, output):
         # helper to be able to compare our generated .cue with the
         # EAC-extracted one
-        discard = [ 'TITLE', 'PERFORMER', 'FLAGS', 'REM' ]
+        discard = ['TITLE', 'PERFORMER', 'FLAGS', 'REM']
         lines = output.split('\n')
 
         res = []
@@ -385,21 +376,16 @@ class StrokesTestCase(common.TestCase):
         return '\n'.join(res)
 
 
-
-
 # Surfer Rosa has
 # track 00 consisting of 32 frames of SILENCE
 # track 11 Vamos with an INDEX 02
 # compared to an EAC single .cue file, all our offsets are 32 frames off
 # because the toc uses silence for track 01 index 00 while EAC puts it in
 # Range.wav
-
-
 class SurferRosaTestCase(common.TestCase):
 
     def setUp(self):
-        self.path = os.path.join(os.path.dirname(__file__),
-            u'surferrosa.toc')
+        self.path = os.path.join(os.path.dirname(__file__), u'surferrosa.toc')
         self.toc = toc.TocFile(self.path)
         self.toc.parse()
         self.assertEquals(len(self.toc.table.tracks), 21)

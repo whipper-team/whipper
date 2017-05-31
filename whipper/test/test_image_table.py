@@ -36,7 +36,7 @@ class LadyhawkeTestCase(tcommon.TestCase):
         self.table.tracks.append(table.Track(13, audio=False))
 
         offsets = [0, 15537, 31691, 50866, 66466, 81202, 99409,
-            115920, 133093, 149847, 161560, 177682, 207106]
+                   115920, 133093, 149847, 161560, 177682, 207106]
         t = self.table.tracks
         for i, offset in enumerate(offsets):
             t[i].index(1, absolute=offset)
@@ -59,14 +59,14 @@ class LadyhawkeTestCase(tcommon.TestCase):
         # however, not (yet) in MusicBrainz database
 
         self.assertEquals(self.table.getMusicBrainzDiscId(),
-            "KnpGsLhvH.lPrNc1PBL21lb9Bg4-")
+                          "KnpGsLhvH.lPrNc1PBL21lb9Bg4-")
 
     def testAccurateRip(self):
         self.assertEquals(self.table.getAccurateRipIds(), (
             "0013bd5a", "00b8d489"))
         self.assertEquals(self.table.getAccurateRipURL(),
-        "http://www.accuraterip.com/accuraterip/a/5/d/"
-        "dBAR-012-0013bd5a-00b8d489-c60af50d.bin")
+                          "http://www.accuraterip.com/accuraterip/a/5/d/"
+                          "dBAR-012-0013bd5a-00b8d489-c60af50d.bin")
 
     def testDuration(self):
         self.assertEquals(self.table.duration(), 2761413)
@@ -95,7 +95,7 @@ class MusicBrainzTestCase(tcommon.TestCase):
 
     def testMusicBrainz(self):
         self.assertEquals(self.table.getMusicBrainzDiscId(),
-            '49HHV7Eb8UKF3aQiNmu1GR8vKTY-')
+                          '49HHV7Eb8UKF3aQiNmu1GR8vKTY-')
 
 
 class PregapTestCase(tcommon.TestCase):

@@ -6,6 +6,7 @@ logger = logging.getLogger(__name__)
 
 SOX = 'sox'
 
+
 def peak_level(track_path):
     """
     Accepts a path to a sox-decodable audio file.

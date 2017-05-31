@@ -53,12 +53,12 @@ class TestCase(unittest.TestCase):
             return inst
         except exception, e:
             raise Exception('%s raised instead of %s:\n %s' %
-                    (sys.exec_info()[0], exception.__name__, str(e))
-            )
+                            (sys.exec_info()[0], exception.__name__, str(e))
+                            )
         else:
             raise Exception('%s not raised (%r returned)' %
-                    (exception.__name__, result)
-            )
+                            (exception.__name__, result)
+                            )
 
     assertRaises = failUnlessRaises
 
@@ -67,14 +67,15 @@ class TestCase(unittest.TestCase):
         Read a .cue file, and replace the version comment with the current
         version so we can use it in comparisons.
         """
-        ret = open(os.path.join(os.path.dirname(__file__), name)).read(
-            ).decode('utf-8')
+        cuefile = os.path.join(os.path.dirname(__file__), name)
+        ret = open(cuefile).read().decode('utf-8')
         ret = re.sub(
             'REM COMMENT "whipper.*',
             'REM COMMENT "whipper %s"' % (whipper.__version__),
             ret, re.MULTILINE)
 
         return ret
+
 
 class UnicodeTestMixin:
     # A helper mixin to skip tests if we're not in a UTF-8 locale

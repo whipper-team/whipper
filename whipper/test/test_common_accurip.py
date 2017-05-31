@@ -12,12 +12,11 @@ class AccurateRipResponseTestCase(tcommon.TestCase):
 
     def testResponse(self):
         path = os.path.join(os.path.dirname(__file__),
-            'dBAR-011-0010e284-009228a3-9809ff0b.bin')
+                            'dBAR-011-0010e284-009228a3-9809ff0b.bin')
         data = open(path, "rb").read()
 
         responses = accurip.getAccurateRipResponses(data)
         self.assertEquals(len(responses), 3)
-
 
         response = responses[0]
 

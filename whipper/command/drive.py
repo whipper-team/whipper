@@ -28,9 +28,10 @@ from whipper.program import cdparanoia
 import logging
 logger = logging.getLogger(__name__)
 
+
 class Analyze(BaseCommand):
     summary = "analyze caching behaviour of drive"
-    description = """Determine whether cdparanoia can defeat the audio cache of the drive."""
+    description = """Determine whether cdparanoia can defeat the audio cache of the drive."""  # noqa: E501
     device_option = True
 
     def do(self):
@@ -51,14 +52,15 @@ class Analyze(BaseCommand):
 
         info = drive.getDeviceInfo(self.options.device)
         if not info:
-            sys.stdout.write('Drive caching behaviour not saved: could not get device info (requires pycdio).\n')
+            sys.stdout.write('Drive caching behaviour not saved:'
+                             'could not get device info (requires pycdio).\n')
             return
 
         sys.stdout.write(
             'Adding drive cache behaviour to configuration file.\n')
 
-        config.Config().setDefeatsCache(info[0], info[1], info[2],
-            t.defeatsCache)
+        config.Config().setDefeatsCache(
+            info[0], info[1], info[2], t.defeatsCache)
 
 
 class List(BaseCommand):
@@ -77,7 +79,7 @@ class List(BaseCommand):
             return
 
         try:
-            import cdio as _
+            import cdio as _  # noqa: F401 (TODO: fix it in a separate PR?)
         except ImportError:
             sys.stdout.write(
                 'Install pycdio for vendor/model/release detection.\n')
@@ -87,7 +89,7 @@ class List(BaseCommand):
             vendor, model, release = drive.getDeviceInfo(path)
             sys.stdout.write(
                 "drive: %s, vendor: %s, model: %s, release: %s\n" % (
-                path, vendor, model, release))
+                    path, vendor, model, release))
 
             try:
                 offset = self.config.getReadOffset(
@@ -95,8 +97,10 @@ class List(BaseCommand):
                 sys.stdout.write(
                     "       Configured read offset: %d\n" % offset)
             except KeyError:
-                sys.stdout.write(
-                    "       No read offset found.  Run 'whipper offset find'\n")
+                # Note spaces at the beginning for pretty terminal output
+                sys.stdout.write("       "
+                                 "No read offset found.  "
+                                 "Run 'whipper offset find'\n")
 
             try:
                 defeats = self.config.getDefeatsCache(
@@ -107,7 +111,6 @@ class List(BaseCommand):
                 sys.stdout.write(
                     "       Unknown whether audio cache can be defeated. "
                     "Run 'whipper drive analyze'\n")
-
 
         if not paths:
             sys.stdout.write('No drives found.\n')

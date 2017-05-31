@@ -23,6 +23,7 @@ import os
 import logging
 logger = logging.getLogger(__name__)
 
+
 def _listify(listOrString):
     if type(listOrString) == str:
         return [listOrString, ]
@@ -64,7 +65,6 @@ def getDeviceInfo(path):
         import cdio
     except ImportError:
         return None
-
     device = cdio.Device(path)
     ok, vendor, model, release = device.get_hwinfo()
 

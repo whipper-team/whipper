@@ -30,6 +30,7 @@ from whipper.common import directory
 import logging
 logger = logging.getLogger(__name__)
 
+
 class Config:
 
     def __init__(self, path=None):
@@ -46,7 +47,7 @@ class Config:
                 self._parser.readfp(f)
 
         logger.info('Loaded %d sections from config file' %
-                     len(self._parser.sections()))
+                    len(self._parser.sections()))
 
     def write(self):
         fd, path = tempfile.mkstemp(suffix=u'.whipperrc')
@@ -55,8 +56,7 @@ class Config:
         handle.close()
         shutil.move(path, self._path)
 
-
-    ### any section
+    # any section
 
     def _getter(self, suffix, section, option):
         methodName = 'get' + suffix
@@ -72,7 +72,7 @@ class Config:
     def getboolean(self, section, option):
         return self._getter('boolean', section, option)
 
-    ### drive sections
+    # drive sections
 
     def setReadOffset(self, vendor, model, release, offset):
         """
@@ -95,7 +95,6 @@ class Config:
         except ConfigParser.NoOptionError:
             raise KeyError("Could not find read_offset for %s/%s/%s" % (
                 vendor, model, release))
-
 
     def setDefeatsCache(self, vendor, model, release, defeat):
         """
@@ -139,7 +138,7 @@ class Config:
             return name
 
         raise KeyError("Could not find configuration section for %s/%s/%s" % (
-                vendor, model, release))
+            vendor, model, release))
 
     def _findOrCreateDriveSection(self, vendor, model, release):
         try:

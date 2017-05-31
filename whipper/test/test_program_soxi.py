@@ -11,6 +11,7 @@ from whipper.test import common as tcommon
 base_track_file = os.path.join(os.path.dirname(__file__), u'track.flac')
 base_track_length = 10 * common.SAMPLES_PER_FRAME
 
+
 class AudioLengthTestCase(tcommon.TestCase):
 
     def testLength(self):
@@ -34,6 +35,7 @@ class AudioLengthPathTestCase(tcommon.TestCase):
         self.assertEquals(t.length, base_track_length)
         os.unlink(path)
 
+
 class NormalAudioLengthPathTestCase(AudioLengthPathTestCase):
 
     def testSingleQuote(self):
@@ -46,11 +48,12 @@ class NormalAudioLengthPathTestCase(AudioLengthPathTestCase):
 
 
 class UnicodeAudioLengthPathTestCase(AudioLengthPathTestCase,
-        tcommon.UnicodeTestMixin):
+                                     tcommon.UnicodeTestMixin):
 
     def testUnicodePath(self):
         # this test makes sure we can checksum a unicode path
         self._testSuffix(u'whipper.test.B\xeate Noire.empty.flac')
+
 
 class AbsentFileAudioLengthPathTestCase(AudioLengthPathTestCase):
     def testAbsentFile(self):
@@ -60,6 +63,6 @@ class AbsentFileAudioLengthPathTestCase(AudioLengthPathTestCase):
         t = AudioLengthTask(path)
         runner = task.SyncRunner()
         self.assertRaises(task.TaskException, runner.run,
-            t, verbose=False)
+                          t, verbose=False)
 
         os.rmdir(tempdir)

@@ -28,6 +28,7 @@ from whipper.result import result
 import logging
 logger = logging.getLogger(__name__)
 
+
 class RCCue(BaseCommand):
     summary = "write a cue file for the cached result"
     description = summary
@@ -148,9 +149,6 @@ class Encode(BaseCommand):
     description = summary
 
     def add_arguments(self):
-        # here to avoid import gst eating our options
-        from whipper.common import encode
-
         self.parser.add_argument('input', action='store',
                                  help="audio file to encode")
         self.parser.add_argument('output', nargs='?', action='store',
@@ -174,8 +172,8 @@ class Encode(BaseCommand):
         runner = task.SyncRunner()
 
         logger.debug('Encoding %s to %s',
-            fromPath.encode('utf-8'),
-            toPath.encode('utf-8'))
+                     fromPath.encode('utf-8'),
+                     toPath.encode('utf-8'))
         encodetask = encode.FlacEncodeTask(fromPath, toPath)
 
         runner.run(encodetask)
@@ -244,7 +242,7 @@ Example disc id: KnpGsLhvH.lPrNc1PBL21lb9Bg4-"""
             sys.stdout.write('- Release %d:\n' % (i + 1, ))
             sys.stdout.write('    Artist: %s\n' % md.artist.encode('utf-8'))
             sys.stdout.write('    Title:  %s\n' % md.title.encode('utf-8'))
-            sys.stdout.write('    Type:   %s\n' % md.releaseType.encode('utf-8'))
+            sys.stdout.write('    Type:   %s\n' % md.releaseType.encode('utf-8'))  # noqa: E501
             sys.stdout.write('    URL: %s\n' % md.url)
             sys.stdout.write('    Tracks: %d\n' % len(md.tracks))
             if md.catalogNumber:

@@ -39,9 +39,11 @@ class PopenTask(task.Task):
 
         try:
             self._popen = asyncsub.Popen(self.command,
-                bufsize=self.bufsize,
-                stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE, close_fds=True, cwd=self.cwd)
+                                         bufsize=self.bufsize,
+                                         stdin=subprocess.PIPE,
+                                         stdout=subprocess.PIPE,
+                                         stderr=subprocess.PIPE,
+                                         close_fds=True, cwd=self.cwd)
         except OSError, e:
             import errno
             if e.errno == errno.ENOENT:
@@ -50,7 +52,7 @@ class PopenTask(task.Task):
             raise
 
         logger.debug('Started %r with pid %d', self.command,
-            self._popen.pid)
+                     self._popen.pid)
 
         self.schedule(1.0, self._read, runner)
 
@@ -92,23 +94,23 @@ class PopenTask(task.Task):
             self.stop()
 
     def _done(self):
-            assert self._popen.returncode is not None, "No returncode"
+        assert self._popen.returncode is not None, "No returncode"
 
-            if self._popen.returncode >= 0:
-                logger.debug('Return code was %d', self._popen.returncode)
-            else:
-                logger.debug('Terminated with signal %d',
-                    -self._popen.returncode)
+        if self._popen.returncode >= 0:
+            logger.debug('Return code was %d', self._popen.returncode)
+        else:
+            logger.debug('Terminated with signal %d',
+                         -self._popen.returncode)
 
-            self.setProgress(1.0)
+        self.setProgress(1.0)
 
-            if self._popen.returncode != 0:
-                self.failed()
-            else:
-                self.done()
+        if self._popen.returncode != 0:
+            self.failed()
+        else:
+            self.done()
 
-            self.stop()
-            return
+        self.stop()
+        return
 
     def abort(self):
         logger.debug('Aborting, sending SIGTERM to %d', self._popen.pid)
@@ -138,7 +140,6 @@ class PopenTask(task.Task):
         Called when the command failed.
         """
         pass
-
 
     def commandMissing(self):
         """

@@ -17,6 +17,7 @@ from whipper.program.utils import eject_device
 import logging
 logger = logging.getLogger(__name__)
 
+
 def main():
     # set user agent
     musicbrainzngs.set_useragent("whipper", whipper.__version__,
@@ -47,7 +48,7 @@ def main():
 
         if isinstance(e.exception, common.EmptyError):
             logger.debug("EmptyError: %r", str(e.exception))
-            sys.stderr.write('whipper: error: Could not create encoded file.\n')
+            sys.stderr.write('whipper: error: Could not create encoded file.\n')  # noqa: E501
             return 255
 
         # in python3 we can instead do `raise e.exception` as that would show
@@ -55,6 +56,7 @@ def main():
         sys.stderr.write(e.exceptionMessage)
         return 255
     return ret if ret else 0
+
 
 class Whipper(BaseCommand):
     description = """whipper is a CD ripping utility focusing on accuracy over speed.
@@ -74,18 +76,20 @@ You can get help on subcommands by using the -h option to the subcommand.
 
     def add_arguments(self):
         self.parser.add_argument('-R', '--record',
-                            action='store_true', dest='record',
-                            help="record API requests for playback")
+                                 action='store_true', dest='record',
+                                 help="record API requests for playback")
         self.parser.add_argument('-v', '--version',
-                            action="store_true", dest="version",
-                            help="show version information")
+                                 action="store_true", dest="version",
+                                 help="show version information")
         self.parser.add_argument('-h', '--help',
-                            action="store_true", dest="help",
-                            help="show this help message and exit")
+                                 action="store_true", dest="help",
+                                 help="show this help message and exit")
         self.parser.add_argument('-e', '--eject',
-                            action="store", dest="eject", default="always",
-                            choices=('never', 'failure', 'success', 'always'),
-                            help="when to eject disc (default: always)")
+                                 action="store", dest="eject",
+                                 default="always",
+                                 choices=('never', 'failure',
+                                          'success', 'always'),
+                                 help="when to eject disc (default: always)")
 
     def handle_arguments(self):
         if self.options.help:

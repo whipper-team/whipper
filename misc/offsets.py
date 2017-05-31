@@ -14,7 +14,7 @@ doc = handle.read()
 
 soup = BeautifulSoup.BeautifulSoup(doc)
 
-offsets = {} # offset -> total count
+offsets = {}  # offset -> total count
 
 rows = soup.findAll('tr')
 for row in rows:
