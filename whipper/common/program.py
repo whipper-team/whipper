@@ -254,11 +254,11 @@ class Program:
             # Find the section of the template with the release name
             for i, part in enumerate(templateParts):
                 if "%d" in part:
-                    templateParts[i] = self.addDisambiguation(part, self.metadata)
+                    templateParts[i] = self.addDisambiguation(part, self.metadata)  # noqa: E501
                     break
             else:
                 # No parts of the template contain the release
-                templateParts[-1] = self.addDisambiguation(templateParts[-1], self.metadata)
+                templateParts[-1] = self.addDisambiguation(templateParts[-1], self.metadata)  # noqa: E501
             template = os.path.join(*templateParts)
             logger.debug('Disambiguated template to %r' % template)
 
