@@ -59,6 +59,7 @@ def DetectCdr(device):
     else:
         return True
 
+
 def version():
     """
     Return cdrdao version as a string.

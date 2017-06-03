@@ -144,7 +144,8 @@ class _CD(BaseCommand):
                 return -1
 
         self.program.result.isCdr = cdrdao.DetectCdr(self.device)
-        if self.program.result.isCdr and not getattr(self.options, 'cdr', False):
+        if self.program.result.isCdr and \
+                not getattr(self.options, 'cdr', False):
             logger.critical("inserted disc seems to be a CD-R, "
                             "--cdr not passed")
             return -1
@@ -307,9 +308,10 @@ Log files will log the path to tracks relative to this directory.
                                  help="whether to continue ripping if "
                                  "the CD is unknown", default=False)
         self.parser.add_argument('--cdr',
-            action="store_true", dest="cdr",
-            help="whether to continue ripping if the disc is a CD-R",
-            default=False)
+                                 action="store_true", dest="cdr",
+                                 help="whether to continue ripping if "
+                                 "the disc is a CD-R",
+                                 default=False)
 
     def handle_arguments(self):
         self.options.output_directory = os.path.expanduser(
