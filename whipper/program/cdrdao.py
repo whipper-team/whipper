@@ -51,7 +51,9 @@ def DetectCdr(device):
     """
     Return whether cdrdao detects a CD-R for 'device'.
     """
-    p = Popen([CDRDAO, 'disk-info', '-v1', '--device', device], stdout=PIPE, stderr=PIPE)
+    cmd = [CDRDAO, 'disk-info', '-v1', '--device', device]
+    logger.debug("executing %r", cmd)
+    p = Popen(cmd, stdout=PIPE, stderr=PIPE)
     if 'CD-R medium          : n/a' in p.stdout.read():
         return False
     else:
