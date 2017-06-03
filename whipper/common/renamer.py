@@ -56,7 +56,6 @@ class Operator(object):
                 operation = cls.deserialize(data)
                 self._todo.append(operation)
 
-
         done = os.path.join(self._statePath, self._key + '.done')
         if os.path.exists(done):
             with open(done, 'r') as handle:

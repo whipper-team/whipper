@@ -21,12 +21,14 @@
 from os import getenv, makedirs
 from os.path import join, expanduser, exists
 
+
 def config_path():
     path = join(getenv('XDG_CONFIG_HOME') or join(expanduser('~'), u'.config'),
                 u'whipper')
     if not exists(path):
         makedirs(path)
     return join(path, u'whipper.conf')
+
 
 def cache_path(name=None):
     path = join(getenv('XDG_CACHE_HOME') or join(expanduser('~'), u'.cache'),
@@ -37,9 +39,10 @@ def cache_path(name=None):
         makedirs(path)
     return path
 
+
 def data_path(name=None):
-    path = join(getenv('XDG_DATA_HOME')
-                or join(expanduser('~'), u'.local/share'),
+    path = join(getenv('XDG_DATA_HOME') or
+                join(expanduser('~'), u'.local/share'),
                 u'whipper')
     if name:
         path = join(path, name)

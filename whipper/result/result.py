@@ -54,7 +54,7 @@ class TrackResult:
     """
     number = None
     filename = None
-    pregap = 0 # in frames
+    pregap = 0  # in frames
     pre_emphasis = None
 
     peak = 0.0
@@ -65,7 +65,7 @@ class TrackResult:
     copyduration = 0.0
     testcrc = None
     copycrc = None
-    accurip = False # whether it's in the database
+    accurip = False  # whether it's in the database
     ARCRC = None
     ARDBCRC = None
     ARDBConfidence = None

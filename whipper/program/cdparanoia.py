@@ -79,12 +79,12 @@ _ERROR_RE = re.compile("^scsi_read error:")
 
 
 class ProgressParser:
-    read = 0 # last [read] frame
-    wrote = 0 # last [wrote] frame
-    errors = 0 # count of number of scsi errors
-    _nframes = None # number of frames read on each [read]
-    _firstFrames = None # number of frames read on first [read]
-    reads = 0 # total number of reads
+    read = 0  # last [read] frame
+    wrote = 0  # last [wrote] frame
+    errors = 0  # count of number of scsi errors
+    _nframes = None  # number of frames read on each [read]
+    _firstFrames = None  # number of frames read on first [read]
+    reads = 0  # total number of reads
 
     def __init__(self, start, stop):
         """
@@ -99,7 +99,7 @@ class ProgressParser:
         # FIXME: privatize
         self.read = start
 
-        self._reads = {} # read count for each sector
+        self._reads = {}  # read count for each sector
 
     def parse(self, line):
         """
@@ -121,8 +121,8 @@ class ProgressParser:
 
     def _parse_read(self, wordOffset):
         if wordOffset % common.WORDS_PER_FRAME != 0:
-            print 'THOMAS: not a multiple of %d: %d' % (
-                common.WORDS_PER_FRAME, wordOffset)
+            logger.debug('THOMAS: not a multiple of %d: %d' % (
+                common.WORDS_PER_FRAME, wordOffset))
             return
 
         frameOffset = wordOffset / common.WORDS_PER_FRAME
@@ -138,14 +138,12 @@ class ProgressParser:
             logger.debug('set firstFrames to %r', self._firstFrames)
 
         markStart = None
-        markEnd = None # the next unread frame (half-inclusive)
+        markEnd = None  # the next unread frame (half-inclusive)
 
         # verify it either read nframes more or went back for verify
         if frameOffset > self.read:
             delta = frameOffset - self.read
             if self._nframes and delta != self._nframes:
-                # print 'THOMAS: Read %d frames more, not %d' % (
-                # delta, self._nframes)
                 # my drive either reads 7 or 13 frames
                 pass
 
@@ -157,13 +155,13 @@ class ProgressParser:
             # we could use firstFrames as an estimate on how many frames this
             # read, but this lowers our track quality needlessly where
             # EAC still reports 100% track quality
-            markStart = frameOffset # - self._firstFrames
+            markStart = frameOffset  # - self._firstFrames
             markEnd = frameOffset
 
         # FIXME: doing this is way too slow even for a testcase, so disable
         if False:
             for frame in range(markStart, markEnd):
-                if not frame in self._reads.keys():
+                if frame not in self._reads.keys():
                     self._reads[frame] = 0
                 self._reads[frame] += 1
 
@@ -190,7 +188,7 @@ class ProgressParser:
         Each frame gets read twice.
         More than two reads for a frame reduce track quality.
         """
-        frames = self.stop - self.start + 1 # + 1 since stop is inclusive
+        frames = self.stop - self.start + 1  # + 1 since stop is inclusive
         reads = self.reads
         logger.debug('getTrackQuality: frames %d, reads %d' % (frames, reads))
 
@@ -210,14 +208,14 @@ class ReadTrackTask(task.Task):
     """
 
     description = "Reading track"
-    quality = None # set at end of reading
+    quality = None  # set at end of reading
     speed = None
-    duration = None # in seconds
+    duration = None  # in seconds
 
-    _MAXERROR = 100 # number of errors detected by parser
+    _MAXERROR = 100  # number of errors detected by parser
 
     def __init__(self, path, table, start, stop, overread, offset=0,
-        device=None, action="Reading", what="track"):
+                 device=None, action="Reading", what="track"):
         """
         Read the given track.
 
@@ -250,7 +248,7 @@ class ReadTrackTask(task.Task):
         self._start_time = None
         self._overread = overread
 
-        self._buffer = "" # accumulate characters
+        self._buffer = ""  # accumulate characters
         self._errors = []
         self.description = "%s %s" % (action, what)
 
@@ -272,31 +270,33 @@ class ReadTrackTask(task.Task):
                 stopOffset = self._stop - self._table.getTrackStart(i + 1)
 
         logger.debug('Ripping from %d to %d (inclusive)',
-            self._start, self._stop)
+                     self._start, self._stop)
         logger.debug('Starting at track %d, offset %d',
-            startTrack, startOffset)
+                     startTrack, startOffset)
         logger.debug('Stopping at track %d, offset %d',
-            stopTrack, stopOffset)
+                     stopTrack, stopOffset)
 
         bufsize = 1024
         if self._overread:
             argv = ["cdparanoia", "--stderr-progress",
-                "--sample-offset=%d" % self._offset, "--force-overread", ]
+                    "--sample-offset=%d" % self._offset, "--force-overread", ]
         else:
             argv = ["cdparanoia", "--stderr-progress",
-                "--sample-offset=%d" % self._offset, ]
+                    "--sample-offset=%d" % self._offset, ]
         if self._device:
             argv.extend(["--force-cdrom-device", self._device, ])
         argv.extend(["%d[%s]-%d[%s]" % (
-                startTrack, common.framesToHMSF(startOffset),
-                stopTrack, common.framesToHMSF(stopOffset)),
+            startTrack, common.framesToHMSF(startOffset),
+            stopTrack, common.framesToHMSF(stopOffset)),
             self.path])
         logger.debug('Running %s' % (" ".join(argv), ))
         try:
             self._popen = asyncsub.Popen(argv,
-                bufsize=bufsize,
-                stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE, close_fds=True)
+                                         bufsize=bufsize,
+                                         stdin=subprocess.PIPE,
+                                         stdout=subprocess.PIPE,
+                                         stderr=subprocess.PIPE,
+                                         close_fds=True)
         except OSError, e:
             import errno
             if e.errno == errno.ENOENT:
@@ -367,7 +367,7 @@ class ReadTrackTask(task.Task):
         if size != expected:
             # FIXME: handle errors better
             logger.warning('file size %d did not match expected size %d',
-                size, expected)
+                           size, expected)
             if (size - expected) % common.BYTES_PER_FRAME == 0:
                 logger.warning('%d frames difference' % (
                     (size - expected) / common.BYTES_PER_FRAME))
@@ -375,8 +375,10 @@ class ReadTrackTask(task.Task):
                 logger.warning('non-integral amount of frames difference')
 
             self.setAndRaiseException(FileSizeError(self.path,
-                "File size %d did not match expected size %d" % (
-                    size, expected)))
+                                                    "File size %d did not "
+                                                    "match expected "
+                                                    "size %d" % (
+                                                        size, expected)))
 
         if not self.exception and self._popen.returncode != 0:
             if self._errors:
@@ -462,10 +464,11 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         self.tasks = []
         self.tasks.append(
             ReadTrackTask(tmppath, table, start, stop, overread,
-                offset=offset, device=device, what=what))
+                          offset=offset, device=device, what=what))
         self.tasks.append(checksum.CRC32Task(tmppath))
         t = ReadTrackTask(tmppath, table, start, stop, overread,
-            offset=offset, device=device, action="Verifying", what=what)
+                          offset=offset, device=device, action="Verifying",
+                          what=what)
         self.tasks.append(t)
         self.tasks.append(checksum.CRC32Task(tmppath))
 
@@ -504,7 +507,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         try:
             if not self.exception:
                 self.quality = max(self.tasks[0].quality,
-                    self.tasks[2].quality)
+                                   self.tasks[2].quality)
                 self.peak = self.tasks[6].peak
                 logger.debug('peak: %r', self.peak)
                 self.testspeed = self.tasks[0].speed
@@ -536,9 +539,8 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
                         logger.debug('Moving to final path %r', self.path)
                         os.rename(self._tmppath, self.path)
                     except Exception, e:
-                        logger.debug('Exception while moving to final path %r: '
-                            '%r',
-                            self.path, str(e))
+                        logger.debug('Exception while moving to final '
+                                     'path %r: %r', self.path, str(e))
                         self.exception = e
                 else:
                     os.unlink(self._tmppath)
@@ -549,15 +551,16 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
 
         task.MultiSeparateTask.stop(self)
 
+
 _VERSION_RE = re.compile(
     "^cdparanoia (?P<version>.+) release (?P<release>.+) \(.*\)")
 
 
 def getCdParanoiaVersion():
     getter = common.VersionGetter('cdparanoia',
-        ["cdparanoia", "-V"],
-        _VERSION_RE,
-        "%(version)s %(release)s")
+                                  ["cdparanoia", "-V"],
+                                  _VERSION_RE,
+                                  "%(version)s %(release)s")
 
     return getter.get()
 
