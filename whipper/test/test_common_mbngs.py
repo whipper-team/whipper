@@ -114,3 +114,40 @@ class MetadataTestCase(unittest.TestCase):
                           ';ec07a209-55ff-4084-bc41-9d4d1764e075'
                           ';f626b92e-07b1-4a19-ad13-c09d690db66c'
                           )
+
+    def testNorthernGateway(self):
+        # disc with artists tagged with [unknown] and an alias in MusicBrainz
+        # see https://github.com/JoeLametta/whipper/issues/155
+        filename = 'whipper.release.38b05c7d-65fe-4dc0-9c10-33a391b86703.json'
+        path = os.path.join(os.path.dirname(__file__), filename)
+        handle = open(path, "rb")
+        response = json.loads(handle.read())
+        handle.close()
+        discid = "rzGHHqfPWIq1GsOLhhlBcZuqo.I-"
+
+        metadata = mbngs._getMetadata({}, response['release'], discid)
+        self.assertEquals(metadata.artist, u'Various Artists')
+        self.assertEquals(metadata.release, u'2010')
+        self.assertEquals(metadata.mbidArtist,
+                          u'89ad4ac3-39f7-470e-963a-56509c546377')
+
+        self.assertEquals(len(metadata.tracks), 10)
+
+        track2 = metadata.tracks[1]
+
+        self.assertEquals(track2.artist, u'Twisted Reaction feat. Danielle')
+        self.assertEquals(track2.sortName,
+                          u'Twisted Reaction feat. [unknown]')
+        self.assertEquals(track2.mbidArtist,
+                          u'4f69f624-73ea-4a16-b822-bd2ca58032bf'
+                          ';125ec42a-7229-4250-afc5-e057484327fe'
+                          )
+
+        track4 = metadata.tracks[3]
+
+        self.assertEquals(track4.artist, u'BioGenesis')
+        self.assertEquals(track4.sortName,
+                          u'Bio Genesis')
+        self.assertEquals(track4.mbidArtist,
+                          u'dd61b86c-c015-43e1-9a28-58fceb0975c8'
+                          )
