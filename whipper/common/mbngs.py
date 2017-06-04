@@ -135,7 +135,8 @@ class _Credit(list):
         return self.joiner(lambda i: i.get('artist').get('sort-name', None))
 
     def getName(self):
-        return self.joiner(lambda i: i.get('name', i.get('artist').get('name', None)))
+        return self.joiner(lambda i: i.get('name',
+                                           i.get('artist').get('name', None)))
 
     def getIds(self):
         return self.joiner(lambda i: i.get('artist').get('id', None),
