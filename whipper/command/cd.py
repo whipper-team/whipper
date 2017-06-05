@@ -144,8 +144,8 @@ class _CD(BaseCommand):
                 return -1
 
         self.program.result.isCdr = cdrdao.DetectCdr(self.device)
-        if self.program.result.isCdr and \
-                not getattr(self.options, 'cdr', False):
+        if (self.program.result.isCdr and
+                not getattr(self.options, 'cdr', False)):
             logger.critical("inserted disc seems to be a CD-R, "
                             "--cdr not passed")
             return -1
