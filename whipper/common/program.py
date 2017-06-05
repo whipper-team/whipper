@@ -170,6 +170,14 @@ class Program:
     def saveRipResult(self):
         self._presult.persist()
 
+    def addDisambiguation(self, template_part, metadata):
+        "Add disambiguation to template path part string."
+        if metadata.catalogNumber:
+            template_part += ' (%s)' % metadata.catalogNumber
+        elif metadata.barcode:
+            template_part += ' (%s)' % metadata.barcode
+        return template_part
+
     def getPath(self, outdir, template, mbdiscid, i, disambiguate=False):
         """
         Based on the template, get a complete path for the given track,
@@ -242,11 +250,15 @@ class Program:
 
         # when disambiguating, use catalogNumber then barcode
         if disambiguate:
-            templateParts = list(os.path.split(template))
-            if self.metadata.catalogNumber:
-                templateParts[-2] += ' (%s)' % self.metadata.catalogNumber
-            elif self.metadata.barcode:
-                templateParts[-2] += ' (%s)' % self.metadata.barcode
+            templateParts = template.split(os.sep)
+            # Find the section of the template with the release name
+            for i, part in enumerate(templateParts):
+                if "%d" in part:
+                    templateParts[i] = self.addDisambiguation(part, self.metadata)  # noqa: E501
+                    break
+            else:
+                # No parts of the template contain the release
+                templateParts[-1] = self.addDisambiguation(templateParts[-1], self.metadata)  # noqa: E501
             template = os.path.join(*templateParts)
             logger.debug('Disambiguated template to %r' % template)
 

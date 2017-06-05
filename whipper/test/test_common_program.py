@@ -119,3 +119,87 @@ class PathTestCase(unittest.TestCase):
         path = prog.getPath(u'/tmp', u'%A/%d', 'mbdiscid', 0)
         self.assertEquals(path,
                           u'/tmp/Jeff Buckley/Grace')
+
+    def testDisambiguateOnRelease(self):
+        """Test that disambiguation gets placed in the same part of the path
+        as the release name.
+
+        See https://github.com/JoeLametta/whipper/issues/127"""
+        prog = program.Program(config.Config())
+        md = mbngs.DiscMetadata()
+        md.artist = 'Guy Davis'
+        md.sortName = 'Davis, Guy'
+        md.title = 'Call Down the Thunder'
+        md.release = '1996'
+        md.catalogNumber = 'RHR CD 89'
+        prog.metadata = md
+        templates = {
+            u'%A/%d - %y': u'Guy Davis/Call Down the Thunder - 1996 (RHR CD 89)',  # noqa: E501
+            u'%A - %d - %y': u'Guy Davis - Call Down the Thunder - 1996 (RHR CD 89)',  # noqa: E501
+            u'%A/%y/%d': u'Guy Davis/1996/Call Down the Thunder (RHR CD 89)',
+            u'%y/%d/%A': u'1996/Call Down the Thunder (RHR CD 89)/Guy Davis',
+            u'%d/%A/%y': u'Call Down the Thunder (RHR CD 89)/Guy Davis/1996',
+        }
+
+        for template, expected_path in templates.iteritems():
+            path = prog.getPath(u'/tmp', template, 'mbdiscid', 0, disambiguate=True)  # noqa: E501
+            self.assertEquals(path, u'/tmp/' + expected_path)
+
+    def testDisambiguateOnReleaseOnlyOnce(self):
+        """Test that disambiguation gets added only once."""
+        prog = program.Program(config.Config())
+        md = mbngs.DiscMetadata()
+        md.artist = 'Guy Davis'
+        md.sortName = 'Davis, Guy'
+        md.title = 'Call Down the Thunder'
+        md.release = '1996'
+        md.catalogNumber = 'RHR CD 89'
+        prog.metadata = md
+        template = u'%A/%d - %y/%d/%d'
+
+        path = prog.getPath(u'/tmp', template, 'mbdiscid', 0, disambiguate=True)  # noqa: E501
+        self.assertEquals(path,
+                          u'/tmp/Guy Davis/Call Down the Thunder - 1996 (RHR CD 89)/Call Down the Thunder/Call Down the Thunder')  # noqa: E501
+
+    def testDisambiguateOnNoReleaseTitle(self):
+        """Test that disambiguation gets added even if there's no release
+        title in the template."""
+        prog = program.Program(config.Config())
+        md = mbngs.DiscMetadata()
+        md.artist = 'Guy Davis'
+        md.sortName = 'Davis, Guy'
+        md.title = 'Call Down the Thunder'
+        md.release = '1996'
+        md.catalogNumber = 'RHR CD 89'
+        prog.metadata = md
+        templates = {
+            u'%A/%y': u'Guy Davis/1996 (RHR CD 89)',
+            u'%A - %y': u'Guy Davis - 1996 (RHR CD 89)',
+            u'%y/%A': u'1996/Guy Davis (RHR CD 89)',
+        }
+
+        for template, expected_path in templates.iteritems():
+            path = prog.getPath(u'/tmp', template, 'mbdiscid', 0, disambiguate=True)  # noqa: E501
+            self.assertEquals(path, u'/tmp/' + expected_path)
+
+    def testAddDisambiguationUnitTest(self):
+        """Unit test for Program.addDisambiguation()."""
+        prog = program.Program(config.Config())
+        md = mbngs.DiscMetadata()
+
+        # No relevant disambiguation metadata
+        self.assertEquals(
+            prog.addDisambiguation(u'Test', md),
+            u'Test')
+
+        # Only barcode available
+        md.barcode = '033651008927'
+        self.assertEquals(
+            prog.addDisambiguation(u'Test', md),
+            u'Test (033651008927)')
+
+        # Both catalog number and barcode available
+        md.catalogNumber = 'RHR CD 89'
+        self.assertEquals(
+            prog.addDisambiguation(u'Test', md),
+            u'Test (RHR CD 89)')
