@@ -54,6 +54,11 @@ class WhipperLogger(result.Logger):
         # Next one fully works only using the patched cdparanoia package
         # lines.append("Fill up missing offset samples with silence: Yes")
         lines.append("  Gap detection: cdrdao %s" % ripResult.cdrdaoVersion)
+        if ripResult.isCdr:
+            isCdr = "Yes"
+        else:
+            isCdr = "No"
+        lines.append("  CD-R detected: %s" % isCdr)
         lines.append("")
 
         # CD metadata

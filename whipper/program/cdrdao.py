@@ -47,6 +47,19 @@ def read_toc(device, fast_toc=False):
     return toc
 
 
+def DetectCdr(device):
+    """
+    Return whether cdrdao detects a CD-R for 'device'.
+    """
+    cmd = [CDRDAO, 'disk-info', '-v1', '--device', device]
+    logger.debug("executing %r", cmd)
+    p = Popen(cmd, stdout=PIPE, stderr=PIPE)
+    if 'CD-R medium          : n/a' in p.stdout.read():
+        return False
+    else:
+        return True
+
+
 def version():
     """
     Return cdrdao version as a string.

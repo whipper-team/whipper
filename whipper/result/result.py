@@ -93,6 +93,7 @@ class RipResult:
 
     offset = 0
     overread = None
+    isCdr = None
     logger = None
     table = None
     artist = None
