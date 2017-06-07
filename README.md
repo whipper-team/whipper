@@ -58,7 +58,7 @@ For detailed information, please check the commit history.
 
 ## Installation
 
-With the exception of an [AUR package for Arch Linux](https://aur.archlinux.org/packages/whipper) and a [Copr repository for Fedora](https://copr.fedorainfracloud.org/coprs/mruszczyk/whipper/), whipper isn't currently available in a prepackaged form so, in order to use it, it must be built from its source code.
+With the exception of an [Arch Linux package](https://www.archlinux.org/packages/community/any/whipper/) and a [Copr repository for Fedora](https://copr.fedorainfracloud.org/coprs/mruszczyk/whipper/), whipper isn't currently available in a prepackaged form so, in order to use it, it must be built from its source code.
 
 If you are building from a source tarball or checkout, you can choose to use whipper installed or uninstalled _but first install all the required dependencies_.
 
