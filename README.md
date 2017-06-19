@@ -2,7 +2,7 @@
 
 [![License: GPLv3](https://img.shields.io/badge/license-GPLv3-CC7722.svg)](https://github.com/JoeLametta/whipper/blob/master/LICENSE) [![Build Status](https://travis-ci.org/JoeLametta/whipper.svg?branch=master)](https://travis-ci.org/JoeLametta/whipper) [![Current version number](https://img.shields.io/badge/version-0.5.1-blue.svg)](https://github.com/JoeLametta/whipper/releases/latest) [![IRC](https://img.shields.io/badge/irc-%23whipper%40freenode-brightgreen.svg)](https://webchat.freenode.net/?channels=%23whipper) [![GitHub Stars](https://img.shields.io/github/stars/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/stargazers) [![GitHub Issues](https://img.shields.io/github/issues/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/issues)
 
-Whipper is a Python 2 CD-DA ripper, fork of the morituri project (_CDDA ripper for *nix systems aiming for accuracy over speed_). It improves morituri which development seems to have halted merging old ignored pull requests, improving it with bugfixes and new features.
+Whipper is a Python 2.7 CD-DA ripper, fork of the morituri project (_CDDA ripper for *nix systems aiming for accuracy over speed_). It improves morituri which development seems to have halted merging old ignored pull requests, improving it with bugfixes and new features.
 
 Whipper is developed and tested _only_ on Linux distributions but _may_ work fine on other *nix OSes too.
 
@@ -58,7 +58,7 @@ For detailed information, please check the commit history.
 
 ## Installation
 
-With the exception of an [AUR package for Arch Linux](https://aur.archlinux.org/packages/whipper) and a [Copr repository for Fedora](https://copr.fedorainfracloud.org/coprs/mruszczyk/whipper/), whipper isn't currently available in a prepackaged form so, in order to use it, it must be built from its source code.
+With the exception of an [Arch Linux package](https://www.archlinux.org/packages/community/any/whipper/) and a [Copr repository for Fedora](https://copr.fedorainfracloud.org/coprs/mruszczyk/whipper/), whipper isn't currently available in a prepackaged form so, in order to use it, it must be built from its source code.
 
 If you are building from a source tarball or checkout, you can choose to use whipper installed or uninstalled _but first install all the required dependencies_.
 
@@ -188,7 +188,7 @@ Note: to get a literal `%` character it must be doubled.
 ## Backward incompatible changes
 
 - The image retag feature has been knowingly broken since [PR #130](https://github.com/JoeLametta/whipper/pull/130)
-- Structural changes broke compatibility with existing logger plugins ([PR #94]https://github.com/JoeLametta/whipper/pull/94))
+- Structural changes broke compatibility with existing logger plugins ([PR #94](https://github.com/JoeLametta/whipper/pull/94))
 - Dropped external git submodules ([PR #31](https://github.com/JoeLametta/whipper/pull/31), [PR #92](https://github.com/JoeLametta/whipper/pull/92))
 - Whipper executable name changed: from `rip` to `whipper` ([PR #70](https://github.com/JoeLametta/whipper/pull/70))
 - Whipper has adopted new config/cache/state file paths ([PR #42](https://github.com/JoeLametta/whipper/pull/42))
@@ -252,7 +252,7 @@ Licensed under the [GNU GPLv3 license](http://www.gnu.org/licenses/gpl-3.0).
 
 ```Text
 Copyright (C) 2009 Thomas Vander Stichele
-Copyright (C) 2016 JoeLametta
+Copyright (C) 2016, 2017 JoeLametta
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -306,7 +306,7 @@ Thanks to:
 You can find us and talk about the project on IRC: [freenode](https://webchat.freenode.net/?channels=%23whipper), **#whipper** channel.
 
 - [Redacted thread (official)](https://redacted.ch/forums.php?action=viewthread&threadid=150)
-- [Arch Linux whipper AUR package](https://aur.archlinux.org/packages/whipper/)
+- [Arch Linux package](https://www.archlinux.org/packages/community/any/whipper/)
 - [Arch Linux whipper-git AUR package](https://aur.archlinux.org/packages/whipper-git/)
 - [Fedora Copr repository for whipper](https://copr.fedorainfracloud.org/coprs/mruszczyk/whipper/)
 - [Unattended ripping using whipper (script by Thomas McWork)](https://github.com/thomas-mc-work/most-possible-unattended-rip)
