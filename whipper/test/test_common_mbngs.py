@@ -155,3 +155,40 @@ class MetadataTestCase(unittest.TestCase):
         self.assertEquals(track4.mbidArtist,
                           u'dd61b86c-c015-43e1-9a28-58fceb0975c8'
                           )
+
+    def testNenaAndKimWildSingle(self):
+        """
+        check the received metadata for artists that differ between
+        named on release and named in recording
+        """
+        filename = 'whipper.release.f484a9fc-db21-4106-9408-bcd105c90047.json'
+        path = os.path.join(os.path.dirname(__file__), filename)
+        handle = open(path, "rb")
+        response = json.loads(handle.read())
+        handle.close()
+        discid = "X2c2IQ5vUy5x6Jh7Xi_DGHtA1X8-"
+
+        metadata = mbngs._getMetadata({}, response['release'], discid)
+        self.assertEquals(metadata.artist, u'Nena & Kim Wilde')
+        self.assertEquals(metadata.release, u'2003-05-19')
+        self.assertEquals(metadata.mbidArtist,
+                          u'38bfaa7f-ee98-48cb-acd0-946d7aeecd76'
+                          ';4b462375-c508-432a-8c88-ceeec38b16ae')
+
+        self.assertEquals(len(metadata.tracks), 4)
+
+        track1 = metadata.tracks[0]
+
+        self.assertEquals(track1.artist, u'Nena & Kim Wilde')
+        self.assertEquals(track1.sortName, u'Nena & Wilde, Kim')
+        self.assertEquals(track1.mbidArtist,
+                          u'38bfaa7f-ee98-48cb-acd0-946d7aeecd76'
+                          ';4b462375-c508-432a-8c88-ceeec38b16ae')
+
+        track2 = metadata.tracks[1]
+
+        self.assertEquals(track2.artist, u'Nena & Kim Wilde')
+        self.assertEquals(track2.sortName, u'Nena & Wilde, Kim')
+        self.assertEquals(track2.mbidArtist,
+                          u'38bfaa7f-ee98-48cb-acd0-946d7aeecd76'
+                          ';4b462375-c508-432a-8c88-ceeec38b16ae')

@@ -215,7 +215,9 @@ def _getMetadata(releaseShort, release, discid, country=None):
                 discMD.title = title
                 for t in medium['track-list']:
                     track = TrackMetadata()
-                    trackCredit = _Credit(t['recording']['artist-credit'])
+                    trackCredit = _Credit(
+                        t.get('artist-credit', t['recording']['artist-credit']
+                              ))
                     if len(trackCredit) > 1:
                         logger.debug('artist-credit more than 1: %r',
                                      trackCredit)
