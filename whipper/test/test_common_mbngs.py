@@ -116,8 +116,12 @@ class MetadataTestCase(unittest.TestCase):
                           )
 
     def testNorthernGateway(self):
-        # disc with artists tagged with [unknown] and an alias in MusicBrainz
-        # see https://github.com/JoeLametta/whipper/issues/155
+        """
+        check the received metadata for artists tagged with [unknown]
+        and artists tagged with an alias in MusicBrainz
+
+        see https://github.com/JoeLametta/whipper/issues/155
+        """
         filename = 'whipper.release.38b05c7d-65fe-4dc0-9c10-33a391b86703.json'
         path = os.path.join(os.path.dirname(__file__), filename)
         handle = open(path, "rb")
