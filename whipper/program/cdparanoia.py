@@ -194,11 +194,13 @@ class ProgressParser:
 
         # don't go over a 100%; we know cdparanoia reads each frame at least
         # twice
-        return min(frames * 2.0 / reads, 1.0)
+        try:
+            return min(frames * 2.0 / reads, 1.0)
+        except ZeroDivisionError:
+            return 0
 
 
 # FIXME: handle errors
-
 
 class ReadTrackTask(task.Task):
     """
