@@ -525,7 +525,12 @@ Log files will log the path to tracks relative to this directory.
                 track.indexes[1].relative = 0
                 continue
 
-            ripIfNotRipped(i + 1)
+            try:
+                ripIfNotRipped(i + 1)
+            except Exception as e:
+                sys.stdout.write(
+                    'ERROR: skipping data track %d, because of: %s\n' % (
+                        i + 1, str(e)))
 
         # write disc files
         discName = self.program.getPath(self.program.outdir,
