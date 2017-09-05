@@ -29,6 +29,7 @@ class TestAccurateRipResponse(TestCase):
     def setUp(self):
         self.cache_dir = mkdtemp(suffix='whipper_accurip_cache_test')
         accurip._CACHE_DIR = self.cache_dir
+
         def cleanup(cachedir):
             chmod(cachedir, 0755)
             rmtree(cachedir)
@@ -83,15 +84,16 @@ class TestAccurateRipResponse(TestCase):
 
 # XXX: test arc.py
 
+
 class TestCalculateChecksums(TestCase):
     def test_returns_none_for_bad_files(self):
-        paths = ['/does/not/exist']
         self.assertEquals(
             calculate_checksums(['/does/not/exist']),
             {'v1': [None], 'v2': [None]}
         )
 
     # TODO: test success when file exists
+
 
 class TestVerifyResult(TestCase):
     @classmethod
@@ -220,6 +222,7 @@ class TestVerifyResult(TestCase):
             'DBMaxConfidence': 20,
             'DBMaxConfidenceCRC': '9cc1f32e',
         })
+
 
 class TestAccurateRipReport(TestCase):
     def setUp(self):

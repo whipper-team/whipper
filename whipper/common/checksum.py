@@ -24,8 +24,6 @@ import wave
 
 from whipper.extern.task import task as etask
 
-from whipper.program.arc import accuraterip_checksum
-
 import logging
 logger = logging.getLogger(__name__)
 

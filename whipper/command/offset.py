@@ -28,7 +28,6 @@ from whipper.command.basecommand import BaseCommand
 from whipper.common import accurip, common, config, drive
 from whipper.common import task as ctask
 from whipper.program import arc, cdrdao, cdparanoia, utils
-from whipper.common import checksum
 from whipper.extern.task import task
 
 gobject.threads_init()

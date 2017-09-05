@@ -34,6 +34,7 @@ logger = logging.getLogger(__name__)
 
 _CACHE_DIR = join(directory.cache_path(), 'accurip')
 
+
 class _AccurateRipResponse(object):
     """
     An AccurateRip response contains a collection of metadata identifying a
@@ -144,6 +145,7 @@ def _download_entry(path):
         return None
     return resp.content
 
+
 def _save_entry(raw_entry, path):
     logger.debug('saving AccurateRip entry to %s', path)
     # XXX: os.makedirs(exist_ok=True) in py3
@@ -154,6 +156,7 @@ def _save_entry(raw_entry, path):
             logger.error('could not save entry to %s: %r' % (path, str(e)))
             return
     open(path, 'wb').write(raw_entry)
+
 
 def get_db_entry(path):
     """
@@ -184,6 +187,7 @@ def _assign_checksums_and_confidences(tracks, checksums, responses):
             key=lambda t: t[0]
         )
 
+
 def _match_responses(tracks, responses):
     """
     Match and save track accuraterip response checksums against
@@ -203,12 +207,13 @@ def _match_responses(tracks, responses):
                             'track %d matched response %s in AccurateRip'
                             ' database: %s crc %s confidence %s' %
                             (i, r.cddbDiscId, v, track.AR[v]['DBCRC'],
-                            track.AR[v]['DBConfidence'])
+                             track.AR[v]['DBConfidence'])
                         )
     return any((
         all([t.AR['v1']['DBCRC'] for t in tracks]),
         all([t.AR['v2']['DBCRC'] for t in tracks])
     ))
+
 
 def verify_result(result, responses, checksums):
     """

@@ -22,14 +22,12 @@ import argparse
 import cdio
 import os
 import glob
-import urllib2
-import socket
 import sys
 import logging
 import gobject
 from whipper.command.basecommand import BaseCommand
 from whipper.common import (
-    accurip, common, config, drive, program, task
+    accurip, config, drive, program, task
 )
 from whipper.program import cdrdao, cdparanoia, utils
 from whipper.result import result
@@ -144,16 +142,6 @@ class _CD(BaseCommand):
             logger.critical("inserted disc seems to be a CD-R, "
                             "--cdr not passed")
             return -1
-
-        # FIXME ?????
-        # Hackish fix for broken commit
-        offset = 0
-        info = drive.getDeviceInfo(self.device)
-        if info:
-            try:
-                offset = self.config.getReadOffset(*info)
-            except KeyError:
-                pass
 
         # now, read the complete index table, which is slower
         self.itable = self.program.getTable(self.runner,
@@ -345,8 +333,11 @@ Log files will log the path to tracks relative to this directory.
         if os.path.exists(dirname):
             logs = glob.glob(os.path.join(dirname, '*.log'))
             if logs:
-                bye("output directory %s is a finished rip" %
-                    dirname.encode('utf-8'))
+                msg = ("output directory %s is a finished rip" %
+                       dirname.encode('utf-8'))
+                logger.critical(msg)
+                raise RuntimeError(msg)
+                exit
             else:
                 sys.stdout.write("output directory %s already exists\n" %
                                  dirname.encode('utf-8'))

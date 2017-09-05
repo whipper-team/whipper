@@ -613,10 +613,9 @@ class Program:
                           common.FRAMES_PER_SECOND)
 
             for i, track in enumerate(self.result.tracks):
-                path = track.filename
                 writeFile(track.filename,
-                        (self.result.table.getTrackLength(i + 1) /
-                        common.FRAMES_PER_SECOND))
+                          (self.result.table.getTrackLength(i + 1) /
+                           common.FRAMES_PER_SECOND))
 
     def writeCue(self, discName):
         assert self.result.table.canCue()

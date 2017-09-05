@@ -2,13 +2,9 @@
 # vi:si:et:sw=4:sts=4:ts=4
 
 
-import os
-import pickle
-
 import unittest
 
-from whipper.result import result
-from whipper.common import program, accurip, mbngs, config
+from whipper.common import program, mbngs, config
 from whipper.command.cd import DEFAULT_DISC_TEMPLATE
 
 

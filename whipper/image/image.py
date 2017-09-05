@@ -26,7 +26,6 @@ import os
 
 from whipper.common import encode
 from whipper.common import common
-from whipper.common import checksum
 from whipper.image import cue, table
 from whipper.extern.task import task
 from whipper.program.soxi import AudioLengthTask

@@ -6,9 +6,11 @@ logger = logging.getLogger(__name__)
 ARB = 'accuraterip-checksum'
 FLAC = 'flac'
 
+
 def _execute(cmd, **redirects):
     logger.debug('executing %r', cmd)
     return Popen(cmd, **redirects)
+
 
 def accuraterip_checksum(f, track_number, total_tracks, wave=False, v2=False):
     v = '--accuraterip-v1'
