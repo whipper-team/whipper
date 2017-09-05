@@ -6,22 +6,25 @@ logger = logging.getLogger(__name__)
 ARB = 'accuraterip-checksum'
 FLAC = 'flac'
 
+def _execute(cmd, **redirects):
+    logger.debug('executing %r', cmd)
+    return Popen(cmd, **redirects)
 
-def accuraterip_checksum(f, track, tracks, wave=False, v2=False):
+def accuraterip_checksum(f, track_number, total_tracks, wave=False, v2=False):
     v = '--accuraterip-v1'
     if v2:
         v = '--accuraterip-v2'
 
-    track, tracks = str(track), str(tracks)
+    track_number, total_tracks = str(track_number), str(total_tracks)
 
-    if not wave:
-        flac = Popen([FLAC, '-cds', f], stdout=PIPE)
-
-        arc = Popen([ARB, v, '/dev/stdin', track, tracks],
-                    stdin=flac.stdout, stdout=PIPE, stderr=PIPE)
+    if wave:
+        cmd = [ARB, v, f, track_number, total_tracks]
+        redirects = dict(stdout=PIPE, stderr=PIPE)
     else:
-        arc = Popen([ARB, v, f, track, tracks],
-                    stdout=PIPE, stderr=PIPE)
+        flac = _execute([FLAC, '-cds', f], stdout=PIPE)
+        cmd = [ARB, v, '/dev/stdin', track_number, total_tracks]
+        redirects = dict(stdin=flac.stdout, stdout=PIPE, stderr=PIPE)
+    arc = _execute(cmd, **redirects)
 
     if not wave:
         flac.stdout.close()
@@ -30,23 +33,24 @@ def accuraterip_checksum(f, track, tracks, wave=False, v2=False):
 
     if not wave:
         flac.wait()
-        flac_rc = flac.returncode
+        if flac.returncode != 0:
+            logger.warning(
+                'ARC calculation failed: flac return code is non zero: %r' %
+                flac.returncode
+            )
+            return None
 
-    arc_rc = arc.returncode
-
-    if not wave and flac_rc != 0:
-        logger.warning('ARC calculation failed: flac return code is non zero')
+    if arc.returncode != 0:
+        logger.warning(
+            'ARC calculation failed: arc return code is non zero: %r' %
+            arc.returncode
+        )
         return None
 
-    if arc_rc != 0:
-        logger.warning('ARC calculation failed: arc return code is non zero')
-        return None
-
-    out = out.strip()
     try:
-        outh = int('0x%s' % out, base=16)
+        checksum = int('0x%s' % out.strip(), base=16)
+        logger.debug('returned %r', checksum)
+        return checksum
     except ValueError:
         logger.warning('ARC output is not usable')
         return None
-
-    return outh

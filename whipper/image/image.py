@@ -108,47 +108,6 @@ class Image(object):
         logger.debug('setup image done')
 
 
-class AccurateRipChecksumTask(task.MultiSeparateTask):
-    """
-    I calculate the AccurateRip checksums of all tracks.
-    """
-
-    description = "Checksumming tracks"
-
-    # TODO MW: Update this further for V2 code
-    def __init__(self, image):
-        task.MultiSeparateTask.__init__(self)
-
-        self._image = image
-        cue = image.cue
-        self.checksums = []
-
-        logger.debug('Checksumming %d tracks' % len(cue.table.tracks))
-        for trackIndex, track in enumerate(cue.table.tracks):
-            index = track.indexes[1]
-            length = cue.getTrackLength(track)
-            if length < 0:
-                logger.debug('track %d has unknown length' %
-                             (trackIndex + 1, ))
-            else:
-                logger.debug('track %d is %d samples long' % (
-                    trackIndex + 1, length))
-
-            path = image.getRealPath(index.path)
-
-            checksumTask = checksum.FastAccurateRipChecksumTask(
-                                path,
-                                trackNumber=trackIndex + 1,
-                                trackCount=len(cue.table.tracks),
-                                wave=True, v2=False)
-
-            self.addTask(checksumTask)
-
-    def stop(self):
-        self.checksums = [t.checksum for t in self.tasks]
-        task.MultiSeparateTask.stop(self)
-
-
 class ImageVerifyTask(task.MultiSeparateTask):
     """
     I verify a disk image and get the necessary track lengths.

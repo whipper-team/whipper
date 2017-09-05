@@ -89,8 +89,8 @@ class CureTestCase(common.TestCase):
         common.diffStrings(ref, cue)
 
         # we verify it because it has failed in readdisc in the past
-        self.assertEquals(self.toc.table.getAccurateRipURL(),
-                          'http://www.accuraterip.com/accuraterip/3/c/4/dBAR-013-0019d4c3-00fe8924-b90c650d.bin')  # noqa: E501
+        self.assertEquals(self.toc.table.accuraterip_path(),
+                          '3/c/4/dBAR-013-0019d4c3-00fe8924-b90c650d.bin')
 
     def testGetRealPath(self):
         self.assertRaises(KeyError, self.toc.getRealPath, u'track01.wav')
@@ -164,8 +164,8 @@ class BlocTestCase(common.TestCase):
 
     def testAccurateRip(self):
         # we verify it because it has failed in readdisc in the past
-        self.assertEquals(self.toc.table.getAccurateRipURL(),
-            'http://www.accuraterip.com/accuraterip/e/d/2/dBAR-013-001af2de-0105994e-ad0be00d.bin')  # noqa: E501
+        self.assertEquals(self.toc.table.accuraterip_path(),
+                          'e/d/2/dBAR-013-001af2de-0105994e-ad0be00d.bin')
 
 # The Breeders - Mountain Battles has CDText
 

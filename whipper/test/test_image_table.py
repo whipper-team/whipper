@@ -62,11 +62,10 @@ class LadyhawkeTestCase(tcommon.TestCase):
                           "KnpGsLhvH.lPrNc1PBL21lb9Bg4-")
 
     def testAccurateRip(self):
-        self.assertEquals(self.table.getAccurateRipIds(), (
+        self.assertEquals(self.table.accuraterip_ids(), (
             "0013bd5a", "00b8d489"))
-        self.assertEquals(self.table.getAccurateRipURL(),
-                          "http://www.accuraterip.com/accuraterip/a/5/d/"
-                          "dBAR-012-0013bd5a-00b8d489-c60af50d.bin")
+        self.assertEquals(self.table.accuraterip_path(),
+                          "a/5/d/dBAR-012-0013bd5a-00b8d489-c60af50d.bin")
 
     def testDuration(self):
         self.assertEquals(self.table.duration(), 2761413)

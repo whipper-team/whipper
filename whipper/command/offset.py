@@ -27,7 +27,7 @@ import gobject
 from whipper.command.basecommand import BaseCommand
 from whipper.common import accurip, common, config, drive
 from whipper.common import task as ctask
-from whipper.program import cdrdao, cdparanoia, utils
+from whipper.program import arc, cdrdao, cdparanoia, utils
 from whipper.common import checksum
 from whipper.extern.task import task
 
@@ -92,23 +92,7 @@ CD in the AccurateRip database."""
         table = t.table
 
         logger.debug("CDDB disc id: %r", table.getCDDBDiscId())
-        url = table.getAccurateRipURL()
-        logger.debug("AccurateRip URL: %s", url)
-
-        # FIXME: download url as a task too
-        responses = []
-        import urllib2
-        try:
-            handle = urllib2.urlopen(url)
-            data = handle.read()
-            responses = accurip.getAccurateRipResponses(data)
-        except urllib2.HTTPError, e:
-            if e.code == 404:
-                sys.stdout.write(
-                    'Album not found in AccurateRip database.\n')
-                return 1
-            else:
-                raise
+        responses = accurip.get_db_entry(table.accuraterip_path())
 
         if responses:
             logger.debug('%d AccurateRip responses found.' % len(responses))
@@ -120,17 +104,19 @@ CD in the AccurateRip database."""
         # now rip the first track at various offsets, calculating AccurateRip
         # CRC, and matching it against the retrieved ones
 
-        def match(archecksum, track, responses):
+        # archecksums is a tuple of accuraterip checksums: (v1, v2)
+        def match(archecksums, track, responses):
             for i, r in enumerate(responses):
-                if archecksum == r.checksums[track - 1]:
-                    return archecksum, i
+                for checksum in archecksums:
+                    if checksum == r.checksums[track - 1]:
+                        return checksum, i
 
             return None, None
 
         for offset in self._offsets:
             sys.stdout.write('Trying read offset %d ...\n' % offset)
             try:
-                archecksum = self._arcs(runner, table, 1, offset)
+                archecksums = self._arcs(runner, table, 1, offset)
             except task.TaskException, e:
 
                 # let MissingDependency fall through
@@ -149,9 +135,9 @@ CD in the AccurateRip database."""
                     'WARNING: cannot rip with offset %d...\n' % offset)
                 continue
 
-            logger.debug('AR checksum calculated: %s' % archecksum)
+            logger.debug('AR checksums calculated: %s %s' % archecksums)
 
-            c, i = match(archecksum, 1, responses)
+            c, i = match(archecksums, 1, responses)
             if c:
                 count = 1
                 logger.debug('MATCHED against response %d' % i)
@@ -161,9 +147,10 @@ CD in the AccurateRip database."""
 
                 # now try and rip all other tracks as well, except for the
                 # last one (to avoid readers that can't do overread
-                for track in range(2, (len(table.tracks) + 1) - 1):
+                # for track in range(2, (len(table.tracks) + 1) - 1):
+                for track in range(2, (len(table.tracks) + 1)):
                     try:
-                        archecksum = self._arcs(runner, table, track, offset)
+                        archecksums = self._arcs(runner, table, track, offset)
                     except task.TaskException, e:
                         if isinstance(e.exception, cdparanoia.FileSizeError):
                             sys.stdout.write(
@@ -171,7 +158,7 @@ CD in the AccurateRip database."""
                                 offset)
                             continue
 
-                    c, i = match(archecksum, track, responses)
+                    c, i = match(archecksums, track, responses)
                     if c:
                         logger.debug('MATCHED track %d against response %d' % (
                             track, i))
@@ -188,9 +175,8 @@ CD in the AccurateRip database."""
         sys.stdout.write('No matching offset found.\n')
         sys.stdout.write('Consider trying again with a different disc.\n')
 
-    # TODO MW: Update this further for ARv2 code
     def _arcs(self, runner, table, track, offset):
-        # rips the track with the given offset, return the arcs checksum
+        # rips the track with the given offset, return the arcs checksums
         logger.debug('Ripping track %r with offset %d ...', track, offset)
 
         fd, path = tempfile.mkstemp(
@@ -207,15 +193,15 @@ CD in the AccurateRip database."""
             track, offset)
         runner.run(t)
 
-        # TODO MW: Update this to also use the v2 checksum(s)
-        t = checksum.FastAccurateRipChecksumTask(path,
-                                                 trackNumber=track,
-                                                 trackCount=len(table.tracks),
-                                                 wave=True, v2=False)
-        runner.run(t)
+        v1 = arc.accuraterip_checksum(
+                path, track, len(table.tracks), wave=True, v2=False
+            )
+        v2 = arc.accuraterip_checksum(
+                path, track, len(table.tracks), wave=True, v2=True
+            )
 
         os.unlink(path)
-        return "%08x" % t.checksum
+        return ("%08x" % v1, "%08x" % v2)
 
     def _foundOffset(self, device, offset):
         sys.stdout.write('\nRead offset of device is: %d.\n' %

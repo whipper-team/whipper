@@ -475,51 +475,6 @@ class Table(object):
         logger.debug('MusicBrainz values: %r', result)
         return result
 
-    def getAccurateRipIds(self):
-        """
-        Calculate the two AccurateRip ID's.
-
-        @returns: the two 8-character hexadecimal disc ID's
-        @rtype:   tuple of (str, str)
-        """
-        # AccurateRip does not take into account data tracks,
-        # but does count the data track to determine the leadout offset
-        discId1 = 0
-        discId2 = 0
-
-        for track in self.tracks:
-            if not track.audio:
-                continue
-            offset = self.getTrackStart(track.number)
-            discId1 += offset
-            discId2 += (offset or 1) * track.number
-
-        # also add end values, where leadout offset is one past the end
-        # of the last track
-        last = self.tracks[-1]
-        offset = self.getTrackEnd(last.number) + 1
-        discId1 += offset
-        discId2 += offset * (self.getAudioTracks() + 1)
-
-        discId1 &= 0xffffffff
-        discId2 &= 0xffffffff
-
-        return ("%08x" % discId1, "%08x" % discId2)
-
-    def getAccurateRipURL(self):
-        """
-        Return the full AccurateRip URL.
-
-        @returns: the AccurateRip URL
-        @rtype:   str
-        """
-        discId1, discId2 = self.getAccurateRipIds()
-
-        return "http://www.accuraterip.com/accuraterip/" \
-            "%s/%s/%s/dBAR-%.3d-%s-%s-%s.bin" % (
-                discId1[-1], discId1[-2], discId1[-3],
-                self.getAudioTracks(), discId1, discId2, self.getCDDBDiscId())
-
     def cue(self, cuePath='', program='whipper'):
         """
         @param cuePath: path to the cue file to be written. If empty,
@@ -850,6 +805,41 @@ class Table(object):
                 return False
 
         return True
+
+    def accuraterip_ids(self):
+        """
+        returns both AccurateRip disc ids as a tuple of 8-char
+        hexadecimal strings (discid1, discid2)
+        """
+        # AccurateRip does not take into account data tracks,
+        # but does count the data track to determine the leadout offset
+        discId1 = 0
+        discId2 = 0
+
+        for track in self.tracks:
+            if not track.audio:
+                continue
+            offset = self.getTrackStart(track.number)
+            discId1 += offset
+            discId2 += (offset or 1) * track.number
+
+        # also add end values, where leadout offset is one past the end
+        # of the last track
+        offset = self.getTrackEnd(self.tracks[-1].number) + 1
+        discId1 += offset
+        discId2 += offset * (self.getAudioTracks() + 1)
+
+        discId1 &= 0xffffffff
+        discId2 &= 0xffffffff
+
+        return ("%08x" % discId1, "%08x" % discId2)
+
+    def accuraterip_path(self):
+        discId1, discId2 = self.accuraterip_ids()
+        return "%s/%s/%s/dBAR-%.3d-%s-%s-%s.bin" % (
+            discId1[-1], discId1[-2], discId1[-3],
+            self.getAudioTracks(), discId1, discId2, self.getCDDBDiscId()
+        )
 
     def canCue(self):
         """
