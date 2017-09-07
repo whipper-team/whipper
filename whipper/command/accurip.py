@@ -21,7 +21,7 @@
 import sys
 
 from whipper.command.basecommand import BaseCommand
-from whipper.common import accurip
+from whipper.common.accurip import get_db_entry, ACCURATERIP_URL
 
 import logging
 logger = logging.getLogger(__name__)
@@ -38,20 +38,18 @@ retrieves and display accuraterip data from the given URL
                                  help="accuraterip URL to load data from")
 
     def do(self):
-        url = self.options.url
-        cache = accurip.AccuCache()
-        responses = cache.retrieve(url)
+        responses = get_db_entry(self.options.url.lstrip(ACCURATERIP_URL))
 
-        count = responses[0].trackCount
+        count = responses[0].num_tracks
 
         sys.stdout.write("Found %d responses for %d tracks\n\n" % (
             len(responses), count))
 
         for (i, r) in enumerate(responses):
-            if r.trackCount != count:
+            if r.num_tracks != count:
                 sys.stdout.write(
                     "Warning: response %d has %d tracks instead of %d\n" % (
-                        i, r.trackCount, count))
+                        i, r.num_tracks, count))
 
         # checksum and confidence by track
         for track in range(count):
@@ -59,11 +57,11 @@ retrieves and display accuraterip data from the given URL
             checksums = {}
 
             for (i, r) in enumerate(responses):
-                if r.trackCount != count:
+                if r.num_tracks != count:
                     continue
 
-                assert len(r.checksums) == r.trackCount
-                assert len(r.confidences) == r.trackCount
+                assert len(r.checksums) == r.num_tracks
+                assert len(r.confidences) == r.num_tracks
 
                 entry = {}
                 entry["confidence"] = r.confidences[track]

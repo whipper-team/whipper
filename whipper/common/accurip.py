@@ -32,6 +32,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+ACCURATERIP_URL = "http://www.accuraterip.com/accuraterip/"
 _CACHE_DIR = join(directory.cache_path(), 'accurip')
 
 
@@ -131,7 +132,7 @@ def calculate_checksums(track_paths):
 
 
 def _download_entry(path):
-    url = "http://www.accuraterip.com/accuraterip/" + path
+    url = ACCURATERIP_URL + path
     logger.debug('downloading AccurateRip entry from %s', url)
     try:
         resp = requests.get(url)
