@@ -337,7 +337,6 @@ Log files will log the path to tracks relative to this directory.
                        dirname.encode('utf-8'))
                 logger.critical(msg)
                 raise RuntimeError(msg)
-                exit
             else:
                 sys.stdout.write("output directory %s already exists\n" %
                                  dirname.encode('utf-8'))
