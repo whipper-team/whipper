@@ -1,6 +1,6 @@
 # Whipper
 
-[![License: GPLv3](https://img.shields.io/badge/license-GPLv3-CC7722.svg)](https://github.com/JoeLametta/whipper/blob/master/LICENSE) [![Build Status](https://travis-ci.org/JoeLametta/whipper.svg?branch=master)](https://travis-ci.org/JoeLametta/whipper) [![Current version number](https://img.shields.io/badge/version-0.5.1-blue.svg)](https://github.com/JoeLametta/whipper/releases/latest) [![IRC](https://img.shields.io/badge/irc-%23whipper%40freenode-brightgreen.svg)](https://webchat.freenode.net/?channels=%23whipper) [![GitHub Stars](https://img.shields.io/github/stars/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/stargazers) [![GitHub Issues](https://img.shields.io/github/issues/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/issues)
+[![license](https://img.shields.io/github/license/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/blob/master/LICENSE) [![Build Status](https://travis-ci.org/JoeLametta/whipper.svg?branch=master)](https://travis-ci.org/JoeLametta/whipper) [![GitHub (pre-)release](https://img.shields.io/github/release/joelametta/whipper/all.svg)](https://github.com/JoeLametta/whipper/releases/latest) [![IRC](https://img.shields.io/badge/irc-%23whipper%40freenode-brightgreen.svg)](https://webchat.freenode.net/?channels=%23whipper) [![GitHub Stars](https://img.shields.io/github/stars/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/stargazers) [![GitHub Issues](https://img.shields.io/github/issues/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/issues) [![GitHub contributors](https://img.shields.io/github/contributors/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/graphs/contributors)
 
 Whipper is a Python 2.7 CD-DA ripper, fork of the morituri project (_CDDA ripper for *nix systems aiming for accuracy over speed_). It improves morituri which development seems to have halted merging old ignored pull requests, improving it with bugfixes and new features.
 
@@ -47,7 +47,7 @@ https://web.archive.org/web/20160528213242/https://thomas.apestaart.org/thomas/t
 - Detects and rips _non digitally silent_ [Hidden Track One Audio](http://wiki.hydrogenaud.io/index.php?title=HTOA) (HTOA)
 - Provides batch ripping capabilities
 - Provides templates for file and directory naming
-- Supports lossless encoding of ripped audio tracks
+- Supports lossless encoding of ripped audio tracks (FLAC)
 - Allows extensibility through external logger plugins
 
 ## Changelog
@@ -121,7 +121,7 @@ is correct, while
 
 is not, because the `-d` argument applies to the `cd` command.
 
-~~Check the man page (`whipper(1)`) for more information.~~ (currently not available as whipper's documentation is planned to be reworked ([Issue #73](https://github.com/JoeLametta/whipper/issues/73)).
+~~Check the man page (`whipper(1)`) for more information.~~ (currently not available as whipper's documentation is planned to be reworked ([Issue #73](https://github.com/JoeLametta/whipper/issues/73))).
 
 ## Getting started
 
@@ -171,6 +171,7 @@ The possible sections are:
   - `read_offset`: the read offset of the drive
 
 - Rip command section: `[rip.COMMAND.SUBCOMMAND]`. Can be used to change the command options default values.
+  **Please note that this feature is currently broken (being this way since [PR #122](https://github.com/JoeLametta/whipper/pull/92) / whipper v0.4.1).**
 
 Example section to configure `whipper cd rip` defaults:
 
@@ -187,7 +188,8 @@ Note: to get a literal `%` character it must be doubled.
 
 ## Backward incompatible changes
 
-- The image retag feature has been knowingly broken since [PR #130](https://github.com/JoeLametta/whipper/pull/130)
+- Profiles (for encoding) aren't supported anymore since ([PR #121](https://github.com/JoeLametta/whipper/pull/121) / whipper v0.5.0): now whipper encodes to FLAC
+- The image retag feature has been knowingly broken since ([PR #130](https://github.com/JoeLametta/whipper/pull/130))
 - Structural changes broke compatibility with existing logger plugins ([PR #94](https://github.com/JoeLametta/whipper/pull/94))
 - Dropped external git submodules ([PR #31](https://github.com/JoeLametta/whipper/pull/31), [PR #92](https://github.com/JoeLametta/whipper/pull/92))
 - Whipper executable name changed: from `rip` to `whipper` ([PR #70](https://github.com/JoeLametta/whipper/pull/70))
