@@ -296,13 +296,11 @@ Log files will log the path to tracks relative to this directory.
         self.parser.add_argument('--track-template',
                                  action="store", dest="track_template",
                                  default=DEFAULT_TRACK_TEMPLATE,
-                                 help="template for track file naming "
-                                 "(default default)")
+                                 help="template for track file naming")
         self.parser.add_argument('--disc-template',
                                  action="store", dest="disc_template",
                                  default=DEFAULT_DISC_TEMPLATE,
-                                 help="template for disc file naming "
-                                 "(default default)")
+                                 help="template for disc file naming")
         self.parser.add_argument('-U', '--unknown',
                                  action="store_true", dest="unknown",
                                  help="whether to continue ripping if "

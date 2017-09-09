@@ -93,8 +93,8 @@ class BaseCommand():
                 self.parser.print_help()
                 sys.exit(0)
             if not self.options.remainder[0] in self.subcommands:
-                sys.stderr.write("incorrect subcommand: %s" %
-                                 self.options.remainder[0])
+                logger.critical("incorrect subcommand: %s",
+                                self.options.remainder[0])
                 sys.exit(1)
             self.cmd = self.subcommands[self.options.remainder[0]](
                 self.options.remainder[1:],
