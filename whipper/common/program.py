@@ -215,7 +215,7 @@ class Program:
         v['x'] = 'flac'
         v['X'] = v['x'].upper()
         v['y'] = '0000'
-        if track_number:
+        if track_number is not None:
             v['a'] = v['A']
             v['t'] = '%02d' % track_number
             if track_number == 0:
@@ -241,7 +241,7 @@ class Program:
                     metadata.tracks[track_number - 1].sortName)
                 v['n'] = self._filter.filter(
                     metadata.tracks[track_number - 1].title)
-            elif track_number:
+            elif track_number == 0:
                 # htoa defaults to disc's artist
                 v['a'] = self._filter.filter(metadata.artist)
 
