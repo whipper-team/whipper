@@ -604,8 +604,10 @@ class Program:
 
             def writeFile(path, length):
                 target_path = common.getRelativePath(path, m3uPath)
-                f.write(u'#EXTINF:%d,%s\n' % (length, target_path))
-                f.write('%s\n' % target_path)
+                u = u'#EXTINF:%d,%s\n' % (length, target_path)
+                f.write(u.encode('utf-8'))
+                u = '%s\n' % target_path
+                f.write(u.encode('utf-8'))
 
             if htoapath:
                 writeFile(htoapath,
