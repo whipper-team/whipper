@@ -429,10 +429,9 @@ Log files will log the path to tracks relative to this directory.
                 if trackResult.testcrc == trackResult.copycrc:
                     sys.stdout.write('CRCs match for track %d\n' % number)
                 else:
-                    sys.stdout.write(
-                        'ERROR: CRCs did not match for track %d\n' % number
+                    raise RuntimeError(
+                        "CRCs did not match for track %d\n" % number
                     )
-                    raise
 
                 sys.stdout.write(
                     'Peak level: {:.2%} \n'.format(trackResult.peak))

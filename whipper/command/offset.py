@@ -146,8 +146,7 @@ CD in the AccurateRip database."""
 
                 # now try and rip all other tracks as well, except for the
                 # last one (to avoid readers that can't do overread
-                # for track in range(2, (len(table.tracks) + 1) - 1):
-                for track in range(2, (len(table.tracks) + 1)):
+                for track in range(2, (len(table.tracks) + 1) - 1):
                     try:
                         archecksums = self._arcs(runner, table, track, offset)
                     except task.TaskException, e:
