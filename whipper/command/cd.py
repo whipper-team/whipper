@@ -486,10 +486,10 @@ Log files will log the path to tracks relative to this directory.
         logger.debug('writing m3u file for %r', discName)
         self.program.write_m3u(discName)
 
-        if self.program.verifyImage(self.runner, self.ittoc, self.itable):
-            print('rip verified as accurate')
-        else:
-            print('rip NOT verified as accurate')
+        try:
+            self.program.verifyImage(self.runner, self.ittoc)
+        except accurip.EntryNotFound:
+            print('AccurateRip entry not found')
 
         accurip.print_report(self.program.result)
 

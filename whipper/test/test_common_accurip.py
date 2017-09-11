@@ -12,7 +12,7 @@ from unittest import TestCase
 from whipper.common import accurip
 from whipper.common.accurip import (
     calculate_checksums, get_db_entry, print_report, verify_result,
-    _split_responses
+    _split_responses, EntryNotFound
 )
 from whipper.result.result import RipResult, TrackResult
 
@@ -45,8 +45,9 @@ class TestAccurateRipResponse(TestCase):
         # ask cache for other entry and assert cached entry equals normal entry
         self.assertEquals(self.entry, get_db_entry(self.other_path))
 
-    def test_returns_none_for_no_entry(self):
-        self.assertIsNone(get_db_entry('definitely_a_404'))
+    def test_raises_entrynotfound_for_no_entry(self):
+        with self.assertRaises(EntryNotFound):
+            get_db_entry('definitely_a_404')
 
     def test_can_return_entry_without_saving(self):
         chmod(self.cache_dir, 0)

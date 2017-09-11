@@ -36,6 +36,10 @@ ACCURATERIP_URL = "http://www.accuraterip.com/accuraterip/"
 _CACHE_DIR = join(directory.cache_path(), 'accurip')
 
 
+class EntryNotFound(Exception):
+    pass
+
+
 class _AccurateRipResponse(object):
     """
     An AccurateRip response contains a collection of metadata identifying a
@@ -175,7 +179,8 @@ def get_db_entry(path):
         if raw_entry:
             _save_entry(raw_entry, cached_path)
     if not raw_entry:
-        return None
+        logger.warning('entry not found in AccurateRip database')
+        raise EntryNotFound
     return _split_responses(raw_entry)
 
 

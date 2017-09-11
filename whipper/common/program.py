@@ -558,9 +558,9 @@ class Program:
         t = image.ImageRetagTask(cueImage, taglists)
         runner.run(t)
 
-    def verifyImage(self, runner, ittoc, itable):
+    def verifyImage(self, runner, table):
         """
-        verify ittoc against accuraterip and cue_path track lengths
+        verify table against accuraterip and cue_path track lengths
         Verify our image against the given AccurateRip responses.
 
         Needs an initialized self.result.
@@ -576,18 +576,8 @@ class Program:
             logger.error(verifytask.exceptionMessage)
             return False
 
-        responses = accurip.get_db_entry(ittoc.accuraterip_path())
-        if not responses:
-            logger.warning('album not found in AccurateRip database')
-            return False
+        responses = accurip.get_db_entry(table.accuraterip_path())
         logger.info('%d AccurateRip response(s) found' % len(responses))
-
-        for r in responses:
-            if r.cddbDiscId != itable.getCDDBDiscId():
-                logger.error(
-                    'AccurateRip response discid differs: %s' % r.cddbDiscId
-                )
-                return False
 
         checksums = accurip.calculate_checksums([
             os.path.join(os.path.dirname(self.cuePath), t.indexes[1].path)
