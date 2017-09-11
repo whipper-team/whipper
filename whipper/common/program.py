@@ -591,7 +591,7 @@ class Program:
         m3uPath = u'%s.m3u' % discname
         with open(m3uPath, 'w') as f:
             f.write(u'#EXTM3U\n')
-            for i, track in enumerate(self.result.tracks):
+            for track in self.result.tracks:
                 if not track.filename:
                     # false positive htoa
                     continue
@@ -599,7 +599,7 @@ class Program:
                     length = (self.result.table.getTrackStart(1) /
                               common.FRAMES_PER_SECOND)
                 else:
-                    length = (self.result.table.getTrackLength(i) /
+                    length = (self.result.table.getTrackLength(track.number) /
                               common.FRAMES_PER_SECOND)
 
                 target_path = common.getRelativePath(track.filename, m3uPath)
