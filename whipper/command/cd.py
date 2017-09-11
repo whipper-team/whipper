@@ -464,14 +464,12 @@ Log files will log the path to tracks relative to this directory.
             self.program.saveRipResult()
 
         # check for hidden track one audio
-        htoapath = None
         htoa = self.program.getHTOA()
         if htoa:
             start, stop = htoa
             print('found Hidden Track One Audio from frame %d to %d' % (
                   start, stop))
             _ripIfNotRipped(0)
-            htoapath = self.program.result.tracks[0].filename
 
         for i, track in enumerate(self.itable.tracks):
             # FIXME: rip data tracks differently
@@ -486,7 +484,7 @@ Log files will log the path to tracks relative to this directory.
         self.program.writeCue(discName)
 
         logger.debug('writing m3u file for %r', discName)
-        self.program.write_m3u(discName, htoapath)
+        self.program.write_m3u(discName)
 
         if self.program.verifyImage(self.runner, self.ittoc, self.itable):
             print('rip verified as accurate')

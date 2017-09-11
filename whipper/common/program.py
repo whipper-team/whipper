@@ -597,27 +597,26 @@ class Program:
             return False
         return accurip.verify_result(self.result, responses, checksums)
 
-    def write_m3u(self, discname, htoapath):
+    def write_m3u(self, discname):
         m3uPath = u'%s.m3u' % discname
         with open(m3uPath, 'w') as f:
             f.write(u'#EXTM3U\n')
+            for i, track in enumerate(self.result.tracks):
+                if not track.filename:
+                    # false positive htoa
+                    continue
+                if track.number == 0:
+                    length = (self.result.table.getTrackStart(1) /
+                              common.FRAMES_PER_SECOND)
+                else:
+                    length = (self.result.table.getTrackLength(i) /
+                              common.FRAMES_PER_SECOND)
 
-            def writeFile(path, length):
-                target_path = common.getRelativePath(path, m3uPath)
+                target_path = common.getRelativePath(track.filename, m3uPath)
                 u = u'#EXTINF:%d,%s\n' % (length, target_path)
                 f.write(u.encode('utf-8'))
                 u = '%s\n' % target_path
                 f.write(u.encode('utf-8'))
-
-            if htoapath:
-                writeFile(htoapath,
-                          self.result.table.getTrackStart(1) /
-                          common.FRAMES_PER_SECOND)
-
-            for i, track in enumerate(self.result.tracks):
-                writeFile(track.filename,
-                          (self.result.table.getTrackLength(i + 1) /
-                           common.FRAMES_PER_SECOND))
 
     def writeCue(self, discName):
         assert self.result.table.canCue()
