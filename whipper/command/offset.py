@@ -91,11 +91,14 @@ CD in the AccurateRip database."""
         table = t.table
 
         logger.debug("CDDB disc id: %r", table.getCDDBDiscId())
-        responses = accurip.get_db_entry(table.accuraterip_path())
+        responses = None
+        try:
+            responses = accurip.get_db_entry(table.accuraterip_path())
+        except accurip.EntryNotFound:
+            print('Accuraterip entry not found')
 
         if responses:
             logger.debug('%d AccurateRip responses found.' % len(responses))
-
             if responses[0].cddbDiscId != table.getCDDBDiscId():
                 logger.warning("AccurateRip response discid different: %s",
                                responses[0].cddbDiscId)
