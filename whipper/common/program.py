@@ -590,7 +590,7 @@ class Program:
     def write_m3u(self, discname):
         m3uPath = u'%s.m3u' % discname
         with open(m3uPath, 'w') as f:
-            f.write(u'#EXTM3U\n')
+            f.write(u'#EXTM3U\n'.encode('utf-8'))
             for track in self.result.tracks:
                 if not track.filename:
                     # false positive htoa

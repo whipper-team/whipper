@@ -474,7 +474,7 @@ Log files will log the path to tracks relative to this directory.
         for i, track in enumerate(self.itable.tracks):
             # FIXME: rip data tracks differently
             if not track.audio:
-                print('skipping data track %d, not implemented' % i + 1)
+                print 'skipping data track %d, not implemented' % (i + 1)
                 # FIXME: make it work for now
                 track.indexes[1].relative = 0
                 continue
