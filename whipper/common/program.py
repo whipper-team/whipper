@@ -23,12 +23,12 @@ Common functionality and class for all programs using whipper.
 """
 
 import musicbrainzngs
+import re
 import os
 import sys
 import time
 
-from whipper.common import common, mbngs, cache, path
-from whipper.common import checksum
+from whipper.common import accurip, cache, checksum, common, mbngs, path
 from whipper.program import cdrdao, cdparanoia
 from whipper.image import image
 from whipper.extern.task import task
@@ -178,34 +178,34 @@ class Program:
             template_part += ' (%s)' % metadata.barcode
         return template_part
 
-    def getPath(self, outdir, template, mbdiscid, i, disambiguate=False):
+    def getPath(self, outdir, template, mbdiscid, metadata, track_number=None):
         """
-        Based on the template, get a complete path for the given track,
-        minus extension.
-        Also works for the disc name, using disc variables for the template.
+        Return disc or track path relative to outdir according to
+        template. Track paths do not include extension.
 
-        @param outdir:   the directory where to write the files
-        @type  outdir:   unicode
-        @param template: the template for writing the file
-        @type  template: unicode
-        @param i:        track number (0 for HTOA, or for disc)
-        @type  i:        int
+        Tracks are named according to the track template, filling in
+        the variables and adding the file extension. Variables
+        exclusive to the track template are:
+          - %t: track number
+          - %a: track artist
+          - %n: track title
+          - %s: track sort name
 
-        @rtype: unicode
+        Disc files (.cue, .log, .m3u) are named according to the disc
+        template, filling in the variables and adding the file
+        extension. Variables for both disc and track template are:
+          - %A: album artist
+          - %S: album sort name
+          - %d: disc title
+          - %y: release year
+          - %r: release type, lowercase
+          - %R: Release type, normal case
+          - %x: audio extension, lowercase
+          - %X: audio extension, uppercase
         """
         assert type(outdir) is unicode, "%r is not unicode" % outdir
         assert type(template) is unicode, "%r is not unicode" % template
-
-        # the template is similar to grip, except for %s/%S/%r/%R
-        # see #gripswitches
-
-        # returns without extension
-
         v = {}
-
-        v['t'] = '%02d' % i
-
-        # default values
         v['A'] = 'Unknown Artist'
         v['d'] = mbdiscid  # fallback for title
         v['r'] = 'unknown'
@@ -215,59 +215,38 @@ class Program:
         v['x'] = 'flac'
         v['X'] = v['x'].upper()
         v['y'] = '0000'
+        if track_number is not None:
+            v['a'] = v['A']
+            v['t'] = '%02d' % track_number
+            if track_number == 0:
+                v['n'] = 'Hidden Track One Audio'
+            else:
+                v['n'] = 'Unknown Track %d' % track_number
 
-        v['a'] = v['A']
-        if i == 0:
-            v['n'] = 'Hidden Track One Audio'
-        else:
-            v['n'] = 'Unknown Track %d' % i
-
-        if self.metadata:
-            release = self.metadata.release or '0000'
+        if metadata:
+            release = metadata.release or '0000'
             v['y'] = release[:4]
-            v['A'] = self._filter.filter(self.metadata.artist)
-            v['S'] = self._filter.filter(self.metadata.sortName)
-            v['d'] = self._filter.filter(self.metadata.title)
-            v['B'] = self.metadata.barcode
-            v['C'] = self.metadata.catalogNumber
-            if self.metadata.releaseType:
-                v['R'] = self.metadata.releaseType
-                v['r'] = self.metadata.releaseType.lower()
-            if i > 0:
-                try:
-                    v['a'] = self._filter.filter(
-                        self.metadata.tracks[i - 1].artist)
-                    v['s'] = self._filter.filter(
-                        self.metadata.tracks[i - 1].sortName)
-                    v['n'] = self._filter.filter(
-                        self.metadata.tracks[i - 1].title)
-                except IndexError, e:
-                    print 'ERROR: no track %d found, %r' % (i, e)
-                    raise
-            else:
+            v['A'] = self._filter.filter(metadata.artist)
+            v['S'] = self._filter.filter(metadata.sortName)
+            v['d'] = self._filter.filter(metadata.title)
+            v['B'] = metadata.barcode
+            v['C'] = metadata.catalogNumber
+            if metadata.releaseType:
+                v['R'] = metadata.releaseType
+                v['r'] = metadata.releaseType.lower()
+            if track_number > 0:
+                v['a'] = self._filter.filter(
+                    metadata.tracks[track_number - 1].artist)
+                v['s'] = self._filter.filter(
+                    metadata.tracks[track_number - 1].sortName)
+                v['n'] = self._filter.filter(
+                    metadata.tracks[track_number - 1].title)
+            elif track_number == 0:
                 # htoa defaults to disc's artist
-                v['a'] = self._filter.filter(self.metadata.artist)
+                v['a'] = self._filter.filter(metadata.artist)
 
-        # when disambiguating, use catalogNumber then barcode
-        if disambiguate:
-            templateParts = template.split(os.sep)
-            # Find the section of the template with the release name
-            for i, part in enumerate(templateParts):
-                if "%d" in part:
-                    templateParts[i] = self.addDisambiguation(part, self.metadata)  # noqa: E501
-                    break
-            else:
-                # No parts of the template contain the release
-                templateParts[-1] = self.addDisambiguation(templateParts[-1], self.metadata)  # noqa: E501
-            template = os.path.join(*templateParts)
-            logger.debug('Disambiguated template to %r' % template)
-
-        import re
         template = re.sub(r'%(\w)', r'%(\1)s', template)
-
-        ret = os.path.join(outdir, template % v)
-
-        return ret
+        return os.path.join(outdir, template % v)
 
     def getCDDB(self, cddbdiscid):
         """
@@ -579,118 +558,55 @@ class Program:
         t = image.ImageRetagTask(cueImage, taglists)
         runner.run(t)
 
-    def verifyImage(self, runner, responses):
+    def verifyImage(self, runner, table):
         """
+        verify table against accuraterip and cue_path track lengths
         Verify our image against the given AccurateRip responses.
 
         Needs an initialized self.result.
         Will set accurip and friends on each TrackResult.
+
+        Populates self.result.tracks with above TrackResults.
         """
-
-        logger.debug('verifying Image against %d AccurateRip responses',
-                     len(responses or []))
-
         cueImage = image.Image(self.cuePath)
+        # assigns track lengths
         verifytask = image.ImageVerifyTask(cueImage)
-        cuetask = image.AccurateRipChecksumTask(cueImage)
         runner.run(verifytask)
-        runner.run(cuetask)
+        if verifytask.exception:
+            logger.error(verifytask.exceptionMessage)
+            return False
 
-        self._verifyImageWithChecksums(responses, cuetask.checksums)
+        responses = accurip.get_db_entry(table.accuraterip_path())
+        logger.info('%d AccurateRip response(s) found' % len(responses))
 
-    def _verifyImageWithChecksums(self, responses, checksums):
-        # loop over tracks to set our calculated AccurateRip CRC's
-        for i, csum in enumerate(checksums):
-            trackResult = self.result.getTrackResult(i + 1)
-            trackResult.ARCRC = csum
+        checksums = accurip.calculate_checksums([
+            os.path.join(os.path.dirname(self.cuePath), t.indexes[1].path)
+            for t in filter(lambda t: t.number != 0, cueImage.cue.table.tracks)
+        ])
+        if not (checksums and any(checksums['v1']) and any(checksums['v2'])):
+            return False
+        return accurip.verify_result(self.result, responses, checksums)
 
-        if not responses:
-            logger.warning('No AccurateRip responses, cannot verify.')
-            return
+    def write_m3u(self, discname):
+        m3uPath = u'%s.m3u' % discname
+        with open(m3uPath, 'w') as f:
+            f.write(u'#EXTM3U\n'.encode('utf-8'))
+            for track in self.result.tracks:
+                if not track.filename:
+                    # false positive htoa
+                    continue
+                if track.number == 0:
+                    length = (self.result.table.getTrackStart(1) /
+                              common.FRAMES_PER_SECOND)
+                else:
+                    length = (self.result.table.getTrackLength(track.number) /
+                              common.FRAMES_PER_SECOND)
 
-        # now loop to match responses
-        for i, csum in enumerate(checksums):
-            trackResult = self.result.getTrackResult(i + 1)
-
-            confidence = None
-            response = None
-
-            # match against each response's checksum for this track
-            for j, r in enumerate(responses):
-                if "%08x" % csum == r.checksums[i]:
-                    response = r
-                    logger.debug(
-                        "Track %02d matched response %d of %d in "
-                        "AccurateRip database",
-                        i + 1, j + 1, len(responses))
-                    trackResult.accurip = True
-                    # FIXME: maybe checksums should be ints
-                    trackResult.ARDBCRC = int(r.checksums[i], 16)
-                    # arsum = csum
-                    confidence = r.confidences[i]
-                    trackResult.ARDBConfidence = confidence
-
-            if not trackResult.accurip:
-                logger.warning("Track %02d: not matched in "
-                               "AccurateRip database", i + 1)
-
-            # I have seen AccurateRip responses with 0 as confidence
-            # for example, Best of Luke Haines, disc 1, track 1
-            maxConfidence = -1
-            maxResponse = None
-            for r in responses:
-                if r.confidences[i] > maxConfidence:
-                    maxConfidence = r.confidences[i]
-                    maxResponse = r
-
-            logger.debug('Track %02d: found max confidence %d' % (
-                i + 1, maxConfidence))
-            trackResult.ARDBMaxConfidence = maxConfidence
-            if not response:
-                logger.warning('Track %02d: none of the responses matched.',
-                               i + 1)
-                trackResult.ARDBCRC = int(
-                    maxResponse.checksums[i], 16)
-            else:
-                trackResult.ARDBCRC = int(response.checksums[i], 16)
-
-    # TODO MW: Update this further for ARv2 code
-    def getAccurateRipResults(self):
-        """
-        @rtype: list of str
-        """
-        res = []
-
-        # loop over tracks
-        for i, trackResult in enumerate(self.result.tracks):
-            status = 'rip NOT accurate'
-
-            if trackResult.accurip:
-                status = 'rip accurate    '
-
-            c = "(not found)            "
-            ar = ", DB [notfound]"
-            if trackResult.ARDBMaxConfidence:
-                c = "(max confidence    %3d)" % trackResult.ARDBMaxConfidence
-                if trackResult.ARDBConfidence is not None:
-                    if trackResult.ARDBConfidence \
-                            < trackResult.ARDBMaxConfidence:
-                        c = "(confidence %3d of %3d)" % (
-                            trackResult.ARDBConfidence,
-                            trackResult.ARDBMaxConfidence)
-
-                ar = ", DB [%08x]" % trackResult.ARDBCRC
-            # htoa tracks (i == 0) do not have an ARCRC
-            if trackResult.ARCRC is None:
-                assert trackResult.number == 0, \
-                    'no trackResult.ARCRC on non-HTOA track %d' % \
-                    trackResult.number
-                res.append("Track  0: unknown          (not tracked)")
-            else:
-                res.append("Track %2d: %s %s [%08x]%s" % (
-                    trackResult.number, status, c, trackResult.ARCRC, ar))
-
-        return res
+                target_path = common.getRelativePath(track.filename, m3uPath)
+                u = u'#EXTINF:%d,%s\n' % (length, target_path)
+                f.write(u.encode('utf-8'))
+                u = '%s\n' % target_path
+                f.write(u.encode('utf-8'))
 
     def writeCue(self, discName):
         assert self.result.table.canCue()

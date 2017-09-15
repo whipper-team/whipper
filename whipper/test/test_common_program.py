@@ -2,87 +2,10 @@
 # vi:si:et:sw=4:sts=4:ts=4
 
 
-import os
-import pickle
-
 import unittest
 
-from whipper.result import result
-from whipper.common import program, accurip, mbngs, config
+from whipper.common import program, mbngs, config
 from whipper.command.cd import DEFAULT_DISC_TEMPLATE
-
-
-class TrackImageVerifyTestCase(unittest.TestCase):
-    # example taken from a rip of Luke Haines Is Dead, disc 1
-    # AccurateRip database has 0 confidence for 1st track
-    # Rip had a wrong result for track 9
-
-    def testVerify(self):
-        path = os.path.join(os.path.dirname(__file__),
-                            'dBAR-020-002e5023-029d8e49-040eaa14.bin')
-        data = open(path, "rb").read()
-        responses = accurip.getAccurateRipResponses(data)
-
-        # these crc's were calculated from an actual rip
-        checksums = [1644890007, 2945205445, 3983436658, 1528082495,
-                     1203704270, 1163423644, 3649097244, 100524219,
-                     1583356174, 373652058, 1842579359, 2850056507,
-                     1329730252, 2526965856, 2525886806, 209743350,
-                     3184062337, 2099956663, 2943874164, 2321637196]
-
-        prog = program.Program(config.Config())
-        prog.result = result.RipResult()
-        # fill it with empty trackresults
-        for i, c in enumerate(checksums):
-            r = result.TrackResult()
-            r.number = i + 1
-            prog.result.tracks.append(r)
-
-        prog._verifyImageWithChecksums(responses, checksums)
-
-        # now check if the results were filled in properly
-        tr = prog.result.getTrackResult(1)
-        self.assertEquals(tr.accurip, False)
-        self.assertEquals(tr.ARDBMaxConfidence, 0)
-        self.assertEquals(tr.ARDBCRC, 0)
-        self.assertEquals(tr.ARDBCRC, 0)
-
-        tr = prog.result.getTrackResult(2)
-        self.assertEquals(tr.accurip, True)
-        self.assertEquals(tr.ARDBMaxConfidence, 2)
-        self.assertEquals(tr.ARDBCRC, checksums[2 - 1])
-
-        tr = prog.result.getTrackResult(10)
-        self.assertEquals(tr.accurip, False)
-        self.assertEquals(tr.ARDBMaxConfidence, 2)
-        # we know track 10 was ripped wrong
-        self.assertNotEquals(tr.ARDBCRC, checksums[10 - 1])
-
-        res = prog.getAccurateRipResults()
-        self.assertEquals(res[1 - 1],
-                          "Track  1: rip NOT accurate (not found)             "
-                          "[620b0797], DB [notfound]")
-        self.assertEquals(res[2 - 1],
-                          "Track  2: rip accurate     (max confidence      2) "
-                          "[af8c44c5], DB [af8c44c5]")
-        self.assertEquals(res[10 - 1],
-                          "Track 10: rip NOT accurate (max confidence      2) "
-                          "[16457a5a], DB [eb6e55b4]")
-
-
-class HTOATestCase(unittest.TestCase):
-
-    def setUp(self):
-        path = os.path.join(os.path.dirname(__file__),
-                            'silentalarm.result.pickle')
-        self._tracks = pickle.load(open(path, 'rb'))
-
-    def testGetAccurateRipResults(self):
-        prog = program.Program(config.Config())
-        prog.result = result.RipResult()
-        prog.result.tracks = self._tracks
-
-        prog.getAccurateRipResults()
 
 
 class PathTestCase(unittest.TestCase):
@@ -91,7 +14,7 @@ class PathTestCase(unittest.TestCase):
         prog = program.Program(config.Config())
 
         path = prog.getPath(u'/tmp', DEFAULT_DISC_TEMPLATE,
-                            'mbdiscid', 0)
+                            'mbdiscid', None)
         self.assertEquals(path,
                           unicode('/tmp/unknown/Unknown Artist - mbdiscid/'
                                   'Unknown Artist - mbdiscid'))
@@ -101,10 +24,9 @@ class PathTestCase(unittest.TestCase):
         md = mbngs.DiscMetadata()
         md.artist = md.sortName = 'Jeff Buckley'
         md.title = 'Grace'
-        prog.metadata = md
 
         path = prog.getPath(u'/tmp', DEFAULT_DISC_TEMPLATE,
-                            'mbdiscid', 0)
+                            'mbdiscid', md, 0)
         self.assertEquals(path,
                           unicode('/tmp/unknown/Jeff Buckley - Grace/'
                                   'Jeff Buckley - Grace'))
@@ -114,92 +36,7 @@ class PathTestCase(unittest.TestCase):
         md = mbngs.DiscMetadata()
         md.artist = md.sortName = 'Jeff Buckley'
         md.title = 'Grace'
-        prog.metadata = md
 
-        path = prog.getPath(u'/tmp', u'%A/%d', 'mbdiscid', 0)
+        path = prog.getPath(u'/tmp', u'%A/%d', 'mbdiscid', md, 0)
         self.assertEquals(path,
                           u'/tmp/Jeff Buckley/Grace')
-
-    def testDisambiguateOnRelease(self):
-        """Test that disambiguation gets placed in the same part of the path
-        as the release name.
-
-        See https://github.com/JoeLametta/whipper/issues/127"""
-        prog = program.Program(config.Config())
-        md = mbngs.DiscMetadata()
-        md.artist = 'Guy Davis'
-        md.sortName = 'Davis, Guy'
-        md.title = 'Call Down the Thunder'
-        md.release = '1996'
-        md.catalogNumber = 'RHR CD 89'
-        prog.metadata = md
-        templates = {
-            u'%A/%d - %y': u'Guy Davis/Call Down the Thunder - 1996 (RHR CD 89)',  # noqa: E501
-            u'%A - %d - %y': u'Guy Davis - Call Down the Thunder - 1996 (RHR CD 89)',  # noqa: E501
-            u'%A/%y/%d': u'Guy Davis/1996/Call Down the Thunder (RHR CD 89)',
-            u'%y/%d/%A': u'1996/Call Down the Thunder (RHR CD 89)/Guy Davis',
-            u'%d/%A/%y': u'Call Down the Thunder (RHR CD 89)/Guy Davis/1996',
-        }
-
-        for template, expected_path in templates.iteritems():
-            path = prog.getPath(u'/tmp', template, 'mbdiscid', 0, disambiguate=True)  # noqa: E501
-            self.assertEquals(path, u'/tmp/' + expected_path)
-
-    def testDisambiguateOnReleaseOnlyOnce(self):
-        """Test that disambiguation gets added only once."""
-        prog = program.Program(config.Config())
-        md = mbngs.DiscMetadata()
-        md.artist = 'Guy Davis'
-        md.sortName = 'Davis, Guy'
-        md.title = 'Call Down the Thunder'
-        md.release = '1996'
-        md.catalogNumber = 'RHR CD 89'
-        prog.metadata = md
-        template = u'%A/%d - %y/%d/%d'
-
-        path = prog.getPath(u'/tmp', template, 'mbdiscid', 0, disambiguate=True)  # noqa: E501
-        self.assertEquals(path,
-                          u'/tmp/Guy Davis/Call Down the Thunder - 1996 (RHR CD 89)/Call Down the Thunder/Call Down the Thunder')  # noqa: E501
-
-    def testDisambiguateOnNoReleaseTitle(self):
-        """Test that disambiguation gets added even if there's no release
-        title in the template."""
-        prog = program.Program(config.Config())
-        md = mbngs.DiscMetadata()
-        md.artist = 'Guy Davis'
-        md.sortName = 'Davis, Guy'
-        md.title = 'Call Down the Thunder'
-        md.release = '1996'
-        md.catalogNumber = 'RHR CD 89'
-        prog.metadata = md
-        templates = {
-            u'%A/%y': u'Guy Davis/1996 (RHR CD 89)',
-            u'%A - %y': u'Guy Davis - 1996 (RHR CD 89)',
-            u'%y/%A': u'1996/Guy Davis (RHR CD 89)',
-        }
-
-        for template, expected_path in templates.iteritems():
-            path = prog.getPath(u'/tmp', template, 'mbdiscid', 0, disambiguate=True)  # noqa: E501
-            self.assertEquals(path, u'/tmp/' + expected_path)
-
-    def testAddDisambiguationUnitTest(self):
-        """Unit test for Program.addDisambiguation()."""
-        prog = program.Program(config.Config())
-        md = mbngs.DiscMetadata()
-
-        # No relevant disambiguation metadata
-        self.assertEquals(
-            prog.addDisambiguation(u'Test', md),
-            u'Test')
-
-        # Only barcode available
-        md.barcode = '033651008927'
-        self.assertEquals(
-            prog.addDisambiguation(u'Test', md),
-            u'Test (033651008927)')
-
-        # Both catalog number and barcode available
-        md.catalogNumber = 'RHR CD 89'
-        self.assertEquals(
-            prog.addDisambiguation(u'Test', md),
-            u'Test (RHR CD 89)')

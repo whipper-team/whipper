@@ -202,23 +202,29 @@ class WhipperLogger(result.Logger):
             lines.append("    Copy CRC: %08X" % trackResult.copycrc)
 
         # AccurateRip track status
-        # Currently there's no support for AccurateRip V2
-        if trackResult.accurip:
-            lines.append("    AccurateRip V1:")
-            self._inARDatabase += 1
-            if trackResult.ARCRC == trackResult.ARDBCRC:
-                lines.append("      Result: Found, exact match")
-                self._accuratelyRipped += 1
-            else:
-                lines.append("      Result: Found, NO exact match")
-            lines.append("      Confidence: %d" %
-                         trackResult.ARDBConfidence)
-            lines.append("      Local CRC: %08X" % trackResult.ARCRC)
-            lines.append("      Remote CRC: %08X" % trackResult.ARDBCRC)
-        elif trackResult.number != 0:
-            lines.append("    AccurateRip V1:")
-            lines.append("      Result: Track not present in "
-                         "AccurateRip database")
+        for v in ('v1', 'v2'):
+            if trackResult.AR[v]['DBCRC']:
+                lines.append("    AccurateRip %s:" % v)
+                self._inARDatabase += 1
+                if trackResult.AR[v]['CRC'] == trackResult.AR[v]['DBCRC']:
+                    lines.append("      Result: Found, exact match")
+                    self._accuratelyRipped += 1
+                else:
+                    lines.append("      Result: Found, NO exact match")
+                lines.append(
+                    "      Confidence: %d" % trackResult.AR[v]['DBConfidence']
+                )
+                lines.append(
+                    "      Local CRC: %s" % trackResult.AR[v]['CRC'].upper()
+                )
+                lines.append(
+                    "      Remote CRC: %s" % trackResult.AR[v]['DBCRC'].upper()
+                )
+            elif trackResult.number != 0:
+                lines.append("    AccurateRip %s:" % v)
+                lines.append(
+                    "      Result: Track not present in AccurateRip database"
+                )
 
         # Check if Test & Copy CRCs are equal
         if trackResult.testcrc == trackResult.copycrc:

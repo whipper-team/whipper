@@ -36,8 +36,13 @@ def main():
                 cmd.options.eject in ('failure', 'always')):
             eject_device(e.device)
         return 255
+    except RuntimeError, e:
+        print(e)
+        return 1
+    except KeyboardInterrupt:
+        return 2
     except ImportError, e:
-        raise ImportError(e)
+        raise
     except task.TaskException, e:
         if isinstance(e.exception, ImportError):
             raise ImportError(e.exception)

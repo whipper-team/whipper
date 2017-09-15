@@ -19,16 +19,15 @@
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
+import cdio
 import os
 import glob
-import urllib2
-import socket
 import sys
 import logging
 import gobject
 from whipper.command.basecommand import BaseCommand
 from whipper.common import (
-    accurip, common, config, drive, program, task
+    accurip, config, drive, program, task
 )
 from whipper.program import cdrdao, cdparanoia, utils
 from whipper.result import result
@@ -41,7 +40,7 @@ logger = logging.getLogger(__name__)
 SILENT = 1e-10
 MAX_TRIES = 5
 
-DEFAULT_TRACK_TEMPLATE = u'%r/%A - %d/%t. %a - %n'
+DEFAULT_TRACK_TEMPLATE = u'%r/%A - %d/%t. %a - %n.%x'
 DEFAULT_DISC_TEMPLATE = u'%r/%A - %d/%A - %d'
 
 TEMPLATE_DESCRIPTION = '''
@@ -68,12 +67,6 @@ disc and track template are:
 
 
 class _CD(BaseCommand):
-
-    """
-    @type program: L{program.Program}
-    @ivar eject:   whether to eject the drive after completing
-    """
-
     eject = True
 
     @staticmethod
@@ -150,21 +143,11 @@ class _CD(BaseCommand):
                             "--cdr not passed")
             return -1
 
-        # FIXME ?????
-        # Hackish fix for broken commit
-        offset = 0
-        info = drive.getDeviceInfo(self.device)
-        if info:
-            try:
-                offset = self.config.getReadOffset(*info)
-            except KeyError:
-                pass
-
         # now, read the complete index table, which is slower
         self.itable = self.program.getTable(self.runner,
                                             self.ittoc.getCDDBDiscId(),
                                             self.ittoc.getMusicBrainzDiscId(),
-                                            self.device, offset)
+                                            self.device, self.options.offset)
 
         assert self.itable.getCDDBDiscId() == self.ittoc.getCDDBDiscId(), \
             "full table's id %s differs from toc id %s" % (
@@ -174,10 +157,10 @@ class _CD(BaseCommand):
             "full table's mb id %s differs from toc id mb %s" % (
             self.itable.getMusicBrainzDiscId(),
             self.ittoc.getMusicBrainzDiscId())
-        assert self.itable.getAccurateRipURL() == \
-            self.ittoc.getAccurateRipURL(), \
+        assert self.itable.accuraterip_path() == \
+            self.ittoc.accuraterip_path(), \
             "full table's AR URL %s differs from toc AR URL %s" % (
-            self.itable.getAccurateRipURL(), self.ittoc.getAccurateRipURL())
+            self.itable.accuraterip_url(), self.ittoc.accuraterip_url())
 
         if self.program.metadata:
             self.program.metadata.discid = self.ittoc.getMusicBrainzDiscId()
@@ -200,15 +183,9 @@ class _CD(BaseCommand):
         self.program.result.title = self.program.metadata \
             and self.program.metadata.title \
             or 'Unknown Title'
-        try:
-            import cdio
-            _, self.program.result.vendor, self.program.result.model, \
-                self.program.result.release = \
-                cdio.Device(self.device).get_hwinfo()
-        except ImportError:
-            raise ImportError("Pycdio module import failed.\n"
-                              "This is a hard dependency: if not "
-                              "available please install it")
+        _, self.program.result.vendor, self.program.result.model, \
+            self.program.result.release = \
+            cdio.Device(self.device).get_hwinfo()
 
         self.doCommand()
 
@@ -346,41 +323,27 @@ Log files will log the path to tracks relative to this directory.
         self.program.result.overread = self.options.overread
         self.program.result.logger = self.options.logger
 
-        # write disc files
-        disambiguate = False
-        while True:
-            discName = self.program.getPath(self.program.outdir,
-                                            self.options.disc_template,
-                                            self.mbdiscid, 0,
-                                            disambiguate=disambiguate)
-            dirname = os.path.dirname(discName)
-            if os.path.exists(dirname):
-                sys.stdout.write("Output directory %s already exists\n" %
-                                 dirname.encode('utf-8'))
-                logs = glob.glob(os.path.join(dirname, '*.log'))
-                if logs:
-                    sys.stdout.write(
-                        "Output directory %s is a finished rip\n" %
-                        dirname.encode('utf-8'))
-                    if not disambiguate:
-                        disambiguate = True
-                        continue
-                    return
-                else:
-                    break
-
+        discName = self.program.getPath(self.program.outdir,
+                                        self.options.disc_template,
+                                        self.mbdiscid,
+                                        self.program.metadata)
+        dirname = os.path.dirname(discName)
+        if os.path.exists(dirname):
+            logs = glob.glob(os.path.join(dirname, '*.log'))
+            if logs:
+                msg = ("output directory %s is a finished rip" %
+                       dirname.encode('utf-8'))
+                logger.critical(msg)
+                raise RuntimeError(msg)
             else:
-                sys.stdout.write("Creating output directory %s\n" %
+                sys.stdout.write("output directory %s already exists\n" %
                                  dirname.encode('utf-8'))
-                os.makedirs(dirname)
-                break
-
-        # FIXME: say when we're continuing a rip
-        # FIXME: disambiguate if the pre-existing rip is different
+        print("creating output directory %s" % dirname.encode('utf-8'))
+        os.makedirs(dirname)
 
         # FIXME: turn this into a method
 
-        def ripIfNotRipped(number):
+        def _ripIfNotRipped(number):
             logger.debug('ripIfNotRipped for track %d' % number)
             # we can have a previous result
             trackResult = self.program.result.getTrackResult(number)
@@ -393,9 +356,9 @@ Log files will log the path to tracks relative to this directory.
 
             path = self.program.getPath(self.program.outdir,
                                         self.options.track_template,
-                                        self.mbdiscid, number,
-                                        disambiguate=disambiguate) \
-                + '.' + 'flac'
+                                        self.mbdiscid,
+                                        self.program.metadata,
+                                        track_number=number)
             logger.debug('ripIfNotRipped: path %r' % path)
             trackResult.number = number
 
@@ -462,13 +425,11 @@ Log files will log the path to tracks relative to this directory.
                         "track can't be ripped. "
                         "Rip attempts number is equal to 'MAX_TRIES'")
                 if trackResult.testcrc == trackResult.copycrc:
-                    sys.stdout.write('Checksums match for track %d\n' %
-                                     number)
+                    sys.stdout.write('CRCs match for track %d\n' % number)
                 else:
-                    sys.stdout.write(
-                        'ERROR: checksums did not match for track %d\n' %
-                        number)
-                    raise
+                    raise RuntimeError(
+                        "CRCs did not match for track %d\n" % number
+                    )
 
                 sys.stdout.write(
                     'Peak level: {:.2%} \n'.format(trackResult.peak))
@@ -501,113 +462,37 @@ Log files will log the path to tracks relative to this directory.
             self.program.saveRipResult()
 
         # check for hidden track one audio
-        htoapath = None
         htoa = self.program.getHTOA()
         if htoa:
             start, stop = htoa
-            sys.stdout.write(
-                'Found Hidden Track One Audio from frame %d to %d\n' % (
-                    start, stop))
-
-            # rip it
-            ripIfNotRipped(0)
-            htoapath = self.program.result.tracks[0].filename
+            print('found Hidden Track One Audio from frame %d to %d' % (
+                  start, stop))
+            _ripIfNotRipped(0)
 
         for i, track in enumerate(self.itable.tracks):
             # FIXME: rip data tracks differently
             if not track.audio:
-                sys.stdout.write(
-                    'WARNING: skipping data track %d, not implemented\n' % (
-                        i + 1, ))
+                print 'skipping data track %d, not implemented' % (i + 1)
                 # FIXME: make it work for now
                 track.indexes[1].relative = 0
                 continue
-
-            ripIfNotRipped(i + 1)
-
-        # write disc files
-        discName = self.program.getPath(self.program.outdir,
-                                        self.options.disc_template,
-                                        self.mbdiscid, 0,
-                                        disambiguate=disambiguate)
-        dirname = os.path.dirname(discName)
-        if not os.path.exists(dirname):
-            os.makedirs(dirname)
+            _ripIfNotRipped(i + 1)
 
         logger.debug('writing cue file for %r', discName)
         self.program.writeCue(discName)
 
-        # write .m3u file
         logger.debug('writing m3u file for %r', discName)
-        m3uPath = u'%s.m3u' % discName
-        handle = open(m3uPath, 'w')
-        u = u'#EXTM3U\n'
-        handle.write(u.encode('utf-8'))
+        self.program.write_m3u(discName)
 
-        def writeFile(handle, path, length):
-            targetPath = common.getRelativePath(path, m3uPath)
-            u = u'#EXTINF:%d,%s\n' % (length, targetPath)
-            handle.write(u.encode('utf-8'))
-            u = '%s\n' % targetPath
-            handle.write(u.encode('utf-8'))
-
-        if htoapath:
-            writeFile(handle, htoapath,
-                      self.itable.getTrackStart(1) / common.FRAMES_PER_SECOND)
-
-        for i, track in enumerate(self.itable.tracks):
-            if not track.audio:
-                continue
-
-            path = self.program.getPath(self.program.outdir,
-                                        self.options.track_template,
-                                        self.mbdiscid, i + 1,
-                                        disambiguate=disambiguate
-                                        ) + '.' + 'flac'
-            writeFile(handle, path,
-                      (self.itable.getTrackLength(i + 1) /
-                       common.FRAMES_PER_SECOND))
-
-        handle.close()
-
-        # verify using accuraterip
-        url = self.ittoc.getAccurateRipURL()
-        sys.stdout.write("AccurateRip URL %s\n" % url)
-
-        accucache = accurip.AccuCache()
         try:
-            responses = accucache.retrieve(url)
-        except urllib2.URLError, e:
-            if isinstance(e.args[0], socket.gaierror):
-                if e.args[0].errno == -2:
-                    sys.stdout.write("Warning: network error: %r\n" % (
-                        e.args[0], ))
-                    responses = None
-                else:
-                    raise
-            else:
-                raise
+            self.program.verifyImage(self.runner, self.ittoc)
+        except accurip.EntryNotFound:
+            print('AccurateRip entry not found')
 
-        if not responses:
-            sys.stdout.write('Album not found in AccurateRip database\n')
-
-        if responses:
-            sys.stdout.write('%d AccurateRip reponses found\n' %
-                             len(responses))
-
-            if responses[0].cddbDiscId != self.itable.getCDDBDiscId():
-                sys.stdout.write(
-                    "AccurateRip response discid different: %s\n" %
-                    responses[0].cddbDiscId)
-
-        self.program.verifyImage(self.runner, responses)
-
-        sys.stdout.write("\n".join(
-            self.program.getAccurateRipResults()) + "\n")
+        accurip.print_report(self.program.result)
 
         self.program.saveRipResult()
 
-        # write log file
         self.program.writeLog(discName, self.logger)
 
 

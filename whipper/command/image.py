@@ -117,15 +117,11 @@ Verifies the image from the given .cue files against the AccurateRip database.
     def do(self):
         prog = program.Program(config.Config())
         runner = task.SyncRunner()
-        cache = accurip.AccuCache()
 
         for arg in self.options.cuefile:
             arg = arg.decode('utf-8')
             cueImage = image.Image(arg)
             cueImage.setup(runner)
-
-            url = cueImage.table.getAccurateRipURL()
-            responses = cache.retrieve(url)
 
             # FIXME: this feels like we're poking at internals.
             prog.cuePath = arg
@@ -135,9 +131,14 @@ Verifies the image from the given .cue files against the AccurateRip database.
                 tr.number = track.number
                 prog.result.tracks.append(tr)
 
-            prog.verifyImage(runner, responses)
-
-            print "\n".join(prog.getAccurateRipResults()) + "\n"
+            verified = False
+            try:
+                verified = prog.verifyImage(runner, cueImage.table)
+            except accurip.EntryNotFound:
+                print('AccurateRip entry not found')
+            accurip.print_report(prog.result)
+            if not verified:
+                sys.exit(1)
 
 
 class Image(BaseCommand):

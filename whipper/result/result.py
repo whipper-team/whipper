@@ -23,55 +23,45 @@ import time
 
 
 class TrackResult:
-    """
-    @type filename:          unicode
-    @ivar testcrc:           4-byte CRC for the test read
-    @type testcrc:           int
-    @ivar copycrc:           4-byte CRC for the copy read
-    @type copycrc:           int
-
-    @var  accurip:           whether this track's AR CRC was found in the
-                             database, and thus whether the track is considered
-                             accurately ripped.
-                             If false, it can be ripped wrong, not exist in
-                             the database, ...
-    @type accurip:           bool
-
-    @var  ARCRC:             our calculated 4 byte AccurateRip CRC for this
-                             track.
-    @type ARCRC:             int
-
-    @var  ARDBCRC:           the 4-byte AccurateRip CRC this
-                             track did or should have matched in the database.
-                             If None, the track is not in the database.
-    @type ARDBCRC:           int
-    @var  ARDBConfidence:    confidence for the matched AccurateRip CRC for
-                             this track in the database.
-                             If None, the track is not in the database.
-    @var  ARDBMaxConfidence: maximum confidence in the AccurateRip database for
-                             this track; can still be 0.
-                             If None, the track is not in the database.
-    """
     number = None
     filename = None
     pregap = 0  # in frames
     pre_emphasis = None
-
     peak = 0.0
     quality = 0.0
     testspeed = 0.0
     copyspeed = 0.0
     testduration = 0.0
     copyduration = 0.0
+    # 4 byte CRCs for the test and copy reads
     testcrc = None
     copycrc = None
-    accurip = False  # whether it's in the database
-    ARCRC = None
-    ARDBCRC = None
-    ARDBConfidence = None
-    ARDBMaxConfidence = None
-
+    AR = None
     classVersion = 3
+
+    def __init__(self):
+        """
+        CRC: calculated 4 byte AccurateRip CRC
+        DBCRC: 4 byte AccurateRip CRC from the AR database
+        DBConfidence: confidence for the matched AccurateRip DB CRC
+
+        DBMaxConfidence: track's maximum confidence in the AccurateRip DB
+        DBMaxConfidenceCRC: maximum confidence CRC
+        """
+        self.AR = {
+            'v1': {
+                'CRC': None,
+                'DBCRC': None,
+                'DBConfidence': None,
+            },
+            'v2': {
+                'CRC': None,
+                'DBCRC': None,
+                'DBConfidence': None,
+            },
+            'DBMaxConfidence': None,
+            'DBMaxConfidenceCRC': None,
+        }
 
 
 class RipResult:

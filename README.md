@@ -75,6 +75,7 @@ Whipper relies on the following packages in order to run correctly and provide a
 - [python-cddb](http://cddb-py.sourceforge.net/), for showing but not using metadata if disc not available in the MusicBrainz DB
 - [pycdio](https://pypi.python.org/pypi/pycdio/) (to avoid bugs please use `pycdio` **0.20** & `libcdio` >= **0.90** or, with previous `libcdio` versions, `pycdio` **0.17**), for drive identification
   - Required for drive offset and caching behavior to be stored in the configuration file
+- [requests](https://pypi.python.org/pypi/requests) for retrieving AccurateRip database entries
 - [libsndfile](http://www.mega-nerd.com/libsndfile/), for reading wav files
 - [flac](https://xiph.org/flac/), for reading flac files
 - [sox](http://sox.sourceforge.net/), for track peak detection

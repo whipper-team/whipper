@@ -24,8 +24,6 @@ import wave
 
 from whipper.extern.task import task as etask
 
-from whipper.program.arc import accuraterip_checksum
-
 import logging
 logger = logging.getLogger(__name__)
 
@@ -48,28 +46,4 @@ class CRC32Task(etask.Task):
         d = w._data_chunk.read()
 
         self.checksum = binascii.crc32(d) & 0xffffffff
-        self.stop()
-
-
-class FastAccurateRipChecksumTask(etask.Task):
-    description = 'Calculating (Fast) AccurateRip checksum'
-
-    def __init__(self, path, trackNumber, trackCount, wave, v2=False):
-        self.path = path
-        self.trackNumber = trackNumber
-        self.trackCount = trackCount
-        self._wave = wave
-        self._v2 = v2
-        self.checksum = None
-
-    def start(self, runner):
-        etask.Task.start(self, runner)
-        self.schedule(0.0, self._arc)
-
-    def _arc(self):
-        arc = accuraterip_checksum(self.path, self.trackNumber,
-                                   self.trackCount,
-                                   self._wave, self._v2)
-        self.checksum = arc
-
         self.stop()
