@@ -294,18 +294,17 @@ class Program:
                                               record=self._record)
                 break
             except mbngs.NotFoundException, e:
+                logger.warning("release not found: %r" % (e, ))
                 break
             except musicbrainzngs.NetworkError, e:
-                self._stdout.write("Warning: network error: %r\n" % (e, ))
+                logger.warning("network error: %r" % (e, ))
                 break
             except mbngs.MusicBrainzException, e:
-                self._stdout.write("Warning: %r\n" % (e, ))
+                logger.warning("musicbrainz exception: %r" % (e, ))
                 time.sleep(5)
                 continue
 
         if not metadatas:
-            if e:
-                self._stdout.write("Error: %r\n" % (e, ))
             self._stdout.write('Continuing without metadata\n')
 
         if metadatas:
