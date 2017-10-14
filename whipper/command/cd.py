@@ -230,14 +230,15 @@ Log files will log the path to tracks relative to this directory.
     def add_arguments(self):
         loggers = result.getLoggers().keys()
         default_offset = None
-        info = drive.getDeviceInfo(self.opts.device)
-        if info:
-            try:
-                default_offset = config.Config().getReadOffset(*info)
-                sys.stdout.write("Using configured read offset %d\n" %
-                                 default_offset)
-            except KeyError:
-                pass
+        if hasattr(self.opts, 'device'):
+            info = drive.getDeviceInfo(self.opts.device)
+            if info:
+                try:
+                    default_offset = config.Config().getReadOffset(*info)
+                    sys.stdout.write("Using configured read offset %d\n" %
+                                     default_offset)
+                except KeyError:
+                    pass
 
         _CD.add_arguments(self.parser)
 
