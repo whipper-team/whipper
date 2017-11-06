@@ -40,7 +40,7 @@ logger = logging.getLogger(__name__)
 SILENT = 1e-10
 MAX_TRIES = 5
 
-DEFAULT_TRACK_TEMPLATE = u'%r/%A - %d/%t. %a - %n.%x'
+DEFAULT_TRACK_TEMPLATE = u'%r/%A - %d/%t. %a - %n'
 DEFAULT_DISC_TEMPLATE = u'%r/%A - %d/%A - %d'
 
 TEMPLATE_DESCRIPTION = '''
@@ -358,7 +358,7 @@ Log files will log the path to tracks relative to this directory.
                                         self.options.track_template,
                                         self.mbdiscid,
                                         self.program.metadata,
-                                        track_number=number)
+                                        track_number=number) + '.flac'
             logger.debug('ripIfNotRipped: path %r' % path)
             trackResult.number = number
 
