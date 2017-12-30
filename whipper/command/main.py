@@ -10,7 +10,7 @@ import whipper
 
 from whipper.command import cd, offset, drive, image, accurip, debug
 from whipper.command.basecommand import BaseCommand
-from whipper.common import common, directory
+from whipper.common import common, directory, config
 from whipper.extern.task import task
 from whipper.program.utils import eject_device
 
@@ -22,6 +22,7 @@ def main():
     # set user agent
     musicbrainzngs.set_useragent("whipper", whipper.__version__,
                                  "https://github.com/JoeLametta/whipper")
+    musicbrainzngs.set_hostname(config.Config().get_musicbrainz_server())
     # register plugins with pkg_resources
     distributions, _ = pkg_resources.working_set.find_plugins(
         pkg_resources.Environment([directory.data_path('plugins')])

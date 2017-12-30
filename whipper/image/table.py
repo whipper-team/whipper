@@ -28,7 +28,7 @@ import urlparse
 
 import whipper
 
-from whipper.common import common
+from whipper.common import common, config
 
 import logging
 logger = logging.getLogger(__name__)
@@ -390,7 +390,7 @@ class Table(object):
         return result
 
     def getMusicBrainzSubmitURL(self):
-        host = 'musicbrainz.org'
+        host = config.Config().get_musicbrainz_server()
 
         discid = self.getMusicBrainzDiscId()
         values = self._getMusicBrainzValues()

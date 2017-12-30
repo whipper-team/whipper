@@ -21,9 +21,11 @@
 import ConfigParser
 import codecs
 import os.path
+import re
 import shutil
 import tempfile
 import urllib
+from urlparse import urlparse
 
 from whipper.common import directory
 
@@ -71,6 +73,13 @@ class Config:
 
     def getboolean(self, section, option):
         return self._getter('boolean', section, option)
+
+    # musicbrainz section
+
+    def get_musicbrainz_server(self):
+        server = self.get('musicbrainz', 'server') or 'musicbrainz.org'
+        server_url = server if re.match(r'^\D*//', server) else '//' + server
+        return urlparse(server_url).netloc
 
     # drive sections
 
