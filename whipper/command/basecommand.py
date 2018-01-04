@@ -62,7 +62,7 @@ class BaseCommand():
                                      nargs=argparse.REMAINDER,
                                      help=argparse.SUPPRESS)
 
-        if self.device_option:
+        if self.device_option and self.no_add_help:
             # pick the first drive as default
             drives = drive.getAllDevicePaths()
             if not drives:
@@ -78,7 +78,7 @@ class BaseCommand():
 
         self.options = self.parser.parse_args(argv, namespace=opts)
 
-        if self.device_option:
+        if self.device_option and self.no_add_help:
             # this can be a symlink to another device
             self.options.device = os.path.realpath(self.options.device)
             if not os.path.exists(self.options.device):
