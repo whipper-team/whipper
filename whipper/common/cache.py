@@ -104,9 +104,11 @@ class Persister:
         try:
             self.object = pickle.load(handle)
             logger.debug('loaded persisted object from %r' % self._path)
-        except:
+        except Exception as e:
+            # TODO: restrict kind of caught exceptions?
             # can fail for various reasons; in that case, pretend we didn't
             # load it
+            logger.debug(e)
             pass
 
     def delete(self):

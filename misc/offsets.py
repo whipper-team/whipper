@@ -16,7 +16,8 @@ soup = BeautifulSoup.BeautifulSoup(doc)
 
 offsets = {}  # offset -> total count
 
-rows = soup.findAll('tr')
+# skip first two spurious elements
+rows = soup.findAll('tr')[2:]
 for row in rows:
     columns = row.findAll('td')
     if len(columns) == 4:
@@ -25,20 +26,15 @@ for row in rows:
         offset = second.find(text=True)
         count = third.find(text=True)
 
-        # only use sensible offsets
+        # only use numeric offsets
         try:
             int(offset)
-        except:
+        except ValueError:
             continue
 
         if offset not in offsets.keys():
             offsets[offset] = 0
-        # first line is text, so int will fail with ValueError
-        # purged entries will have None as count, so TypeError
-        try:
-            offsets[offset] += int(count)
-        except (ValueError, TypeError):
-            pass
+        offsets[offset] += int(count)
 
 # now sort offsets by count
 counts = []
