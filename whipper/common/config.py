@@ -21,7 +21,6 @@
 import ConfigParser
 import codecs
 import os.path
-import re
 import shutil
 import tempfile
 import urllib
@@ -78,8 +77,10 @@ class Config:
 
     def get_musicbrainz_server(self):
         server = self.get('musicbrainz', 'server') or 'musicbrainz.org'
-        server_url = server if re.match(r'^\D*//', server) else '//' + server
-        return urlparse(server_url).netloc
+        server_url = urlparse('//' + server)
+        if server_url.scheme != '' or server_url.path != '':
+            raise KeyError('Invalid MusicBrainz server: %s' % server)
+        return server
 
     # drive sections
 

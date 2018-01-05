@@ -22,7 +22,14 @@ def main():
     # set user agent
     musicbrainzngs.set_useragent("whipper", whipper.__version__,
                                  "https://github.com/JoeLametta/whipper")
-    musicbrainzngs.set_hostname(config.Config().get_musicbrainz_server())
+
+    try:
+        server = config.Config().get_musicbrainz_server()
+    except KeyError, e:
+        sys.stderr.write('whipper: %s\n' % e.message)
+        sys.exit()
+
+    musicbrainzngs.set_hostname(server)
     # register plugins with pkg_resources
     distributions, _ = pkg_resources.working_set.find_plugins(
         pkg_resources.Environment([directory.data_path('plugins')])

@@ -84,8 +84,11 @@ class ConfigTestCase(tcommon.TestCase):
         self._config._parser.set('musicbrainz', 'server',
                                  '192.168.2.141:5000/hello/world')
         self._config.write()
-        self.assertEquals(self._config.get_musicbrainz_server(),
-                          '192.168.2.141:5000',
-                          msg='Correctly strips out path after port number')
+        self.assertRaises(KeyError, self._config.get_musicbrainz_server)
+
+        self._config._parser.set('musicbrainz', 'server',
+                                 'http://192.168.2.141:5000')
+        self._config.write()
+        self.assertRaises(KeyError, self._config.get_musicbrainz_server)
 
         self._config._parser.remove_section('musicbrainz')
