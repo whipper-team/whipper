@@ -13,8 +13,14 @@ CDRDAO = 'cdrdao'
 
 
 def read_toc(device, fast_toc=False):
-    """
-    Return cdrdao-generated table of contents for 'device'.
+    """Get the cd's toc using cdrdao and parse it.
+
+    :param device: optical disk drive.
+    :type device:
+    :param fast_toc: enable cdrdao's fast-toc option? (Default value = False)
+    :type fast_toc: bool
+    :returns:
+    :rtype: TocFile
     """
     # cdrdao MUST be passed a non-existing filename as its last argument
     # to write the TOC to; it does not support writing to stdout or
@@ -48,8 +54,12 @@ def read_toc(device, fast_toc=False):
 
 
 def DetectCdr(device):
-    """
-    Return whether cdrdao detects a CD-R for 'device'.
+    """Check if inserted disk is a CD-R.
+
+    :param device: optical disk drive.
+    :type device:
+    :returns: False if inserted disk is not a CD-R, True otherwise.
+    :rtype: bool
     """
     cmd = [CDRDAO, 'disk-info', '-v1', '--device', device]
     logger.debug("executing %r", cmd)
@@ -61,8 +71,10 @@ def DetectCdr(device):
 
 
 def version():
-    """
-    Return cdrdao version as a string.
+    """Detect cdrdao's version.
+
+    :returns:
+    :rtype:
     """
     cdrdao = Popen(CDRDAO, stderr=PIPE)
     out, err = cdrdao.communicate()
@@ -80,21 +92,31 @@ def version():
 
 
 def ReadTOCTask(device):
-    """
-    stopgap morituri-insanity compatibility layer
+    """Stopgap morituri-insanity compatibility layer.
+
+    :param device: optical disk drive.
+    :type device:
+    :returns:
+    :rtype: TocFile
     """
     return read_toc(device, fast_toc=True)
 
 
 def ReadTableTask(device):
-    """
-    stopgap morituri-insanity compatibility layer
+    """Stopgap morituri-insanity compatibility layer.
+
+    :param device: optical disk drive.
+    :type device:
+    :returns:
+    :rtype: TocFile
     """
     return read_toc(device)
 
 
 def getCDRDAOVersion():
-    """
-    stopgap morituri-insanity compatibility layer
+    """Stopgap morituri-insanity compatibility layer.
+
+    :returns:
+    :rtype:
     """
     return version()

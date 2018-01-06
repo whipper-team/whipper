@@ -13,6 +13,6 @@ setup(
     entry_points={
         'console_scripts': [
             'whipper = whipper.command.main:main'
-         ]
+        ]
     }
 )

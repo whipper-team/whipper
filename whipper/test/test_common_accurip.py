@@ -110,7 +110,7 @@ class TestVerifyResult(TestCase):
 
     def setUp(self):
         self.result = RipResult()
-        for n in range(1, 2+1):
+        for n in range(1, 2 + 1):
             track = TrackResult()
             track.number = n
             self.result.tracks.append(track)
