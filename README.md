@@ -166,6 +166,9 @@ The possible sections are:
 - Main section: `[main]`
   - `path_filter_fat`: whether to filter path components for FAT file systems
   - `path_filter_special`: whether to filter path components for special characters
+  
+- MusicBrainz section: `[musicbrainz]`
+  - `server`: the MusicBrainz server to connect to, in `host:[port]` format. Defaults to `musicbrainz.org`.
 
 - Drive section: `[drive:IDENTIFIER]`, one for each configured drive. All these values are probed by whipper and should not be edited by hand.
   - `defeats_cache`: whether this drive can defeat the audio cache

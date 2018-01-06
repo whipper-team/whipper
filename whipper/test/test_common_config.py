@@ -66,3 +66,29 @@ class ConfigTestCase(tcommon.TestCase):
         defeats = self._config.getDefeatsCache(
             'PLEXTOR ', 'DVDR   PX-L890SA', '1.05')
         self.assertEquals(defeats, True)
+
+    def test_get_musicbrainz_server(self):
+        self.assertEquals(self._config.get_musicbrainz_server(),
+                          'musicbrainz.org',
+                          msg='Default value is correct')
+
+        self._config._parser.add_section('musicbrainz')
+
+        self._config._parser.set('musicbrainz', 'server',
+                                 '192.168.2.141:5000')
+        self._config.write()
+        self.assertEquals(self._config.get_musicbrainz_server(),
+                          '192.168.2.141:5000',
+                          msg='Correctly returns user-set value')
+
+        self._config._parser.set('musicbrainz', 'server',
+                                 '192.168.2.141:5000/hello/world')
+        self._config.write()
+        self.assertRaises(KeyError, self._config.get_musicbrainz_server)
+
+        self._config._parser.set('musicbrainz', 'server',
+                                 'http://192.168.2.141:5000')
+        self._config.write()
+        self.assertRaises(KeyError, self._config.get_musicbrainz_server)
+
+        self._config._parser.remove_section('musicbrainz')

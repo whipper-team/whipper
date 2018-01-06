@@ -24,6 +24,7 @@ import os.path
 import shutil
 import tempfile
 import urllib
+from urlparse import urlparse
 
 from whipper.common import directory
 
@@ -71,6 +72,15 @@ class Config:
 
     def getboolean(self, section, option):
         return self._getter('boolean', section, option)
+
+    # musicbrainz section
+
+    def get_musicbrainz_server(self):
+        server = self.get('musicbrainz', 'server') or 'musicbrainz.org'
+        server_url = urlparse('//' + server)
+        if server_url.scheme != '' or server_url.path != '':
+            raise KeyError('Invalid MusicBrainz server: %s' % server)
+        return server
 
     # drive sections
 
