@@ -116,11 +116,9 @@ class MetadataTestCase(unittest.TestCase):
                           )
 
     def testNorthernGateway(self):
-        """
-        check the received metadata for artists tagged with [unknown]
-        and artists tagged with an alias in MusicBrainz
+        """Check MBz metadata for artists tagged with: [unknown] / an alias.
 
-        see https://github.com/JoeLametta/whipper/issues/155
+        .. seealso:: https://github.com/JoeLametta/whipper/issues/156
         """
         filename = 'whipper.release.38b05c7d-65fe-4dc0-9c10-33a391b86703.json'
         path = os.path.join(os.path.dirname(__file__), filename)
@@ -157,9 +155,12 @@ class MetadataTestCase(unittest.TestCase):
                           )
 
     def testNenaAndKimWildSingle(self):
-        """
-        check the received metadata for artists that differ between
-        named on release and named in recording
+        """Check MBz metadata for artists with different names.
+
+        An artist can have different names on MusicBrainz like:
+        *artist in MusicBrainz*, *artist as credited*.
+
+        .. seealso:: https://github.com/JoeLametta/whipper/issues/156
         """
         filename = 'whipper.release.f484a9fc-db21-4106-9408-bcd105c90047.json'
         path = os.path.join(os.path.dirname(__file__), filename)

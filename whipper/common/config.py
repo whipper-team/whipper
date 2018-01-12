@@ -85,18 +85,27 @@ class Config:
     # drive sections
 
     def setReadOffset(self, vendor, model, release, offset):
-        """
-        Set a read offset for the given drive.
+        """Set a read offset for the given drive.
 
         Strips the given strings of leading and trailing whitespace.
+
+        :param vendor:
+        :param model:
+        :param release:
+        :param offset:
+
         """
         section = self._findOrCreateDriveSection(vendor, model, release)
         self._parser.set(section, 'read_offset', str(offset))
         self.write()
 
     def getReadOffset(self, vendor, model, release):
-        """
-        Get a read offset for the given drive.
+        """Get a read offset for the given drive.
+
+        :param vendor:
+        :param model:
+        :param release:
+
         """
         section = self._findDriveSection(vendor, model, release)
 
@@ -107,10 +116,15 @@ class Config:
                 vendor, model, release))
 
     def setDefeatsCache(self, vendor, model, release, defeat):
-        """
-        Set whether the drive defeats the cache.
+        """Set whether the drive defeats the cache.
 
         Strips the given strings of leading and trailing whitespace.
+
+        :param vendor:
+        :param model:
+        :param release:
+        :param defeat:
+
         """
         section = self._findOrCreateDriveSection(vendor, model, release)
         self._parser.set(section, 'defeats_cache', str(defeat))

@@ -18,9 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
-"""
-Handles communication with the MusicBrainz server using NGS.
-"""
+"""Handles communication with the MusicBrainz server using NGS."""
 
 import urllib2
 
@@ -54,15 +52,38 @@ class TrackMetadata(object):
 
 
 class DiscMetadata(object):
+    """I represent all relevant disc metadata information found in MBz.
+
+    :cvar artist: artist(s) name.
+    :vartype artist:
+    :cvar sortName: album artist sort name.
+    :vartype sortName:
+    :cvar title: title of the disc (with disambiguation).
+    :vartype title:
+    :cvar various:
+    :vartype various:
+    :cvar tracks:
+    :vartype tracks:
+    :cvar release: earliest release date, in YYYY-MM-DD.
+    :vartype release: unicode
+    :cvar releaseTitle: title of the release (without disambiguation).
+    :vartype releaseTitle:
+    :cvar releaseType:
+    :vartype releaseType:
+    :cvar mbid:
+    :vartype mbid:
+    :cvar mbidArtist:
+    :vartype mbidArtist:
+    :cvar url:
+    :vartype url:
+    :cvar catalogNumber:
+    :vartype catalogNumber:
+    :cvar barcode:
+    :vartype barcode:
+    :ivar tracks:
+    :vartype tracks:
     """
-    @param artist:       artist(s) name
-    @param sortName:     album artist sort name
-    @param release:      earliest release date, in YYYY-MM-DD
-    @type  release:      unicode
-    @param title:        title of the disc (with disambiguation)
-    @param releaseTitle: title of the release (without disambiguation)
-    @type  tracks:       C{list} of L{TrackMetadata}
-    """
+
     artist = None
     sortName = None
     title = None
@@ -112,10 +133,7 @@ def _record(record, which, name, what):
 
 
 class _Credit(list):
-    """
-    I am a representation of an artist-credit in MusicBrainz for a disc
-    or track.
-    """
+    """Representation of an artist-credit in MusicBrainz for a disc/track."""
 
     def joiner(self, attributeGetter, joinString=None):
         res = []
@@ -144,12 +162,19 @@ class _Credit(list):
 
 
 def _getMetadata(releaseShort, release, discid, country=None):
-    """
-    @type  release: C{dict}
-    @param release: a release dict as returned in the value for key release
-                    from get_release_by_id
+    """Get disc's metadata using MusicBrainz.
 
-    @rtype: L{DiscMetadata} or None
+    :param releaseShort:
+    :type releaseShort:
+    :param release: a release dict as returned in the value for key release
+                    from get_release_by_id.
+    :type release: C{dict}
+    :param discid:
+    :type discid:
+    :param country:  (Default value = None).
+    :type country:
+    :returns:
+    :rtype: L{DiscMetadata} or None
     """
     logger.debug('getMetadata for release id %r',
                  release['id'])
@@ -256,15 +281,18 @@ def _getMetadata(releaseShort, release, discid, country=None):
 
 
 def musicbrainz(discid, country=None, record=False):
-    """
-    Based on a MusicBrainz disc id, get a list of DiscMetadata objects
-    for the given disc id.
+    """Get a list of DiscMetadata objects for the given MusicBrainz disc id.
 
     Example disc id: Mj48G109whzEmAbPBoGvd4KyCS4-
 
-    @type  discid: str
-
-    @rtype: list of L{DiscMetadata}
+    :param discid:
+    :type discid: str
+    :param country:  (Default value = None).
+    :type country:
+    :param record:  (Default value = False).
+    :type record:
+    :returns:
+    :rtype: list of L{DiscMetadata}
     """
     logger.debug('looking up results for discid %r', discid)
     import musicbrainzngs
@@ -274,7 +302,7 @@ def musicbrainz(discid, country=None, record=False):
     try:
         result = musicbrainzngs.get_releases_by_discid(
             discid, includes=["artists", "recordings", "release-groups"])
-    except musicbrainzngs.ResponseError, e:
+    except musicbrainzngs.ResponseError as e:
         if isinstance(e.cause, urllib2.HTTPError):
             if e.cause.code == 404:
                 raise NotFoundException(e)

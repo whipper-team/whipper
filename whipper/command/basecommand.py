@@ -26,8 +26,7 @@ logger = logging.getLogger(__name__)
 
 
 class BaseCommand():
-    """
-    A base command class for whipper commands.
+    """A base command class for whipper commands.
 
     Creates an argparse.ArgumentParser.
     Override add_arguments() and handle_arguments() to register
@@ -46,6 +45,7 @@ class BaseCommand():
     arguments, the current options namespace, and the full command path
     name.
     """
+
     device_option = False
     no_add_help = False  # for rip.main.Whipper
     formatter_class = argparse.RawDescriptionHelpFormatter

@@ -118,9 +118,9 @@ class ResultCache(BaseCommand):
     description = summary
 
     subcommands = {
-        'cue':  RCCue,
+        'cue': RCCue,
         'list': RCList,
-        'log':  RCLog,
+        'log': RCLog,
     }
 
 
@@ -291,10 +291,10 @@ class Debug(BaseCommand):
     description = "debug internals"
 
     subcommands = {
-        'checksum':       Checksum,
-        'encode':         Encode,
-        'tag':            Tag,
+        'checksum': Checksum,
+        'encode': Encode,
+        'tag': Tag,
         'musicbrainzngs': MusicBrainzNGS,
-        'resultcache':    ResultCache,
-        'version':        Version,
+        'resultcache': ResultCache,
+        'version': Version,
     }
