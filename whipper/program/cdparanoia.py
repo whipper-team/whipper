@@ -295,10 +295,10 @@ class ReadTrackTask(task.Task):
 
         bufsize = 1024
         if self._overread:
-            argv = ["cdparanoia", "--stderr-progress",
+            argv = ["cd-paranoia", "--stderr-progress",
                     "--sample-offset=%d" % self._offset, "--force-overread", ]
         else:
-            argv = ["cdparanoia", "--stderr-progress",
+            argv = ["cd-paranoia", "--stderr-progress",
                     "--sample-offset=%d" % self._offset, ]
         if self._device:
             argv.extend(["--force-cdrom-device", self._device, ])
@@ -317,7 +317,7 @@ class ReadTrackTask(task.Task):
         except OSError as e:
             import errno
             if e.errno == errno.ENOENT:
-                raise common.MissingDependencyException('cdparanoia')
+                raise common.MissingDependencyException('cd-paranoia')
 
             raise
 
@@ -579,8 +579,8 @@ _VERSION_RE = re.compile(
 
 
 def getCdParanoiaVersion():
-    getter = common.VersionGetter('cdparanoia',
-                                  ["cdparanoia", "-V"],
+    getter = common.VersionGetter('cd-paranoia',
+                                  ["cd-paranoia", "-V"],
                                   _VERSION_RE,
                                   "%(version)s %(release)s")
 
@@ -605,12 +605,12 @@ class AnalyzeTask(ctask.PopenTask):
     def __init__(self, device=None):
         # cdparanoia -A *always* writes cdparanoia.log
         self.cwd = tempfile.mkdtemp(suffix='.whipper.cache')
-        self.command = ['cdparanoia', '-A']
+        self.command = ['cd-paranoia', '-A']
         if device:
             self.command += ['-d', device]
 
     def commandMissing(self):
-        raise common.MissingDependencyException('cdparanoia')
+        raise common.MissingDependencyException('cd-paranoia')
 
     def readbyteserr(self, bytes):
         self._output.append(bytes)
