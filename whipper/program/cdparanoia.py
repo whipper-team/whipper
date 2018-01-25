@@ -575,7 +575,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
 
 
 _VERSION_RE = re.compile(
-    "^cdparanoia (?P<version>.+) release (?P<release>.+) \(.*\)")
+    "^cdparanoia (?P<version>.+) release (?P<release>.+)")
 
 
 def getCdParanoiaVersion():
