@@ -20,6 +20,9 @@
 
 import binascii
 import wave
+import tempfile
+import subprocess
+import os
 
 
 from whipper.extern.task import task as etask
@@ -34,16 +37,24 @@ class CRC32Task(etask.Task):
     # TODO: Support sampleStart, sampleLength later on (should be trivial, just
     # add change the read part in _crc32 to skip some samples and/or not
     # read too far)
-    def __init__(self, path, sampleStart=0, sampleLength=-1):
+    def __init__(self, path, sampleStart=0, sampleLength=-1, is_wave=True):
         self.path = path
+        self.is_wave = is_wave
 
     def start(self, runner):
         etask.Task.start(self, runner)
         self.schedule(0.0, self._crc32)
 
     def _crc32(self):
-        w = wave.open(self.path)
-        d = w._data_chunk.read()
+        fd, tmpf = tempfile.mkstemp()
 
-        self.checksum = binascii.crc32(d) & 0xffffffff
-        self.stop()
+        try:
+            subprocess.check_call(['flac', '-d', self.path, '-fo', tmpf])
+
+            w = wave.open(tmpf)
+            d = w._data_chunk.read()
+
+            self.checksum = binascii.crc32(d) & 0xffffffff
+            self.stop()
+        finally:
+            os.remove(tmpf)
