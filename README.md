@@ -66,7 +66,7 @@ If you are building from a source tarball or checkout, you can choose to use whi
 
 Whipper relies on the following packages in order to run correctly and provide all the supported features:
 
-- [cdparanoia](https://www.xiph.org/paranoia/), for the actual ripping
+- [cd-paranoia](https://www.gnu.org/software/libcdio/), for the actual ripping
 - [cdrdao](http://cdrdao.sourceforge.net/), for session, TOC, pre-gap, and ISRC extraction
 - [python-gobject-2](https://packages.debian.org/en/jessie/python-gobject-2), required by `task.py`
 - [python-musicbrainzngs](https://github.com/alastair/python-musicbrainzngs), for metadata lookup
