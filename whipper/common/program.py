@@ -531,8 +531,8 @@ class Program:
         return (start, stop)
 
     def verifyTrack(self, runner, trackResult):
-
-        t = checksum.CRC32Task(trackResult.filename)
+        is_wave = not trackResult.filename.endswith('.flac')
+        t = checksum.CRC32Task(trackResult.filename, is_wave=is_wave)
 
         try:
             runner.run(t)

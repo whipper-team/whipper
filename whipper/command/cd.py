@@ -338,8 +338,9 @@ Log files will log the path to tracks relative to this directory.
             else:
                 sys.stdout.write("output directory %s already exists\n" %
                                  dirname.encode('utf-8'))
-        print("creating output directory %s" % dirname.encode('utf-8'))
-        os.makedirs(dirname)
+        else:
+            print("creating output directory %s" % dirname.encode('utf-8'))
+            os.makedirs(dirname)
 
         # FIXME: turn this into a method
 
