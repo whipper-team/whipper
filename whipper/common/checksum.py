@@ -46,15 +46,19 @@ class CRC32Task(etask.Task):
         self.schedule(0.0, self._crc32)
 
     def _crc32(self):
-        fd, tmpf = tempfile.mkstemp()
+        if not self.is_wave:
+            fd, tmpf = tempfile.mkstemp()
 
-        try:
-            subprocess.check_call(['flac', '-d', self.path, '-fo', tmpf])
+            try:
+                subprocess.check_call(['flac', '-d', self.path, '-fo', tmpf])
 
-            w = wave.open(tmpf)
-            d = w._data_chunk.read()
+                w = wave.open(tmpf)
+            finally:
+                os.remove(tmpf)
+        else:
+            w = wave.open(self.path)
 
-            self.checksum = binascii.crc32(d) & 0xffffffff
-            self.stop()
-        finally:
-            os.remove(tmpf)
+        d = w._data_chunk.read()
+
+        self.checksum = binascii.crc32(d) & 0xffffffff
+        self.stop()
