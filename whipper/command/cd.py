@@ -222,7 +222,7 @@ relative to the directory of the disc files.
 All files will be created relative to the given output directory.
 Log files will log the path to tracks relative to this directory.
 """ % TEMPLATE_DESCRIPTION
-    formatter_class = argparse.ArgumentDefaultsHelpFormatter
+    formatter_class = argparse.RawTextHelpFormatter
 
     # Requires opts.record
     # Requires opts.device
