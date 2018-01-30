@@ -37,7 +37,7 @@ gobject.threads_init()
 logger = logging.getLogger(__name__)
 
 
-SILENT = 1e-10
+SILENT = 0
 MAX_TRIES = 5
 
 DEFAULT_TRACK_TEMPLATE = u'%r/%A - %d/%t. %a - %n'
@@ -433,7 +433,7 @@ Log files will log the path to tracks relative to this directory.
                     )
 
                 sys.stdout.write(
-                    'Peak level: {:.2%} \n'.format(trackResult.peak))
+                    'Peak level: {}\n'.format(trackResult.peak))
 
                 sys.stdout.write(
                     'Rip quality: {:.2%}\n'.format(trackResult.quality))
@@ -442,9 +442,9 @@ Log files will log the path to tracks relative to this directory.
             if number == 0:
                 # HTOA goes on index 0 of track 1
                 # ignore silence in PREGAP
-                if trackResult.peak <= SILENT:
+                if trackResult.peak == SILENT:
                     logger.debug(
-                        'HTOA peak %r is below SILENT '
+                        'HTOA peak %r is equal to the SILENT '
                         'threshold, disregarding', trackResult.peak)
                     self.itable.setFile(1, 0, None,
                                         self.ittoc.getTrackStart(1), number)

@@ -11,4 +11,4 @@ class PeakLevelTestCase(common.TestCase):
         self.path = os.path.join(os.path.dirname(__file__), 'track.flac')
 
     def testParse(self):
-        self.assertEquals(0.800018, sox.peak_level(self.path))
+        self.assertEquals(26215, sox.peak_level(self.path))

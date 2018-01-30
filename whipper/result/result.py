@@ -36,7 +36,7 @@ class TrackResult:
     filename = None
     pregap = 0  # in frames
     pre_emphasis = None
-    peak = 0.0
+    peak = 0
     quality = 0.0
     testspeed = 0.0
     copyspeed = 0.0
