@@ -232,8 +232,7 @@ To make it easier for developers, you can run whipper straight from the
 source checkout:
 
 ```bash
-python2 setup.py develop --user
-whipper -h
+python2 -m whipper -h
 ```
 
 ## Logger plugins
