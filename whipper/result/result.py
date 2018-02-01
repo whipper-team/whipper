@@ -72,6 +72,8 @@ class RipResult:
 
     :cvar offset: sample read offset.
     :vartype offset:
+    :cvar maxspeed: throttle drive to specified read speed
+    :vartype maxspeed:
     :cvar table: the full index table.
     :vartype table: L{whipper.image.table.Table}
     :cvar vendor: vendor of the CD drive.
@@ -88,6 +90,7 @@ class RipResult:
 
     offset = 0
     overread = None
+    maxspeed = None
     isCdr = None
     logger = None
     table = None

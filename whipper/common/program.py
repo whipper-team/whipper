@@ -549,7 +549,7 @@ class Program:
                      trackResult.testcrc, t.checksum, ret)
         return ret
 
-    def ripTrack(self, runner, trackResult, offset, device, taglist,
+    def ripTrack(self, runner, trackResult, maxspeed, offset, device, taglist,
                  overread, what=None):
         """.
 
@@ -560,6 +560,8 @@ class Program:
         :type trackResult: L{result.TrackResult}
         :param runner:
         :type runner:
+        :param maxspeed: throttle drive to specified read speed
+        :type maxspeed:
         :param offset:
         :type offset:
         :param device:
@@ -586,7 +588,9 @@ class Program:
 
         t = cdparanoia.ReadVerifyTrackTask(trackResult.filename,
                                            self.result.table, start,
-                                           stop, overread,
+                                           stop,
+                                           overread=overread,
+                                           maxspeed=maxspeed,
                                            offset=offset,
                                            device=device,
                                            taglist=taglist,

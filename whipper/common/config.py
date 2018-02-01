@@ -89,10 +89,10 @@ class Config:
 
         Strips the given strings of leading and trailing whitespace.
 
-        :param vendor:
-        :param model:
-        :param release:
-        :param offset:
+        :param vendor:  Drive vendor
+        :param model:   Drive model
+        :param release: Drive release (or firmware)
+        :param offset:  Drive read offset
 
         """
         section = self._findOrCreateDriveSection(vendor, model, release)
@@ -102,9 +102,9 @@ class Config:
     def getReadOffset(self, vendor, model, release):
         """Get a read offset for the given drive.
 
-        :param vendor:
-        :param model:
-        :param release:
+        :param vendor:  Drive vendor
+        :param model:   Drive model
+        :param release: Drive release (or firmware)
 
         """
         section = self._findDriveSection(vendor, model, release)
@@ -113,6 +113,22 @@ class Config:
             return int(self._parser.get(section, 'read_offset'))
         except ConfigParser.NoOptionError:
             raise KeyError("Could not find read_offset for %s/%s/%s" % (
+                vendor, model, release))
+
+    def getMaxReadSpeed(self, vendor, model, release):
+        """Get a maximum read speed for the given drive.
+
+        :param vendor:
+        :param model:
+        :param release:
+
+        """
+        section = self._findDriveSection(vendor, model, release)
+
+        try:
+            return int(self._parser.get(section, 'max_read_speed'))
+        except ConfigParser.NoOptionError:
+            raise KeyError("Could not find max_read_speed for %s/%s/%s" % (
                 vendor, model, release))
 
     def setDefeatsCache(self, vendor, model, release, defeat):

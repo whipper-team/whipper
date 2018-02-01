@@ -51,6 +51,13 @@ class WhipperLogger(result.Logger):
         lines.append("Ripping phase information:")
         lines.append("  Drive: %s%s (revision %s)" % (
             ripResult.vendor, ripResult.model, ripResult.release))
+
+        if ripResult.maxspeed is None:
+            throttling = "No"
+        else:
+            throttling = "%sx speed" % ripResult.maxspeed
+        lines.append("  Drive speed throttled: %s" % throttling)
+
         if ripResult.cdparanoiaDefeatsCache is None:
             defeat = "Unknown"
         elif ripResult.cdparanoiaDefeatsCache:
@@ -208,7 +215,7 @@ class WhipperLogger(result.Logger):
         if trackResult.copyspeed:
             lines.append("    Extraction speed: %.1f X" % (
                 trackResult.copyspeed))
-
+                
         # Extraction quality
         if trackResult.quality and trackResult.quality > 0.001:
             lines.append("    Extraction quality: %.2f %%" %

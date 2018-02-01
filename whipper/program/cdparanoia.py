@@ -238,6 +238,8 @@ class ReadTrackTask(task.Task):
     :vartype start_time:
     :ivar overread:
     :vartype overread:
+    :ivar maxspeed: throttle drive to specified read speed
+    :vartype maxspeed:
     :ivar buffer:
     :vartype buffer:
     :ivar errors:
@@ -251,7 +253,7 @@ class ReadTrackTask(task.Task):
 
     _MAXERROR = 100  # number of errors detected by parser
 
-    def __init__(self, path, table, start, stop, overread, offset=0,
+    def __init__(self, path, table, start, stop, maxspeed, overread, offset=0,
                  device=None, action="Reading", what="track"):
         assert type(path) is unicode, "%r is not unicode" % path
 
@@ -259,11 +261,13 @@ class ReadTrackTask(task.Task):
         self._table = table
         self._start = start
         self._stop = stop
-        self._offset = offset
-        self._parser = ProgressParser(start, stop)
-        self._device = device
-        self._start_time = None
+        self._maxspeed = maxspeed
         self._overread = overread
+        self._offset = offset
+        self._device = device
+
+        self._parser = ProgressParser(start, stop)
+        self._start_time = None
 
         self._buffer = ""  # accumulate characters
         self._errors = []
@@ -294,14 +298,19 @@ class ReadTrackTask(task.Task):
                      stopTrack, stopOffset)
 
         bufsize = 1024
+
+        argv = ["cd-paranoia", "--stderr-progress",
+                "--sample-offset=%d" % self._offset, ]
+
+        if self._maxspeed:
+            argv.extend(["--force-read-speed", str(self._maxspeed), ])
+
         if self._overread:
-            argv = ["cd-paranoia", "--stderr-progress",
-                    "--sample-offset=%d" % self._offset, "--force-overread", ]
-        else:
-            argv = ["cd-paranoia", "--stderr-progress",
-                    "--sample-offset=%d" % self._offset, ]
+            argv.extend(["--force-overread", ])
+
         if self._device:
             argv.extend(["--force-cdrom-device", self._device, ])
+
         argv.extend(["%d[%s]-%d[%s]" % (
             startTrack, common.framesToHMSF(startOffset),
             stopTrack, common.framesToHMSF(stopOffset)),
@@ -406,7 +415,7 @@ class ReadTrackTask(task.Task):
 
         self.quality = self._parser.getTrackQuality()
         self.duration = end_time - self._start_time
-        self.speed = (offsetLength / 75.0) / self.duration
+        self.speed = size / (self.duration * common.BYTES_PER_SECOND_CDROM_X1)
 
         self.stop()
         return
@@ -446,6 +455,8 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
     :vartype table: L{table.Table}
     :ivar stop: last frame to rip (inclusive).
     :vartype stop: int
+    :ivar maxspeed: throttle drive to specified read speed
+    :vartype maxspeed:
     :ivar offset: read offset, in samples.
     :vartype offset: int
     :ivar device: the device to rip from.
@@ -467,7 +478,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
     _tmpwavpath = None
     _tmppath = None
 
-    def __init__(self, path, table, start, stop, overread, offset=0,
+    def __init__(self, path, table, start, stop, maxspeed, overread, offset=0,
                  device=None, taglist=None, what="track"):
         task.MultiSeparateTask.__init__(self)
 
@@ -485,10 +496,10 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
 
         self.tasks = []
         self.tasks.append(
-            ReadTrackTask(tmppath, table, start, stop, overread,
+            ReadTrackTask(tmppath, table, start, stop, maxspeed, overread,
                           offset=offset, device=device, what=what))
         self.tasks.append(checksum.CRC32Task(tmppath))
-        t = ReadTrackTask(tmppath, table, start, stop, overread,
+        t = ReadTrackTask(tmppath, table, start, stop, maxspeed, overread,
                           offset=offset, device=device, action="Verifying",
                           what=what)
         self.tasks.append(t)

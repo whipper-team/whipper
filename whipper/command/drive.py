@@ -103,6 +103,16 @@ class List(BaseCommand):
                                  "Run 'whipper offset find'\n")
 
             try:
+                maxspeed = self.config.getMaxReadSpeed(
+                    vendor, model, release)
+                sys.stdout.write("       "
+                                 "Maximum drive speed throttled to: %dx\n"
+                                 % maxspeed)
+            except KeyError:
+                sys.stdout.write("       "
+                                 "No maximum drive speed configured.\n")
+
+            try:
                 defeats = self.config.getDefeatsCache(
                     vendor, model, release)
                 sys.stdout.write(

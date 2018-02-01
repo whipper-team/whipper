@@ -230,12 +230,21 @@ Log files will log the path to tracks relative to this directory.
     def add_arguments(self):
         loggers = result.getLoggers().keys()
         default_offset = None
+        default_maxspeed = None
         info = drive.getDeviceInfo(self.opts.device)
         if info:
             try:
                 default_offset = config.Config().getReadOffset(*info)
                 sys.stdout.write("Using configured read offset %d\n" %
                                  default_offset)
+            except KeyError:
+                pass
+
+            try:
+                default_maxspeed = config.Config().getMaxReadSpeed(*info)
+                sys.stdout.write("Using configured maximum read speed %d\n" %
+                                 default_maxspeed)
+            
             except KeyError:
                 pass
 
@@ -251,6 +260,11 @@ Log files will log the path to tracks relative to this directory.
                                  action="store", dest="offset",
                                  default=default_offset,
                                  help="sample read offset")
+        self.parser.add_argument('-s', '--speed',
+                                 action="store", dest="maxspeed",
+                                 default=default_maxspeed,
+                                 help="Throttle read speed of the drive "
+                                 "(where available)")
         self.parser.add_argument('-x', '--force-overread',
                                  action="store_true", dest="overread",
                                  default=False,
@@ -319,6 +333,7 @@ Log files will log the path to tracks relative to this directory.
     def doCommand(self):
         self.program.setWorkingDirectory(self.options.working_directory)
         self.program.outdir = self.options.output_directory.decode('utf-8')
+        self.program.result.maxspeed = self.options.maxspeed
         self.program.result.offset = int(self.options.offset)
         self.program.result.overread = self.options.overread
         self.program.result.logger = self.options.logger
@@ -405,6 +420,7 @@ Log files will log the path to tracks relative to this directory.
                         logger.debug('ripIfNotRipped: track %d, try %d',
                                      number, tries)
                         self.program.ripTrack(self.runner, trackResult,
+                                              maxspeed=self.options.maxspeed,
                                               offset=int(self.options.offset),
                                               device=self.device,
                                               taglist=self.program.getTagList(
