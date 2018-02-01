@@ -215,7 +215,7 @@ class WhipperLogger(result.Logger):
         if trackResult.copyspeed:
             lines.append("    Extraction speed: %.1f X" % (
                 trackResult.copyspeed))
-                
+
         # Extraction quality
         if trackResult.quality and trackResult.quality > 0.001:
             lines.append("    Extraction quality: %.2f %%" %

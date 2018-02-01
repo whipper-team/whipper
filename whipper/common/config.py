@@ -118,9 +118,9 @@ class Config:
     def getMaxReadSpeed(self, vendor, model, release):
         """Get a maximum read speed for the given drive.
 
-        :param vendor:
-        :param model:
-        :param release:
+        :param vendor:  Drive vendor
+        :param model:   Drive model
+        :param release: Drive release (or firmware)
 
         """
         section = self._findDriveSection(vendor, model, release)
