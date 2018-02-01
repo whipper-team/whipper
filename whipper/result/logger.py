@@ -193,7 +193,7 @@ class WhipperLogger(result.Logger):
             lines.append("    Pre-gap length: %s" % common.framesToMSF(pregap))
 
         # Peak level
-        peak = trackResult.peak
+        peak = trackResult.peak / 32768.0
         lines.append("    Peak level: %.6f" % peak)
 
         # Pre-emphasis status
