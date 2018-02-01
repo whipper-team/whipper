@@ -35,7 +35,8 @@ SAMPLES_PER_FRAME = 588  # a sample is 2 16-bit values, left and right channel
 WORDS_PER_FRAME = SAMPLES_PER_FRAME * 2
 BYTES_PER_FRAME = SAMPLES_PER_FRAME * 4
 
-BYTES_PER_SECOND_CDROM_X1 = 153600 # Data access rate of a single-speed CD-ROM
+BYTES_PER_SECOND_CDROM_X1 = 153600  # Data access rate of a single-speed CD-ROM
+
 
 class EjectError(SystemError):
     """Possibly ejects the drive in command.main.

@@ -244,7 +244,7 @@ Log files will log the path to tracks relative to this directory.
                 default_maxspeed = config.Config().getMaxReadSpeed(*info)
                 sys.stdout.write("Using configured maximum read speed %d\n" %
                                  default_maxspeed)
-            
+
             except KeyError:
                 pass
 
