@@ -1,0 +1,554 @@
+$ radon raw -s -i test whipper/
+
+whipper/__main__.py
+    LOC: 14
+    LLOC: 7
+    SLOC: 7
+    Comments: 3
+    Single comments: 3
+    Multi: 0
+    Blank: 4
+    - Comment Stats
+        (C % L): 21%
+        (C % S): 43%
+        (C + M % L): 21%
+whipper/__init__.py
+    LOC: 14
+    LLOC: 11
+    SLOC: 12
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 2
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+whipper/result/result.py
+    LOC: 158
+    LLOC: 57
+    SLOC: 69
+    Comments: 20
+    Single comments: 21
+    Multi: 35
+    Blank: 33
+    - Comment Stats
+        (C % L): 13%
+        (C % S): 29%
+        (C + M % L): 35%
+whipper/result/logger.py
+    LOC: 256
+    LLOC: 150
+    SLOC: 169
+    Comments: 29
+    Single comments: 29
+    Multi: 23
+    Blank: 35
+    - Comment Stats
+        (C % L): 11%
+        (C % S): 17%
+        (C + M % L): 20%
+whipper/result/__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+whipper/program/utils.py
+    LOC: 42
+    LLOC: 16
+    SLOC: 16
+    Comments: 0
+    Single comments: 0
+    Multi: 14
+    Blank: 12
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 33%
+whipper/program/soxi.py
+    LOC: 60
+    LLOC: 28
+    SLOC: 28
+    Comments: 0
+    Single comments: 0
+    Multi: 16
+    Blank: 16
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 27%
+whipper/program/sox.py
+    LOC: 31
+    LLOC: 17
+    SLOC: 17
+    Comments: 3
+    Single comments: 3
+    Multi: 6
+    Blank: 5
+    - Comment Stats
+        (C % L): 10%
+        (C % S): 18%
+        (C + M % L): 29%
+whipper/program/flac.py
+    LOC: 25
+    LLOC: 9
+    SLOC: 10
+    Comments: 2
+    Single comments: 2
+    Multi: 8
+    Blank: 5
+    - Comment Stats
+        (C % L): 8%
+        (C % S): 20%
+        (C + M % L): 40%
+whipper/program/cdrdao.py
+    LOC: 122
+    LLOC: 52
+    SLOC: 57
+    Comments: 8
+    Single comments: 8
+    Multi: 34
+    Blank: 23
+    - Comment Stats
+        (C % L): 7%
+        (C % S): 14%
+        (C + M % L): 34%
+whipper/program/cdparanoia.py
+    LOC: 636
+    LLOC: 324
+    SLOC: 364
+    Comments: 78
+    Single comments: 66
+    Multi: 89
+    Blank: 117
+    - Comment Stats
+        (C % L): 12%
+        (C % S): 21%
+        (C + M % L): 26%
+whipper/program/arc.py
+    LOC: 58
+    LLOC: 39
+    SLOC: 45
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 13
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+whipper/program/__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+whipper/image/toc.py
+    LOC: 467
+    LLOC: 202
+    SLOC: 253
+    Comments: 70
+    Single comments: 68
+    Multi: 62
+    Blank: 84
+    - Comment Stats
+        (C % L): 15%
+        (C % S): 28%
+        (C + M % L): 28%
+whipper/image/table.py
+    LOC: 892
+    LLOC: 400
+    SLOC: 449
+    Comments: 96
+    Single comments: 93
+    Multi: 175
+    Blank: 175
+    - Comment Stats
+        (C % L): 11%
+        (C % S): 21%
+        (C + M % L): 30%
+whipper/image/image.py
+    LOC: 235
+    LLOC: 118
+    SLOC: 125
+    Comments: 24
+    Single comments: 22
+    Multi: 41
+    Blank: 47
+    - Comment Stats
+        (C % L): 10%
+        (C % S): 19%
+        (C + M % L): 28%
+whipper/image/cue.py
+    LOC: 214
+    LLOC: 91
+    SLOC: 111
+    Comments: 29
+    Single comments: 27
+    Multi: 33
+    Blank: 43
+    - Comment Stats
+        (C % L): 14%
+        (C % S): 26%
+        (C + M % L): 29%
+whipper/image/__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+whipper/extern/asyncsub.py
+    LOC: 176
+    LLOC: 136
+    SLOC: 136
+    Comments: 4
+    Single comments: 3
+    Multi: 0
+    Blank: 37
+    - Comment Stats
+        (C % L): 2%
+        (C % S): 3%
+        (C + M % L): 2%
+whipper/extern/__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+whipper/extern/task/task.py
+    LOC: 608
+    LLOC: 282
+    SLOC: 296
+    Comments: 52
+    Single comments: 54
+    Multi: 122
+    Blank: 136
+    - Comment Stats
+        (C % L): 9%
+        (C % S): 18%
+        (C + M % L): 29%
+whipper/extern/task/__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+whipper/common/task.py
+    LOC: 144
+    LLOC: 79
+    SLOC: 86
+    Comments: 8
+    Single comments: 12
+    Multi: 8
+    Blank: 38
+    - Comment Stats
+        (C % L): 6%
+        (C % S): 9%
+        (C + M % L): 11%
+whipper/common/renamer.py
+    LOC: 214
+    LLOC: 103
+    SLOC: 107
+    Comments: 21
+    Single comments: 25
+    Multi: 29
+    Blank: 53
+    - Comment Stats
+        (C % L): 10%
+        (C % S): 20%
+        (C + M % L): 23%
+whipper/common/program.py
+    LOC: 698
+    LLOC: 363
+    SLOC: 416
+    Comments: 36
+    Single comments: 34
+    Multi: 139
+    Blank: 109
+    - Comment Stats
+        (C % L): 5%
+        (C % S): 9%
+        (C + M % L): 25%
+whipper/common/path.py
+    LOC: 69
+    LLOC: 24
+    SLOC: 26
+    Comments: 20
+    Single comments: 20
+    Multi: 10
+    Blank: 13
+    - Comment Stats
+        (C % L): 29%
+        (C % S): 77%
+        (C + M % L): 43%
+whipper/common/mbngs.py
+    LOC: 349
+    LLOC: 166
+    SLOC: 178
+    Comments: 47
+    Single comments: 47
+    Multi: 54
+    Blank: 70
+    - Comment Stats
+        (C % L): 13%
+        (C % S): 26%
+        (C + M % L): 29%
+whipper/common/encode.py
+    LOC: 91
+    LLOC: 44
+    SLOC: 44
+    Comments: 21
+    Single comments: 21
+    Multi: 0
+    Blank: 26
+    - Comment Stats
+        (C % L): 23%
+        (C % S): 48%
+        (C + M % L): 23%
+whipper/common/drive.py
+    LOC: 71
+    LLOC: 31
+    SLOC: 31
+    Comments: 21
+    Single comments: 21
+    Multi: 0
+    Blank: 19
+    - Comment Stats
+        (C % L): 30%
+        (C % S): 68%
+        (C + M % L): 30%
+whipper/common/directory.py
+    LOC: 51
+    LLOC: 21
+    SLOC: 25
+    Comments: 17
+    Single comments: 17
+    Multi: 0
+    Blank: 9
+    - Comment Stats
+        (C % L): 33%
+        (C % S): 68%
+        (C + M % L): 33%
+whipper/common/config.py
+    LOC: 180
+    LLOC: 92
+    SLOC: 99
+    Comments: 21
+    Single comments: 21
+    Multi: 19
+    Blank: 41
+    - Comment Stats
+        (C % L): 12%
+        (C % S): 21%
+        (C + M % L): 22%
+whipper/common/common.py
+    LOC: 308
+    LLOC: 136
+    SLOC: 147
+    Comments: 33
+    Single comments: 33
+    Multi: 57
+    Blank: 71
+    - Comment Stats
+        (C % L): 11%
+        (C % S): 22%
+        (C + M % L): 29%
+whipper/common/checksum.py
+    LOC: 64
+    LLOC: 28
+    SLOC: 28
+    Comments: 21
+    Single comments: 21
+    Multi: 0
+    Blank: 15
+    - Comment Stats
+        (C % L): 33%
+        (C % S): 75%
+        (C + M % L): 33%
+whipper/common/cache.py
+    LOC: 237
+    LLOC: 108
+    SLOC: 113
+    Comments: 32
+    Single comments: 32
+    Multi: 38
+    Blank: 54
+    - Comment Stats
+        (C % L): 14%
+        (C % S): 28%
+        (C + M % L): 30%
+whipper/common/accurip.py
+    LOC: 303
+    LLOC: 146
+    SLOC: 178
+    Comments: 24
+    Single comments: 24
+    Multi: 50
+    Blank: 51
+    - Comment Stats
+        (C % L): 8%
+        (C % S): 13%
+        (C + M % L): 24%
+whipper/common/__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+whipper/command/offset.py
+    LOC: 231
+    LLOC: 116
+    SLOC: 161
+    Comments: 28
+    Single comments: 28
+    Multi: 0
+    Blank: 42
+    - Comment Stats
+        (C % L): 12%
+        (C % S): 17%
+        (C + M % L): 12%
+whipper/command/main.py
+    LOC: 113
+    LLOC: 68
+    SLOC: 92
+    Comments: 7
+    Single comments: 6
+    Multi: 0
+    Blank: 15
+    - Comment Stats
+        (C % L): 6%
+        (C % S): 8%
+        (C + M % L): 6%
+whipper/command/image.py
+    LOC: 154
+    LLOC: 79
+    SLOC: 109
+    Comments: 20
+    Single comments: 19
+    Multi: 0
+    Blank: 26
+    - Comment Stats
+        (C % L): 13%
+        (C % S): 18%
+        (C + M % L): 13%
+whipper/command/drive.py
+    LOC: 125
+    LLOC: 64
+    SLOC: 83
+    Comments: 20
+    Single comments: 18
+    Multi: 0
+    Blank: 24
+    - Comment Stats
+        (C % L): 16%
+        (C % S): 24%
+        (C + M % L): 16%
+whipper/command/debug.py
+    LOC: 300
+    LLOC: 170
+    SLOC: 202
+    Comments: 23
+    Single comments: 22
+    Multi: 0
+    Blank: 76
+    - Comment Stats
+        (C % L): 8%
+        (C % S): 11%
+        (C + M % L): 8%
+whipper/command/cd.py
+    LOC: 508
+    LLOC: 229
+    SLOC: 390
+    Comments: 42
+    Single comments: 42
+    Multi: 0
+    Blank: 76
+    - Comment Stats
+        (C % L): 8%
+        (C % S): 11%
+        (C + M % L): 8%
+whipper/command/basecommand.py
+    LOC: 130
+    LLOC: 60
+    SLOC: 73
+    Comments: 18
+    Single comments: 16
+    Multi: 14
+    Blank: 27
+    - Comment Stats
+        (C % L): 14%
+        (C % S): 25%
+        (C + M % L): 25%
+whipper/command/accurip.py
+    LOC: 98
+    LLOC: 46
+    SLOC: 58
+    Comments: 19
+    Single comments: 19
+    Multi: 0
+    Blank: 21
+    - Comment Stats
+        (C % L): 19%
+        (C % S): 33%
+        (C + M % L): 19%
+whipper/command/__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+** Total **
+    LOC: 8446
+    LLOC: 4112
+    SLOC: 4810
+    Comments: 917
+    Single comments: 897
+    Multi: 1076
+    Blank: 1663
+    - Comment Stats
+        (C % L): 11%
+        (C % S): 19%
+        (C + M % L): 24%

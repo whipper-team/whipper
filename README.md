@@ -2,7 +2,7 @@
 
 [![license](https://img.shields.io/github/license/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/blob/master/LICENSE) [![Build Status](https://travis-ci.org/JoeLametta/whipper.svg?branch=master)](https://travis-ci.org/JoeLametta/whipper) [![GitHub (pre-)release](https://img.shields.io/github/release/joelametta/whipper/all.svg)](https://github.com/JoeLametta/whipper/releases/latest) [![IRC](https://img.shields.io/badge/irc-%23whipper%40freenode-brightgreen.svg)](https://webchat.freenode.net/?channels=%23whipper) [![GitHub Stars](https://img.shields.io/github/stars/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/stargazers) [![GitHub Issues](https://img.shields.io/github/issues/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/issues) [![GitHub contributors](https://img.shields.io/github/contributors/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/graphs/contributors)
 
-Whipper is a Python 2.7 CD-DA ripper, fork of the morituri project (_CDDA ripper for *nix systems aiming for accuracy over speed_). It improves morituri which development seems to have halted merging old ignored pull requests, improving it with bugfixes and new features.
+Whipper is a Python 2.7 CD-DA ripper, fork of the morituri project (_CDDA ripper for *nix systems aiming for accuracy over speed_). It improves [morituri](https://github.com/thomasvs/morituri) which development seems to have halted merging old ignored pull requests, improving it with bugfixes and new features.
 
 Whipper is developed and tested _only_ on Linux distributions but _may_ work fine on other *nix OSes too.
 
@@ -39,6 +39,7 @@ https://web.archive.org/web/20160528213242/https://thomas.apestaart.org/thomas/t
 ## Features
 
 - Detects correct read offset (in samples)
+- Detects whether ripped media is a CD-R
 - Has ability to defeat cache of drives
 - Performs Test & Copy rips
 - Verifies rip accuracy using the [AccurateRip database](http://www.accuraterip.com/)
@@ -73,9 +74,8 @@ Whipper relies on the following packages in order to run correctly and provide a
 - [python-mutagen](https://pypi.python.org/pypi/mutagen), for tagging support
 - [python-setuptools](https://pypi.python.org/pypi/setuptools), for installation, plugins support
 - [python-cddb](http://cddb-py.sourceforge.net/), for showing but not using metadata if disc not available in the MusicBrainz DB
-- [pycdio](https://pypi.python.org/pypi/pycdio/) (to avoid bugs please use `pycdio` **0.20** & `libcdio` >= **0.90** or, with previous `libcdio` versions, `pycdio` **0.17**), for drive identification
-  - Required for drive offset and caching behavior to be stored in the configuration file
-- [requests](https://pypi.python.org/pypi/requests) for retrieving AccurateRip database entries
+- [python-requests](https://pypi.python.org/pypi/requests), for retrieving AccurateRip database entries
+- [pycdio](https://pypi.python.org/pypi/pycdio/) (to avoid bugs please use `pycdio` **0.20** & `libcdio` >= **0.90** or, with previous `libcdio` versions, `pycdio` **0.17**), for drive identification (required for drive offset and caching behavior to be stored in the configuration file)
 - [libsndfile](http://www.mega-nerd.com/libsndfile/), for reading wav files
 - [flac](https://xiph.org/flac/), for reading flac files
 - [sox](http://sox.sourceforge.net/), for track peak detection
@@ -85,7 +85,7 @@ Whipper relies on the following packages in order to run correctly and provide a
 Change to a directory where you want to put whipper source code (for example, `$HOME/dev/ext` or `$HOME/prefix/src`)
 
 ```bash
-git clone -b master --single-branch https://github.com/JoeLametta/whipper.git
+git clone https://github.com/JoeLametta/whipper.git
 cd whipper
 ```
 
@@ -175,7 +175,7 @@ The possible sections are:
   - `read_offset`: the read offset of the drive
 
 - Rip command section: `[rip.COMMAND.SUBCOMMAND]`. Can be used to change the command options default values.
-  **Please note that this feature is currently broken (being this way since [PR #122](https://github.com/JoeLametta/whipper/pull/92) / whipper v0.4.1).**
+  **Please note that this feature is currently broken (being this way since [PR #122](https://github.com/JoeLametta/whipper/pull/92) / whipper [v0.4.1](https://github.com/JoeLametta/whipper/releases/tag/v0.4.1)).**
 
 Example section to configure `whipper cd rip` defaults:
 
@@ -192,7 +192,11 @@ Note: to get a literal `%` character it must be doubled.
 
 ## Backward incompatible changes
 
-- Profiles (for encoding) aren't supported anymore since ([PR #121](https://github.com/JoeLametta/whipper/pull/121) / whipper v0.5.0): now whipper encodes to FLAC
+- Rely on `cd-paranoia` (`libcdio-cdparanoia`) instead of `cdparanoia` (Xiph): changed dependency ([PR #213](https://github.com/JoeLametta/whipper/pull/213) / whipper [v0.6.0](https://github.com/JoeLametta/whipper/releases/tag/v0.6.0))
+- Introduced AccurateRip v2 support: added new `requests` python dependency ([PR #187](https://github.com/JoeLametta/whipper/pull/187) / whipper [v0.6.0](https://github.com/JoeLametta/whipper/releases/tag/v0.6.0))
+- Added CD-R media type disc detection: CD-R rips are now prevented by default ([PR #154](https://github.com/JoeLametta/whipper/pull/154) / whipper [v0.6.0](https://github.com/JoeLametta/whipper/releases/tag/v0.6.0))
+- Changed all `morituri` references to `whipper`: renamed python module and logger too ([PR #109](https://github.com/JoeLametta/whipper/pull/109) / whipper [v0.6.0](https://github.com/JoeLametta/whipper/releases/tag/v0.6.0))
+- Profiles (for encoding) aren't supported anymore since ([PR #121](https://github.com/JoeLametta/whipper/pull/121) / whipper [v0.5.0](https://github.com/JoeLametta/whipper/releases/tag/v0.5.0)): now whipper encodes to FLAC
 - The image retag feature has been knowingly broken since ([PR #130](https://github.com/JoeLametta/whipper/pull/130))
 - Structural changes broke compatibility with existing logger plugins ([PR #94](https://github.com/JoeLametta/whipper/pull/94))
 - Dropped external git submodules ([PR #31](https://github.com/JoeLametta/whipper/pull/31), [PR #92](https://github.com/JoeLametta/whipper/pull/92))
@@ -257,7 +261,7 @@ Licensed under the [GNU GPLv3 license](http://www.gnu.org/licenses/gpl-3.0).
 
 ```Text
 Copyright (C) 2009 Thomas Vander Stichele
-Copyright (C) 2016, 2017 JoeLametta
+Copyright (C) 2016, 2017, 2018 JoeLametta
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

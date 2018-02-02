@@ -2,7 +2,65 @@
 
 ## [Unreleased](https://github.com/JoeLametta/whipper/tree/HEAD)
 
-[Full Changelog](https://github.com/JoeLametta/whipper/compare/v0.5.1...HEAD)
+[Full Changelog](https://github.com/JoeLametta/whipper/compare/v0.6.0...HEAD)
+
+## [v0.6.0](https://github.com/JoeLametta/whipper/tree/v0.6.0) (2018-02-02)
+
+**Implemented enhancements:**
+
+- Error: NotFoundException message displayed while ripping an unknown disc [\#198](https://github.com/JoeLametta/whipper/issues/198)
+- rename milestone 101010 to backlog [\#190](https://github.com/JoeLametta/whipper/issues/190)
+- Use 'Artist as credited' in filename instead of 'Artist in MusicBrainz' \(e.g. to solve \[unknown\]\) [\#155](https://github.com/JoeLametta/whipper/issues/155)
+- Declare supported Python version [\#152](https://github.com/JoeLametta/whipper/issues/152)
+- Update doc/release or remove it [\#149](https://github.com/JoeLametta/whipper/issues/149)
+- Test HTOA peak value against 0 \(integer equality\) [\#143](https://github.com/JoeLametta/whipper/issues/143)
+- Identify media type in log file \(ie CD vs CD-R\) [\#137](https://github.com/JoeLametta/whipper/issues/137)
+- Rename the Python module [\#100](https://github.com/JoeLametta/whipper/issues/100)
+- libcdio-paranoia instead of cdparanoia [\#87](https://github.com/JoeLametta/whipper/issues/87)
+- Support both AccurateRip V1 and AccurateRip V2 at the same time [\#18](https://github.com/JoeLametta/whipper/issues/18)
+- Test HTOA peak value against 0 \(integer comparison\) [\#224](https://github.com/JoeLametta/whipper/pull/224) ([JoeLametta](https://github.com/JoeLametta))
+
+**Fixed bugs:**
+
+- Catch DNS error [\#206](https://github.com/JoeLametta/whipper/issues/206)
+- whipper doesn't name files .flac, which leads to it not being able to find ripped files [\#194](https://github.com/JoeLametta/whipper/issues/194)
+- Issues with finding offset [\#182](https://github.com/JoeLametta/whipper/issues/182)
+- failing unittests in systemd-nspawn container [\#157](https://github.com/JoeLametta/whipper/issues/157)
+- Regression: Unable to resume a failed rip [\#136](https://github.com/JoeLametta/whipper/issues/136)
+- "Catalog Number" incorrectly appended to "artist" instead of the Album name. [\#127](https://github.com/JoeLametta/whipper/issues/127)
+- Track "can't be ripped" but EAC can :\) [\#116](https://github.com/JoeLametta/whipper/issues/116)
+- ERROR: stopping task which is already stopped [\#59](https://github.com/JoeLametta/whipper/issues/59)
+- can't find accuraterip-checksum binary in morituri-uninstalled mode [\#47](https://github.com/JoeLametta/whipper/issues/47)
+
+**Closed issues:**
+
+- using your own MusicBrainz server [\#172](https://github.com/JoeLametta/whipper/issues/172)
+- cdda2wav from cdrtools instead of cdparanoia [\#38](https://github.com/JoeLametta/whipper/issues/38)
+
+**Merged pull requests:**
+
+- Fix appearance of template description text. [\#223](https://github.com/JoeLametta/whipper/pull/223) ([calumchisholm](https://github.com/calumchisholm))
+- Run whipper without installation [\#222](https://github.com/JoeLametta/whipper/pull/222) ([vmx](https://github.com/vmx))
+- Remove doc/release [\#218](https://github.com/JoeLametta/whipper/pull/218) ([MerlijnWajer](https://github.com/MerlijnWajer))
+- Fix resuming previous rips [\#217](https://github.com/JoeLametta/whipper/pull/217) ([MerlijnWajer](https://github.com/MerlijnWajer))
+- Switch to libcdio-cdparanoia \(from cdparanoia\) [\#213](https://github.com/JoeLametta/whipper/pull/213) ([MerlijnWajer](https://github.com/MerlijnWajer))
+- Convert docstrings to reStructuredText [\#211](https://github.com/JoeLametta/whipper/pull/211) ([JoeLametta](https://github.com/JoeLametta))
+- Enable connecting to a custom MusicBrainz server [\#210](https://github.com/JoeLametta/whipper/pull/210) ([naiveaiguy](https://github.com/naiveaiguy))
+- Fix recently introduced Python 3 incompatibility [\#199](https://github.com/JoeLametta/whipper/pull/199) ([LingMan](https://github.com/LingMan))
+- restore .flac extension [\#195](https://github.com/JoeLametta/whipper/pull/195) ([RecursiveForest](https://github.com/RecursiveForest))
+- Misc fixes [\#188](https://github.com/JoeLametta/whipper/pull/188) ([ubitux](https://github.com/ubitux))
+- AccurateRip V2 support [\#187](https://github.com/JoeLametta/whipper/pull/187) ([RecursiveForest](https://github.com/RecursiveForest))
+- Solve all flake8 warnings [\#163](https://github.com/JoeLametta/whipper/pull/163) ([JoeLametta](https://github.com/JoeLametta))
+- Minor touchups [\#161](https://github.com/JoeLametta/whipper/pull/161) ([Freso](https://github.com/Freso))
+- Stop allowing flake8 to fail in Travis CI [\#160](https://github.com/JoeLametta/whipper/pull/160) ([Freso](https://github.com/Freso))
+- Fix division by zero [\#159](https://github.com/JoeLametta/whipper/pull/159) ([sqozz](https://github.com/sqozz))
+- Fix artist name [\#156](https://github.com/JoeLametta/whipper/pull/156) ([gorgobacka](https://github.com/gorgobacka))
+- Detect and handle CD-R discs [\#154](https://github.com/JoeLametta/whipper/pull/154) ([gorgobacka](https://github.com/gorgobacka))
+- Disambiguate on release [\#153](https://github.com/JoeLametta/whipper/pull/153) ([Freso](https://github.com/Freso))
+- Add flake8 testing to CI [\#151](https://github.com/JoeLametta/whipper/pull/151) ([Freso](https://github.com/Freso))
+- Clean up files in misc/ [\#150](https://github.com/JoeLametta/whipper/pull/150) ([Freso](https://github.com/Freso))
+- Update .gitignore [\#148](https://github.com/JoeLametta/whipper/pull/148) ([Freso](https://github.com/Freso))
+- Fix references to morituri. [\#109](https://github.com/JoeLametta/whipper/pull/109) ([Freso](https://github.com/Freso))
 
 ## [v0.5.1](https://github.com/JoeLametta/whipper/tree/v0.5.1) (2017-04-24)
 
@@ -168,3 +226,4 @@
 
 
 \* *This Change Log was automatically generated by [github_changelog_generator](https://github.com/skywinder/Github-Changelog-Generator)* and hand edited by [JoeLametta](https://github.com/JoeLametta).
+
