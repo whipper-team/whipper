@@ -1,5 +1,8 @@
 import os
+import re
+
 from subprocess import Popen, PIPE
+from whipper.common import common
 
 import logging
 logger = logging.getLogger(__name__)
@@ -29,3 +32,23 @@ def peak_level(track_path):
     min_level = int(err.splitlines()[2].split()[2])
     max_level = int(err.splitlines()[3].split()[2])
     return max(abs(min_level), abs(max_level))
+
+
+# Sample version string:
+# sox:      SoX v14.4.2
+_VERSION_RE = re.compile(
+    "^sox:\s*SoX v(?P<major>.+)\.(?P<minor>.+)\.(?P<micro>.+)")
+
+
+def getVersion():
+    """Detect sox's version.
+
+    :returns: Formatted sox version string
+    :rtype: bool
+    """
+    getter = common.VersionGetter('sox',
+                                  [SOX, "--version"],
+                                  _VERSION_RE,
+                                  "%(major)s.%(minor)s.%(micro)s",
+                                  stderr=False)
+    return getter.get()

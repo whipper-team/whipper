@@ -2,6 +2,7 @@
 # vi:si:et:sw=4:sts=4:ts=4
 
 # from http://code.activestate.com/recipes/440554/
+#      https://github.com/ActiveState/code/tree/master/recipes/Python/440554_Module_allow_Asynchronous_subprocess_use
 
 import os
 import subprocess

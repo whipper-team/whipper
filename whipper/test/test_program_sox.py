@@ -12,3 +12,12 @@ class PeakLevelTestCase(common.TestCase):
 
     def testParse(self):
         self.assertEquals(26215, sox.peak_level(self.path))
+
+
+class VersionTestCase(common.TestCase):
+
+    def testGetVersion(self):
+        v = sox.getVersion()
+        self.failUnless(v)
+        # make sure it starts with a digit
+        self.failUnless(int(v[0]))

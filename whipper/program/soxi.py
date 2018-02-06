@@ -1,4 +1,5 @@
 import os
+import re
 
 from whipper.common import common
 from whipper.common import task as ctask
@@ -58,3 +59,24 @@ class AudioLengthTask(ctask.PopenTask):
         if self._error:
             logger.warning("soxi reported on stderr: %s", "".join(self._error))
         self.length = int("".join(self._output))
+
+
+# Sample version string:
+# sox:      SoX v14.4.2
+_VERSION_RE = re.compile(
+    "^soxi:\s*SoX v(?P<major>.+)\.(?P<minor>.+)\.(?P<micro>.+)")
+
+
+def getVersion():
+    """Detect soxi's version.
+       Soxi doesn't have a --version command - we call it with no parameters.
+
+    :returns: Formatted soxi version string
+    :rtype: bool
+    """
+    getter = common.VersionGetter('soxi',
+                                  [SOXI],
+                                  _VERSION_RE,
+                                  "%(major)s.%(minor)s.%(micro)s",
+                                  stderr=False)
+    return getter.get()

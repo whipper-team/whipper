@@ -21,11 +21,11 @@
 import binascii
 import wave
 import tempfile
-import subprocess
 import os
 
 
 from whipper.extern.task import task as etask
+from whipper.program import flac
 
 import logging
 logger = logging.getLogger(__name__)
@@ -47,10 +47,10 @@ class CRC32Task(etask.Task):
 
     def _crc32(self):
         if not self.is_wave:
-            fd, tmpf = tempfile.mkstemp()
+            _, tmpf = tempfile.mkstemp()
 
             try:
-                subprocess.check_call(['flac', '-d', self.path, '-fo', tmpf])
+                flac.decode(self.path, tmpf)
 
                 w = wave.open(tmpf)
             finally:

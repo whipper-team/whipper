@@ -66,7 +66,7 @@ class ErrorTestCase(common.TestCase):
 class VersionTestCase(common.TestCase):
 
     def testGetVersion(self):
-        v = cdparanoia.getCdParanoiaVersion()
+        v = cdparanoia.getVersion()
         self.failUnless(v)
 
 

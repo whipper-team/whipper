@@ -262,7 +262,7 @@ class CDParanoia(BaseCommand):
 
     def do(self):
         from whipper.program import cdparanoia
-        version = cdparanoia.getCdParanoiaVersion()
+        version = cdparanoia.getVersion()
         sys.stdout.write("cdparanoia version: %s\n" % version)
 
 
@@ -272,8 +272,38 @@ class CDRDAO(BaseCommand):
 
     def do(self):
         from whipper.program import cdrdao
-        version = cdrdao.getCDRDAOVersion()
+        version = cdrdao.getVersion()
         sys.stdout.write("cdrdao version: %s\n" % version)
+
+
+class Flac(BaseCommand):
+    summary = "show flac version"
+    description = summary
+
+    def do(self):
+        from whipper.program import flac
+        version = flac.getVersion()
+        sys.stdout.write("flac version: %s\n" % version)
+
+
+class Sox(BaseCommand):
+    summary = "show sox version"
+    description = summary
+
+    def do(self):
+        from whipper.program import sox
+        version = sox.getVersion()
+        sys.stdout.write("sox version: %s\n" % version)
+
+
+class Soxi(BaseCommand):
+    summary = "show soxi version"
+    description = summary
+
+    def do(self):
+        from whipper.program import soxi
+        version = soxi.getVersion()
+        sys.stdout.write("soxi version: %s\n" % version)
 
 
 class Version(BaseCommand):
@@ -283,6 +313,9 @@ class Version(BaseCommand):
     subcommands = {
         'cdparanoia': CDParanoia,
         'cdrdao': CDRDAO,
+        'flac': Flac,
+        'sox': Sox,
+        'soxi': Soxi,
     }
 
 

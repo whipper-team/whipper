@@ -35,6 +35,8 @@ from whipper.extern.task import task
 import logging
 logger = logging.getLogger(__name__)
 
+CDPARANOIA = "cd-paranoia"
+
 
 class FileSizeError(Exception):
     """The given path does not have the expected size."""
@@ -295,10 +297,10 @@ class ReadTrackTask(task.Task):
 
         bufsize = 1024
         if self._overread:
-            argv = ["cd-paranoia", "--stderr-progress",
+            argv = [CDPARANOIA, "--stderr-progress",
                     "--sample-offset=%d" % self._offset, "--force-overread", ]
         else:
-            argv = ["cd-paranoia", "--stderr-progress",
+            argv = [CDPARANOIA, "--stderr-progress",
                     "--sample-offset=%d" % self._offset, ]
         if self._device:
             argv.extend(["--force-cdrom-device", self._device, ])
@@ -574,15 +576,23 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         task.MultiSeparateTask.stop(self)
 
 
+# Sample version string:
+# cdparanoia III release 10.2 (September 11, 2008)
 _VERSION_RE = re.compile(
     "^cdparanoia (?P<version>.+) release (?P<release>.+)")
 
 
-def getCdParanoiaVersion():
+def getVersion():
+    """Detect cd-paranoia's version.
+
+    :returns: Formatted cd-paranoia version string
+    :rtype: string
+    """
     getter = common.VersionGetter('cd-paranoia',
-                                  ["cd-paranoia", "-V"],
+                                  [CDPARANOIA, "-V"],
                                   _VERSION_RE,
-                                  "%(version)s %(release)s")
+                                  "%(version)s %(release)s",
+                                  stderr=True)
 
     return getter.get()
 
@@ -605,7 +615,7 @@ class AnalyzeTask(ctask.PopenTask):
     def __init__(self, device=None):
         # cdparanoia -A *always* writes cdparanoia.log
         self.cwd = tempfile.mkdtemp(suffix='.whipper.cache')
-        self.command = ['cd-paranoia', '-A']
+        self.command = [CDPARANOIA, '-A']
         if device:
             self.command += ['-d', device]
 

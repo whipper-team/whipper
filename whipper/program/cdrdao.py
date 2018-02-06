@@ -3,6 +3,7 @@ import re
 import tempfile
 from subprocess import Popen, PIPE
 
+from whipper.common import common
 from whipper.common.common import EjectError
 from whipper.image.toc import TocFile
 
@@ -70,25 +71,26 @@ def DetectCdr(device):
         return True
 
 
-def version():
-    """Detect cdrdao's version.
+# Sample version string:
+# Cdrdao version 1.2.3 - (C) Andreas Mueller <andreas@daneb.de>
+_VERSION_RE = re.compile(
+    r'^Cdrdao version (?P<major>.+)\.(?P<minor>.+)\.(?P<micro>.+) - \(C\)')
 
-    :returns:
-    :rtype:
+
+def getVersion():
+    """Detect cdrdao's version.
+      Cdrdao doesn't have a --version command - we call it with no parameters.
+
+    :returns: Formatted cdrdao version string
+    :rtype: string
     """
-    cdrdao = Popen(CDRDAO, stderr=PIPE)
-    out, err = cdrdao.communicate()
-    if cdrdao.returncode != 1:
-        logger.warning("cdrdao version detection failed: "
-                       "return code is " + str(cdrdao.returncode))
-        return None
-    m = re.compile(r'^Cdrdao version (?P<version>.*) - \(C\)').search(
-        err.decode('utf-8'))
-    if not m:
-        logger.warning("cdrdao version detection failed: "
-                       "could not find version")
-        return None
-    return m.group('version')
+    getter = common.VersionGetter('cdrdao',
+                                  [CDRDAO],
+                                  _VERSION_RE,
+                                  "%(major)s.%(minor)s.%(micro)s",
+                                  stderr=True)
+
+    return getter.get()
 
 
 def ReadTOCTask(device):
@@ -119,4 +121,4 @@ def getCDRDAOVersion():
     :returns:
     :rtype:
     """
-    return version()
+    return getVersion()

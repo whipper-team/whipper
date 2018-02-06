@@ -279,13 +279,16 @@ class VersionGetter(object):
     :ivar expander: the expansion string for the version using the
                      regexp group dict
     :vartype expander:
+    :ivar stderr: read result from standard error (otherwise stdout)
+    :vartype stderr: True if reading from stderr. False for stdout.
     """
 
-    def __init__(self, dependency, args, regexp, expander):
+    def __init__(self, dependency, args, regexp, expander, stderr=True):
         self._dep = dependency
         self._args = args
         self._regexp = regexp
         self._expander = expander
+        self._stderr = stderr
 
     def get(self):
         version = "(Unknown)"
@@ -295,7 +298,8 @@ class VersionGetter(object):
                                stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE, close_fds=True)
             p.wait()
-            output = asyncsub.recv_some(p, e=0, stderr=1)
+            output = asyncsub.recv_some(p, e=0,
+                                        stderr=(1 if self._stderr else 0))
             vre = self._regexp.search(output)
             if vre:
                 version = self._expander % vre.groupdict()

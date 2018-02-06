@@ -5,6 +5,7 @@ import tempfile
 
 from whipper.common import common
 from whipper.extern.task import task
+from whipper.program import soxi
 from whipper.program.soxi import AudioLengthTask
 from whipper.test import common as tcommon
 
@@ -66,3 +67,12 @@ class AbsentFileAudioLengthPathTestCase(AudioLengthPathTestCase):
                           t, verbose=False)
 
         os.rmdir(tempdir)
+
+
+class VersionTestCase(tcommon.TestCase):
+
+    def testGetVersion(self):
+        v = soxi.getVersion()
+        self.failUnless(v)
+        # make sure it starts with a digit
+        self.failUnless(int(v[0]))

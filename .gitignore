@@ -8,6 +8,9 @@ REVISION
 .project
 .pydevproject
 
+# For Python development using Visual Studio Code
+.vscode/
+
 # setup.py install generated files
 build/
 dist/

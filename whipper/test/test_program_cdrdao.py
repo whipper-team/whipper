@@ -8,7 +8,14 @@ from whipper.test import common
 
 
 class VersionTestCase(common.TestCase):
+
     def testGetVersion(self):
+        v = cdrdao.getVersion()
+        self.failUnless(v)
+        # make sure it starts with a digit
+        self.failUnless(int(v[0]))
+
+    def testGetVersionLegacy(self):
         v = cdrdao.getCDRDAOVersion()
         self.failUnless(v)
         # make sure it starts with a digit
