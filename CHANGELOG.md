@@ -6,6 +6,8 @@
 
 ## [v0.6.0](https://github.com/JoeLametta/whipper/tree/v0.6.0) (2018-02-02)
 
+[Full Changelog](https://github.com/JoeLametta/whipper/compare/v0.5.1...v0.6.0)
+
 **Implemented enhancements:**
 
 - Error: NotFoundException message displayed while ripping an unknown disc [\#198](https://github.com/JoeLametta/whipper/issues/198)

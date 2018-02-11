@@ -59,9 +59,15 @@ For detailed information, please check the commit history.
 
 ## Installation
 
-With the exception of an [Arch Linux package](https://www.archlinux.org/packages/community/any/whipper/) and a [Copr repository for Fedora](https://copr.fedorainfracloud.org/coprs/mruszczyk/whipper/), whipper isn't currently available in a prepackaged form so, in order to use it, it must be built from its source code.
+Whipper still isn't widely available as an official package in many Linux distributions so, in order to use it, it may be necessary to build it from its source code. If you are building from a source tarball or checkout, you can choose to use whipper installed or uninstalled _but first install all the required dependencies_.
 
-If you are building from a source tarball or checkout, you can choose to use whipper installed or uninstalled _but first install all the required dependencies_.
+This is a noncomprehensive summary which shows whipper's packaging status (unofficial repositories are probably not included):
+
+[![Packaging status](https://repology.org/badge/vertical-allrepos/whipper.svg)](https://repology.org/metapackage/whipper)
+
+User mruszczyk is also providing an unofficial [Copr repository](https://copr.fedorainfracloud.org/coprs/mruszczyk/whipper/) for Fedora / CentOS.
+
+In case you decide to install whipper using an unofficial repository just keep in mind it is your responsibility to verify that the provided content is safe to use.
 
 ### Required dependencies
 
@@ -315,7 +321,6 @@ Thanks to:
 You can find us and talk about the project on IRC: [freenode](https://webchat.freenode.net/?channels=%23whipper), **#whipper** channel.
 
 - [Redacted thread (official)](https://redacted.ch/forums.php?action=viewthread&threadid=150)
-- [Arch Linux package](https://www.archlinux.org/packages/community/any/whipper/)
-- [Arch Linux whipper-git AUR package](https://aur.archlinux.org/packages/whipper-git/)
+- [Repology: versions for whipper](https://repology.org/metapackage/whipper/versions)
 - [Fedora Copr repository for whipper](https://copr.fedorainfracloud.org/coprs/mruszczyk/whipper/)
-- [Unattended ripping using whipper (script by Thomas McWork)](https://github.com/thomas-mc-work/most-possible-unattended-rip)
+- [Unattended ripping using whipper (by Thomas McWork)](https://github.com/thomas-mc-work/most-possible-unattended-rip)
