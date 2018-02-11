@@ -14,9 +14,3 @@ class VersionTestCase(common.TestCase):
         self.failUnless(v)
         # make sure it starts with a digit
         self.failUnless(int(v[0]))
-
-    def testGetVersionLegacy(self):
-        v = cdrdao.getCDRDAOVersion()
-        self.failUnless(v)
-        # make sure it starts with a digit
-        self.failUnless(int(v[0]))

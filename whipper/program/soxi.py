@@ -72,7 +72,7 @@ def getVersion():
        Soxi doesn't have a --version command - we call it with no parameters.
 
     :returns: Formatted soxi version string
-    :rtype: bool
+    :rtype: string
     """
     getter = common.VersionGetter('soxi',
                                   [SOXI],

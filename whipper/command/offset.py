@@ -87,7 +87,8 @@ CD in the AccurateRip database."""
         utils.unmount_device(device)
 
         # first get the Table Of Contents of the CD
-        t = cdrdao.ReadTOCTask(device)
+        t = cdrdao.read_toc(device, True)
+
         table = t.table
 
         logger.debug("CDDB disc id: %r", table.getCDDBDiscId())

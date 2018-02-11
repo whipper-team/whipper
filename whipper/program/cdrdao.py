@@ -93,32 +93,18 @@ def getVersion():
     return getter.get()
 
 
-def ReadTOCTask(device):
-    """Stopgap morituri-insanity compatibility layer.
+def getVersionWarnings():
+    """Display any warnings based upon the detected cdrdao version number.
 
-    :param device: optical disk drive.
-    :type device:
-    :returns:
-    :rtype: TocFile
+    :returns: Warning text specific to the detected CDRDAO version.
+    :rtype: string
     """
-    return read_toc(device, fast_toc=True)
 
-
-def ReadTableTask(device):
-    """Stopgap morituri-insanity compatibility layer.
-
-    :param device: optical disk drive.
-    :type device:
-    :returns:
-    :rtype: TocFile
-    """
-    return read_toc(device)
-
-
-def getCDRDAOVersion():
-    """Stopgap morituri-insanity compatibility layer.
-
-    :returns:
-    :rtype:
-    """
-    return getVersion()
+    from pkg_resources import parse_version as V
+    version = getVersion()
+    if V(version) < V('1.2.3rc2'):
+        return ('Warning: cdrdao older than 1.2.3 has a '
+                'pre-gap length bug.\n'
+                'See http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=102171\n')  # noqa: E501
+    else:
+        return ''

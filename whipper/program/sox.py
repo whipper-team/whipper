@@ -44,7 +44,7 @@ def getVersion():
     """Detect sox's version.
 
     :returns: Formatted sox version string
-    :rtype: bool
+    :rtype: string
     """
     getter = common.VersionGetter('sox',
                                   [SOX, "--version"],
