@@ -191,7 +191,6 @@ unknown = True
 output_directory = ~/My Music
 track_template = new/%%A/%%y - %%d/%%t - %%n
 disc_template = %(track_template)s
-profile = flac
 ```
 
 Note: to get a literal `%` character it must be doubled.
