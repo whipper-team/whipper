@@ -207,6 +207,11 @@ class Info(_CD):
     def add_arguments(self):
         _CD.add_arguments(self.parser)
 
+    def handle_arguments(self):
+        sys.stdout.write("Ignoring read offset for reading CD info.\n")
+        self.options.offset = 0
+        _CD.handle_arguments(self)
+
 
 class Rip(_CD):
     summary = "rip CD"
