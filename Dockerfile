@@ -1,13 +1,12 @@
 FROM debian:stretch
 
-RUN apt-get update
-RUN apt-get install -y cdparanoia cdrdao python-gobject-2 python-musicbrainzngs python-mutagen python-setuptools \
+RUN apt-get update \
+  && apt-get install -y cdparanoia cdrdao python-gobject-2 python-musicbrainzngs python-mutagen python-setuptools \
   python-cddb python-requests libsndfile1-dev flac sox \
   libiso9660-dev python-pip swig make pkgconf \
-  libcdio-dev libiso9660-dev libcdio-dev eject locales
-
-RUN pip install --upgrade pip
-RUN pip install pycdio==0.21
+  libcdio-dev libiso9660-dev libcdio-dev eject locales \
+  && pip install --upgrade pip \
+  && pip install pycdio==0.21
 
 # install whipper
 RUN mkdir /whipper
@@ -22,10 +21,12 @@ RUN useradd -m worker -G cdrom \
   && chown worker: /output /home/worker/.config/whipper
 VOLUME ["/home/worker/.config/whipper", "/output"]
 
+# setup locales + cleanup
 RUN echo "LC_ALL=en_US.UTF-8" >> /etc/environment \
   && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
   && echo "LANG=en_US.UTF-8" > /etc/locale.conf \
-  && locale-gen en_US.UTF-8
+  && locale-gen en_US.UTF-8 \
+  && apt-get clean && apt-get autoremove -y
 
 ENV LC_ALL=en_US.UTF-8
 ENV LANG=en_US
