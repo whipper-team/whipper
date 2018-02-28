@@ -5,7 +5,7 @@ import argparse
 import os
 import sys
 
-from whipper.common import drive
+from whipper.common import config, drive
 
 import logging
 logger = logging.getLogger(__name__)
@@ -27,11 +27,13 @@ logger = logging.getLogger(__name__)
 
 class BaseCommand():
     """
-    A base command class for whipper commands.
+    Register and handle whipper command arguments with ArgumentParser.
 
-    Creates an argparse.ArgumentParser.
-    Override add_arguments() and handle_arguments() to register
-    and process arguments before & after argparse.parse_args().
+    Register arguments by overriding `add_arguments()` and modifying
+    `self.parser`. Option defaults are read from the dot-separated
+    `prog_name` section of the config file (e.g., 'whipper cd rip'
+    options are read from '[whipper.cd.rip]'). Runs
+    `argparse.parse_args()` then calls `handle_arguments()`.
 
     Provides self.epilog() formatting command for argparse.
 
@@ -56,6 +58,19 @@ class BaseCommand():
 
         self.init_parser()
         self.add_arguments()
+
+        config_section = prog_name.replace(' ', '.')
+        defaults = {}
+        for action in self.parser._actions:
+            val = None
+            if isinstance(action, argparse._StoreAction):
+                val = config.Config().get(config_section, action.dest)
+            elif isinstance(action, (argparse._StoreTrueAction,
+                                     argparse._StoreFalseAction)):
+                val = config.Config().getboolean(config_section, action.dest)
+            if val is not None:
+                defaults[action.dest] = val
+        self.parser.set_defaults(**defaults)
 
         if hasattr(self, 'subcommands'):
             self.parser.add_argument('remainder',
