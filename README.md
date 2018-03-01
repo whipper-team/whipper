@@ -157,41 +157,44 @@ The simplest way to get started making accurate rips is:
 
 ## Configuration file documentation
 
-The configuration file is stored according to the [XDG Base Directory Specification](
-http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html)
-when possible.
+The configuration file is stored in  
+`$XDG_CONFIG_HOME/whipper/whipper.conf` or  
+`$HOME/.config/whipper/whipper.conf` if `$XDG_CONFIG_HOME` is undefined.
 
-It lives in `$XDG_CONFIG_HOME/whipper/whipper.conf` (or `$HOME/.config/whipper/whipper.conf`).
+See [XDG Base Directory
+Specification](http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html)
+and [ConfigParser](https://docs.python.org/2/library/configparser.html).
 
-The configuration file follows python's [ConfigParser](https://docs.python.org/2/library/configparser.html) syntax.
+The configuration file consists of newline-deliniated `[sections]`
+containing `key = value` pairs. The sections `[main]` and
+`[musicbrainz]` are special config sections for options not respresented
+from the command line interface.  Sections beginning with `drive` are
+written by whipper; certain values should not be edited.
 
-The possible sections are:
-
-- Main section: `[main]`
-  - `path_filter_fat`: whether to filter path components for FAT file systems
-  - `path_filter_special`: whether to filter path components for special characters
-  
-- MusicBrainz section: `[musicbrainz]`
-  - `server`: the MusicBrainz server to connect to, in `host:[port]` format. Defaults to `musicbrainz.org`.
-
-- Drive section: `[drive:IDENTIFIER]`, one for each configured drive. All these values are probed by whipper and should not be edited by hand.
-  - `defeats_cache`: whether this drive can defeat the audio cache
-  - `read_offset`: the read offset of the drive
-
-- Rip command section: `[rip.COMMAND.SUBCOMMAND]`. Can be used to change the command options default values.
-  **Please note that this feature is currently broken (being this way since [PR #122](https://github.com/JoeLametta/whipper/pull/92) / whipper [v0.4.1](https://github.com/JoeLametta/whipper/releases/tag/v0.4.1)).**
-
-Example section to configure `whipper cd rip` defaults:
+Example configuration demonstrating all `[main]` and `[musicbrainz]`
+options:
 
 ```Python
-[rip.cd.rip]
+[main]
+path_filter_fat = True		; replace FAT file system unsafe characters in filenames with _
+path_filter_special = False	; replace special characters in filenames with _
+
+[musicbrainz]
+server = musicbrainz.org:80	; use musicbrainz server at host[:port]
+
+[drive:HL-20]
+defeats_cache = True		; whether the drive is capable of defeating the audio cache
+read_offset = 6			; drive read offset in positive/negative frames (no leading +)
+# do not edit the values 'vendor', 'model', and 'release'; they are used by whipper to match the drive
+
+# command line defaults for `whipper cd rip`
+[whipper.cd.rip]
 unknown = True
 output_directory = ~/My Music
-track_template = new/%%A/%%y - %%d/%%t - %%n
+track_template = new/%%A/%%y - %%d/%%t - %%n	; note: the format char '%' must be represented '%%'
 disc_template = %(track_template)s
+# ...
 ```
-
-Note: to get a literal `%` character it must be doubled.
 
 ## Backward incompatible changes
 
