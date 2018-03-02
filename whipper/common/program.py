@@ -18,7 +18,9 @@
 # You should have received a copy of the GNU General Public License
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Common functionality and class for all programs using whipper."""
+"""
+Common functionality and class for all programs using whipper.
+"""
 
 import musicbrainzngs
 import re
@@ -39,26 +41,15 @@ logger = logging.getLogger(__name__)
 
 
 class Program:
-    """I maintain program state and functionality.
+    """
+    I maintain program state and functionality.
 
-    :cvar cuePath:
-    :vartype cuePath:
-    :cvar logPath:
-    :vartype logPath:
-    :cvar metadata:
-    :vartype metadata: L{mbngs.DiscMetadata}
-    :cvar outdir:
-    :vartype outdir: unicode
-    :cvar result: the rip's result
-    :vartype result: L{result.RipResult}
-    :ivar config:
-    :vartype config:
-    :ivar record: whether to record results of API calls for playback.
-    :vartype record:
-    :param stdout:  (Default value = sys.stdout).
-    :type stdout:
-    :ivar cache:
-    :vartype cache:
+    @ivar metadata:
+    @type metadata: L{mbngs.DiscMetadata}
+    @ivar result:   the rip's result
+    @type result:   L{result.RipResult}
+    @type outdir:   unicode
+    @type config:   L{whipper.common.config.Config}
     """
 
     cuePath = None
@@ -70,6 +61,9 @@ class Program:
     _stdout = None
 
     def __init__(self, config, record=False, stdout=sys.stdout):
+        """
+        @param record: whether to record results of API calls for playback.
+        """
         self._record = record
         self._cache = cache.ResultCache()
         self._stdout = stdout
@@ -97,7 +91,6 @@ class Program:
 
     def getFastToc(self, runner, device):
         """Retrieve the normal TOC table from a toc pickle or the drive.
-
         Also retrieves the cdrdao version
         """
         def function(r, t):
@@ -118,20 +111,10 @@ class Program:
         return toc
 
     def getTable(self, runner, cddbdiscid, mbdiscid, device, offset):
-        """Retrieve the Table either from the cache or the drive.
+        """
+        Retrieve the Table either from the cache or the drive.
 
-        :param runner:
-        :type runner:
-        :param cddbdiscid:
-        :type cddbdiscid:
-        :param mbdiscid:
-        :type mbdiscid:
-        :param device:
-        :type device:
-        :param offset:
-        :type offset:
-        :returns:
-        :rtype: L{table.Table}
+        @rtype: L{table.Table}
         """
         tcache = cache.TableCache()
         ptable = tcache.get(cddbdiscid, mbdiscid)
@@ -168,15 +151,11 @@ class Program:
         return itable
 
     def getRipResult(self, cddbdiscid):
-        """Retrieve the persistable RipResult.
+        """
+        Retrieve the persistable RipResult either from our cache (from a
+        previous, possibly aborted rip), or return a new one.
 
-        RipResult is either retrieved from our cache (from a previous,
-        possibly aborted rip), or return a new one.
-
-        :param cddbdiscid:
-        :type cddbdiscid:
-        :returns:
-        :rtype: L{result.RipResult}
+        @rtype: L{result.RipResult}
         """
         assert self.result is None
 
@@ -189,7 +168,7 @@ class Program:
         self._presult.persist()
 
     def addDisambiguation(self, template_part, metadata):
-        """Add disambiguation to template path part string."""
+        "Add disambiguation to template path part string."
         if metadata.catalogNumber:
             template_part += ' (%s)' % metadata.catalogNumber
         elif metadata.barcode:
@@ -197,40 +176,29 @@ class Program:
         return template_part
 
     def getPath(self, outdir, template, mbdiscid, metadata, track_number=None):
-        """Return disc or track path relative to outdir according to template.
-
-        Track paths do not include extension.
+        """
+        Return disc or track path relative to outdir according to
+        template. Track paths do not include extension.
 
         Tracks are named according to the track template, filling in
         the variables and adding the file extension. Variables
         exclusive to the track template are:
-            * %t: track number.
-            * %a: track artist.
-            * %n: track title.
-            * %s: track sort name.
+          - %t: track number
+          - %a: track artist
+          - %n: track title
+          - %s: track sort name
 
         Disc files (.cue, .log, .m3u) are named according to the disc
         template, filling in the variables and adding the file
         extension. Variables for both disc and track template are:
-            * %A: album artist.
-            * %S: album sort name.
-            * %d: disc title.
-            * %y: release year.
-            * %r: release type, lowercase.
-            * %R: Release type, normal case.
-            * %x: audio extension, lowercase.
-            * %X: audio extension, uppercase.
-
-        :param outdir:
-        :type outdir:
-        :param template:
-        :type template:
-        :param mbdiscid:
-        :type mbdiscid:
-        :param metadata:
-        :type metadata:
-        :param track_number:  (Default value = None)
-        :type track_number:
+          - %A: album artist
+          - %S: album sort name
+          - %d: disc title
+          - %y: release year
+          - %r: release type, lowercase
+          - %R: Release type, normal case
+          - %x: audio extension, lowercase
+          - %X: audio extension, uppercase
         """
         assert type(outdir) is unicode, "%r is not unicode" % outdir
         assert type(template) is unicode, "%r is not unicode" % template
@@ -278,12 +246,10 @@ class Program:
         return os.path.join(outdir, template % v)
 
     def getCDDB(self, cddbdiscid):
-        """Query CDDB using the given cddbdiscid to find the disc title.
+        """
+        @param cddbdiscid: list of id, tracks, offsets, seconds
 
-        :param cddbdiscid: list of id, tracks, offsets, seconds.
-        :type cddbdiscid:
-        :returns:
-        :rtype: str
+        @rtype: str
         """
         # FIXME: convert to nonblocking?
         import CDDB
@@ -293,7 +259,7 @@ class Program:
             if code == 200:
                 return md['title']
 
-        except IOError as e:
+        except IOError, e:
             # FIXME: for some reason errno is a str ?
             if e.errno == 'socket error':
                 self._stdout.write("Warning: network error: %r\n" % (e, ))
@@ -304,18 +270,8 @@ class Program:
 
     def getMusicBrainz(self, ittoc, mbdiscid, release=None, country=None,
                        prompt=False):
-        """Look up disc on MusicBrainz and get the relevant metadata.
-
-        :param ittoc:
-        :type ittoc: L{whipper.image.table.Table}
-        :param mbdiscid:
-        :type mbdiscid:
-        :param release:  (Default value = None)
-        :type release:
-        :param country:  (Default value = None)
-        :type country:
-        :param prompt:  (Default value = False)
-        :type prompt:
+        """
+        @type  ittoc: L{whipper.image.table.Table}
         """
         # look up disc on MusicBrainz
         self._stdout.write('Disc duration: %s, %d audio tracks\n' % (
@@ -334,13 +290,13 @@ class Program:
                                               country=country,
                                               record=self._record)
                 break
-            except mbngs.NotFoundException as e:
+            except mbngs.NotFoundException, e:
                 logger.warning("release not found: %r" % (e, ))
                 break
-            except musicbrainzngs.NetworkError as e:
+            except musicbrainzngs.NetworkError, e:
                 logger.warning("network error: %r" % (e, ))
                 break
-            except mbngs.MusicBrainzException as e:
+            except mbngs.MusicBrainzException, e:
                 logger.warning("musicbrainz exception: %r" % (e, ))
                 time.sleep(5)
                 continue
@@ -447,12 +403,13 @@ class Program:
         return ret
 
     def getTagList(self, number):
-        """Based on the metadata, get a dict of tags for the given track.
+        """
+        Based on the metadata, get a dict of tags for the given track.
 
-        :param number: track number (0 for HTOA).
-        :type number: int
-        :returns:
-        :rtype: dict
+        @param number:   track number (0 for HTOA)
+        @type  number:   int
+
+        @rtype: dict
         """
         trackArtist = u'Unknown Artist'
         albumArtist = u'Unknown Artist'
@@ -474,7 +431,7 @@ class Program:
                     title = track.title
                     mbidTrack = track.mbid
                     mbidTrackArtist = track.mbidArtist
-                except IndexError as e:
+                except IndexError, e:
                     print 'ERROR: no track %d found, %r' % (number, e)
                     raise
             else:
@@ -507,9 +464,10 @@ class Program:
         return tags
 
     def getHTOA(self):
-        """Check if we have hidden track one audio.
+        """
+        Check if we have hidden track one audio.
 
-        :returns: tuple of (start, stop), or None.
+        @returns: tuple of (start, stop), or None
         """
         track = self.result.table.tracks[0]
         try:
@@ -527,7 +485,7 @@ class Program:
 
         try:
             runner.run(t)
-        except task.TaskException as e:
+        except task.TaskException, e:
             if isinstance(e.exception, common.MissingFrames):
                 logger.warning('missing frames for %r' % trackResult.filename)
                 return False
@@ -542,25 +500,12 @@ class Program:
 
     def ripTrack(self, runner, trackResult, offset, device, taglist,
                  overread, what=None):
-        """.
-
+        """
         Ripping the track may change the track's filename as stored in
         trackResult.
 
-        :param trackResult: the object to store information in.
-        :type trackResult: L{result.TrackResult}
-        :param runner:
-        :type runner:
-        :param offset:
-        :type offset:
-        :param device:
-        :type device:
-        :param taglist:
-        :type taglist:
-        :param overread:
-        :type overread:
-        :param what:  (Default value = None)
-        :type what:
+        @param trackResult: the object to store information in.
+        @type  trackResult: L{result.TrackResult}
         """
         if trackResult.number == 0:
             start, stop = self.getHTOA()
@@ -610,19 +555,14 @@ class Program:
         runner.run(t)
 
     def verifyImage(self, runner, table):
-        """Verify table against accuraterip and cue_path track lengths.
-
+        """
+        verify table against accuraterip and cue_path track lengths
         Verify our image against the given AccurateRip responses.
 
         Needs an initialized self.result.
         Will set accurip and friends on each TrackResult.
 
         Populates self.result.tracks with above TrackResults.
-
-        :param runner:
-        :type runner:
-        :param table:
-        :type table:
         """
         cueImage = image.Image(self.cuePath)
         # assigns track lengths

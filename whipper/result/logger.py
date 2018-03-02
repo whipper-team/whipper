@@ -14,28 +14,14 @@ class WhipperLogger(result.Logger):
     _errors = False
 
     def log(self, ripResult, epoch=time.time()):
-        """Join all logfile lines in a single str.
+        """Returns big str: logfile joined text lines"""
 
-        :param ripResult:
-        :type ripResult:
-        :param epoch: rip time since the epoch (Default value = time.time()).
-        :type epoch: float
-        :returns: logfile report
-        :rtype: str
-        """
         lines = self.logRip(ripResult, epoch=epoch)
         return "\n".join(lines)
 
     def logRip(self, ripResult, epoch):
-        """Generate logfile as a list of str lines.
+        """Returns logfile lines list"""
 
-        :param ripResult:
-        :type ripResult:
-        :param epoch: rip time since the epoch.
-        :type epoch: float
-        :returns:
-        :rtype: str
-        """
         lines = []
 
         # Ripper version
@@ -170,15 +156,8 @@ class WhipperLogger(result.Logger):
         return lines
 
     def trackLog(self, trackResult):
-        """Generate tracks section lines.
+        """Returns Tracks section lines: data picked from trackResult"""
 
-        Tracks information are mostly taken from ``trackResult``.
-
-        :param trackResult:
-        :type trackResult:
-        :returns: tracks section lines.
-        :rtype: list
-        """
         lines = []
 
         # Track number

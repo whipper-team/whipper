@@ -25,7 +25,9 @@ class LoggableMultiSeparateTask(task.MultiSeparateTask):
 
 
 class PopenTask(task.Task):
-    """I am a task that runs a command using Popen."""
+    """
+    I am a task that runs a command using Popen.
+    """
 
     logCategory = 'PopenTask'
     bufsize = 1024
@@ -42,7 +44,7 @@ class PopenTask(task.Task):
                                          stdout=subprocess.PIPE,
                                          stderr=subprocess.PIPE,
                                          close_fds=True, cwd=self.cwd)
-        except OSError as e:
+        except OSError, e:
             import errno
             if e.errno == errno.ENOENT:
                 self.commandMissing()
@@ -86,7 +88,7 @@ class PopenTask(task.Task):
                 return
 
             self._done()
-        except Exception as e:
+        except Exception, e:
             logger.debug('exception during _read(): %r', str(e))
             self.setException(e)
             self.stop()
@@ -116,29 +118,31 @@ class PopenTask(task.Task):
         # self.stop()
 
     def readbytesout(self, bytes):
-        """Call when bytes have been read from stdout.
-
-        :param bytes:
-        :type bytes:
+        """
+        Called when bytes have been read from stdout.
         """
         pass
 
     def readbyteserr(self, bytes):
-        """Call when bytes have been read from stderr.
-
-        :param bytes:
-        :type bytes:
+        """
+        Called when bytes have been read from stderr.
         """
         pass
 
     def done(self):
-        """Call when the command completed successfully."""
+        """
+        Called when the command completed successfully.
+        """
         pass
 
     def failed(self):
-        """Call when the command failed."""
+        """
+        Called when the command failed.
+        """
         pass
 
     def commandMissing(self):
-        """Call when the command is missing."""
+        """
+        Called when the command is missing.
+        """
         pass
