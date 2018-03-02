@@ -65,8 +65,6 @@ This is a noncomprehensive summary which shows whipper's packaging status (unoff
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/whipper.svg)](https://repology.org/metapackage/whipper)
 
-User mruszczyk is also providing an unofficial [Copr repository](https://copr.fedorainfracloud.org/coprs/mruszczyk/whipper/) for Fedora / CentOS.
-
 In case you decide to install whipper using an unofficial repository just keep in mind it is your responsibility to verify that the provided content is safe to use.
 
 ### Required dependencies
@@ -322,5 +320,4 @@ You can find us and talk about the project on IRC: [freenode](https://webchat.fr
 
 - [Redacted thread (official)](https://redacted.ch/forums.php?action=viewthread&threadid=150)
 - [Repology: versions for whipper](https://repology.org/metapackage/whipper/versions)
-- [Fedora Copr repository for whipper](https://copr.fedorainfracloud.org/coprs/mruszczyk/whipper/)
 - [Unattended ripping using whipper (by Thomas McWork)](https://github.com/thomas-mc-work/most-possible-unattended-rip)
