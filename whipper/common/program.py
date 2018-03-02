@@ -95,24 +95,15 @@ class Program:
             logger.info('Changing to working directory %s' % workingDirectory)
             os.chdir(workingDirectory)
 
-    def getFastToc(self, runner, toc_pickle, device):
+    def getFastToc(self, runner, device):
         """Retrieve the normal TOC table from a toc pickle or the drive.
 
         Also retrieves the cdrdao version
-
-        :param runner:
-        :type runner:
-        :param toc_pickle:
-        :type toc_pickle:
-        :param device:
-        :type device:
-        :returns:
-        :rtype: tuple of L{table.Table}, str
         """
         def function(r, t):
             r.run(t)
 
-        ptoc = cache.Persister(toc_pickle or None)
+        ptoc = cache.Persister()
         if not ptoc.object:
             from pkg_resources import parse_version as V
             version = cdrdao.getCDRDAOVersion()

@@ -71,11 +71,6 @@ class _CD(BaseCommand):
 
     @staticmethod
     def add_arguments(parser):
-        # FIXME: have a cache of these pickles somewhere
-        parser.add_argument('-T', '--toc-pickle',
-                            action="store", dest="toc_pickle",
-                            help="pickle to use for reading and "
-                            "writing the TOC")
         parser.add_argument('-R', '--release-id',
                             action="store", dest="release_id",
                             help="MusicBrainz release id to match to "
@@ -103,9 +98,7 @@ class _CD(BaseCommand):
         utils.unmount_device(self.device)
 
         # first, read the normal TOC, which is fast
-        self.ittoc = self.program.getFastToc(self.runner,
-                                             self.options.toc_pickle,
-                                             self.device)
+        self.ittoc = self.program.getFastToc(self.runner, self.device)
 
         # already show us some info based on this
         self.program.getRipResult(self.ittoc.getCDDBDiscId())
