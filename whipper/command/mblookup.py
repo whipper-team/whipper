@@ -1,7 +1,6 @@
-import sys
-
 from whipper.command.basecommand import BaseCommand
 from whipper.common.mbngs import musicbrainz
+
 
 class MBLookup(BaseCommand):
     summary = "lookup MusicBrainz entry"
@@ -16,30 +15,30 @@ Example disc id: KnpGsLhvH.lPrNc1PBL21lb9Bg4-"""
             'mbdiscid', action='store', help="MB disc id to look up"
         )
 
-
     def do(self):
         try:
             discId = unicode(self.options.mbdiscid)
         except IndexError:
-            sys.stdout.write('Please specify a MusicBrainz disc id.\n')
+            print 'Please specify a MusicBrainz disc id.'
             return 3
 
         metadatas = musicbrainz(discId)
 
-        sys.stdout.write('%d releases\n' % len(metadatas))
+        print '%d releases' % len(metadatas)
         for i, md in enumerate(metadatas):
-            sys.stdout.write('- Release %d:\n' % (i + 1, ))
-            sys.stdout.write('    Artist: %s\n' % md.artist.encode('utf-8'))
-            sys.stdout.write('    Title:  %s\n' % md.title.encode('utf-8'))
-            sys.stdout.write('    Type:   %s\n' % md.releaseType.encode('utf-8'))  # noqa: E501
-            sys.stdout.write('    URL: %s\n' % md.url)
-            sys.stdout.write('    Tracks: %d\n' % len(md.tracks))
+            print '- Release %d:' % (i + 1, )
+            print '    Artist: %s' % md.artist.encode('utf-8')
+            print '    Title:  %s' % md.title.encode('utf-8')
+            print '    Type:   %s' % md.releaseType.encode('utf-8')  # noqa: E501
+            print '    URL: %s' % md.url
+            print '    Tracks: %d' % len(md.tracks)
             if md.catalogNumber:
-                sys.stdout.write('    Cat no: %s\n' % md.catalogNumber)
+                print '    Cat no: %s' % md.catalogNumber
             if md.barcode:
-                sys.stdout.write('   Barcode: %s\n' % md.barcode)
+                print '   Barcode: %s' % md.barcode
 
                 for j, track in enumerate(md.tracks):
-                    sys.stdout.write('      Track %2d: %s - %s\n' % (
+                    print '      Track %2d: %s - %s' % (
                         j + 1, track.artist.encode('utf-8'),
-                        track.title.encode('utf-8')))
+                        track.title.encode('utf-8')
+                    )
