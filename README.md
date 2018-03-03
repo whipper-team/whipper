@@ -1,6 +1,12 @@
 # Whipper
 
-[![license](https://img.shields.io/github/license/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/blob/master/LICENSE) [![Build Status](https://travis-ci.org/JoeLametta/whipper.svg?branch=master)](https://travis-ci.org/JoeLametta/whipper) [![GitHub (pre-)release](https://img.shields.io/github/release/joelametta/whipper/all.svg)](https://github.com/JoeLametta/whipper/releases/latest) [![IRC](https://img.shields.io/badge/irc-%23whipper%40freenode-brightgreen.svg)](https://webchat.freenode.net/?channels=%23whipper) [![GitHub Stars](https://img.shields.io/github/stars/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/stargazers) [![GitHub Issues](https://img.shields.io/github/issues/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/issues) [![GitHub contributors](https://img.shields.io/github/contributors/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/graphs/contributors)
+[![license](https://img.shields.io/github/license/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/blob/master/LICENSE)
+[![Build Status](https://travis-ci.org/JoeLametta/whipper.svg?branch=master)](https://travis-ci.org/JoeLametta/whipper)
+[![GitHub (pre-)release](https://img.shields.io/github/release/joelametta/whipper/all.svg)](https://github.com/JoeLametta/whipper/releases/latest)
+[![IRC](https://img.shields.io/badge/irc-%23whipper%40freenode-brightgreen.svg)](https://webchat.freenode.net/?channels=%23whipper)
+[![GitHub Stars](https://img.shields.io/github/stars/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/stargazers)
+[![GitHub Issues](https://img.shields.io/github/issues/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/issues)
+[![GitHub contributors](https://img.shields.io/github/contributors/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/graphs/contributors)
 
 Whipper is a Python 2.7 CD-DA ripper based on the [morituri project](https://github.com/thomasvs/morituri) (_CDDA ripper for *nix systems aiming for accuracy over speed_). It enhances morituri which development seems to have halted merging old ignored pull requests, improving it with bugfixes and new features.
 
