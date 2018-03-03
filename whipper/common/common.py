@@ -37,26 +37,28 @@ BYTES_PER_FRAME = SAMPLES_PER_FRAME * 4
 
 
 class EjectError(SystemError):
-    """Possibly ejects the drive in command.main.
-
-    ivar args: is a tuple used by BaseException.__str__.
-    :vartype args:
-    ivar: device is the device path to eject.
-    :vartype device:
+    """
+    Possibly ejects the drive in command.main.
     """
 
     def __init__(self, device, *args):
+        """
+        args is a tuple used by BaseException.__str__
+        device is the device path to eject
+        """
         self.args = args
         self.device = device
 
 
 def msfToFrames(msf):
-    """Convert a string value in MM:SS:FF to frames.
+    """
+    Converts a string value in MM:SS:FF to frames.
 
-    :param msf: the MM:SS:FF value to convert.
-    :type msf: str
-    :returns: number of frames.
-    :rtype: int
+    @param msf: the MM:SS:FF value to convert
+    @type  msf: str
+
+    @rtype:   int
+    @returns: number of frames
     """
     if ':' not in msf:
         return int(msf)
@@ -92,19 +94,22 @@ def framesToHMSF(frames):
 
 
 def formatTime(seconds, fractional=3):
-    """Nicely format time in a human-readable format, like HH:MM:SS.mmm.
+    """
+    Nicely format time in a human-readable format, like
+    HH:MM:SS.mmm
 
     If fractional is zero, no seconds will be shown.
     If it is greater than 0, we will show seconds and fractions of seconds.
     As a side consequence, there is no way to show seconds without fractions.
 
-    :param seconds: the time in seconds to format.
-    :type seconds: int or float
-    :param fractional: how many digits to show for the fractional part of
-                       seconds. (Default value = 3)
-    :type fractional: int
-    :returns: a nicely formatted time string.
-    :rtype: str
+    @param seconds:    the time in seconds to format.
+    @type  seconds:    int or float
+    @param fractional: how many digits to show for the fractional part of
+                       seconds.
+    @type  fractional: int
+
+    @rtype: string
+    @returns: a nicely formatted time string.
     """
     chunks = []
 
@@ -142,18 +147,16 @@ class EmptyError(Exception):
 
 
 class MissingFrames(Exception):
-    """Less frames decoded than expected."""
-
+    """
+    Less frames decoded than expected.
+    """
     pass
 
 
 def shrinkPath(path):
-    """Shrink a full path to a shorter version.
-
+    """
+    Shrink a full path to a shorter version.
     Used to handle ENAMETOOLONG
-
-    :param path:
-    :type path:
     """
     parts = list(os.path.split(path))
     length = len(parts[-1])
@@ -183,16 +186,16 @@ def shrinkPath(path):
 
 
 def getRealPath(refPath, filePath):
-    """Translate a .cue or .toc's FILE argument to an existing path.
-
+    """
+    Translate a .cue or .toc's FILE argument to an existing path.
     Does Windows path translation.
     Will look for the given file name, but with .flac and .wav as extensions.
 
-    :param refPath: path to the file from which the track is referenced;
-                    for example, path to the .cue file in the same directory
-    :type refPath: unicode
-    :param filePath:
-    :type filePath: unicode
+    @param refPath:  path to the file from which the track is referenced;
+                     for example, path to the .cue file in the same directory
+    @type  refPath:  unicode
+
+    @type  filePath: unicode
     """
     assert type(filePath) is unicode, "%r is not unicode" % filePath
 
@@ -238,14 +241,11 @@ def getRealPath(refPath, filePath):
 
 
 def getRelativePath(targetPath, collectionPath):
-    """Get a relative path from the directory of collectionPath to targetPath.
+    """
+    Get a relative path from the directory of collectionPath to
+    targetPath.
 
     Used to determine the path to use in .cue/.m3u files
-
-    :param targetPath:
-    :type targetPath:
-    :param collectionPath:
-    :type collectionPath:
     """
     logger.debug('getRelativePath: target %r, collection %r' % (
         targetPath, collectionPath))
@@ -266,22 +266,21 @@ def getRelativePath(targetPath, collectionPath):
 
 
 class VersionGetter(object):
-    """I get the version of a program by looking for it in command output.
-
-    (Through a RegExp).
-
-    :ivar dependency: name of the dependency providing the program
-    :vartype dependency:
-    :ivar args: the arguments to invoke to show the version
-    :vartype args: list of str
-    :ivar regexp: the regular expression to get the version
-    :vartype regexp:
-    :ivar expander: the expansion string for the version using the
-                     regexp group dict
-    :vartype expander:
+    """
+    I get the version of a program by looking for it in command output
+    according to a regexp.
     """
 
     def __init__(self, dependency, args, regexp, expander):
+        """
+        @param dependency: name of the dependency providing the program
+        @param args:       the arguments to invoke to show the version
+        @type  args:       list of str
+        @param regexp:     the regular expression to get the version
+        @param expander:   the expansion string for the version using the
+                           regexp group dict
+        """
+
         self._dep = dependency
         self._args = args
         self._regexp = regexp
@@ -299,7 +298,7 @@ class VersionGetter(object):
             vre = self._regexp.search(output)
             if vre:
                 version = self._expander % vre.groupdict()
-        except OSError as e:
+        except OSError, e:
             import errno
             if e.errno == errno.ENOENT:
                 raise MissingDependencyException(self._dep)

@@ -5,15 +5,9 @@ logger = logging.getLogger(__name__)
 
 
 def encode(infile, outfile):
-    """Encode infile to outfile, with flac.
-
-    Uses ``-f`` because whipper already creates the file.
-
-    :param infile: full path to input audio track.
-    :type infile: str
-    :param outfile: full path to output audio track.
-    :type outfile: str
-    :raises CalledProcessError: if the flac encoder returns non-zero.
+    """
+    Encodes infile to outfile, with flac.
+    Uses '-f' because whipper already creates the file.
     """
     try:
         # TODO: Replace with Popen so that we can catch stderr and write it to
