@@ -27,13 +27,11 @@ In order to track whipper's latest changes it's advised to check its commit hist
 - [Usage](#usage)
 - [Getting started](#getting-started)
 - [Configuration file documentation](#configuration-file-documentation)
-- [Backward incompatible changes](#backward-incompatible-changes)
 - [Running uninstalled](#running-uninstalled)
 - [Logger plugins](#logger-plugins)
 - [License](#license)
 - [Contributing](#contributing)
   - [Bug reports & feature requests](#bug-reports--feature-requests)
-  - [Developing](#developing)
 - [Credits](#credits)
 - [Links](#links)
 
