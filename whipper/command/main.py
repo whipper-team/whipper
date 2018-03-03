@@ -8,7 +8,7 @@ import musicbrainzngs
 
 import whipper
 
-from whipper.command import cd, offset, drive, image, accurip, debug, mblookup
+from whipper.command import cd, offset, drive, image, accurip, mblookup
 from whipper.command.basecommand import BaseCommand
 from whipper.common import common, directory, config
 from whipper.extern.task import task
@@ -77,7 +77,6 @@ You can get help on subcommands by using the -h option to the subcommand.
     subcommands = {
         'accurip': accurip.AccuRip,
         'cd':      cd.CD,
-        'debug':   debug.Debug,
         'drive':   drive.Drive,
         'offset':  offset.Offset,
         'image':   image.Image,
