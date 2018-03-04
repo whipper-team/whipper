@@ -30,7 +30,7 @@ Example disc id: KnpGsLhvH.lPrNc1PBL21lb9Bg4-"""
             print '    Artist: %s' % md.artist.encode('utf-8')
             print '    Title:  %s' % md.title.encode('utf-8')
             print '    Type:   %s' % md.releaseType.encode('utf-8')  # noqa: E501
-            print '    URL: %s' % md.url
+            print '    URL:    %s' % md.url
             print '    Tracks: %d' % len(md.tracks)
             if md.catalogNumber:
                 print '    Cat no: %s' % md.catalogNumber

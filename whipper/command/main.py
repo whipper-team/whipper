@@ -76,10 +76,10 @@ You can get help on subcommands by using the -h option to the subcommand.
     no_add_help = True
     subcommands = {
         'accurip': accurip.AccuRip,
-        'cd':      cd.CD,
-        'drive':   drive.Drive,
-        'offset':  offset.Offset,
-        'image':   image.Image,
+        'cd': cd.CD,
+        'drive': drive.Drive,
+        'offset': offset.Offset,
+        'image': image.Image,
         'mblookup': mblookup.MBLookup
     }
 
