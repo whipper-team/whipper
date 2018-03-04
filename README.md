@@ -167,7 +167,7 @@ and [ConfigParser](https://docs.python.org/2/library/configparser.html).
 
 The configuration file consists of newline-deliniated `[sections]`
 containing `key = value` pairs. The sections `[main]` and
-`[musicbrainz]` are special config sections for options not respresented
+`[musicbrainz]` are special config sections for options not accessible
 from the command line interface.  Sections beginning with `drive` are
 written by whipper; certain values should not be edited.
 
