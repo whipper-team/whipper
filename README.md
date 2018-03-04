@@ -158,7 +158,7 @@ The simplest way to get started making accurate rips is:
 ## Configuration file documentation
 
 The configuration file is stored in  
-`$XDG_CONFIG_HOME/whipper/whipper.conf` or  
+`$XDG_CONFIG_HOME/whipper/whipper.conf`, or  
 `$HOME/.config/whipper/whipper.conf` if `$XDG_CONFIG_HOME` is undefined.
 
 See [XDG Base Directory
@@ -174,7 +174,7 @@ written by whipper; certain values should not be edited.
 Example configuration demonstrating all `[main]` and `[musicbrainz]`
 options:
 
-```Python
+```INI
 [main]
 path_filter_fat = True		; replace FAT file system unsafe characters in filenames with _
 path_filter_special = False	; replace special characters in filenames with _
