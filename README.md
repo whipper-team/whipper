@@ -165,7 +165,7 @@ See [XDG Base Directory
 Specification](http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html)
 and [ConfigParser](https://docs.python.org/2/library/configparser.html).
 
-The configuration file consists of newline-deliniated `[sections]`
+The configuration file consists of newline-delineated `[sections]`
 containing `key = value` pairs. The sections `[main]` and
 `[musicbrainz]` are special config sections for options not accessible
 from the command line interface.  Sections beginning with `drive` are
