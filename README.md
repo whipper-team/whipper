@@ -32,7 +32,6 @@ In order to track whipper's latest changes it's advised to check its commit hist
 - [License](#license)
 - [Contributing](#contributing)
   - [Bug reports & feature requests](#bug-reports--feature-requests)
-- [Credits](#credits)
 - [Links](#links)
 
 ## Rationale
@@ -265,15 +264,6 @@ gzip whipper.log
 And attach the gzipped log file to your bug report.
 
 Without `WHIPPER_LOGFILE` set, logging messages will go to stderr. `WHIPPER_DEBUG` accepts a string of the [default python logging levels](https://docs.python.org/2/library/logging.html#logging-levels).
-
-## Credits
-
-Thanks to:
-
-- [Thomas Vander Stichele](https://github.com/thomasvs)
-- [Joe Lametta](https://github.com/JoeLametta)
-- [Merlijn Wajer](https://github.com/MerlijnWajer)
-- [Samantha Baldwin](https://github.com/RecursiveForest)
 
 ## Links
 
