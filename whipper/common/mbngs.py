@@ -21,8 +21,9 @@
 """
 Handles communication with the MusicBrainz server using NGS.
 """
-
 import urllib2
+
+import whipper
 
 import logging
 logger = logging.getLogger(__name__)
@@ -269,6 +270,8 @@ def musicbrainz(discid, country=None, record=False):
     logger.debug('looking up results for discid %r', discid)
     import musicbrainzngs
 
+    musicbrainzngs.set_useragent("whipper", whipper.__version__,
+                                 "https://github.com/JoeLametta/whipper")
     ret = []
 
     try:

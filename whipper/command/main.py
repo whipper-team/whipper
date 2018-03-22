@@ -8,7 +8,7 @@ import musicbrainzngs
 
 import whipper
 
-from whipper.command import cd, offset, drive, image, accurip, debug
+from whipper.command import cd, offset, drive, image, accurip, mblookup
 from whipper.command.basecommand import BaseCommand
 from whipper.common import common, directory, config
 from whipper.extern.task import task
@@ -19,10 +19,6 @@ logger = logging.getLogger(__name__)
 
 
 def main():
-    # set user agent
-    musicbrainzngs.set_useragent("whipper", whipper.__version__,
-                                 "https://github.com/JoeLametta/whipper")
-
     try:
         server = config.Config().get_musicbrainz_server()
     except KeyError, e:
@@ -80,11 +76,11 @@ You can get help on subcommands by using the -h option to the subcommand.
     no_add_help = True
     subcommands = {
         'accurip': accurip.AccuRip,
-        'cd':      cd.CD,
-        'debug':   debug.Debug,
-        'drive':   drive.Drive,
-        'offset':  offset.Offset,
-        'image':   image.Image
+        'cd': cd.CD,
+        'drive': drive.Drive,
+        'offset': offset.Offset,
+        'image': image.Image,
+        'mblookup': mblookup.MBLookup
     }
 
     def add_arguments(self):
