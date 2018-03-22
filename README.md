@@ -1,6 +1,12 @@
 # Whipper
 
-[![license](https://img.shields.io/github/license/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/blob/master/LICENSE) [![Build Status](https://travis-ci.org/JoeLametta/whipper.svg?branch=master)](https://travis-ci.org/JoeLametta/whipper) [![GitHub (pre-)release](https://img.shields.io/github/release/joelametta/whipper/all.svg)](https://github.com/JoeLametta/whipper/releases/latest) [![IRC](https://img.shields.io/badge/irc-%23whipper%40freenode-brightgreen.svg)](https://webchat.freenode.net/?channels=%23whipper) [![GitHub Stars](https://img.shields.io/github/stars/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/stargazers) [![GitHub Issues](https://img.shields.io/github/issues/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/issues) [![GitHub contributors](https://img.shields.io/github/contributors/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/graphs/contributors)
+[![license](https://img.shields.io/github/license/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/blob/master/LICENSE)
+[![Build Status](https://travis-ci.org/JoeLametta/whipper.svg?branch=master)](https://travis-ci.org/JoeLametta/whipper)
+[![GitHub (pre-)release](https://img.shields.io/github/release/joelametta/whipper/all.svg)](https://github.com/JoeLametta/whipper/releases/latest)
+[![IRC](https://img.shields.io/badge/irc-%23whipper%40freenode-brightgreen.svg)](https://webchat.freenode.net/?channels=%23whipper)
+[![GitHub Stars](https://img.shields.io/github/stars/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/stargazers)
+[![GitHub Issues](https://img.shields.io/github/issues/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/issues)
+[![GitHub contributors](https://img.shields.io/github/contributors/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/graphs/contributors)
 
 Whipper is a Python 2.7 CD-DA ripper based on the [morituri project](https://github.com/thomasvs/morituri) (_CDDA ripper for *nix systems aiming for accuracy over speed_). It enhances morituri which development seems to have halted merging old ignored pull requests, improving it with bugfixes and new features.
 
@@ -21,13 +27,11 @@ In order to track whipper's latest changes it's advised to check its commit hist
 - [Usage](#usage)
 - [Getting started](#getting-started)
 - [Configuration file documentation](#configuration-file-documentation)
-- [Backward incompatible changes](#backward-incompatible-changes)
 - [Running uninstalled](#running-uninstalled)
 - [Logger plugins](#logger-plugins)
 - [License](#license)
 - [Contributing](#contributing)
   - [Bug reports & feature requests](#bug-reports--feature-requests)
-  - [Developing](#developing)
 - [Credits](#credits)
 - [Links](#links)
 
@@ -126,8 +130,6 @@ is correct, while
 
 is not, because the `-d` argument applies to the `cd` command.
 
-~~Check the man page (`whipper(1)`) for more information.~~ (currently not available as whipper's documentation is planned to be reworked ([Issue #73](https://github.com/JoeLametta/whipper/issues/73))).
-
 ## Getting started
 
 The simplest way to get started making accurate rips is:
@@ -196,46 +198,6 @@ disc_template = %(track_template)s
 # ...
 ```
 
-## Backward incompatible changes
-
-- Rely on `cd-paranoia` (`libcdio-cdparanoia`) instead of `cdparanoia` (Xiph): changed dependency ([PR #213](https://github.com/JoeLametta/whipper/pull/213) / whipper [v0.6.0](https://github.com/JoeLametta/whipper/releases/tag/v0.6.0))
-- Introduced AccurateRip v2 support: added new `requests` python dependency ([PR #187](https://github.com/JoeLametta/whipper/pull/187) / whipper [v0.6.0](https://github.com/JoeLametta/whipper/releases/tag/v0.6.0))
-- Added CD-R media type disc detection: CD-R rips are now prevented by default ([PR #154](https://github.com/JoeLametta/whipper/pull/154) / whipper [v0.6.0](https://github.com/JoeLametta/whipper/releases/tag/v0.6.0))
-- Changed all `morituri` references to `whipper`: renamed python module and logger too ([PR #109](https://github.com/JoeLametta/whipper/pull/109) / whipper [v0.6.0](https://github.com/JoeLametta/whipper/releases/tag/v0.6.0))
-- Profiles (for encoding) aren't supported anymore since ([PR #121](https://github.com/JoeLametta/whipper/pull/121) / whipper [v0.5.0](https://github.com/JoeLametta/whipper/releases/tag/v0.5.0)): now whipper encodes to FLAC
-- The image retag feature has been knowingly broken since ([PR #130](https://github.com/JoeLametta/whipper/pull/130))
-- Structural changes broke compatibility with existing logger plugins ([PR #94](https://github.com/JoeLametta/whipper/pull/94))
-- Dropped external git submodules ([PR #31](https://github.com/JoeLametta/whipper/pull/31), [PR #92](https://github.com/JoeLametta/whipper/pull/92))
-- Whipper executable name changed: from `rip` to `whipper` ([PR #70](https://github.com/JoeLametta/whipper/pull/70))
-- Whipper has adopted new config/cache/state file paths ([PR #42](https://github.com/JoeLametta/whipper/pull/42))
-  - Now always follows XDG specifications
-
-    - Paths used when XDG environment variables are available:
-      - `$XDG_CONFIG_HOME/whipper`
-      - `$XDG_CACHE_HOME/whipper`
-      - `$XDG_DATA_HOME/whipper`
-
-    - Paths used when XDG environment variables are **NOT** available:
-      - `$HOME/.config/whipper`
-      - `$HOME/.cache/whipper`
-      - `$HOME/.local/share/whipper`
-
-  - Configuration file information:
-    - `.moriturirc`, `morituri.conf` aren't used anymore
-
-    - When XDG environment variables are available it's located in:
-      - `$XDG_CONFIG_HOME/whipper/whipper.conf`
-
-    - When XDG environment variables are **NOT** available it's located in:
-      - `$HOME/.config/whipper/whipper.conf`
-
-  - Plugins folder path:
-    - When XDG environment variables are available it's located in:
-      - `$XDG_DATA_HOME/whipper/plugins`
-
-    - When XDG environment variables are **NOT** available it's located in:
-      - `$HOME/.local/share/whipper/plugins`
-
 ## Running uninstalled
 
 To make it easier for developers, you can run whipper straight from the
@@ -287,6 +249,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
 ## Contributing
 
+Make sure you have the latest copy from our [git
+repository](https://github.com/JoeLametta/whipper). Where possible,
+please include tests for new or changed functionality. You can run tests
+with `python -m unittest discover` from your source checkout.
+
 ### Bug reports & feature requests
 
 Please use the [issue tracker](https://github.com/JoeLametta/whipper/issues) to report any bugs or to file feature requests.
@@ -301,12 +268,6 @@ gzip whipper.log
 And attach the gzipped log file to your bug report.
 
 Without `WHIPPER_LOGFILE` set, logging messages will go to stderr. `WHIPPER_DEBUG` accepts a string of the [default python logging levels](https://docs.python.org/2/library/logging.html#logging-levels).
-
-### Developing
-
-Pull requests are welcome.
-
-**WARNING:** As whipper is still under heavy development sometimes I will force push (`--force-with-lease`) to the non master branches.
 
 ## Credits
 
