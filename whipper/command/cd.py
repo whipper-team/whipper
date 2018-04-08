@@ -253,6 +253,11 @@ Log files will log the path to tracks relative to this directory.
                                  "if the patched cdparanoia package is "
                                  "installed and the drive "
                                  "supports this feature. ")
+        self.parser.add_argument('--exclude-tracks',
+                                 action="store", dest="excluded_tracks",
+                                 default="",
+                                 help="Comma separated list of tracks to "
+                                 "exclude. This will propably mess up your logs")
         self.parser.add_argument('-O', '--output-directory',
                                  action="store", dest="output_directory",
                                  default=os.path.relpath(os.getcwd()),
@@ -455,7 +460,16 @@ Log files will log the path to tracks relative to this directory.
                                     self.ittoc.getTrackLength(number), number)
 
             self.program.saveRipResult()
-
+        try:
+            excluded_tracks = self.options.excluded_tracks.split(",")
+        except UnboundLocalError:
+            excluded_tracks = []
+        excluded_tracks_integer = []
+        for i in excluded_tracks:
+            try:
+                excluded_tracks_integer.append(int(i.replace(" ", "")))
+            except ValueError:
+                pass
         # check for hidden track one audio
         htoa = self.program.getHTOA()
         if htoa:
@@ -470,6 +484,9 @@ Log files will log the path to tracks relative to this directory.
                 print('skipping data track %d, not implemented' % (i + 1))
                 # FIXME: make it work for now
                 track.indexes[1].relative = 0
+                continue
+            if i + 1 in excluded_tracks_integer:
+                print("excluding track {}".format(i + 1))
                 continue
             _ripIfNotRipped(i + 1)
 
