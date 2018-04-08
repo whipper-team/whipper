@@ -257,7 +257,8 @@ Log files will log the path to tracks relative to this directory.
                                  action="store", dest="excluded_tracks",
                                  default="",
                                  help="Comma separated list of tracks to "
-                                 "exclude. This will propably mess up your logs")
+                                 "exclude. This will propably mess up "
+                                 "your logs")
         self.parser.add_argument('-O', '--output-directory',
                                  action="store", dest="output_directory",
                                  default=os.path.relpath(os.getcwd()),
