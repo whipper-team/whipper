@@ -90,23 +90,16 @@ class Program:
             os.chdir(workingDirectory)
 
     def getFastToc(self, runner, device):
-        """Retrieve the normal TOC table from a toc pickle or the drive.
-        Also retrieves the cdrdao version
+        """Retrieve the normal TOC table from the drive.
+        Also warn about buggy cdrdao versions.
         """
-        def function(r, t):
-            r.run(t)
-
-        ptoc = cache.Persister()
-        if not ptoc.object:
-            from pkg_resources import parse_version as V
-            version = cdrdao.getCDRDAOVersion()
-            if V(version) < V('1.2.3rc2'):
-                sys.stdout.write('Warning: cdrdao older than 1.2.3 has a '
-                                 'pre-gap length bug.\n'
-                                 'See http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=102171\n')  # noqa: E501
-            t = cdrdao.ReadTOCTask(device)
-            ptoc.persist(t.table)
-        toc = ptoc.object
+        from pkg_resources import parse_version as V
+        version = cdrdao.getCDRDAOVersion()
+        if V(version) < V('1.2.3rc2'):
+            sys.stdout.write('Warning: cdrdao older than 1.2.3 has a '
+                             'pre-gap length bug.\n'
+                             'See http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=102171\n')  # noqa: E501
+        toc = cdrdao.ReadTOCTask(device).table
         assert toc.hasTOC()
         return toc
 
