@@ -114,7 +114,7 @@ class OperatorTestCase(unittest.TestCase):
     def testLoadOneDone(self):
         self.assertEqual(len(self._operator._done), 0)
         self._operator.save()
-        self._operator.next()
+        next(self._operator)
         self.assertEqual(len(self._operator._done), 1)
 
         o = renamer.Operator(self._statePath, 'test')
@@ -125,7 +125,7 @@ class OperatorTestCase(unittest.TestCase):
         self.assertEqual(o._done, self._operator._done)
 
         # now continue
-        o.next()
+        next(o)
         self.assertEqual(len(o._done), 2)
         os.unlink(self._destination)
 
@@ -146,9 +146,9 @@ class OperatorTestCase(unittest.TestCase):
         self.assertEqual(o._done, self._operator._done)
 
         # now continue, resuming
-        o.next()
+        next(o)
         self.assertEqual(len(o._done), 1)
-        o.next()
+        next(o)
         self.assertEqual(len(o._done), 2)
 
         os.unlink(self._destination)
