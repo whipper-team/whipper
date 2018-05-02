@@ -23,7 +23,7 @@ class AudioLengthTask(ctask.PopenTask):
         """
         @type  path: unicode
         """
-        assert type(path) is unicode, "%r is not unicode" % path
+        assert isinstance(path, unicode), "%r is not unicode" % path
 
         self.logName = os.path.basename(path).encode('utf-8')
 

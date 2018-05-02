@@ -36,7 +36,7 @@ def main():
         ret = cmd.do()
     except SystemError as e:
         sys.stderr.write('whipper: error: %s\n' % e)
-        if (type(e) is common.EjectError and
+        if (isinstance(e, common.EjectError) and
                 cmd.options.eject in ('failure', 'always')):
             eject_device(e.device)
         return 255

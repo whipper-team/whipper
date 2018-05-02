@@ -92,7 +92,7 @@ class Track:
         @type path:  unicode or None
         """
         if path is not None:
-            assert type(path) is unicode, "%r is not unicode" % path
+            assert isinstance(path, unicode), "%r is not unicode" % path
 
         i = Index(number, absolute, path, relative, counter)
         self.indexes[number] = i
@@ -107,13 +107,11 @@ class Track:
         Typically this is INDEX 01; but it could be INDEX 00 if there's
         a pre-gap.
         """
-        indexes = list(self.indexes.keys())
-        indexes.sort()
+        indexes = sorted(self.indexes.keys())
         return self.indexes[indexes[0]]
 
     def getLastIndex(self):
-        indexes = list(self.indexes.keys())
-        indexes.sort()
+        indexes = sorted(self.indexes.keys())
         return self.indexes[indexes[-1]]
 
     def getPregap(self):
@@ -145,7 +143,7 @@ class Index:
                  counter=None):
 
         if path is not None:
-            assert type(path) is unicode, "%r is not unicode" % path
+            assert isinstance(path, unicode), "%r is not unicode" % path
 
         self.number = number
         self.absolute = absolute
@@ -543,8 +541,7 @@ class Table(object):
             if not track.audio:
                 continue
 
-            indexes = list(track.indexes.keys())
-            indexes.sort()
+            indexes = sorted(track.indexes.keys())
 
             wroteTrack = False
 

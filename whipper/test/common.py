@@ -30,7 +30,7 @@ def _diff(old, new, desc):
 
 def diffStrings(orig, new, desc='input'):
 
-    assert type(orig) == type(new), 'type %s and %s are different' % (
+    assert isinstance(orig, type(new)), 'type %s and %s are different' % (
         type(orig), type(new))
 
     def _tolines(s):

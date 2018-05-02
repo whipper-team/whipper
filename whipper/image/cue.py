@@ -71,7 +71,7 @@ class CueFile(object):
         """
         @type  path: unicode
         """
-        assert type(path) is unicode, "%r is not unicode" % path
+        assert isinstance(path, unicode), "%r is not unicode" % path
 
         self._path = path
         self._rems = {}
@@ -196,7 +196,7 @@ class File:
         """
         @type  path: unicode
         """
-        assert type(path) is unicode, "%r is not unicode" % path
+        assert isinstance(path, unicode), "%r is not unicode" % path
 
         self.path = path
         self.format = format

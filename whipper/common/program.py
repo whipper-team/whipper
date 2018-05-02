@@ -115,7 +115,7 @@ class Program:
         tdict = {}
 
         # Ignore old cache, since we do not know what offset it used.
-        if type(ptable.object) is dict:
+        if isinstance(ptable.object, dict):
             tdict = ptable.object
 
             if offset in tdict:
@@ -193,8 +193,8 @@ class Program:
           - %x: audio extension, lowercase
           - %X: audio extension, uppercase
         """
-        assert type(outdir) is unicode, "%r is not unicode" % outdir
-        assert type(template) is unicode, "%r is not unicode" % template
+        assert isinstance(outdir, unicode), "%r is not unicode" % outdir
+        assert isinstance(template, unicode), "%r is not unicode" % template
         v = {}
         v['A'] = 'Unknown Artist'
         v['d'] = mbdiscid  # fallback for title

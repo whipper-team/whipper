@@ -357,7 +357,7 @@ Log files will log the path to tracks relative to this directory.
             logger.debug('ripIfNotRipped: path %r' % path)
             trackResult.number = number
 
-            assert type(path) is unicode, "%r is not unicode" % path
+            assert isinstance(path, unicode), "%r is not unicode" % path
             trackResult.filename = path
             if number > 0:
                 trackResult.pregap = self.itable.tracks[number - 1].getPregap()

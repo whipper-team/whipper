@@ -238,7 +238,7 @@ class ReadTrackTask(task.Task):
         @param what:   a string representing what's being read; e.g. Track
         @type  what:   str
         """
-        assert type(path) is unicode, "%r is not unicode" % path
+        assert isinstance(path, unicode), "%r is not unicode" % path
 
         self.path = path
         self._table = table

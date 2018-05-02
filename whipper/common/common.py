@@ -197,7 +197,7 @@ def getRealPath(refPath, filePath):
 
     @type  filePath: unicode
     """
-    assert type(filePath) is unicode, "%r is not unicode" % filePath
+    assert isinstance(filePath, unicode), "%r is not unicode" % filePath
 
     if os.path.exists(filePath):
         return filePath
