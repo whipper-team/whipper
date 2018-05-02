@@ -30,7 +30,7 @@ def main():
     distributions, _ = pkg_resources.working_set.find_plugins(
         pkg_resources.Environment([directory.data_path('plugins')])
     )
-    map(pkg_resources.working_set.add, distributions)
+    list(map(pkg_resources.working_set.add, distributions))
     try:
         cmd = Whipper(sys.argv[1:], os.path.basename(sys.argv[0]), None)
         ret = cmd.do()
