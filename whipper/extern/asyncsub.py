@@ -167,10 +167,10 @@ if __name__ == '__main__':
         shell, commands, tail = ('sh', ('ls', 'echo HELLO WORLD'), '\n')
 
     a = Popen(shell, stdin=PIPE, stdout=PIPE)
-    print recv_some(a),
+    print(recv_some(a))
     for cmd in commands:
         send_all(a, cmd + tail)
-        print recv_some(a),
+        print(recv_some(a))
     send_all(a, 'exit' + tail)
-    print recv_some(a, e=0)
+    print(recv_some(a, e=0))
     a.wait()

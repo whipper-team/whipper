@@ -79,7 +79,7 @@ Retags the image from the given .cue files with tags obtained from MusicBrainz.
                                                 prompt=self.options.prompt)
 
             if not prog.metadata:
-                print 'Not in MusicBrainz database, skipping'
+                print('Not in MusicBrainz database, skipping')
                 continue
 
             prog.metadata.discid = mbdiscid
@@ -98,10 +98,10 @@ Retags the image from the given .cue files with tags obtained from MusicBrainz.
                 runner.run(t)
                 path = os.path.basename(path)
                 if t.changed:
-                    print 'Retagged %s' % path
+                    print('Retagged %s' % path)
                 else:
-                    print '%s already tagged correctly' % path
-            print
+                    print('%s already tagged correctly' % path)
+            print()
 
 
 class Verify(BaseCommand):

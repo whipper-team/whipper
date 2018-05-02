@@ -338,7 +338,7 @@ class TocFile(object):
             if m:
                 if not currentTrack:
                     self.message(number, 'START without preceding TRACK')
-                    print 'ouch'
+                    print('ouch')
                     continue
 
                 length = common.msfToFrames(m.group('length'))
@@ -362,7 +362,7 @@ class TocFile(object):
             if m:
                 if not currentTrack:
                     self.message(number, 'INDEX without preceding TRACK')
-                    print 'ouch'
+                    print('ouch')
                     continue
 
                 indexNumber += 1

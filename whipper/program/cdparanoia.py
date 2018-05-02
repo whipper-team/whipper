@@ -384,7 +384,7 @@ class ReadTrackTask(task.Task):
 
         if not self.exception and self._popen.returncode != 0:
             if self._errors:
-                print "\n".join(self._errors)
+                print("\n".join(self._errors))
             else:
                 logger.warning('exit code %r', self._popen.returncode)
                 self.exception = ReturnCodeError(self._popen.returncode)
@@ -549,7 +549,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
             else:
                 logger.debug('stop: exception %r', self.exception)
         except Exception, e:
-            print 'WARNING: unhandled exception %r' % (e, )
+            print('WARNING: unhandled exception %r' % (e, ))
 
         task.MultiSeparateTask.stop(self)
 

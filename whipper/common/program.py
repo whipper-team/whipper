@@ -425,7 +425,7 @@ class Program:
                     mbidTrack = track.mbid
                     mbidTrackArtist = track.mbidArtist
                 except IndexError, e:
-                    print 'ERROR: no track %d found, %r' % (number, e)
+                    print('ERROR: no track %d found, %r' % (number, e))
                     raise
             else:
                 # htoa defaults to disc's artist

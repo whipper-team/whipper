@@ -150,7 +150,7 @@ class Task(LogStub):
         self.debug('stopping')
         self.running = False
         if not self.runner:
-            print 'ERROR: stopping task which is already stopped'
+            print('ERROR: stopping task which is already stopped')
             import traceback
             traceback.print_stack()
         self.runner = None
@@ -214,7 +214,7 @@ class Task(LogStub):
 
     def schedule(self, delta, callable, *args, **kwargs):
         if not self.runner:
-            print "ERROR: scheduling on a task that's altready stopped"
+            print("ERROR: scheduling on a task that's altready stopped")
             import traceback
             traceback.print_stack()
             return

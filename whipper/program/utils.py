@@ -31,5 +31,5 @@ def unmount_device(device):
     logger.debug('possibly unmount real path %r' % device)
     proc = open('/proc/mounts').read()
     if device in proc:
-        print 'Device %s is mounted, unmounting' % device
+        print('Device %s is mounted, unmounting' % device)
         os.system('umount %s' % device)

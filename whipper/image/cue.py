@@ -130,7 +130,7 @@ class CueFile(object):
             if m:
                 if not currentTrack:
                     self.message(number, 'INDEX without preceding TRACK')
-                    print 'ouch'
+                    print('ouch')
                     continue
 
                 indexNumber = int(m.expand('\\1'))

@@ -105,5 +105,5 @@ You can get help on subcommands by using the -h option to the subcommand.
             self.parser.print_help()
             sys.exit(0)
         if self.options.version:
-            print "whipper %s" % whipper.__version__
+            print("whipper %s" % whipper.__version__)
             sys.exit(0)

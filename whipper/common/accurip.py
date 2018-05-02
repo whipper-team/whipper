@@ -271,9 +271,9 @@ def print_report(result):
             logger.error(
                 'no track AR CRC on non-HTOA track %d' % track.number
             )
-            print('track %2d: unknown          (error)' % track.number)
+            print(('track %2d: unknown          (error)' % track.number))
         else:
-            print('track %2d: %-16s %-23s v1 [%s], v2 [%s], DB [%s]' % (
+            print(('track %2d: %-16s %-23s v1 [%s], v2 [%s], DB [%s]' % (
                 track.number, status, conf,
                 track.AR['v1']['CRC'], track.AR['v2']['CRC'], db
-            ))
+            )))
