@@ -25,7 +25,7 @@ class CureTestCase(common.TestCase):
         # its length is all of track 1 from .toc, plus the INDEX 00 length
         # of track 2
         self.assertEqual(self.toc.getTrackLength(t),
-                          (((6 * 60) + 16) * 75 + 45) + ((1 * 75) + 4))
+                         (((6 * 60) + 16) * 75 + 45) + ((1 * 75) + 4))
         # last track has unknown length
         t = self.toc.table.tracks[-1]
         self.assertEqual(self.toc.getTrackLength(t), -1)
@@ -90,7 +90,7 @@ class CureTestCase(common.TestCase):
 
         # we verify it because it has failed in readdisc in the past
         self.assertEqual(self.toc.table.accuraterip_path(),
-                          '3/c/4/dBAR-013-0019d4c3-00fe8924-b90c650d.bin')
+                         '3/c/4/dBAR-013-0019d4c3-00fe8924-b90c650d.bin')
 
     def testGetRealPath(self):
         self.assertRaises(KeyError, self.toc.getRealPath, u'track01.wav')
@@ -165,7 +165,7 @@ class BlocTestCase(common.TestCase):
     def testAccurateRip(self):
         # we verify it because it has failed in readdisc in the past
         self.assertEqual(self.toc.table.accuraterip_path(),
-                          'e/d/2/dBAR-013-001af2de-0105994e-ad0be00d.bin')
+                         'e/d/2/dBAR-013-001af2de-0105994e-ad0be00d.bin')
 
 # The Breeders - Mountain Battles has CDText
 
@@ -214,7 +214,7 @@ class LadyhawkeTestCase(common.TestCase):
 
     def testMusicBrainz(self):
         self.assertEqual(self.toc.table.getMusicBrainzDiscId(),
-                          "KnpGsLhvH.lPrNc1PBL21lb9Bg4-")
+                         "KnpGsLhvH.lPrNc1PBL21lb9Bg4-")
         self.assertEqual(self.toc.table.getMusicBrainzSubmitURL(),
             "https://musicbrainz.org/cdtoc/attach?toc=1+12+195856+150+15687+31841+51016+66616+81352+99559+116070+133243+149997+161710+177832&tracks=12&id=KnpGsLhvH.lPrNc1PBL21lb9Bg4-")  # noqa: E501
 
@@ -262,7 +262,7 @@ class CapitalMergeTestCase(common.TestCase):
         # 197850+24320+44855+64090+77885+88095+104020+118245+129255+141765+
         # 164487+181780&tracks=11&id=MAj3xXf6QMy7G.BIFOyHyq4MySE-
         self.assertEqual(self.table.getMusicBrainzDiscId(),
-                          "MAj3xXf6QMy7G.BIFOyHyq4MySE-")
+                         "MAj3xXf6QMy7G.BIFOyHyq4MySE-")
 
     def testDuration(self):
         # this matches track 11 end sector - track 1 start sector on

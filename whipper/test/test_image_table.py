@@ -59,13 +59,13 @@ class LadyhawkeTestCase(tcommon.TestCase):
         # however, not (yet) in MusicBrainz database
 
         self.assertEqual(self.table.getMusicBrainzDiscId(),
-                          "KnpGsLhvH.lPrNc1PBL21lb9Bg4-")
+                         "KnpGsLhvH.lPrNc1PBL21lb9Bg4-")
 
     def testAccurateRip(self):
         self.assertEqual(self.table.accuraterip_ids(), (
             "0013bd5a", "00b8d489"))
         self.assertEqual(self.table.accuraterip_path(),
-                          "a/5/d/dBAR-012-0013bd5a-00b8d489-c60af50d.bin")
+                         "a/5/d/dBAR-012-0013bd5a-00b8d489-c60af50d.bin")
 
     def testDuration(self):
         self.assertEqual(self.table.duration(), 2761413)
@@ -94,7 +94,7 @@ class MusicBrainzTestCase(tcommon.TestCase):
 
     def testMusicBrainz(self):
         self.assertEqual(self.table.getMusicBrainzDiscId(),
-                          '49HHV7Eb8UKF3aQiNmu1GR8vKTY-')
+                         '49HHV7Eb8UKF3aQiNmu1GR8vKTY-')
 
 
 class PregapTestCase(tcommon.TestCase):

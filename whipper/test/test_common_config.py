@@ -69,8 +69,8 @@ class ConfigTestCase(tcommon.TestCase):
 
     def test_get_musicbrainz_server(self):
         self.assertEqual(self._config.get_musicbrainz_server(),
-                          'musicbrainz.org',
-                          msg='Default value is correct')
+                         'musicbrainz.org',
+                         msg='Default value is correct')
 
         self._config._parser.add_section('musicbrainz')
 
@@ -78,8 +78,8 @@ class ConfigTestCase(tcommon.TestCase):
                                  '192.168.2.141:5000')
         self._config.write()
         self.assertEqual(self._config.get_musicbrainz_server(),
-                          '192.168.2.141:5000',
-                          msg='Correctly returns user-set value')
+                         '192.168.2.141:5000',
+                         msg='Correctly returns user-set value')
 
         self._config._parser.set('musicbrainz', 'server',
                                  '192.168.2.141:5000/hello/world')

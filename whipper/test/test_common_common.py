@@ -46,7 +46,7 @@ class GetRelativePathTestCase(tcommon.TestCase):
         track = './' + directory + '/01. Placebo - Taste in Men.flac'
 
         self.assertEqual(common.getRelativePath(track, cue),
-                          '01. Placebo - Taste in Men.flac')
+                         '01. Placebo - Taste in Men.flac')
 
 
 class GetRealPathTestCase(tcommon.TestCase):
@@ -55,13 +55,11 @@ class GetRealPathTestCase(tcommon.TestCase):
         fd, path = tempfile.mkstemp(suffix=u'back\\slash.flac')
         refPath = os.path.join(os.path.dirname(path), 'fake.cue')
 
-        self.assertEqual(common.getRealPath(refPath, path),
-                          path)
+        self.assertEqual(common.getRealPath(refPath, path), path)
 
         # same path, but with wav extension, will point to flac file
         wavPath = path[:-4] + 'wav'
-        self.assertEqual(common.getRealPath(refPath, wavPath),
-                          path)
+        self.assertEqual(common.getRealPath(refPath, wavPath), path)
 
         os.close(fd)
         os.unlink(path)
