@@ -570,7 +570,7 @@ class Program:
 
         checksums = accurip.calculate_checksums([
             os.path.join(os.path.dirname(self.cuePath), t.indexes[1].path)
-            for t in filter(lambda t: t.number != 0, cueImage.cue.table.tracks)
+            for t in [t for t in cueImage.cue.table.tracks if t.number != 0]
         ])
         if not (checksums and any(checksums['v1']) and any(checksums['v2'])):
             return False
