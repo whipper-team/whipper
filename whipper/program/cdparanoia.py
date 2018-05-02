@@ -161,7 +161,7 @@ class ProgressParser:
         # FIXME: doing this is way too slow even for a testcase, so disable
         if False:
             for frame in range(markStart, markEnd):
-                if frame not in self._reads.keys():
+                if frame not in list(self._reads.keys()):
                     self._reads[frame] = 0
                 self._reads[frame] += 1
 

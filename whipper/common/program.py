@@ -71,10 +71,10 @@ class Program:
 
         d = {}
 
-        for key, default in {
+        for key, default in list({
             'fat': True,
             'special': False
-        }.items():
+        }.items()):
             value = None
             value = self._config.getboolean('main', 'path_filter_' + key)
             if value is None:
@@ -375,7 +375,7 @@ class Program:
                                            releaseTitle, i,
                                            metadata.releaseTitle))
 
-                if (not release and len(deltas.keys()) > 1):
+                if (not release and len(list(deltas)) > 1):
                     self._stdout.write('\n')
                     self._stdout.write('Picked closest match in duration.\n')
                     self._stdout.write('Others may be wrong in MusicBrainz, '

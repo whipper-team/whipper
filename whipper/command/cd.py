@@ -222,7 +222,7 @@ Log files will log the path to tracks relative to this directory.
     # Requires opts.device
 
     def add_arguments(self):
-        loggers = result.getLoggers().keys()
+        loggers = list(result.getLoggers())
         default_offset = None
         info = drive.getDeviceInfo(self.opts.device)
         if info:
