@@ -237,7 +237,7 @@ class Task(LogStub):
                 method = getattr(l, methodName)
                 try:
                     method(self, *args, **kwargs)
-                except Exception, e:
+                except Exception as e:
                     self.setException(e)
 
 
@@ -349,7 +349,7 @@ class BaseMultiTask(Task, ITaskListener):
             task.start(self.runner)
             self.debug('BaseMultiTask.next(): started task %d of %d: %r',
                        self._task, len(self.tasks), task)
-        except Exception, e:
+        except Exception as e:
             self.setException(e)
             self.debug('Got exception during next: %r', self.exceptionMessage)
             self.stop()
@@ -502,7 +502,7 @@ class SyncRunner(TaskRunner, ITaskListener):
         try:
             self.debug('start task %r' % task)
             task.start(self)
-        except Exception, e:
+        except Exception as e:
             # getExceptionMessage uses global exception state that doesn't
             # hang around, so store the message
             task.setException(e)
@@ -516,7 +516,7 @@ class SyncRunner(TaskRunner, ITaskListener):
                          callable, args, kwargs)
                 callable(*args, **kwargs)
                 return False
-            except Exception, e:
+            except Exception as e:
                 self.debug('exception when calling scheduled callable %r',
                            callable)
                 task.setException(e)

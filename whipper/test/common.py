@@ -49,9 +49,9 @@ class TestCase(unittest.TestCase):
     def failUnlessRaises(self, exception, f, *args, **kwargs):
         try:
             result = f(*args, **kwargs)
-        except exception, inst:
+        except exception as inst:
             return inst
-        except exception, e:
+        except exception as e:
             raise Exception('%s raised instead of %s:\n %s' %
                             (sys.exec_info()[0], exception.__name__, str(e))
                             )

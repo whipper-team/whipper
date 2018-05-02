@@ -169,7 +169,7 @@ class _CD(BaseCommand):
             try:
                 self.program.result.cdparanoiaDefeatsCache = \
                     self.config.getDefeatsCache(*info)
-            except KeyError, e:
+            except KeyError as e:
                 logger.debug('Got key error: %r' % (e, ))
         self.program.result.artist = self.program.metadata \
             and self.program.metadata.artist \
@@ -409,7 +409,7 @@ Log files will log the path to tracks relative to this directory.
                                                   len(self.itable.tracks),
                                                   extra))
                         break
-                    except Exception, e:
+                    except Exception as e:
                         logger.debug('Got exception %r on try %d',
                                      e, tries)
 

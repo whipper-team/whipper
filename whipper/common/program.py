@@ -252,7 +252,7 @@ class Program:
             if code == 200:
                 return md['title']
 
-        except IOError, e:
+        except IOError as e:
             # FIXME: for some reason errno is a str ?
             if e.errno == 'socket error':
                 self._stdout.write("Warning: network error: %r\n" % (e, ))
@@ -283,13 +283,13 @@ class Program:
                                               country=country,
                                               record=self._record)
                 break
-            except mbngs.NotFoundException, e:
+            except mbngs.NotFoundException as e:
                 logger.warning("release not found: %r" % (e, ))
                 break
-            except musicbrainzngs.NetworkError, e:
+            except musicbrainzngs.NetworkError as e:
                 logger.warning("network error: %r" % (e, ))
                 break
-            except mbngs.MusicBrainzException, e:
+            except mbngs.MusicBrainzException as e:
                 logger.warning("musicbrainz exception: %r" % (e, ))
                 time.sleep(5)
                 continue
@@ -424,7 +424,7 @@ class Program:
                     title = track.title
                     mbidTrack = track.mbid
                     mbidTrackArtist = track.mbidArtist
-                except IndexError, e:
+                except IndexError as e:
                     print('ERROR: no track %d found, %r' % (number, e))
                     raise
             else:
@@ -478,7 +478,7 @@ class Program:
 
         try:
             runner.run(t)
-        except task.TaskException, e:
+        except task.TaskException as e:
             if isinstance(e.exception, common.MissingFrames):
                 logger.warning('missing frames for %r' % trackResult.filename)
                 return False

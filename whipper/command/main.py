@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 def main():
     try:
         server = config.Config().get_musicbrainz_server()
-    except KeyError, e:
+    except KeyError as e:
         sys.stderr.write('whipper: %s\n' % e.message)
         sys.exit()
 
@@ -34,20 +34,20 @@ def main():
     try:
         cmd = Whipper(sys.argv[1:], os.path.basename(sys.argv[0]), None)
         ret = cmd.do()
-    except SystemError, e:
+    except SystemError as e:
         sys.stderr.write('whipper: error: %s\n' % e)
         if (type(e) is common.EjectError and
                 cmd.options.eject in ('failure', 'always')):
             eject_device(e.device)
         return 255
-    except RuntimeError, e:
+    except RuntimeError as e:
         print(e)
         return 1
     except KeyboardInterrupt:
         return 2
-    except ImportError, e:
+    except ImportError as e:
         raise
-    except task.TaskException, e:
+    except task.TaskException as e:
         if isinstance(e.exception, ImportError):
             raise ImportError(e.exception)
         elif isinstance(e.exception, common.MissingDependencyException):

@@ -298,7 +298,7 @@ class VersionGetter(object):
             vre = self._regexp.search(output)
             if vre:
                 version = self._expander % vre.groupdict()
-        except OSError, e:
+        except OSError as e:
             import errno
             if e.errno == errno.ENOENT:
                 raise MissingDependencyException(self._dep)

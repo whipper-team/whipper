@@ -44,7 +44,7 @@ class PopenTask(task.Task):
                                          stdout=subprocess.PIPE,
                                          stderr=subprocess.PIPE,
                                          close_fds=True, cwd=self.cwd)
-        except OSError, e:
+        except OSError as e:
             import errno
             if e.errno == errno.ENOENT:
                 self.commandMissing()
@@ -88,7 +88,7 @@ class PopenTask(task.Task):
                 return
 
             self._done()
-        except Exception, e:
+        except Exception as e:
             logger.debug('exception during _read(): %r', str(e))
             self.setException(e)
             self.stop()

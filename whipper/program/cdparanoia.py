@@ -299,7 +299,7 @@ class ReadTrackTask(task.Task):
                                          stdout=subprocess.PIPE,
                                          stderr=subprocess.PIPE,
                                          close_fds=True)
-        except OSError, e:
+        except OSError as e:
             import errno
             if e.errno == errno.ENOENT:
                 raise common.MissingDependencyException('cd-paranoia')
@@ -478,7 +478,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         try:
             tmpoutpath = path + u'.part'
             open(tmpoutpath, 'wb').close()
-        except IOError, e:
+        except IOError as e:
             if errno.ENAMETOOLONG != e.errno:
                 raise
             path = common.shrinkPath(path)
@@ -540,7 +540,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
                     try:
                         logger.debug('Moving to final path %r', self.path)
                         os.rename(self._tmppath, self.path)
-                    except Exception, e:
+                    except Exception as e:
                         logger.debug('Exception while moving to final '
                                      'path %r: %r', self.path, str(e))
                         self.exception = e
@@ -548,7 +548,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
                     os.unlink(self._tmppath)
             else:
                 logger.debug('stop: exception %r', self.exception)
-        except Exception, e:
+        except Exception as e:
             print('WARNING: unhandled exception %r' % (e, ))
 
         task.MultiSeparateTask.stop(self)

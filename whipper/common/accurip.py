@@ -156,7 +156,7 @@ def _save_entry(raw_entry, path):
     # XXX: os.makedirs(exist_ok=True) in py3
     try:
         makedirs(dirname(path))
-    except OSError, e:
+    except OSError as e:
         if e.errno != EEXIST:
             logger.error('could not save entry to %s: %r' % (path, str(e)))
             return
