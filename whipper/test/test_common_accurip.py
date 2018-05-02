@@ -31,7 +31,7 @@ class TestAccurateRipResponse(TestCase):
         accurip._CACHE_DIR = self.cache_dir
 
         def cleanup(cachedir):
-            chmod(cachedir, 0755)
+            chmod(cachedir, 0o755)
             rmtree(cachedir)
         self.addCleanup(cleanup, self.cache_dir)
 
@@ -52,7 +52,7 @@ class TestAccurateRipResponse(TestCase):
     def test_can_return_entry_without_saving(self):
         chmod(self.cache_dir, 0)
         self.assertEqual(get_db_entry(self.path), self.entry)
-        chmod(self.cache_dir, 0755)
+        chmod(self.cache_dir, 0o755)
         self.assertFalse(exists(join(self.cache_dir, self.path)))
 
     def test_retrieves_and_saves_accuraterip_entry(self):
