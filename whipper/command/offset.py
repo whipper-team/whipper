@@ -70,7 +70,7 @@ CD in the AccurateRip database."""
         for b in blocks:
             if ':' in b:
                 a, b = b.split(':')
-                self._offsets.extend(range(int(a), int(b) + 1))
+                self._offsets.extend(list(range(int(a), int(b) + 1)))
             else:
                 self._offsets.append(int(b))
 
