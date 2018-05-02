@@ -14,10 +14,10 @@ class TrackTestCase(tcommon.TestCase):
 
     def testRepr(self):
         track = table.Track(1)
-        self.assertEquals(repr(track), "<Track 01>")
+        self.assertEqual(repr(track), "<Track 01>")
 
         track.index(1, 100)
-        self.failUnless(repr(track.indexes[1]).startswith('<Index 01 '))
+        self.assertTrue(repr(track.indexes[1]).startswith('<Index 01 '))
 
 
 class LadyhawkeTestCase(tcommon.TestCase):
@@ -41,15 +41,15 @@ class LadyhawkeTestCase(tcommon.TestCase):
         for i, offset in enumerate(offsets):
             t[i].index(1, absolute=offset)
 
-        self.failIf(self.table.hasTOC())
+        self.assertFalse(self.table.hasTOC())
 
         self.table.leadout = 210385
 
-        self.failUnless(self.table.hasTOC())
-        self.assertEquals(self.table.tracks[0].getPregap(), 0)
+        self.assertTrue(self.table.hasTOC())
+        self.assertEqual(self.table.tracks[0].getPregap(), 0)
 
     def testCDDB(self):
-        self.assertEquals(self.table.getCDDBDiscId(), "c60af50d")
+        self.assertEqual(self.table.getCDDBDiscId(), "c60af50d")
 
     def testMusicBrainz(self):
         # output from mb-submit-disc:
@@ -58,17 +58,17 @@ class LadyhawkeTestCase(tcommon.TestCase):
         # 177832&tracks=12&id=KnpGsLhvH.lPrNc1PBL21lb9Bg4-
         # however, not (yet) in MusicBrainz database
 
-        self.assertEquals(self.table.getMusicBrainzDiscId(),
+        self.assertEqual(self.table.getMusicBrainzDiscId(),
                           "KnpGsLhvH.lPrNc1PBL21lb9Bg4-")
 
     def testAccurateRip(self):
-        self.assertEquals(self.table.accuraterip_ids(), (
+        self.assertEqual(self.table.accuraterip_ids(), (
             "0013bd5a", "00b8d489"))
-        self.assertEquals(self.table.accuraterip_path(),
+        self.assertEqual(self.table.accuraterip_path(),
                           "a/5/d/dBAR-012-0013bd5a-00b8d489-c60af50d.bin")
 
     def testDuration(self):
-        self.assertEquals(self.table.duration(), 2761413)
+        self.assertEqual(self.table.duration(), 2761413)
 
 
 class MusicBrainzTestCase(tcommon.TestCase):
@@ -86,14 +86,14 @@ class MusicBrainzTestCase(tcommon.TestCase):
         for i, offset in enumerate(offsets):
             t[i].index(1, absolute=offset)
 
-        self.failIf(self.table.hasTOC())
+        self.assertFalse(self.table.hasTOC())
 
         self.table.leadout = 95312
 
-        self.failUnless(self.table.hasTOC())
+        self.assertTrue(self.table.hasTOC())
 
     def testMusicBrainz(self):
-        self.assertEquals(self.table.getMusicBrainzDiscId(),
+        self.assertEqual(self.table.getMusicBrainzDiscId(),
                           '49HHV7Eb8UKF3aQiNmu1GR8vKTY-')
 
 
@@ -112,5 +112,5 @@ class PregapTestCase(tcommon.TestCase):
         t[1].index(0, offsets[1] - 200)
 
     def testPreGap(self):
-        self.assertEquals(self.table.tracks[0].getPregap(), 0)
-        self.assertEquals(self.table.tracks[1].getPregap(), 200)
+        self.assertEqual(self.table.tracks[0].getPregap(), 0)
+        self.assertEqual(self.table.tracks[1].getPregap(), 200)

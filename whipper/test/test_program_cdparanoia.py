@@ -25,7 +25,7 @@ class ParseTestCase(common.TestCase):
             self._parser.parse(line)
 
         q = '%.01f %%' % (self._parser.getTrackQuality() * 100.0, )
-        self.assertEquals(q, '99.6 %')
+        self.assertEqual(q, '99.6 %')
 
 
 class Parse1FrameTestCase(common.TestCase):
@@ -42,7 +42,7 @@ class Parse1FrameTestCase(common.TestCase):
             self._parser.parse(line)
 
         q = '%.01f %%' % (self._parser.getTrackQuality() * 100.0, )
-        self.assertEquals(q, '100.0 %')
+        self.assertEqual(q, '100.0 %')
 
 
 class ErrorTestCase(common.TestCase):
@@ -60,14 +60,14 @@ class ErrorTestCase(common.TestCase):
             self._parser.parse(line)
 
         q = '%.01f %%' % (self._parser.getTrackQuality() * 100.0, )
-        self.assertEquals(q, '79.6 %')
+        self.assertEqual(q, '79.6 %')
 
 
 class VersionTestCase(common.TestCase):
 
     def testGetVersion(self):
         v = cdparanoia.getCdParanoiaVersion()
-        self.failUnless(v)
+        self.assertTrue(v)
 
 
 class AnalyzeFileTask(cdparanoia.AnalyzeTask):
@@ -88,4 +88,4 @@ class CacheTestCase(common.TestCase):
                             'cdparanoia', 'PX-L890SA.cdparanoia-A.stderr')
         t = AnalyzeFileTask(path)
         self.runner.run(t)
-        self.failUnless(t.defeatsCache)
+        self.assertTrue(t.defeatsCache)

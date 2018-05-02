@@ -12,7 +12,7 @@ class DirectoryTestCase(common.TestCase):
 
     def testAll(self):
         path = directory.config_path()
-        self.failUnless(path.startswith(DirectoryTestCase.HOME_PARENT))
+        self.assertTrue(path.startswith(DirectoryTestCase.HOME_PARENT))
 
         path = directory.cache_path()
-        self.failUnless(path.startswith(DirectoryTestCase.HOME_PARENT))
+        self.assertTrue(path.startswith(DirectoryTestCase.HOME_PARENT))

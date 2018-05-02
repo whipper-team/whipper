@@ -9,8 +9,8 @@ class ListifyTestCase(common.TestCase):
 
     def testString(self):
         string = '/dev/sr0'
-        self.assertEquals(drive._listify(string), [string, ])
+        self.assertEqual(drive._listify(string), [string, ])
 
     def testList(self):
         lst = ['/dev/scd0', '/dev/sr0']
-        self.assertEquals(drive._listify(lst), lst)
+        self.assertEqual(drive._listify(lst), lst)

@@ -15,7 +15,7 @@ class PathTestCase(unittest.TestCase):
 
         path = prog.getPath(u'/tmp', DEFAULT_DISC_TEMPLATE,
                             'mbdiscid', None)
-        self.assertEquals(path,
+        self.assertEqual(path,
                           unicode('/tmp/unknown/Unknown Artist - mbdiscid/'
                                   'Unknown Artist - mbdiscid'))
 
@@ -27,7 +27,7 @@ class PathTestCase(unittest.TestCase):
 
         path = prog.getPath(u'/tmp', DEFAULT_DISC_TEMPLATE,
                             'mbdiscid', md, 0)
-        self.assertEquals(path,
+        self.assertEqual(path,
                           unicode('/tmp/unknown/Jeff Buckley - Grace/'
                                   'Jeff Buckley - Grace'))
 
@@ -38,5 +38,5 @@ class PathTestCase(unittest.TestCase):
         md.title = 'Grace'
 
         path = prog.getPath(u'/tmp', u'%A/%d', 'mbdiscid', md, 0)
-        self.assertEquals(path,
+        self.assertEqual(path,
                           u'/tmp/Jeff Buckley/Grace')
