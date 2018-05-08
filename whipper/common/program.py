@@ -329,7 +329,7 @@ class Program:
 
             if not release and len(metadatas) > 1:
                 # Select the release that most closely matches the duration.
-                lowest = min(deltas.keys())
+                lowest = min(list(deltas))
 
                 if prompt:
                     guess = (deltas[lowest])[0].mbid
