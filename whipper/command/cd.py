@@ -333,7 +333,7 @@ Log files will log the path to tracks relative to this directory.
                 sys.stdout.write("output directory %s already exists\n" %
                                  dirname.encode('utf-8'))
         else:
-            print(("creating output directory %s" % dirname.encode('utf-8')))
+            print("creating output directory %s" % dirname.encode('utf-8'))
             os.makedirs(dirname)
 
         # FIXME: turn this into a method
@@ -460,14 +460,14 @@ Log files will log the path to tracks relative to this directory.
         htoa = self.program.getHTOA()
         if htoa:
             start, stop = htoa
-            print(('found Hidden Track One Audio from frame %d to %d' % (
-                  start, stop)))
+            print('found Hidden Track One Audio from frame %d to %d' % (
+                  start, stop))
             _ripIfNotRipped(0)
 
         for i, track in enumerate(self.itable.tracks):
             # FIXME: rip data tracks differently
             if not track.audio:
-                print(('skipping data track %d, not implemented' % (i + 1)))
+                print('skipping data track %d, not implemented' % (i + 1))
                 # FIXME: make it work for now
                 track.indexes[1].relative = 0
                 continue
