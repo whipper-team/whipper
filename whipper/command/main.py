@@ -22,7 +22,7 @@ def main():
     try:
         server = config.Config().get_musicbrainz_server()
     except KeyError as e:
-        sys.stderr.write('whipper: %s\n' % e.message)
+        sys.stderr.write('whipper: %s\n' % str(e))
         sys.exit()
 
     musicbrainzngs.set_hostname(server)
