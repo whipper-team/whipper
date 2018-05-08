@@ -37,6 +37,8 @@ class WhipperLogger(result.Logger):
         lines.append("Ripping phase information:")
         lines.append("  Drive: %s%s (revision %s)" % (
             ripResult.vendor, ripResult.model, ripResult.release))
+        lines.append("  Extraction engine: cdparanoia %s" %
+                     ripResult.cdparanoiaVersion)
         if ripResult.cdparanoiaDefeatsCache is None:
             defeat = "Unknown"
         elif ripResult.cdparanoiaDefeatsCache:
