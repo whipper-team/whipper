@@ -18,9 +18,12 @@
 # You should have received a copy of the GNU General Public License
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 import sys
 
 import gobject
+
+logger = logging.getLogger(__name__)
 
 
 class TaskException(Exception):
@@ -70,21 +73,14 @@ class LogStub(object):
     I am a stub for a log interface.
     """
 
-    # log stubs
     def log(self, message, *args):
-        pass
+        logger.info(message, *args)
 
     def debug(self, message, *args):
-        pass
-
-    def info(self, message, *args):
-        pass
+        logger.debug(message, *args)
 
     def warning(self, message, *args):
-        pass
-
-    def error(self, message, *args):
-        pass
+        logger.warning(message, *args)
 
 
 class Task(LogStub):
