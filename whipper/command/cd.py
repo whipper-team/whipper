@@ -145,12 +145,20 @@ class _CD(BaseCommand):
                                              self.program.metadata)
         else:
             out_fpath = None
-        # now, read the complete index table, which is slower
-        offset = getattr(self.options, 'offset', 0)
-        self.itable = self.program.getTable(self.runner,
-                                            self.ittoc.getCDDBDiscId(),
-                                            self.ittoc.getMusicBrainzDiscId(),
-                                            self.device, offset, out_fpath)
+
+        info = drive.getDeviceInfo(self.device)
+        if info and self.config.getForceFastToc(*info):
+            # Some drives fail reading the detailed TOC. For those drives,
+            # 'force_fast_toc' may be set to skip this step and use the
+            # less detailed fast TOC.
+            self.program.result.table = self.itable = self.ittoc
+        else:
+            # now, read the complete index table, which is slower
+            offset = getattr(self.options, 'offset', 0)
+            self.itable = self.program.getTable(self.runner,
+                                                self.ittoc.getCDDBDiscId(),
+                                                self.ittoc.getMusicBrainzDiscId(),
+                                                self.device, offset, out_fpath)
 
         assert self.itable.getCDDBDiscId() == self.ittoc.getCDDBDiscId(), \
             "full table's id %s differs from toc id %s" % (
@@ -169,7 +177,6 @@ class _CD(BaseCommand):
         self.program.result.cdrdaoVersion = cdrdao.version()
         self.program.result.cdparanoiaVersion = \
             cdparanoia.getCdParanoiaVersion()
-        info = drive.getDeviceInfo(self.device)
         if info:
             try:
                 self.program.result.cdparanoiaDefeatsCache = \

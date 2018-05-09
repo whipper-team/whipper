@@ -105,6 +105,12 @@ class Config:
     def getDefeatsCache(self, vendor, model, release):
         return self._getDriveOption(vendor, model, release, 'defeats_cache') == 'True'
 
+    def getForceFastToc(self, vendor, model, release):
+        try:
+            return self._getDriveOption(vendor, model, release, 'force_fast_toc') == 'True'
+        except KeyError:
+            return False
+
     def _findDriveSection(self, vendor, model, release):
         for name in self._parser.sections():
             if not name.startswith('drive:'):
