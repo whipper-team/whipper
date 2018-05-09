@@ -21,7 +21,10 @@
 import logging
 import sys
 
-import gobject
+try:
+    from gi.repository import GLib as gobject
+except ImportError:
+    import gobject
 
 logger = logging.getLogger(__name__)
 
