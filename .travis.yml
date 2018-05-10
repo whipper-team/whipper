@@ -23,11 +23,6 @@ install:
     # Testing dependencies
     - pip install twisted flake8
 
-    # Build bundled C utils
-    - cd src
-    - sudo make install
-    - cd ..
-
     # Installing
     - python setup.py install
 

@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages, Extension
 
 setup(
     name="whipper",
@@ -11,6 +11,11 @@ setup(
     python_requires='>=2.7,<3',
     packages=find_packages(),
     setup_requires=['setuptools_scm'],
+    ext_modules=[
+        Extension('accuraterip',
+                  libraries=['sndfile'],
+                  sources=['src/accuraterip-checksum.c'])
+    ],
     entry_points={
         'console_scripts': [
             'whipper = whipper.command.main:main'

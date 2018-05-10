@@ -110,19 +110,14 @@ def calculate_checksums(track_paths):
     logger.debug('checksumming %d tracks', track_count)
     # This is done sequentially because it is very fast.
     for i, path in enumerate(track_paths):
-        v1_sum = accuraterip_checksum(
-            path, i+1, track_count, wave=True, v2=False
-        )
-        if not v1_sum:
+        v1_sum, v2_sum = accuraterip_checksum(path, i+1, track_count)
+        if v1_sum is None:
             logger.error('could not calculate AccurateRip v1 checksum '
                          'for track %d %r', i + 1, path)
             v1_checksums.append(None)
         else:
             v1_checksums.append("%08x" % v1_sum)
-        v2_sum = accuraterip_checksum(
-            path, i+1, track_count, wave=True, v2=True
-        )
-        if not v2_sum:
+        if v2_sum is None:
             logger.error('could not calculate AccurateRip v2 checksum '
                          'for track %d %r', i + 1, path)
             v2_checksums.append(None)

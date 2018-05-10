@@ -190,12 +190,7 @@ CD in the AccurateRip database."""
             track, offset)
         runner.run(t)
 
-        v1 = arc.accuraterip_checksum(
-                path, track, len(table.tracks), wave=True, v2=False
-            )
-        v2 = arc.accuraterip_checksum(
-                path, track, len(table.tracks), wave=True, v2=True
-            )
+        v1, v2 = arc.accuraterip_checksum(path, track, len(table.tracks))
 
         os.unlink(path)
         return "%08x" % v1, "%08x" % v2
