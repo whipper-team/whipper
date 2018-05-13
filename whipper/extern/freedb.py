@@ -44,74 +44,6 @@ class DiscID(object):
         self.track_count = track_count
         self.playable_length = playable_length
 
-    @classmethod
-    def from_cddareader(cls, cddareader):
-        """given a CDDAReader object, returns a DiscID for that object"""
-
-        def offset(sector):
-            # the HOWTO implies sectors should be lopped off, like:
-            # t = ((cdtoc[tot_trks].min * 60) + cdtoc[tot_trks].sec) -
-            #     ((cdtoc[0].min * 60) + cdtoc[0].sec);
-            minutes = sector // 75 // 60
-            seconds = sector // 75 % 60
-            return minutes * 60 + seconds
-
-        offsets = cddareader.track_offsets
-
-        return cls(offsets=[(offsets[k] // 588) + 150 for k in
-                            sorted(offsets.keys())],
-                   total_length=(offset(cddareader.last_sector + 150 + 1) -
-                                 offset(cddareader.first_sector + 150)),
-                   track_count=len(offsets),
-                   playable_length=(cddareader.last_sector + 150 + 1) // 75)
-
-    @classmethod
-    def from_tracks(cls, tracks):
-        """given a sorted list of tracks,
-        returns DiscID for those tracks as if they were a CD"""
-
-        from audiotools import has_pre_gap_track
-
-        if not has_pre_gap_track(tracks):
-            offsets = [150]
-            for track in tracks[0:-1]:
-                offsets.append(offsets[-1] + track.cd_frames())
-
-            #track_lengths = sum(t.cd_frames() for t in tracks) // 75
-            total_length = sum(t.seconds_length() for t in tracks)
-
-            return cls(offsets=offsets,
-                       total_length=int(total_length),
-                       track_count=len(tracks),
-                       playable_length=int(total_length + 2))
-        else:
-            offsets = [150 + tracks[0].cd_frames()]
-            for track in tracks[1:-1]:
-                offsets.append(offsets[-1] + track.cd_frames())
-
-            total_length = sum(t.seconds_length() for t in tracks[1:])
-
-            return cls(
-                offsets=offsets,
-                total_length=int(total_length),
-                track_count=len(tracks) - 1,
-                playable_length=int(total_length + 2))
-
-    @classmethod
-    def from_sheet(cls, sheet, total_pcm_frames, sample_rate):
-        """given a Sheet object
-        length of the album in PCM frames
-        and sample rate of the disc,
-        returns a DiscID for that CD"""
-
-        return cls(offsets=[int(t.index(1).offset() * 75 + 150)
-                            for t in sheet],
-                   total_length=((total_pcm_frames // sample_rate) -
-                                 int(sheet.track(1).index(1).offset())),
-                   track_count=len(sheet),
-                   playable_length=((total_pcm_frames + (sample_rate * 2)) //
-                                    sample_rate))
-
     def __repr__(self):
         return "DiscID({})".format(
             ", ".join(["{}={}".format(attr, getattr(self, attr))
@@ -224,7 +156,7 @@ def perform_lookup(disc_id, freedb_server, freedb_port):
                             else:
                                 freedb[entry.group(1)] = entry.group(2)
                     line = next(query)
-                yield list(xmcd_metadata(freedb))
+                yield freedb
             else:
                 raise ValueError("invalid response from server")
 
@@ -243,7 +175,7 @@ def freedb_command(freedb_server, freedb_port, cmd, *args):
     except ImportError:
         from urllib import urlencode
     from socket import getfqdn
-    from audiotools import VERSION
+    from whipper import __version__ as VERSION
     from sys import version_info
 
     PY3 = version_info[0] >= 3
@@ -265,7 +197,7 @@ def freedb_command(freedb_server, freedb_port, cmd, *args):
         (u"hello",
          u"user {} {} {}".format(
              getfqdn() if PY3 else getfqdn().decode("UTF-8", "replace"),
-             u"audiotools",
+             u"whipper",
              VERSION if PY3 else VERSION.decode("ascii"))))
 
     POST.append((u"proto", u"6"))
@@ -283,48 +215,3 @@ def freedb_command(freedb_server, freedb_port, cmd, *args):
             line = request.readline()
     finally:
         request.close()
-
-
-def xmcd_metadata(freedb_file):
-    """given a dict of KEY->value unicode strings,
-    yields a MetaData object per track"""
-
-    import re
-
-    TTITLE = re.compile(r'TTITLE(\d+)')
-
-    dtitle = freedb_file.get(u"DTITLE", u"")
-    if u" / " in dtitle:
-        (album_artist, album_name) = dtitle.split(u" / ", 1)
-    else:
-        album_artist = None
-        album_name = dtitle
-
-    year = freedb_file.get(u"DYEAR", None)
-
-    ttitles = [(int(m.group(1)), value) for (m, value) in
-               [(TTITLE.match(key), value) for (key, value) in
-                freedb_file.items()] if m is not None]
-
-    if len(ttitles) > 0:
-        track_total = max([tracknum for (tracknum, ttitle) in ttitles]) + 1
-    else:
-        track_total = 0
-
-    for (tracknum, ttitle) in sorted(ttitles, key=lambda t: t[0]):
-        if u" / " in ttitle:
-            (track_artist,
-             track_name) = ttitle.split(u" / ", 1)
-        else:
-            track_artist = album_artist
-            track_name = ttitle
-
-        from audiotools import MetaData
-
-        yield MetaData(
-            track_name=track_name,
-            track_number=tracknum + 1,
-            track_total=track_total,
-            album_name=album_name,
-            artist_name=(track_artist if track_artist is not None else None),
-            year=(year if year is not None else None))
