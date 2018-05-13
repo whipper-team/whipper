@@ -31,6 +31,7 @@ import time
 from whipper.common import accurip, cache, checksum, common, mbngs, path
 from whipper.program import cdrdao, cdparanoia
 from whipper.image import image
+from whipper.extern import freedb
 from whipper.extern.task import task
 
 import logging
@@ -245,12 +246,10 @@ class Program:
         @rtype: str
         """
         # FIXME: convert to nonblocking?
-        import CDDB
         try:
-            code, md = CDDB.query(cddbdiscid)
-            logger.debug('CDDB query result: %r, %r', code, md)
-            if code == 200:
-                return md['title']
+            md = freedb.perform_lookup(cddbdiscid, 'freedb.freedb.org', 80)
+            logger.debug('CDDB query result: %r', md)
+            return [item['DTITLE'] for item in md if 'DTITLE' in item] or None
 
         except IOError, e:
             # FIXME: for some reason errno is a str ?

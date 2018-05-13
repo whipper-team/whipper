@@ -29,6 +29,7 @@ import urlparse
 import whipper
 
 from whipper.common import common, config
+from whipper.extern.freedb import DiscID
 
 import logging
 logger = logging.getLogger(__name__)
@@ -270,9 +271,7 @@ class Table(object):
 
         @rtype:   list of int
         """
-        result = []
-
-        result.append(self.getAudioTracks())
+        offsets = []
 
         # cddb disc id takes into account data tracks
         # last byte is the number of tracks on the CD
@@ -285,7 +284,7 @@ class Table(object):
         debug = [str(len(self.tracks))]
         for track in self.tracks:
             offset = self.getTrackStart(track.number) + delta
-            result.append(offset)
+            offsets.append(offset)
             debug.append(str(offset))
             seconds = offset / common.FRAMES_PER_SECOND
             n += self._cddbSum(seconds)
@@ -306,10 +305,9 @@ class Table(object):
         # assert t == duration, "%r != %r" % (t, duration)
 
         debug.append(str(leadoutSeconds + 2))  # 2 is the 150 frame cddb offset
-        result.append(leadoutSeconds)
 
-        value = (n % 0xff) << 24 | t << 8 | len(self.tracks)
-        result.insert(0, value)
+        result = DiscID(offsets, t, len(self.tracks), leadoutSeconds)
+        value = int(result)
 
         # compare this debug line to cd-discid output
         logger.debug('cddb values: %r', result)
@@ -327,7 +325,7 @@ class Table(object):
         @returns: the 8-character hexadecimal disc ID
         """
         values = self.getCDDBValues()
-        return "%08x" % values[0]
+        return "%08x" % int(values)
 
     def getMusicBrainzDiscId(self):
         """
