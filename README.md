@@ -78,6 +78,7 @@ Whipper relies on the following packages in order to run correctly and provide a
 - [cd-paranoia](https://www.gnu.org/software/libcdio/), for the actual ripping
   - To avoid bugs it's advised to use `cd-paranoia` **10.2+0.94+2-2**
 - [cdrdao](http://cdrdao.sourceforge.net/), for session, TOC, pre-gap, and ISRC extraction
+- [GObject Introspection](https://wiki.gnome.org/Projects/GObjectIntrospection), to provide GLib-2.0 methods used by `task.py`
 - [PyGObject](https://pypi.org/project/PyGObject/), required by `task.py`
 - [python-musicbrainzngs](https://github.com/alastair/python-musicbrainzngs), for metadata lookup
 - [python-mutagen](https://pypi.python.org/pypi/mutagen), for tagging support
