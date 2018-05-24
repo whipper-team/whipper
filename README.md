@@ -48,7 +48,7 @@ https://web.archive.org/web/20160528213242/https://thomas.apestaart.org/thomas/t
 - Performs Test & Copy rips
 - Verifies rip accuracy using the [AccurateRip database](http://www.accuraterip.com/)
 - Uses [MusicBrainz](https://musicbrainz.org/doc/About) for metadata lookup
-- Supports reading the [pre-emphasis](http://wiki.hydrogenaud.io/index.php?title=Pre-emphasis) flag embedded into some CDs (and correctly tags the resulting rip)
+- Supports reading the [pre-emphasis](http://wiki.hydrogenaud.io/index.php?title=Pre-emphasis) flag embedded into some CDs (and correctly tags the resulting rip). _Currently whipper only reports the pre-emphasis flag value stored in the TOC._
 - Detects and rips _non digitally silent_ [Hidden Track One Audio](http://wiki.hydrogenaud.io/index.php?title=HTOA) (HTOA)
 - Provides batch ripping capabilities
 - Provides templates for file and directory naming
