@@ -16,8 +16,8 @@ class ResultCacheTestCase(tcommon.TestCase):
 
     def testGetResult(self):
         result = self.cache.getRipResult('fe105a11')
-        self.assertEquals(result.object.title, "The Writing's on the Wall")
+        self.assertEqual(result.object.title, "The Writing's on the Wall")
 
     def testGetIds(self):
         ids = self.cache.getIds()
-        self.assertEquals(ids, ['fe105a11'])
+        self.assertEqual(ids, ['fe105a11'])

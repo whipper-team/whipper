@@ -197,7 +197,7 @@ def getRealPath(refPath, filePath):
 
     @type  filePath: unicode
     """
-    assert type(filePath) is unicode, "%r is not unicode" % filePath
+    assert isinstance(filePath, unicode), "%r is not unicode" % filePath
 
     if os.path.exists(filePath):
         return filePath
@@ -298,7 +298,7 @@ class VersionGetter(object):
             vre = self._regexp.search(output)
             if vre:
                 version = self._expander % vre.groupdict()
-        except OSError, e:
+        except OSError as e:
             import errno
             if e.errno == errno.ENOENT:
                 raise MissingDependencyException(self._dep)

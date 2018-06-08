@@ -19,7 +19,7 @@ class AudioLengthTestCase(tcommon.TestCase):
         t = AudioLengthTask(path)
         runner = task.SyncRunner()
         runner.run(t, verbose=False)
-        self.assertEquals(t.length, base_track_length)
+        self.assertEqual(t.length, base_track_length)
 
 
 class AudioLengthPathTestCase(tcommon.TestCase):
@@ -32,7 +32,7 @@ class AudioLengthPathTestCase(tcommon.TestCase):
         t = AudioLengthTask(path)
         runner = task.SyncRunner()
         runner.run(t, verbose=False)
-        self.assertEquals(t.length, base_track_length)
+        self.assertEqual(t.length, base_track_length)
         os.unlink(path)
 
 

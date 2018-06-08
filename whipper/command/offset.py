@@ -67,7 +67,7 @@ CD in the AccurateRip database."""
         for b in blocks:
             if ':' in b:
                 a, b = b.split(':')
-                self._offsets.extend(range(int(a), int(b) + 1))
+                self._offsets.extend(list(range(int(a), int(b) + 1)))
             else:
                 self._offsets.append(int(b))
 
@@ -117,7 +117,7 @@ CD in the AccurateRip database."""
             sys.stdout.write('Trying read offset %d ...\n' % offset)
             try:
                 archecksums = self._arcs(runner, table, 1, offset)
-            except task.TaskException, e:
+            except task.TaskException as e:
 
                 # let MissingDependency fall through
                 if isinstance(e.exception,
@@ -150,7 +150,7 @@ CD in the AccurateRip database."""
                 for track in range(2, (len(table.tracks) + 1) - 1):
                     try:
                         archecksums = self._arcs(runner, table, track, offset)
-                    except task.TaskException, e:
+                    except task.TaskException as e:
                         if isinstance(e.exception, cdparanoia.FileSizeError):
                             sys.stdout.write(
                                 'WARNING: cannot rip with offset %d...\n' %

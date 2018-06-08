@@ -166,7 +166,7 @@ class _CD(BaseCommand):
             try:
                 self.program.result.cdparanoiaDefeatsCache = \
                     self.config.getDefeatsCache(*info)
-            except KeyError, e:
+            except KeyError as e:
                 logger.debug('Got key error: %r' % (e, ))
         self.program.result.artist = self.program.metadata \
             and self.program.metadata.artist \
@@ -219,7 +219,7 @@ Log files will log the path to tracks relative to this directory.
     # Requires opts.device
 
     def add_arguments(self):
-        loggers = result.getLoggers().keys()
+        loggers = list(result.getLoggers())
         default_offset = None
         info = drive.getDeviceInfo(self.opts.device)
         if info:
@@ -354,7 +354,7 @@ Log files will log the path to tracks relative to this directory.
             logger.debug('ripIfNotRipped: path %r' % path)
             trackResult.number = number
 
-            assert type(path) is unicode, "%r is not unicode" % path
+            assert isinstance(path, unicode), "%r is not unicode" % path
             trackResult.filename = path
             if number > 0:
                 trackResult.pregap = self.itable.tracks[number - 1].getPregap()
@@ -406,7 +406,7 @@ Log files will log the path to tracks relative to this directory.
                                                   len(self.itable.tracks),
                                                   extra))
                         break
-                    except Exception, e:
+                    except Exception as e:
                         logger.debug('Got exception %r on try %d',
                                      e, tries)
 
