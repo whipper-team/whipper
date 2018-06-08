@@ -83,7 +83,6 @@ Whipper relies on the following packages in order to run correctly and provide a
 - [python-musicbrainzngs](https://github.com/alastair/python-musicbrainzngs), for metadata lookup
 - [python-mutagen](https://pypi.python.org/pypi/mutagen), for tagging support
 - [python-setuptools](https://pypi.python.org/pypi/setuptools), for installation, plugins support
-- [python-cddb](http://cddb-py.sourceforge.net/), for showing (but not using) metadata if disc information aren't available in the MusicBrainz DB
 - [python-requests](https://pypi.python.org/pypi/requests), for retrieving AccurateRip database entries
 - [pycdio](https://pypi.python.org/pypi/pycdio/), for drive identification (required for drive offset and caching behavior to be stored in the configuration file).
   - To avoid bugs  it's advised to use `pycdio` **0.20** or **0.21** with `libcdio` ≥ **0.90** ≤ **0.94**. If using `libcdio` **0.83**, which is _too old_ to satisfy all the requirements of whipper, just stick to `pycdio` **0.17**. Altough it needs additional testing, `libcdio` **2.0.0** seems to work fine if used with `pycdio` **2.0.0**. All other combinations aren't guaranteed to work.
