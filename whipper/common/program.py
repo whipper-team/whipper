@@ -542,11 +542,6 @@ class Program:
             trackResult.filename = t.path
             logger.info('Filename changed to %r', trackResult.filename)
 
-    def retagImage(self, runner, taglists):
-        cueImage = image.Image(self.cuePath)
-        t = image.ImageRetagTask(cueImage, taglists)
-        runner.run(t)
-
     def verifyImage(self, runner, table):
         """
         verify table against accuraterip and cue_path track lengths

@@ -23,14 +23,11 @@ import os
 import sys
 import tempfile
 import logging
-import gobject
 from whipper.command.basecommand import BaseCommand
 from whipper.common import accurip, common, config, drive
 from whipper.common import task as ctask
 from whipper.program import arc, cdrdao, cdparanoia, utils
 from whipper.extern.task import task
-
-gobject.threads_init()
 
 logger = logging.getLogger(__name__)
 
