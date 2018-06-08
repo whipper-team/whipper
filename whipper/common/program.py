@@ -72,10 +72,10 @@ class Program:
 
         d = {}
 
-        for key, default in {
+        for key, default in list({
             'fat': True,
             'special': False
-        }.items():
+        }.items()):
             value = None
             value = self._config.getboolean('main', 'path_filter_' + key)
             if value is None:
@@ -116,7 +116,7 @@ class Program:
         tdict = {}
 
         # Ignore old cache, since we do not know what offset it used.
-        if type(ptable.object) is dict:
+        if isinstance(ptable.object, dict):
             tdict = ptable.object
 
             if offset in tdict:
@@ -194,8 +194,8 @@ class Program:
           - %x: audio extension, lowercase
           - %X: audio extension, uppercase
         """
-        assert type(outdir) is unicode, "%r is not unicode" % outdir
-        assert type(template) is unicode, "%r is not unicode" % template
+        assert isinstance(outdir, unicode), "%r is not unicode" % outdir
+        assert isinstance(template, unicode), "%r is not unicode" % template
         v = {}
         v['A'] = 'Unknown Artist'
         v['d'] = mbdiscid  # fallback for title
@@ -251,7 +251,7 @@ class Program:
             logger.debug('CDDB query result: %r', md)
             return [item['DTITLE'] for item in md if 'DTITLE' in item] or None
 
-        except IOError, e:
+        except IOError as e:
             # FIXME: for some reason errno is a str ?
             if e.errno == 'socket error':
                 self._stdout.write("Warning: network error: %r\n" % (e, ))
@@ -282,13 +282,13 @@ class Program:
                                               country=country,
                                               record=self._record)
                 break
-            except mbngs.NotFoundException, e:
+            except mbngs.NotFoundException as e:
                 logger.warning("release not found: %r" % (e, ))
                 break
-            except musicbrainzngs.NetworkError, e:
+            except musicbrainzngs.NetworkError as e:
                 logger.warning("network error: %r" % (e, ))
                 break
-            except mbngs.MusicBrainzException, e:
+            except mbngs.MusicBrainzException as e:
                 logger.warning("musicbrainz exception: %r" % (e, ))
                 time.sleep(5)
                 continue
@@ -328,7 +328,7 @@ class Program:
 
             if not release and len(metadatas) > 1:
                 # Select the release that most closely matches the duration.
-                lowest = min(deltas.keys())
+                lowest = min(list(deltas))
 
                 if prompt:
                     guess = (deltas[lowest])[0].mbid
@@ -374,7 +374,7 @@ class Program:
                                            releaseTitle, i,
                                            metadata.releaseTitle))
 
-                if (not release and len(deltas.keys()) > 1):
+                if (not release and len(list(deltas)) > 1):
                     self._stdout.write('\n')
                     self._stdout.write('Picked closest match in duration.\n')
                     self._stdout.write('Others may be wrong in MusicBrainz, '
@@ -423,8 +423,8 @@ class Program:
                     title = track.title
                     mbidTrack = track.mbid
                     mbidTrackArtist = track.mbidArtist
-                except IndexError, e:
-                    print 'ERROR: no track %d found, %r' % (number, e)
+                except IndexError as e:
+                    print('ERROR: no track %d found, %r' % (number, e))
                     raise
             else:
                 # htoa defaults to disc's artist
@@ -477,7 +477,7 @@ class Program:
 
         try:
             runner.run(t)
-        except task.TaskException, e:
+        except task.TaskException as e:
             if isinstance(e.exception, common.MissingFrames):
                 logger.warning('missing frames for %r' % trackResult.filename)
                 return False
@@ -541,11 +541,6 @@ class Program:
             trackResult.filename = t.path
             logger.info('Filename changed to %r', trackResult.filename)
 
-    def retagImage(self, runner, taglists):
-        cueImage = image.Image(self.cuePath)
-        t = image.ImageRetagTask(cueImage, taglists)
-        runner.run(t)
-
     def verifyImage(self, runner, table):
         """
         verify table against accuraterip and cue_path track lengths
@@ -569,7 +564,7 @@ class Program:
 
         checksums = accurip.calculate_checksums([
             os.path.join(os.path.dirname(self.cuePath), t.indexes[1].path)
-            for t in filter(lambda t: t.number != 0, cueImage.cue.table.tracks)
+            for t in [t for t in cueImage.cue.table.tracks if t.number != 0]
         ])
         if not (checksums and any(checksums['v1']) and any(checksums['v2'])):
             return False

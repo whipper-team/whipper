@@ -30,7 +30,7 @@ def _diff(old, new, desc):
 
 def diffStrings(orig, new, desc='input'):
 
-    assert type(orig) == type(new), 'type %s and %s are different' % (
+    assert isinstance(orig, type(new)), 'type %s and %s are different' % (
         type(orig), type(new))
 
     def _tolines(s):
@@ -49,9 +49,9 @@ class TestCase(unittest.TestCase):
     def failUnlessRaises(self, exception, f, *args, **kwargs):
         try:
             result = f(*args, **kwargs)
-        except exception, inst:
+        except exception as inst:
             return inst
-        except exception, e:
+        except exception as e:
             raise Exception('%s raised instead of %s:\n %s' %
                             (sys.exec_info()[0], exception.__name__, str(e))
                             )

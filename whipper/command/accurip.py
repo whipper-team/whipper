@@ -74,7 +74,7 @@ retrieves and display accuraterip data from the given URL
 
             # now sort track results in checksum by highest confidence
             sortedChecksums = []
-            for checksum, entries in checksums.items():
+            for checksum, entries in list(checksums.items()):
                 highest = max(d['confidence'] for d in entries)
                 sortedChecksums.append((highest, checksum))
 

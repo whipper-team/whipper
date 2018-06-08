@@ -277,7 +277,7 @@ def musicbrainz(discid, country=None, record=False):
     try:
         result = musicbrainzngs.get_releases_by_discid(
             discid, includes=["artists", "recordings", "release-groups"])
-    except musicbrainzngs.ResponseError, e:
+    except musicbrainzngs.ResponseError as e:
         if isinstance(e.cause, urllib2.HTTPError):
             if e.cause.code == 404:
                 raise NotFoundException(e)

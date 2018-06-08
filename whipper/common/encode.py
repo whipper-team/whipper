@@ -83,7 +83,7 @@ class TaggingTask(task.Task):
     def _tag(self):
         w = FLAC(self.track_path)
 
-        for k, v in self.tags.items():
+        for k, v in list(self.tags.items()):
             w[k] = v
 
         w.save()

@@ -127,7 +127,7 @@ class PersistedCache:
         self.path = path
         try:
             os.makedirs(self.path)
-        except OSError, e:
+        except OSError as e:
             if e.errno != 17:  # FIXME
                 raise
 
