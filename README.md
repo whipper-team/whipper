@@ -48,7 +48,7 @@ https://web.archive.org/web/20160528213242/https://thomas.apestaart.org/thomas/t
 - Performs Test & Copy rips
 - Verifies rip accuracy using the [AccurateRip database](http://www.accuraterip.com/)
 - Uses [MusicBrainz](https://musicbrainz.org/doc/About) for metadata lookup
-- Supports reading the [pre-emphasis](http://wiki.hydrogenaud.io/index.php?title=Pre-emphasis) flag embedded into some CDs (and correctly tags the resulting rip)
+- Supports reading the [pre-emphasis](http://wiki.hydrogenaud.io/index.php?title=Pre-emphasis) flag embedded into some CDs (and correctly tags the resulting rip). _Currently whipper only reports the pre-emphasis flag value stored in the TOC._
 - Detects and rips _non digitally silent_ [Hidden Track One Audio](http://wiki.hydrogenaud.io/index.php?title=HTOA) (HTOA)
 - Provides batch ripping capabilities
 - Provides templates for file and directory naming
@@ -78,11 +78,11 @@ Whipper relies on the following packages in order to run correctly and provide a
 - [cd-paranoia](https://www.gnu.org/software/libcdio/), for the actual ripping
   - To avoid bugs it's advised to use `cd-paranoia` **10.2+0.94+2-2**
 - [cdrdao](http://cdrdao.sourceforge.net/), for session, TOC, pre-gap, and ISRC extraction
-- [python-gobject-2](https://packages.debian.org/en/jessie/python-gobject-2), required by `task.py`
+- [GObject Introspection](https://wiki.gnome.org/Projects/GObjectIntrospection), to provide GLib-2.0 methods used by `task.py`
+- [PyGObject](https://pypi.org/project/PyGObject/), required by `task.py`
 - [python-musicbrainzngs](https://github.com/alastair/python-musicbrainzngs), for metadata lookup
 - [python-mutagen](https://pypi.python.org/pypi/mutagen), for tagging support
 - [python-setuptools](https://pypi.python.org/pypi/setuptools), for installation, plugins support
-- [python-cddb](http://cddb-py.sourceforge.net/), for showing (but not using) metadata if disc information aren't available in the MusicBrainz DB
 - [python-requests](https://pypi.python.org/pypi/requests), for retrieving AccurateRip database entries
 - [pycdio](https://pypi.python.org/pypi/pycdio/), for drive identification (required for drive offset and caching behavior to be stored in the configuration file).
   - To avoid bugs  it's advised to use `pycdio` **0.20** or **0.21** with `libcdio` ≥ **0.90** ≤ **0.94**. If using `libcdio` **0.83**, which is _too old_ to satisfy all the requirements of whipper, just stick to `pycdio` **0.17**. Altough it needs additional testing, `libcdio` **2.0.0** seems to work fine if used with `pycdio` **2.0.0**. All other combinations aren't guaranteed to work.

@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 
 def _listify(listOrString):
-    if type(listOrString) == str:
+    if isinstance(listOrString, str):
         return [listOrString, ]
 
     return listOrString

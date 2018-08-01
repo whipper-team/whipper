@@ -161,7 +161,7 @@ class ProgressParser:
         # FIXME: doing this is way too slow even for a testcase, so disable
         if False:
             for frame in range(markStart, markEnd):
-                if frame not in self._reads.keys():
+                if frame not in list(self._reads.keys()):
                     self._reads[frame] = 0
                 self._reads[frame] += 1
 
@@ -238,7 +238,7 @@ class ReadTrackTask(task.Task):
         @param what:   a string representing what's being read; e.g. Track
         @type  what:   str
         """
-        assert type(path) is unicode, "%r is not unicode" % path
+        assert isinstance(path, unicode), "%r is not unicode" % path
 
         self.path = path
         self._table = table
@@ -299,7 +299,7 @@ class ReadTrackTask(task.Task):
                                          stdout=subprocess.PIPE,
                                          stderr=subprocess.PIPE,
                                          close_fds=True)
-        except OSError, e:
+        except OSError as e:
             import errno
             if e.errno == errno.ENOENT:
                 raise common.MissingDependencyException('cd-paranoia')
@@ -384,7 +384,7 @@ class ReadTrackTask(task.Task):
 
         if not self.exception and self._popen.returncode != 0:
             if self._errors:
-                print "\n".join(self._errors)
+                print("\n".join(self._errors))
             else:
                 logger.warning('exit code %r', self._popen.returncode)
                 self.exception = ReturnCodeError(self._popen.returncode)
@@ -478,7 +478,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         try:
             tmpoutpath = path + u'.part'
             open(tmpoutpath, 'wb').close()
-        except IOError, e:
+        except IOError as e:
             if errno.ENAMETOOLONG != e.errno:
                 raise
             path = common.shrinkPath(path)
@@ -540,7 +540,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
                     try:
                         logger.debug('Moving to final path %r', self.path)
                         os.rename(self._tmppath, self.path)
-                    except Exception, e:
+                    except Exception as e:
                         logger.debug('Exception while moving to final '
                                      'path %r: %r', self.path, str(e))
                         self.exception = e
@@ -548,8 +548,8 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
                     os.unlink(self._tmppath)
             else:
                 logger.debug('stop: exception %r', self.exception)
-        except Exception, e:
-            print 'WARNING: unhandled exception %r' % (e, )
+        except Exception as e:
+            print('WARNING: unhandled exception %r' % (e, ))
 
         task.MultiSeparateTask.stop(self)
 

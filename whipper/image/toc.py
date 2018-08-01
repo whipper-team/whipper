@@ -140,7 +140,7 @@ class TocFile(object):
         """
         @type  path: unicode
         """
-        assert type(path) is unicode, "%r is not unicode" % path
+        assert isinstance(path, unicode), "%r is not unicode" % path
         self._path = path
         self._messages = []
         self.table = table.Table()
@@ -338,7 +338,7 @@ class TocFile(object):
             if m:
                 if not currentTrack:
                     self.message(number, 'START without preceding TRACK')
-                    print 'ouch'
+                    print('ouch')
                     continue
 
                 length = common.msfToFrames(m.group('length'))
@@ -362,7 +362,7 @@ class TocFile(object):
             if m:
                 if not currentTrack:
                     self.message(number, 'INDEX without preceding TRACK')
-                    print 'ouch'
+                    print('ouch')
                     continue
 
                 indexNumber += 1
@@ -430,7 +430,7 @@ class File:
         @param start:  starting point for the track in this file, in frames
         @param length: length for the track in this file, in frames
         """
-        assert type(path) is unicode, "%r is not unicode" % path
+        assert isinstance(path, unicode), "%r is not unicode" % path
 
         self.path = path
         self.start = start

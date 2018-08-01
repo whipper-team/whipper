@@ -156,7 +156,7 @@ def _save_entry(raw_entry, path):
     # XXX: os.makedirs(exist_ok=True) in py3
     try:
         makedirs(dirname(path))
-    except OSError, e:
+    except OSError as e:
         if e.errno != EEXIST:
             logger.error('could not save entry to %s: %r' % (path, str(e)))
             return
@@ -231,7 +231,7 @@ def verify_result(result, responses, checksums):
     # exclude HTOA from AccurateRip verification
     # NOTE: if pre-gap hidden audio support is expanded to include
     # tracks other than HTOA, this is invalid.
-    tracks = filter(lambda t: t.number != 0, result.tracks)
+    tracks = [t for t in result.tracks if t.number != 0]
     if not tracks:
         return False
     _assign_checksums_and_confidences(tracks, checksums, responses)
@@ -251,10 +251,10 @@ def print_report(result):
             conf = '(max confidence    %3d)' % track.AR['DBMaxConfidence']
             if track.AR['v1']['DBCRC'] or track.AR['v2']['DBCRC']:
                 status = 'rip accurate'
-                db = ', '.join(filter(None, (
+                db = ', '.join([_f for _f in (
                     track.AR['v1']['DBCRC'],
                     track.AR['v2']['DBCRC']
-                )))
+                ) if _f])
             max_conf = max(
                 [track.AR[v]['DBConfidence'] for v in ('v1', 'v2')]
             )

@@ -29,6 +29,7 @@ import urlparse
 import whipper
 
 from whipper.common import common, config
+from whipper.extern.freedb import DiscID
 
 import logging
 logger = logging.getLogger(__name__)
@@ -92,7 +93,7 @@ class Track:
         @type path:  unicode or None
         """
         if path is not None:
-            assert type(path) is unicode, "%r is not unicode" % path
+            assert isinstance(path, unicode), "%r is not unicode" % path
 
         i = Index(number, absolute, path, relative, counter)
         self.indexes[number] = i
@@ -107,13 +108,11 @@ class Track:
         Typically this is INDEX 01; but it could be INDEX 00 if there's
         a pre-gap.
         """
-        indexes = self.indexes.keys()
-        indexes.sort()
+        indexes = sorted(self.indexes.keys())
         return self.indexes[indexes[0]]
 
     def getLastIndex(self):
-        indexes = self.indexes.keys()
-        indexes.sort()
+        indexes = sorted(self.indexes.keys())
         return self.indexes[indexes[-1]]
 
     def getPregap(self):
@@ -145,7 +144,7 @@ class Index:
                  counter=None):
 
         if path is not None:
-            assert type(path) is unicode, "%r is not unicode" % path
+            assert isinstance(path, unicode), "%r is not unicode" % path
 
         self.number = number
         self.absolute = absolute
@@ -270,9 +269,7 @@ class Table(object):
 
         @rtype:   list of int
         """
-        result = []
-
-        result.append(self.getAudioTracks())
+        offsets = []
 
         # cddb disc id takes into account data tracks
         # last byte is the number of tracks on the CD
@@ -285,7 +282,7 @@ class Table(object):
         debug = [str(len(self.tracks))]
         for track in self.tracks:
             offset = self.getTrackStart(track.number) + delta
-            result.append(offset)
+            offsets.append(offset)
             debug.append(str(offset))
             seconds = offset / common.FRAMES_PER_SECOND
             n += self._cddbSum(seconds)
@@ -306,10 +303,9 @@ class Table(object):
         # assert t == duration, "%r != %r" % (t, duration)
 
         debug.append(str(leadoutSeconds + 2))  # 2 is the 150 frame cddb offset
-        result.append(leadoutSeconds)
 
-        value = (n % 0xff) << 24 | t << 8 | len(self.tracks)
-        result.insert(0, value)
+        result = DiscID(offsets, t, len(self.tracks), leadoutSeconds)
+        value = int(result)
 
         # compare this debug line to cd-discid output
         logger.debug('cddb values: %r', result)
@@ -327,7 +323,7 @@ class Table(object):
         @returns: the 8-character hexadecimal disc ID
         """
         values = self.getCDDBValues()
-        return "%08x" % values[0]
+        return "%08x" % int(values)
 
     def getMusicBrainzDiscId(self):
         """
@@ -543,8 +539,7 @@ class Table(object):
             if not track.audio:
                 continue
 
-            indexes = track.indexes.keys()
-            indexes.sort()
+            indexes = sorted(track.indexes.keys())
 
             wroteTrack = False
 
@@ -724,7 +719,7 @@ class Table(object):
             t = copy.deepcopy(track)
             t.number = track.number + trackCount
             t.session = session
-            for i in t.indexes.values():
+            for i in list(t.indexes.values()):
                 if i.absolute is not None:
                     i.absolute += self.leadout + gap
                     logger.debug('Fixing track %02d, index %02d, '
@@ -768,7 +763,7 @@ class Table(object):
         @rtype: tuple of (int, int)
         """
         t = self.tracks[track - 1]
-        indexes = t.indexes.keys()
+        indexes = list(t.indexes)
         position = indexes.index(index)
 
         if position + 1 < len(indexes):
@@ -780,7 +775,7 @@ class Table(object):
                 track - 1, index))
 
         t = self.tracks[track - 1]
-        indexes = t.indexes.keys()
+        indexes = list(t.indexes)
 
         return track, indexes[0]
 
@@ -797,7 +792,7 @@ class Table(object):
             return False
 
         for t in self.tracks:
-            if 1 not in t.indexes.keys():
+            if 1 not in list(t.indexes):
                 logger.debug('no index 1, no TOC')
                 return False
             if t.indexes[1].absolute is None:
@@ -850,7 +845,7 @@ class Table(object):
             return False
 
         for t in self.tracks:
-            for i in t.indexes.values():
+            for i in list(t.indexes.values()):
                 if i.relative is None:
                     logger.debug('Track %02d, Index %02d does not '
                                  'have relative', t.number, i.number)

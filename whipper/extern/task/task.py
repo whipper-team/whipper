@@ -18,9 +18,15 @@
 # You should have received a copy of the GNU General Public License
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 import sys
 
-import gobject
+try:
+    from gi.repository import GLib as gobject
+except ImportError:
+    import gobject
+
+logger = logging.getLogger(__name__)
 
 
 class TaskException(Exception):
@@ -70,21 +76,14 @@ class LogStub(object):
     I am a stub for a log interface.
     """
 
-    # log stubs
     def log(self, message, *args):
-        pass
+        logger.info(message, *args)
 
     def debug(self, message, *args):
-        pass
-
-    def info(self, message, *args):
-        pass
+        logger.debug(message, *args)
 
     def warning(self, message, *args):
-        pass
-
-    def error(self, message, *args):
-        pass
+        logger.warning(message, *args)
 
 
 class Task(LogStub):
@@ -150,7 +149,7 @@ class Task(LogStub):
         self.debug('stopping')
         self.running = False
         if not self.runner:
-            print 'ERROR: stopping task which is already stopped'
+            print('ERROR: stopping task which is already stopped')
             import traceback
             traceback.print_stack()
         self.runner = None
@@ -214,7 +213,7 @@ class Task(LogStub):
 
     def schedule(self, delta, callable, *args, **kwargs):
         if not self.runner:
-            print "ERROR: scheduling on a task that's altready stopped"
+            print("ERROR: scheduling on a task that's altready stopped")
             import traceback
             traceback.print_stack()
             return
@@ -237,7 +236,7 @@ class Task(LogStub):
                 method = getattr(l, methodName)
                 try:
                     method(self, *args, **kwargs)
-                except Exception, e:
+                except Exception as e:
                     self.setException(e)
 
 
@@ -349,7 +348,7 @@ class BaseMultiTask(Task, ITaskListener):
             task.start(self.runner)
             self.debug('BaseMultiTask.next(): started task %d of %d: %r',
                        self._task, len(self.tasks), task)
-        except Exception, e:
+        except Exception as e:
             self.setException(e)
             self.debug('Got exception during next: %r', self.exceptionMessage)
             self.stop()
@@ -502,7 +501,7 @@ class SyncRunner(TaskRunner, ITaskListener):
         try:
             self.debug('start task %r' % task)
             task.start(self)
-        except Exception, e:
+        except Exception as e:
             # getExceptionMessage uses global exception state that doesn't
             # hang around, so store the message
             task.setException(e)
@@ -516,7 +515,7 @@ class SyncRunner(TaskRunner, ITaskListener):
                          callable, args, kwargs)
                 callable(*args, **kwargs)
                 return False
-            except Exception, e:
+            except Exception as e:
                 self.debug('exception when calling scheduled callable %r',
                            callable)
                 task.setException(e)

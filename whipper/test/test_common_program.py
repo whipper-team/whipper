@@ -15,9 +15,9 @@ class PathTestCase(unittest.TestCase):
 
         path = prog.getPath(u'/tmp', DEFAULT_DISC_TEMPLATE,
                             'mbdiscid', None)
-        self.assertEquals(path,
-                          unicode('/tmp/unknown/Unknown Artist - mbdiscid/'
-                                  'Unknown Artist - mbdiscid'))
+        self.assertEqual(path,
+                         unicode('/tmp/unknown/Unknown Artist - mbdiscid/'
+                                 'Unknown Artist - mbdiscid'))
 
     def testStandardTemplateFilled(self):
         prog = program.Program(config.Config())
@@ -27,9 +27,9 @@ class PathTestCase(unittest.TestCase):
 
         path = prog.getPath(u'/tmp', DEFAULT_DISC_TEMPLATE,
                             'mbdiscid', md, 0)
-        self.assertEquals(path,
-                          unicode('/tmp/unknown/Jeff Buckley - Grace/'
-                                  'Jeff Buckley - Grace'))
+        self.assertEqual(path,
+                         unicode('/tmp/unknown/Jeff Buckley - Grace/'
+                                 'Jeff Buckley - Grace'))
 
     def testIssue66TemplateFilled(self):
         prog = program.Program(config.Config())
@@ -38,5 +38,5 @@ class PathTestCase(unittest.TestCase):
         md.title = 'Grace'
 
         path = prog.getPath(u'/tmp', u'%A/%d', 'mbdiscid', md, 0)
-        self.assertEquals(path,
-                          u'/tmp/Jeff Buckley/Grace')
+        self.assertEqual(path,
+                         u'/tmp/Jeff Buckley/Grace')
