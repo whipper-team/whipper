@@ -10,6 +10,6 @@ from whipper.test import common
 class VersionTestCase(common.TestCase):
     def testGetVersion(self):
         v = cdrdao.getCDRDAOVersion()
-        self.failUnless(v)
+        self.assertTrue(v)
         # make sure it starts with a digit
-        self.failUnless(int(v[0]))
+        self.assertTrue(int(v[0]))

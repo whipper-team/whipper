@@ -23,30 +23,28 @@ import os
 import sys
 import tempfile
 import logging
-import gobject
 from whipper.command.basecommand import BaseCommand
 from whipper.common import accurip, common, config, drive
 from whipper.common import task as ctask
 from whipper.program import arc, cdrdao, cdparanoia, utils
 from whipper.extern.task import task
 
-gobject.threads_init()
-
 logger = logging.getLogger(__name__)
 
 # see http://www.accuraterip.com/driveoffsets.htm
 # and misc/offsets.py
-OFFSETS = "+6, +48, +102, +667, +12, +30, +618, +594, +738, -472, " + \
-          "+98, +116, +96, +733, +120, +691, +685, +97, +600, " + \
-          "+690, +1292, +99, +676, +686, +1182, -24, +704, +572, " + \
-          "+688, +91, +696, +103, -491, +689, +145, +708, +697, " + \
-          "+564, +86, +679, +355, -496, -1164, +1160, +694, 0, " + \
-          "-436, +79, +94, +684, +681, +106, +692, +943, +1194, " + \
-          "+92, +117, +680, +682, +1268, +678, -582, +1473, +1279, " + \
-          "-54, +1508, +740, +1272, +534, +976, +687, +675, +1303, " + \
-          "+674, +1263, +108, +974, +122, +111, -489, +772, +732, " + \
-          "-495, -494, +975, +935, +87, +668, +1776, +1364, +1336, " + \
-          "+1127"
+OFFSETS = ("+6, +667, +48, +102, +12, +30, +103, +618, +96, +594, "
+           "+738, +98, -472, +116, +733, +696, +120, +691, +685, "
+           "+99, +97, +600, +676, +690, +1292, +702, +686, -24, "
+           "+704, +697, +572, +1182, +688, +91, -491, +145, +689, "
+           "+564, +708, +86, +355, +79, -496, +679, -1164, 0, "
+           "+1160, -436, +694, +684, +94, +1194, +106, +681, +117, "
+           "+692, +943, +92, +680, +678, +682, +1268, +1279, +1473, "
+           "-582, -54, +674, +687, +1272, +1263, +1508, +675, "
+           "+534, +740, +122, -489, +974, +976, +1303, +108, +1130, "
+           "+111, +739, +732, -589, -495, -494, +975, +961, +935, "
+           "+87, +668, +234, +1776, +138, +1364, +1336, +1262, "
+           "+1127")
 
 
 class Find(BaseCommand):
@@ -69,7 +67,7 @@ CD in the AccurateRip database."""
         for b in blocks:
             if ':' in b:
                 a, b = b.split(':')
-                self._offsets.extend(range(int(a), int(b) + 1))
+                self._offsets.extend(list(range(int(a), int(b) + 1)))
             else:
                 self._offsets.append(int(b))
 
@@ -195,11 +193,11 @@ CD in the AccurateRip database."""
         runner.run(t)
 
         v1 = arc.accuraterip_checksum(
-            path, track, len(table.tracks), wave=True, v2=False
-        )
+                path, track, len(table.tracks), wave=True, v2=False
+            )
         v2 = arc.accuraterip_checksum(
-            path, track, len(table.tracks), wave=True, v2=True
-        )
+                path, track, len(table.tracks), wave=True, v2=True
+            )
 
         os.unlink(path)
         return ("%08x" % v1, "%08x" % v2)

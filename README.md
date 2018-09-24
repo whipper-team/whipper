@@ -1,12 +1,18 @@
 # Whipper
 
-[![license](https://img.shields.io/github/license/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/blob/master/LICENSE) [![Build Status](https://travis-ci.org/JoeLametta/whipper.svg?branch=master)](https://travis-ci.org/JoeLametta/whipper) [![GitHub (pre-)release](https://img.shields.io/github/release/joelametta/whipper/all.svg)](https://github.com/JoeLametta/whipper/releases/latest) [![IRC](https://img.shields.io/badge/irc-%23whipper%40freenode-brightgreen.svg)](https://webchat.freenode.net/?channels=%23whipper) [![GitHub Stars](https://img.shields.io/github/stars/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/stargazers) [![GitHub Issues](https://img.shields.io/github/issues/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/issues) [![GitHub contributors](https://img.shields.io/github/contributors/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/graphs/contributors)
+[![license](https://img.shields.io/github/license/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/blob/master/LICENSE)
+[![Build Status](https://travis-ci.com/JoeLametta/whipper.svg?branch=master)](https://travis-ci.com/JoeLametta/whipper)
+[![GitHub (pre-)release](https://img.shields.io/github/release/joelametta/whipper/all.svg)](https://github.com/JoeLametta/whipper/releases/latest)
+[![IRC](https://img.shields.io/badge/irc-%23whipper%40freenode-brightgreen.svg)](https://webchat.freenode.net/?channels=%23whipper)
+[![GitHub Stars](https://img.shields.io/github/stars/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/stargazers)
+[![GitHub Issues](https://img.shields.io/github/issues/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/issues)
+[![GitHub contributors](https://img.shields.io/github/contributors/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/graphs/contributors)
 
-Whipper is a Python 2.7 CD-DA ripper, fork of the morituri project (_CDDA ripper for *nix systems aiming for accuracy over speed_). It improves [morituri](https://github.com/thomasvs/morituri) which development seems to have halted merging old ignored pull requests, improving it with bugfixes and new features.
+Whipper is a Python 2.7 CD-DA ripper based on the [morituri project](https://github.com/thomasvs/morituri) (_CDDA ripper for *nix systems aiming for accuracy over speed_). It enhances morituri which development seems to have halted merging old ignored pull requests, improving it with bugfixes and new features.
 
-Whipper is developed and tested _only_ on Linux distributions but _may_ work fine on other *nix OSes too.
+Whipper is currently developed and tested _only_ on Linux distributions but _may_ work fine on other *nix OSes too.
 
-In order to track whipper's current development it's advised to check its commit history (README **isn't** still complete).
+In order to track whipper's latest changes it's advised to check its commit history (README and [CHANGELOG](#changelog) files may not be comprehensive).
 
 ## Table of content
 
@@ -21,13 +27,11 @@ In order to track whipper's current development it's advised to check its commit
 - [Usage](#usage)
 - [Getting started](#getting-started)
 - [Configuration file documentation](#configuration-file-documentation)
-- [Backward incompatible changes](#backward-incompatible-changes)
 - [Running uninstalled](#running-uninstalled)
 - [Logger plugins](#logger-plugins)
 - [License](#license)
 - [Contributing](#contributing)
   - [Bug reports & feature requests](#bug-reports--feature-requests)
-  - [Developing](#developing)
 - [Credits](#credits)
 - [Links](#links)
 
@@ -44,7 +48,7 @@ https://web.archive.org/web/20160528213242/https://thomas.apestaart.org/thomas/t
 - Performs Test & Copy rips
 - Verifies rip accuracy using the [AccurateRip database](http://www.accuraterip.com/)
 - Uses [MusicBrainz](https://musicbrainz.org/doc/About) for metadata lookup
-- Supports reading the [pre-emphasis](http://wiki.hydrogenaud.io/index.php?title=Pre-emphasis) flag embedded into some CDs (and correctly tags the resulting rip)
+- Supports reading the [pre-emphasis](http://wiki.hydrogenaud.io/index.php?title=Pre-emphasis) flag embedded into some CDs (and correctly tags the resulting rip). _Currently whipper only reports the pre-emphasis flag value stored in the TOC._
 - Detects and rips _non digitally silent_ [Hidden Track One Audio](http://wiki.hydrogenaud.io/index.php?title=HTOA) (HTOA)
 - Provides batch ripping capabilities
 - Provides templates for file and directory naming
@@ -65,8 +69,6 @@ This is a noncomprehensive summary which shows whipper's packaging status (unoff
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/whipper.svg)](https://repology.org/metapackage/whipper)
 
-User mruszczyk is also providing an unofficial [Copr repository](https://copr.fedorainfracloud.org/coprs/mruszczyk/whipper/) for Fedora / CentOS.
-
 In case you decide to install whipper using an unofficial repository just keep in mind it is your responsibility to verify that the provided content is safe to use.
 
 ### Required dependencies
@@ -74,14 +76,16 @@ In case you decide to install whipper using an unofficial repository just keep i
 Whipper relies on the following packages in order to run correctly and provide all the supported features:
 
 - [cd-paranoia](https://www.gnu.org/software/libcdio/), for the actual ripping
+  - To avoid bugs it's advised to use `cd-paranoia` **10.2+0.94+2-2**
 - [cdrdao](http://cdrdao.sourceforge.net/), for session, TOC, pre-gap, and ISRC extraction
-- [python-gobject-2](https://packages.debian.org/en/jessie/python-gobject-2), required by `task.py`
+- [GObject Introspection](https://wiki.gnome.org/Projects/GObjectIntrospection), to provide GLib-2.0 methods used by `task.py`
+- [PyGObject](https://pypi.org/project/PyGObject/), required by `task.py`
 - [python-musicbrainzngs](https://github.com/alastair/python-musicbrainzngs), for metadata lookup
 - [python-mutagen](https://pypi.python.org/pypi/mutagen), for tagging support
 - [python-setuptools](https://pypi.python.org/pypi/setuptools), for installation, plugins support
-- [python-cddb](http://cddb-py.sourceforge.net/), for showing but not using metadata if disc not available in the MusicBrainz DB
 - [python-requests](https://pypi.python.org/pypi/requests), for retrieving AccurateRip database entries
-- [pycdio](https://pypi.python.org/pypi/pycdio/) (to avoid bugs please use `pycdio` **0.20** & `libcdio` >= **0.90** or, with previous `libcdio` versions, `pycdio` **0.17**), for drive identification (required for drive offset and caching behavior to be stored in the configuration file)
+- [pycdio](https://pypi.python.org/pypi/pycdio/), for drive identification (required for drive offset and caching behavior to be stored in the configuration file).
+  - To avoid bugs  it's advised to use `pycdio` **0.20** or **0.21** with `libcdio` ≥ **0.90** ≤ **0.94**. If using `libcdio` **0.83**, which is _too old_ to satisfy all the requirements of whipper, just stick to `pycdio` **0.17**. Altough it needs additional testing, `libcdio` **2.0.0** seems to work fine if used with `pycdio` **2.0.0**. All other combinations aren't guaranteed to work.
 - [libsndfile](http://www.mega-nerd.com/libsndfile/), for reading wav files
 - [flac](https://xiph.org/flac/), for reading flac files
 - [sox](http://sox.sourceforge.net/), for track peak detection
@@ -112,6 +116,8 @@ cd ..
 
 Install whipper: `python2 setup.py install`
 
+Note that, depending on the chosen installation path, this command may require elevated rights.
+
 ## Usage
 
 Whipper currently only has a command-line interface called `whipper` which is self-documenting: `whipper -h` gives you the basic instructions.
@@ -127,8 +133,6 @@ is correct, while
 `whipper cd rip -d (device)`
 
 is not, because the `-d` argument applies to the `cd` command.
-
-~~Check the man page (`whipper(1)`) for more information.~~ (currently not available as whipper's documentation is planned to be reworked ([Issue #73](https://github.com/JoeLametta/whipper/issues/73))).
 
 ## Getting started
 
@@ -159,81 +163,42 @@ The simplest way to get started making accurate rips is:
 
 ## Configuration file documentation
 
-The configuration file is stored according to the [XDG Base Directory Specification](
-http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html)
-when possible.
+The configuration file is stored in `$XDG_CONFIG_HOME/whipper/whipper.conf`, or `$HOME/.config/whipper/whipper.conf` if `$XDG_CONFIG_HOME` is undefined.
 
-It lives in `$XDG_CONFIG_HOME/whipper/whipper.conf` (or `$HOME/.config/whipper/whipper.conf`).
+See [XDG Base Directory
+Specification](http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html)
+and [ConfigParser](https://docs.python.org/2/library/configparser.html).
 
-The configuration file follows python's [ConfigParser](https://docs.python.org/2/library/configparser.html) syntax.
+The configuration file consists of newline-delineated `[sections]`
+containing `key = value` pairs. The sections `[main]` and
+`[musicbrainz]` are special config sections for options not accessible
+from the command line interface.  Sections beginning with `drive` are
+written by whipper; certain values should not be edited.
 
-The possible sections are:
+Example configuration demonstrating all `[main]` and `[musicbrainz]`
+options:
 
-- Main section: `[main]`
-  - `path_filter_fat`: whether to filter path components for FAT file systems
-  - `path_filter_special`: whether to filter path components for special characters
-  
-- MusicBrainz section: `[musicbrainz]`
-  - `server`: the MusicBrainz server to connect to, in `host:[port]` format. Defaults to `musicbrainz.org`.
+```INI
+[main]
+path_filter_fat = True		; replace FAT file system unsafe characters in filenames with _
+path_filter_special = False	; replace special characters in filenames with _
 
-- Drive section: `[drive:IDENTIFIER]`, one for each configured drive. All these values are probed by whipper and should not be edited by hand.
-  - `defeats_cache`: whether this drive can defeat the audio cache
-  - `read_offset`: the read offset of the drive
+[musicbrainz]
+server = musicbrainz.org:80	; use MusicBrainz server at host[:port]
 
-- Rip command section: `[rip.COMMAND.SUBCOMMAND]`. Can be used to change the command options default values.
-  **Please note that this feature is currently broken (being this way since [PR #122](https://github.com/JoeLametta/whipper/pull/92) / whipper [v0.4.1](https://github.com/JoeLametta/whipper/releases/tag/v0.4.1)).**
+[drive:HL-20]
+defeats_cache = True		; whether the drive is capable of defeating the audio cache
+read_offset = 6			; drive read offset in positive/negative frames (no leading +)
+# do not edit the values 'vendor', 'model', and 'release'; they are used by whipper to match the drive
 
-Example section to configure `whipper cd rip` defaults:
-
-```Python
-[rip.cd.rip]
+# command line defaults for `whipper cd rip`
+[whipper.cd.rip]
 unknown = True
 output_directory = ~/My Music
-track_template = new/%%A/%%y - %%d/%%t - %%n
+track_template = new/%%A/%%y - %%d/%%t - %%n	; note: the format char '%' must be represented '%%'
 disc_template = %(track_template)s
+# ...
 ```
-
-Note: to get a literal `%` character it must be doubled.
-
-## Backward incompatible changes
-
-- Rely on `cd-paranoia` (`libcdio-cdparanoia`) instead of `cdparanoia` (Xiph): changed dependency ([PR #213](https://github.com/JoeLametta/whipper/pull/213) / whipper [v0.6.0](https://github.com/JoeLametta/whipper/releases/tag/v0.6.0))
-- Introduced AccurateRip v2 support: added new `requests` python dependency ([PR #187](https://github.com/JoeLametta/whipper/pull/187) / whipper [v0.6.0](https://github.com/JoeLametta/whipper/releases/tag/v0.6.0))
-- Added CD-R media type disc detection: CD-R rips are now prevented by default ([PR #154](https://github.com/JoeLametta/whipper/pull/154) / whipper [v0.6.0](https://github.com/JoeLametta/whipper/releases/tag/v0.6.0))
-- Changed all `morituri` references to `whipper`: renamed python module and logger too ([PR #109](https://github.com/JoeLametta/whipper/pull/109) / whipper [v0.6.0](https://github.com/JoeLametta/whipper/releases/tag/v0.6.0))
-- Profiles (for encoding) aren't supported anymore since ([PR #121](https://github.com/JoeLametta/whipper/pull/121) / whipper [v0.5.0](https://github.com/JoeLametta/whipper/releases/tag/v0.5.0)): now whipper encodes to FLAC
-- The image retag feature has been knowingly broken since ([PR #130](https://github.com/JoeLametta/whipper/pull/130))
-- Structural changes broke compatibility with existing logger plugins ([PR #94](https://github.com/JoeLametta/whipper/pull/94))
-- Dropped external git submodules ([PR #31](https://github.com/JoeLametta/whipper/pull/31), [PR #92](https://github.com/JoeLametta/whipper/pull/92))
-- Whipper executable name changed: from `rip` to `whipper` ([PR #70](https://github.com/JoeLametta/whipper/pull/70))
-- Whipper has adopted new config/cache/state file paths ([PR #42](https://github.com/JoeLametta/whipper/pull/42))
-  - Now always follows XDG specifications
-
-    - Paths used when XDG environment variables are available:
-      - `$XDG_CONFIG_HOME/whipper`
-      - `$XDG_CACHE_HOME/whipper`
-      - `$XDG_DATA_HOME/whipper`
-
-    - Paths used when XDG environment variables are **NOT** available:
-      - `$HOME/.config/whipper`
-      - `$HOME/.cache/whipper`
-      - `$HOME/.local/share/whipper`
-
-  - Configuration file information:
-    - `.moriturirc`, `morituri.conf` aren't used anymore
-
-    - When XDG environment variables are available it's located in:
-      - `$XDG_CONFIG_HOME/whipper/whipper.conf`
-
-    - When XDG environment variables are **NOT** available it's located in:
-      - `$HOME/.config/whipper/whipper.conf`
-
-  - Plugins folder path:
-    - When XDG environment variables are available it's located in:
-      - `$XDG_DATA_HOME/whipper/plugins`
-
-    - When XDG environment variables are **NOT** available it's located in:
-      - `$HOME/.local/share/whipper/plugins`
 
 ## Running uninstalled
 
@@ -254,9 +219,10 @@ List available plugins with `whipper cd rip -h`. Specify a logger to rip with by
 whipper cd rip -L what
 ```
 
-### Official loggers
+### Official logger plugins
 
-- [morituri-yamlloger](https://github.com/JoeLametta/morituri-yamllogger) - default whipper logger (provided as external logger for compatibility with morituri), yaml format
+Unfortunately both logger plugins are currently outdated and won't work with latest whipper versions.
+
 - [morituri-eaclogger](https://github.com/JoeLametta/morituri-eaclogger) - eac-like logger attempting to maintain strict compatiility with EAC
 - [morituri-whatlogger](https://github.com/RecursiveForest/morituri-whatlogger) - eac-like logger containing the informational enhancements of the yamllogger, originally designed for use on What.CD
 
@@ -266,7 +232,8 @@ Licensed under the [GNU GPLv3 license](http://www.gnu.org/licenses/gpl-3.0).
 
 ```Text
 Copyright (C) 2009 Thomas Vander Stichele
-Copyright (C) 2016, 2017, 2018 JoeLametta
+Copyright (C) 2016-2018 the whipper team: JoeLametta, Frederik Olesen,
+			Samantha Baldwin, Merlijn Wajer, et al.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -285,6 +252,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
 ## Contributing
 
+Make sure you have the latest copy from our [git
+repository](https://github.com/JoeLametta/whipper). Where possible,
+please include tests for new or changed functionality. You can run tests
+with `python -m unittest discover` from your source checkout.
+
 ### Bug reports & feature requests
 
 Please use the [issue tracker](https://github.com/JoeLametta/whipper/issues) to report any bugs or to file feature requests.
@@ -300,12 +272,6 @@ And attach the gzipped log file to your bug report.
 
 Without `WHIPPER_LOGFILE` set, logging messages will go to stderr. `WHIPPER_DEBUG` accepts a string of the [default python logging levels](https://docs.python.org/2/library/logging.html#logging-levels).
 
-### Developing
-
-Pull requests are welcome.
-
-**WARNING:** As whipper is still under heavy development sometimes I will force push (`--force-with-lease`) to the non master branches.
-
 ## Credits
 
 Thanks to:
@@ -315,11 +281,12 @@ Thanks to:
 - [Merlijn Wajer](https://github.com/MerlijnWajer)
 - [Samantha Baldwin](https://github.com/RecursiveForest)
 
+And to all the [![GitHub contributors](https://img.shields.io/github/contributors/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/graphs/contributors).
+
 ## Links
 
 You can find us and talk about the project on IRC: [freenode](https://webchat.freenode.net/?channels=%23whipper), **#whipper** channel.
 
 - [Redacted thread (official)](https://redacted.ch/forums.php?action=viewthread&threadid=150)
 - [Repology: versions for whipper](https://repology.org/metapackage/whipper/versions)
-- [Fedora Copr repository for whipper](https://copr.fedorainfracloud.org/coprs/mruszczyk/whipper/)
 - [Unattended ripping using whipper (by Thomas McWork)](https://github.com/thomas-mc-work/most-possible-unattended-rip)

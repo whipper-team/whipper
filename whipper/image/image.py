@@ -18,6 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
+"""
+Wrap on-disk CD images based on the .cue file.
+"""
+
 import os
 
 from whipper.common import encode
@@ -31,24 +35,18 @@ logger = logging.getLogger(__name__)
 
 
 class Image(object):
-    """Wrap on-disk CD images based on the .cue file.
-
-    :ivar path: .cue path.
-    :vartype path: unicode
-    :ivar cue:
-    :vartype cue:
-    :ivar offsets:
-    :vartype offsets:
-    :ivar lengths:
-    :vartype lengths:
-    :ivar table: the Table of Contents for this image.
-    :vartype table: L{table.Table}
     """
-
+    @ivar table: The Table of Contents for this image.
+    @type table: L{table.Table}
+    """
     logCategory = 'Image'
 
     def __init__(self, path):
-        assert type(path) is unicode, "%r is not unicode" % path
+        """
+        @type  path: unicode
+        @param path: .cue path
+        """
+        assert isinstance(path, unicode), "%r is not unicode" % path
 
         self._path = path
         self.cue = cue.CueFile(path)
@@ -59,22 +57,19 @@ class Image(object):
         self.table = None
 
     def getRealPath(self, path):
-        """Translate the .cue's FILE to an existing path.
-
-        :param path: .cue path.
-        :type path:
         """
-        assert type(path) is unicode, "%r is not unicode" % path
+        Translate the .cue's FILE to an existing path.
+
+        @param path: .cue path
+        """
+        assert isinstance(path, unicode), "%r is not unicode" % path
 
         return self.cue.getRealPath(path)
 
     def setup(self, runner):
-        """Do initial setup.
-
-        Like figuring out track lengths and constructing the Table of Contents.
-
-        :param runner:
-        :type runner:
+        """
+        Do initial setup, like figuring out track lengths, and
+        constructing the Table of Contents.
         """
         logger.debug('setup image start')
         verify = ImageVerifyTask(self)
@@ -113,18 +108,8 @@ class Image(object):
 
 
 class ImageVerifyTask(task.MultiSeparateTask):
-    """I verify a disk image and get the necessary track lengths.
-
-    :cvar logCategory:
-    :vartype logCategory:
-    :cvar description:
-    :vartype description:
-    :cvar lengths:
-    :vartype lengths:
-    :ivar image:
-    :vartype image:
-    :ivar tasks:
-    :vartype tasks:
+    """
+    I verify a disk image and get the necessary track lengths.
     """
 
     logCategory = 'ImageVerifyTask'
@@ -144,7 +129,7 @@ class ImageVerifyTask(task.MultiSeparateTask):
             htoa = cue.table.tracks[0].indexes[0]
             track = cue.table.tracks[0]
             path = image.getRealPath(htoa.path)
-            assert type(path) is unicode, "%r is not unicode" % path
+            assert isinstance(path, unicode), "%r is not unicode" % path
             logger.debug('schedule scan of audio length of %r', path)
             taskk = AudioLengthTask(path)
             self.addTask(taskk)
@@ -159,7 +144,7 @@ class ImageVerifyTask(task.MultiSeparateTask):
 
             if length == -1:
                 path = image.getRealPath(index.path)
-                assert type(path) is unicode, "%r is not unicode" % path
+                assert isinstance(path, unicode), "%r is not unicode" % path
                 logger.debug('schedule scan of audio length of %r', path)
                 taskk = AudioLengthTask(path)
                 self.addTask(taskk)
@@ -188,14 +173,8 @@ class ImageVerifyTask(task.MultiSeparateTask):
 
 
 class ImageEncodeTask(task.MultiSeparateTask):
-    """I encode a disk image to a different format.
-
-    :ivar image:
-    :vartype image:
-    :ivar tasks:
-    :vartype tasks:
-    :ivar lengths:
-    :vartype lengths:
+    """
+    I encode a disk image to a different format.
     """
 
     description = "Encoding tracks"
@@ -211,7 +190,7 @@ class ImageEncodeTask(task.MultiSeparateTask):
         def add(index):
 
             path = image.getRealPath(index.path)
-            assert type(path) is unicode, "%r is not unicode" % path
+            assert isinstance(path, unicode), "%r is not unicode" % path
             logger.debug('schedule encode of %r', path)
             root, ext = os.path.splitext(os.path.basename(path))
             outpath = os.path.join(outdir, root + '.' + 'flac')

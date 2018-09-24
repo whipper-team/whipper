@@ -32,39 +32,35 @@ logger = logging.getLogger(__name__)
 
 
 class Persister:
-    """I wrap an optional pickle to persist an object to disk.
+    """
+    I wrap an optional pickle to persist an object to disk.
 
     Instantiate me with a path to automatically unpickle the object.
     Call persist to store the object to disk; it will get stored if it
     changed from the on-disk object.
 
-    If path is not given, the object will not be persisted.
-    This allows code to transparently deal with both persisted and
-    non-persisted objects, since the persist method will just end up
-    doing nothing.
-
-    :ivar object: the persistent object.
-    :vartype object:
-    :ivar path:
-    :vartype path:
+    @ivar object: the persistent object
     """
 
     def __init__(self, path=None, default=None):
+        """
+        If path is not given, the object will not be persisted.
+        This allows code to transparently deal with both persisted and
+        non-persisted objects, since the persist method will just end up
+        doing nothing.
+        """
         self._path = path
         self.object = None
 
         self._unpickle(default)
 
     def persist(self, obj=None):
-        """Persist the given object.
-
-        If we have a persistence path and the object changed.
+        """
+        Persist the given object, if we have a persistence path and the
+        object changed.
 
         If object is not given, re-persist our object, always.
         If object is given, only persist if it was changed.
-
-        :param obj:  (Default value = None).
-        :type obj:
         """
         # don't pickle if it's already ok
         if obj and obj == self.object:
@@ -121,7 +117,9 @@ class Persister:
 
 
 class PersistedCache:
-    """I wrap a directory of persisted objects."""
+    """
+    I wrap a directory of persisted objects.
+    """
 
     path = None
 
@@ -137,10 +135,8 @@ class PersistedCache:
         return os.path.join(self.path, '%s.pickle' % key)
 
     def get(self, key):
-        """Return the persister for the given key.
-
-        :param key:
-        :type key:
+        """
+        Returns the persister for the given key.
         """
         persister = Persister(self._getPath(key))
         if persister.object:
@@ -164,16 +160,11 @@ class ResultCache:
         self._pcache = PersistedCache(self._path)
 
     def getRipResult(self, cddbdiscid, create=True):
-        """Retrieve the persistable RipResult.
+        """
+        Retrieve the persistable RipResult either from our cache (from a
+        previous, possibly aborted rip), or return a new one.
 
-        The RipResult is retrieved either from our cache (from a previous,
-        possibly aborted rip), or a new one is returned.
-
-        :param cddbdiscid:
-        :type cddbdiscid:
-        :param create:  (Default value = True).
-        :type create:
-        :rtype: L{Persistable} for L{result.RipResult}
+        @rtype: L{Persistable} for L{result.RipResult}
         """
         presult = self._pcache.get(cddbdiscid)
 
@@ -199,7 +190,9 @@ class ResultCache:
 
 
 class TableCache:
-    """I read and write entries to and from the cache of tables.
+
+    """
+    I read and write entries to and from the cache of tables.
 
     If no path is specified, the cache will write to the current cache
     directory and read from all possible cache directories (to allow for

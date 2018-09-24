@@ -30,7 +30,7 @@ def _diff(old, new, desc):
 
 def diffStrings(orig, new, desc='input'):
 
-    assert type(orig) == type(new), 'type %s and %s are different' % (
+    assert isinstance(orig, type(new)), 'type %s and %s are different' % (
         type(orig), type(new))
 
     def _tolines(s):
@@ -63,14 +63,9 @@ class TestCase(unittest.TestCase):
     assertRaises = failUnlessRaises
 
     def readCue(self, name):
-        """Read a cue file and replace its version number with the current one.
-
-        The version number is replaced to use the cue file in comparisons.
-
-        :param name: cuesheet filename (without path).
-        :type name: str
-        :returns: the cuesheet with version number replaced.
-        :rtype: str
+        """
+        Read a .cue file, and replace the version comment with the current
+        version so we can use it in comparisons.
         """
         cuefile = os.path.join(os.path.dirname(__file__), name)
         ret = open(cuefile).read().decode('utf-8')

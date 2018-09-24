@@ -24,15 +24,12 @@ import os
 import glob
 import sys
 import logging
-import gobject
 from whipper.command.basecommand import BaseCommand
 from whipper.common import (
     accurip, config, drive, program, task
 )
 from whipper.program import cdrdao, cdparanoia, utils
 from whipper.result import result
-
-gobject.threads_init()
 
 logger = logging.getLogger(__name__)
 
@@ -71,11 +68,6 @@ class _CD(BaseCommand):
 
     @staticmethod
     def add_arguments(parser):
-        # FIXME: have a cache of these pickles somewhere
-        parser.add_argument('-T', '--toc-pickle',
-                            action="store", dest="toc_pickle",
-                            help="pickle to use for reading and "
-                            "writing the TOC")
         parser.add_argument('-R', '--release-id',
                             action="store", dest="release_id",
                             help="MusicBrainz release id to match to "
@@ -103,9 +95,8 @@ class _CD(BaseCommand):
         utils.unmount_device(self.device)
 
         # first, read the normal TOC, which is fast
-        self.ittoc = self.program.getFastToc(self.runner,
-                                             self.options.toc_pickle,
-                                             self.device)
+        print("Reading TOC...")
+        self.ittoc = self.program.getFastToc(self.runner, self.device)
 
         # already show us some info based on this
         self.program.getRipResult(self.ittoc.getCDDBDiscId())
@@ -228,7 +219,7 @@ Log files will log the path to tracks relative to this directory.
     # Requires opts.device
 
     def add_arguments(self):
-        loggers = result.getLoggers().keys()
+        loggers = list(result.getLoggers())
         default_offset = None
         info = drive.getDeviceInfo(self.opts.device)
         if info:
@@ -363,7 +354,7 @@ Log files will log the path to tracks relative to this directory.
             logger.debug('ripIfNotRipped: path %r' % path)
             trackResult.number = number
 
-            assert type(path) is unicode, "%r is not unicode" % path
+            assert isinstance(path, unicode), "%r is not unicode" % path
             trackResult.filename = path
             if number > 0:
                 trackResult.pregap = self.itable.tracks[number - 1].getPregap()

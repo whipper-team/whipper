@@ -21,7 +21,7 @@ class ShrinkTestCase(tcommon.TestCase):
                 'Are Off Our Lands!".flac')
 
         shorter = common.shrinkPath(path)
-        self.failUnless(os.path.splitext(path)[0].startswith(
+        self.assertTrue(os.path.splitext(path)[0].startswith(
             os.path.splitext(shorter)[0]))
         self.failIfEquals(path, shorter)
 
@@ -29,13 +29,13 @@ class ShrinkTestCase(tcommon.TestCase):
 class FramesTestCase(tcommon.TestCase):
 
     def testFrames(self):
-        self.assertEquals(common.framesToHMSF(123456), '00:27:26.06')
+        self.assertEqual(common.framesToHMSF(123456), '00:27:26.06')
 
 
 class FormatTimeTestCase(tcommon.TestCase):
 
     def testFormatTime(self):
-        self.assertEquals(common.formatTime(7202), '02:00:02.000')
+        self.assertEqual(common.formatTime(7202), '02:00:02.000')
 
 
 class GetRelativePathTestCase(tcommon.TestCase):
@@ -45,8 +45,8 @@ class GetRelativePathTestCase(tcommon.TestCase):
         cue = './' + directory + '/Placebo - Black Market Music (2000)'
         track = './' + directory + '/01. Placebo - Taste in Men.flac'
 
-        self.assertEquals(common.getRelativePath(track, cue),
-                          '01. Placebo - Taste in Men.flac')
+        self.assertEqual(common.getRelativePath(track, cue),
+                         '01. Placebo - Taste in Men.flac')
 
 
 class GetRealPathTestCase(tcommon.TestCase):
@@ -55,13 +55,11 @@ class GetRealPathTestCase(tcommon.TestCase):
         fd, path = tempfile.mkstemp(suffix=u'back\\slash.flac')
         refPath = os.path.join(os.path.dirname(path), 'fake.cue')
 
-        self.assertEquals(common.getRealPath(refPath, path),
-                          path)
+        self.assertEqual(common.getRealPath(refPath, path), path)
 
         # same path, but with wav extension, will point to flac file
         wavPath = path[:-4] + 'wav'
-        self.assertEquals(common.getRealPath(refPath, wavPath),
-                          path)
+        self.assertEqual(common.getRealPath(refPath, wavPath), path)
 
         os.close(fd)
         os.unlink(path)

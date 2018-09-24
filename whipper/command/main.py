@@ -8,7 +8,7 @@ import musicbrainzngs
 
 import whipper
 
-from whipper.command import cd, offset, drive, image, accurip, debug
+from whipper.command import cd, offset, drive, image, accurip, mblookup
 from whipper.command.basecommand import BaseCommand
 from whipper.common import common, directory, config
 from whipper.extern.task import task
@@ -19,14 +19,10 @@ logger = logging.getLogger(__name__)
 
 
 def main():
-    # set user agent
-    musicbrainzngs.set_useragent("whipper", whipper.__version__,
-                                 "https://github.com/JoeLametta/whipper")
-
     try:
         server = config.Config().get_musicbrainz_server()
-    except KeyError, e:
-        sys.stderr.write('whipper: %s\n' % e.message)
+    except KeyError as e:
+        sys.stderr.write('whipper: %s\n' % str(e))
         sys.exit()
 
     musicbrainzngs.set_hostname(server)
@@ -34,13 +30,13 @@ def main():
     distributions, _ = pkg_resources.working_set.find_plugins(
         pkg_resources.Environment([directory.data_path('plugins')])
     )
-    map(pkg_resources.working_set.add, distributions)
+    list(map(pkg_resources.working_set.add, distributions))
     try:
         cmd = Whipper(sys.argv[1:], os.path.basename(sys.argv[0]), None)
         ret = cmd.do()
     except SystemError as e:
         sys.stderr.write('whipper: error: %s\n' % e)
-        if (type(e) is common.EjectError and
+        if (isinstance(e, common.EjectError) and
                 cmd.options.eject in ('failure', 'always')):
             eject_device(e.device)
         return 255
@@ -81,10 +77,10 @@ You can get help on subcommands by using the -h option to the subcommand.
     subcommands = {
         'accurip': accurip.AccuRip,
         'cd': cd.CD,
-        'debug': debug.Debug,
         'drive': drive.Drive,
         'offset': offset.Offset,
-        'image': image.Image
+        'image': image.Image,
+        'mblookup': mblookup.MBLookup
     }
 
     def add_arguments(self):
@@ -109,5 +105,5 @@ You can get help on subcommands by using the -h option to the subcommand.
             self.parser.print_help()
             sys.exit(0)
         if self.options.version:
-            print "whipper %s" % whipper.__version__
+            print("whipper %s" % whipper.__version__)
             sys.exit(0)

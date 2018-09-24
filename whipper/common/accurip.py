@@ -41,8 +41,7 @@ class EntryNotFound(Exception):
 
 
 class _AccurateRipResponse(object):
-    """I represent an AccurateRip response with its metadata.
-
+    """
     An AccurateRip response contains a collection of metadata identifying a
     particular digital audio compact disc.
 
@@ -53,14 +52,14 @@ class _AccurateRipResponse(object):
     the disc index, which excludes any audio hidden in track pre-gaps (such as
     HTOA).
 
-    The checksums and confidences arrays are indexed by relative track
-    position, so track 1 will have array index 0, track 2 will have array
-    index 1, and so forth. HTOA and other hidden tracks are not included.
-
     The response is stored as a packed binary structure.
     """
-
     def __init__(self, data):
+        """
+        The checksums and confidences arrays are indexed by relative track
+        position, so track 1 will have array index 0, track 2 will have array
+        index 1, and so forth. HTOA and other hidden tracks are not included.
+        """
         self.num_tracks = struct.unpack("B", data[0])[0]
         self.discId1 = "%08x" % struct.unpack("<L", data[1:5])[0]
         self.discId2 = "%08x" % struct.unpack("<L", data[5:9])[0]
@@ -97,17 +96,13 @@ def _split_responses(raw_entry):
 
 
 def calculate_checksums(track_paths):
-    """Calculate ARv1 and ARv2 checksums of the given tracks.
-
+    """
     Return ARv1 and ARv2 checksums as two arrays of character strings in a
     dictionary: {'v1': ['deadbeef', ...], 'v2': [...]}
 
     Return None instead of checksum string for unchecksummable tracks.
 
     HTOA checksums are not included in the database and are not calculated.
-
-    :param track_paths:
-    :type track_paths:
     """
     track_count = len(track_paths)
     v1_checksums = []
@@ -116,23 +111,23 @@ def calculate_checksums(track_paths):
     # This is done sequentially because it is very fast.
     for i, path in enumerate(track_paths):
         v1_sum = accuraterip_checksum(
-            path, i + 1, track_count, wave=True, v2=False
+            path, i+1, track_count, wave=True, v2=False
         )
         if not v1_sum:
             logger.error(
                 'could not calculate AccurateRip v1 checksum for track %d %r' %
-                (i + 1, path)
+                (i+1, path)
             )
             v1_checksums.append(None)
         else:
             v1_checksums.append("%08x" % v1_sum)
         v2_sum = accuraterip_checksum(
-            path, i + 1, track_count, wave=True, v2=True
+            path, i+1, track_count, wave=True, v2=True
         )
         if not v2_sum:
             logger.error(
                 'could not calculate AccurateRip v2 checksum for track %d %r' %
-                (i + 1, path)
+                (i+1, path)
             )
             v2_checksums.append(None)
         else:
@@ -169,16 +164,11 @@ def _save_entry(raw_entry, path):
 
 
 def get_db_entry(path):
-    """Retrieve cached AccurateRip disc entry.
-
-    (As array of _AccurateRipResponses).
-
+    """
+    Retrieve cached AccurateRip disc entry as array of _AccurateRipResponses.
     Downloads entry from accuraterip.com on cache fault.
 
-    ``path`` is in the format of the output of table.accuraterip_path().
-
-    :param path:
-    :type path:
+    `path' is in the format of the output of table.accuraterip_path().
     """
     cached_path = join(_CACHE_DIR, path)
     if exists(cached_path):
@@ -205,17 +195,12 @@ def _assign_checksums_and_confidences(tracks, checksums, responses):
 
 
 def _match_responses(tracks, responses):
-    """Match and save track AccurateRip response checksums.
-
-    The checksum are matched against all non-hidden tracks.
+    """
+    Match and save track accuraterip response checksums against
+    all non-hidden tracks.
 
     Returns True if every track has a match for every entry for either
     AccurateRip version.
-
-    :param tracks:
-    :type tracks:
-    :param responses:
-    :type responses:
     """
     for r in responses:
         for i, track in enumerate(tracks):
@@ -237,23 +222,16 @@ def _match_responses(tracks, responses):
 
 
 def verify_result(result, responses, checksums):
-    """Verify track AccurateRip checksums against database responses.
-
+    """
+    Verify track AccurateRip checksums against database responses.
     Stores track checksums and database values on result.
-
-    :param result:
-    :type result:
-    :param responses:
-    :type responses:
-    :param checksums:
-    :type checksums:
     """
     if not (result and responses and checksums):
         return False
     # exclude HTOA from AccurateRip verification
     # NOTE: if pre-gap hidden audio support is expanded to include
     # tracks other than HTOA, this is invalid.
-    tracks = filter(lambda t: t.number != 0, result.tracks)
+    tracks = [t for t in result.tracks if t.number != 0]
     if not tracks:
         return False
     _assign_checksums_and_confidences(tracks, checksums, responses)
@@ -261,10 +239,8 @@ def verify_result(result, responses, checksums):
 
 
 def print_report(result):
-    """Print AccurateRip verification results to stdout.
-
-    :param result:
-    :type result:
+    """
+    Print AccurateRip verification results to stdout.
     """
     for i, track in enumerate(result.tracks):
         status = 'rip NOT accurate'
@@ -275,10 +251,10 @@ def print_report(result):
             conf = '(max confidence    %3d)' % track.AR['DBMaxConfidence']
             if track.AR['v1']['DBCRC'] or track.AR['v2']['DBCRC']:
                 status = 'rip accurate'
-                db = ', '.join(filter(None, (
+                db = ', '.join([_f for _f in (
                     track.AR['v1']['DBCRC'],
                     track.AR['v2']['DBCRC']
-                )))
+                ) if _f])
             max_conf = max(
                 [track.AR[v]['DBConfidence'] for v in ('v1', 'v2')]
             )
