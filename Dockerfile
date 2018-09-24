@@ -4,26 +4,28 @@ RUN apt-get update \
   && apt-get install -y cdrdao python-gobject-2 python-musicbrainzngs python-mutagen python-setuptools \
   python-cddb python-requests libsndfile1-dev flac sox \
   libiso9660-dev python-pip swig make pkgconf \
-  libiso9660-dev eject locales \
+  eject locales \
   autoconf libtool curl \
-  && pip install pycdio
+  && pip install pycdio==2.0.0
 
-# libcdio-utils, libcdio-dev are actually required
-
-RUN curl -o 'libcdio-0.94.tar.gz' 'https://ftp.gnu.org/gnu/libcdio/libcdio-0.94.tar.gz'
-RUN printf '96e2c903f866ae96f9f5b9048fa32db0921464a2286f5b586c0f02699710025a  libcdio-0.94.tar.gz' | sha256sum -c
-RUN tar xf libcdio-0.94.tar.gz && cd libcdio-0.94/ \
-&& autoreconf -fi \
-&& ./configure --disable-dependency-tracking --disable-cxx --disable-example-progs --disable-static \
-&& make install
+# libcdio-paranoia / libcdio-utils are wrongfully packaged in Debian, thus built manually
+# see https://github.com/JoeLametta/whipper/pull/237#issuecomment-367985625
+RUN curl -o - 'https://ftp.gnu.org/gnu/libcdio/libcdio-2.0.0.tar.gz' | tar zxf - \
+  && cd libcdio-2.0.0 \
+  && autoreconf -fi \
+  && ./configure --disable-dependency-tracking --disable-cxx --disable-example-progs --disable-static \
+  && make install \
+  && cd .. \
+  && rm -rf libcdio-2.0.0
 
 # Install cd-paranoia from tarball
-RUN curl -o 'libcdio-paranoia-10.2+0.94+2.tar.gz' 'https://ftp.gnu.org/gnu/libcdio/libcdio-paranoia-10.2+0.94+2.tar.gz'
-RUN printf 'd60f82ece97eeb92407a9ee03f3499c8983206672c28ae5e4e22179063c81941  libcdio-paranoia-10.2+0.94+2.tar.gz' | sha256sum -c
-RUN tar xf libcdio-paranoia-10.2+0.94+2.tar.gz && cd libcdio-paranoia-10.2+0.94+2/ \
-&& autoreconf -fi \
-&& ./configure --disable-dependency-tracking --disable-example-progs --disable-static \
-&& make install
+RUN curl -o - 'https://ftp.gnu.org/gnu/libcdio/libcdio-paranoia-10.2+0.94+2.tar.gz' | tar zxf - \
+  && cd libcdio-paranoia-10.2+0.94+2 \
+  && autoreconf -fi \
+  && ./configure --disable-dependency-tracking --disable-example-progs --disable-static \
+  && make install \
+  && cd .. \ 
+  && rm -rf libcdio-paranoia-10.2+0.94+2
 
 RUN ldconfig
 
@@ -33,6 +35,7 @@ COPY . /whipper/
 RUN cd /whipper/src && make && make install \
   && cd /whipper && python2 setup.py install \
   && rm -rf /whipper
+  && whipper -v
 
 # add user
 RUN useradd -m worker -G cdrom \
@@ -54,5 +57,4 @@ ENV PYTHONIOENCODING=utf-8
 
 USER worker
 WORKDIR /output
-RUN whipper -v
 ENTRYPOINT ["whipper"]
