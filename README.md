@@ -20,10 +20,13 @@ In order to track whipper's latest changes it's advised to check its commit hist
 - [Features](#features)
 - [Changelog](#changelog)
 - [Installation](#installation)
+  * [Docker](#docker)
+  * [Package](#package)
+- [Building](#building)
   1. [Required dependencies](#required-dependencies)
   2. [Fetching the source code](#fetching-the-source-code)
   3. [Building the bundled dependencies](#building-the-bundled-dependencies)
-  4. [Finalizing the installation](#finalizing-the-installation)
+  4. [Finalizing the build](#finalizing-the-build)
 - [Usage](#usage)
 - [Getting started](#getting-started)
 - [Configuration file documentation](#configuration-file-documentation)
@@ -63,13 +66,39 @@ For detailed information, please check the commit history.
 
 ## Installation
 
-Whipper still isn't widely available as an official package in many Linux distributions so, in order to use it, it may be necessary to build it from its source code. If you are building from a source tarball or checkout, you can choose to use whipper installed or uninstalled _but first install all the required dependencies_.
+Whipper still isn't widely available as an official package in many Linux distributions so, in order to use it, it may be necessary to [build it from its source code](#building).
+
+### Docker
+
+You can easily install whipper by making use of the included Dockerfile without needing to care about the required dependencies:
+
+    docker build -t whipper/whipper:0.6 -t whipper/whipper:latest .
+
+It's recommended to create an alias for a convenient usage:
+
+    alias whipper="docker run -ti --rm --device=/dev/cdrom \
+      -v ${PWD}/config:/home/worker/.config/whipper \
+      -v ${PWD}/output:/output \
+      whipper/whipper"
+
+You should put this e.g. into your `.bash_aliases`. Also keep in mind to substitude the path definitions to something that fits to your needs (e.g. replace `… -v ${PWD}/output:/output …` by `… -v ${HOME}/ripped:/output \ …`)
+
+Finally you can test the correct installation:
+
+    whipper -v
+    whipper drive list
+
+### Package
 
 This is a noncomprehensive summary which shows whipper's packaging status (unofficial repositories are probably not included):
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/whipper.svg)](https://repology.org/metapackage/whipper)
 
 In case you decide to install whipper using an unofficial repository just keep in mind it is your responsibility to verify that the provided content is safe to use.
+
+## Building
+
+If you are building from a source tarball or checkout, you can choose to use whipper installed or uninstalled _but first install all the required dependencies_.
 
 ### Required dependencies
 
@@ -112,7 +141,7 @@ sudo make install
 cd ..
 ```
 
-### Finalizing the installation
+### Finalizing the build
 
 Install whipper: `python2 setup.py install`
 
