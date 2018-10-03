@@ -66,27 +66,31 @@ For detailed information, please check the commit history.
 
 ## Installation
 
-Whipper still isn't widely available as an official package in many Linux distributions so, in order to use it, it may be necessary to [build it from its source code](#building).
+Whipper still isn't available as an official package in every Linux distributions so, in order to use it, it may be necessary to [build it from its source code](#building).
 
 ### Docker
 
 You can easily install whipper by making use of the included Dockerfile without needing to care about the required dependencies:
 
-    docker build -t whipper/whipper:0.6 -t whipper/whipper:latest .
+`docker build -t whipper/whipper:0.7-git -t whipper/whipper:latest`
 
 It's recommended to create an alias for a convenient usage:
 
-    alias whipper="docker run -ti --rm --device=/dev/cdrom \
-      -v ${PWD}/config:/home/worker/.config/whipper \
-      -v ${PWD}/output:/output \
-      whipper/whipper"
+```bash
+alias whipper="docker run -ti --rm --device=/dev/cdrom \
+    -v ${PWD}/config:/home/worker/.config/whipper \
+    -v ${PWD}/output:/output \
+    whipper/whipper"
+```
 
-You should put this e.g. into your `.bash_aliases`. Also keep in mind to substitude the path definitions to something that fits to your needs (e.g. replace `… -v ${PWD}/output:/output …` by `… -v ${HOME}/ripped:/output \ …`)
+You should put this e.g. into your `.bash_aliases`. Also keep in mind to substitude the path definitions to something that fits to your needs (e.g. replace `… -v ${PWD}/output:/output …` with `… -v ${HOME}/ripped:/output \ …`).
 
 Finally you can test the correct installation:
 
-    whipper -v
-    whipper drive list
+```
+whipper -v
+whipper drive list
+```
 
 ### Package
 
