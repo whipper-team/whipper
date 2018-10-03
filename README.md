@@ -72,7 +72,7 @@ Whipper still isn't available as an official package in every Linux distribution
 
 You can easily install whipper by making use of the included Dockerfile without needing to care about the required dependencies:
 
-    docker build -t whipper/whipper .
+`docker build -t whipper/whipper`
 
 It's recommended to create an alias for a convenient usage:
 
@@ -83,9 +83,11 @@ alias whipper="docker run -ti --rm --device=/dev/cdrom \
     whipper/whipper"
 ```
 
-You should put this e.g. into your `.bash_aliases`. Also keep in mind to substitude the path definitions to something that fits to your needs (e.g. replace `… -v ${PWD}/output:/output …` with `… -v ${HOME}/ripped:/output \ …`). Make sure you create the configuration directory:
+You should put this e.g. into your `.bash_aliases`. Also keep in mind to substitute the path definitions to something that fits to your needs (e.g. replace `… -v ${PWD}/output:/output …` with `… -v ${HOME}/ripped:/output \ …`).
 
-     mkdir ~/.config/whipper ${PWD}/output
+Make sure you create the configuration directory:
+
+`mkdir -p ~/.config/whipper ${PWD}/output`
 
 Finally you can test the correct installation:
 
