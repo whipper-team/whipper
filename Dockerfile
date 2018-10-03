@@ -34,7 +34,7 @@ RUN mkdir /whipper
 COPY . /whipper/
 RUN cd /whipper/src && make && make install \
   && cd /whipper && python2 setup.py install \
-  && rm -rf /whipper
+  && rm -rf /whipper \
   && whipper -v
 
 # add user
