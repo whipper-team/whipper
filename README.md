@@ -72,7 +72,7 @@ Whipper still isn't available as an official package in every Linux distribution
 
 You can easily install whipper by making use of the included Dockerfile without needing to care about the required dependencies:
 
-    docker build -t whipper/whipper:latest .
+    docker build -t whipper/whipper .
 
 It's recommended to create an alias for a convenient usage:
 
