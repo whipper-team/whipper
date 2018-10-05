@@ -257,7 +257,7 @@ class Program:
         except IOError as e:
             # FIXME: for some reason errno is a str ?
             if e.errno == 'socket error':
-                self._stdout.write("Warning: network error: %r\n" % (e, ))
+                self._stdout.write("WARNING: CDDB network error: %r\n" % (e, ))
             else:
                 raise
 
