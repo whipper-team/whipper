@@ -169,8 +169,9 @@ def freedb_command(freedb_server, freedb_port, cmd, *args):
 
     try:
         from urllib.request import urlopen
+        from urllib.error import URLError
     except ImportError:
-        from urllib2 import urlopen
+        from urllib2 import urlopen, URLError
     try:
         from urllib.parse import urlencode
     except ImportError:
@@ -203,11 +204,14 @@ def freedb_command(freedb_server, freedb_port, cmd, *args):
 
     POST.append((u"proto", u"6"))
 
-    # get Request object from post
-    request = urlopen(
-        "http://{}:{:d}/~cddb/cddb.cgi".format(freedb_server, freedb_port),
-        urlencode(POST).encode("UTF-8") if (version_info[0] >= 3) else
-        urlencode(POST))
+    try:
+        # get Request object from post
+        request = urlopen(
+            "http://{}:{:d}/~cddb/cddb.cgi".format(freedb_server, freedb_port),
+            urlencode(POST).encode("UTF-8") if (version_info[0] >= 3) else
+            urlencode(POST))
+    except URLError as e:
+        raise ValueError(str(e))
     try:
         # yield lines of output
         line = request.readline()
