@@ -251,10 +251,13 @@ class Program:
             logger.debug('CDDB query result: %r', md)
             return [item['DTITLE'] for item in md if 'DTITLE' in item] or None
 
+        except ValueError as e:
+            self._stdout.write("WARNING: CDDB protocol error: %s\n" % e)
+
         except IOError as e:
             # FIXME: for some reason errno is a str ?
             if e.errno == 'socket error':
-                self._stdout.write("Warning: network error: %r\n" % (e, ))
+                self._stdout.write("WARNING: CDDB network error: %r\n" % (e, ))
             else:
                 raise
 
