@@ -29,14 +29,6 @@ RUN curl -o - 'https://ftp.gnu.org/gnu/libcdio/libcdio-paranoia-10.2+0.94+2.tar.
 
 RUN ldconfig
 
-# install whipper
-RUN mkdir /whipper
-COPY . /whipper/
-RUN cd /whipper/src && make && make install \
-  && cd /whipper && python2 setup.py install \
-  && rm -rf /whipper \
-  && whipper -v
-
 # add user
 RUN useradd -m worker -G cdrom \
   && mkdir -p /output /home/worker/.config/whipper \
@@ -49,6 +41,14 @@ RUN echo "LC_ALL=en_US.UTF-8" >> /etc/environment \
   && echo "LANG=en_US.UTF-8" > /etc/locale.conf \
   && locale-gen en_US.UTF-8 \
   && apt-get clean && apt-get autoremove -y
+
+# install whipper
+RUN mkdir /whipper
+COPY . /whipper/
+RUN cd /whipper/src && make && make install \
+  && cd /whipper && python2 setup.py install \
+  && rm -rf /whipper \
+  && whipper -v
 
 ENV LC_ALL=en_US.UTF-8
 ENV LANG=en_US
