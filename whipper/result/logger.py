@@ -116,7 +116,10 @@ class WhipperLogger(result.Logger):
         for t in ripResult.tracks:
             if not t.filename:
                 continue
-            lines.extend(self.trackLog(t))
+            track_lines, ARDB_entry, ARDB_match = self.trackLog(t)
+            self._inARDatabase += int(ARDB_entry)
+            self._accuratelyRipped += int(ARDB_match)
+            lines.extend(track_lines)
             lines.append("")
             duration += t.testduration + t.copyduration
 
@@ -204,23 +207,25 @@ class WhipperLogger(result.Logger):
             lines.append("    Copy CRC: %08X" % trackResult.copycrc)
 
         # AccurateRip track status
-        for v in ('v1', 'v2'):
-            if trackResult.AR[v]['DBCRC']:
+        ARDB_entry = 0
+        ARDB_match = 0
+        for v in ("v1", "v2"):
+            if trackResult.AR[v]["DBCRC"]:
                 lines.append("    AccurateRip %s:" % v)
-                self._inARDatabase += 1
-                if trackResult.AR[v]['CRC'] == trackResult.AR[v]['DBCRC']:
+                ARDB_entry += 1
+                if trackResult.AR[v]["CRC"] == trackResult.AR[v]["DBCRC"]:
                     lines.append("      Result: Found, exact match")
-                    self._accuratelyRipped += 1
+                    ARDB_match += 1
                 else:
                     lines.append("      Result: Found, NO exact match")
                 lines.append(
-                    "      Confidence: %d" % trackResult.AR[v]['DBConfidence']
+                    "      Confidence: %d" % trackResult.AR[v]["DBConfidence"]
                 )
                 lines.append(
-                    "      Local CRC: %s" % trackResult.AR[v]['CRC'].upper()
+                    "      Local CRC: %s" % trackResult.AR[v]["CRC"].upper()
                 )
                 lines.append(
-                    "      Remote CRC: %s" % trackResult.AR[v]['DBCRC'].upper()
+                    "      Remote CRC: %s" % trackResult.AR[v]["DBCRC"].upper()
                 )
             elif trackResult.number != 0:
                 lines.append("    AccurateRip %s:" % v)
@@ -234,4 +239,4 @@ class WhipperLogger(result.Logger):
         else:
             self._errors = True
             lines.append("    Status: Error, CRC mismatch")
-        return lines
+        return lines, bool(ARDB_entry), bool(ARDB_match)
