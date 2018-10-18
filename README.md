@@ -127,6 +127,19 @@ Whipper relies on the following packages in order to run correctly and provide a
 - [flac](https://xiph.org/flac/), for reading flac files
 - [sox](http://sox.sourceforge.net/), for track peak detection
 
+Some dependencies aren't available in the PyPI. They can be probably installed using your distribution's package manager:
+
+- [cd-paranoia](https://www.gnu.org/software/libcdio/)
+- [cdrdao](http://cdrdao.sourceforge.net/)
+- [GObject Introspection](https://wiki.gnome.org/Projects/GObjectIntrospection)
+- [libsndfile](http://www.mega-nerd.com/libsndfile/)
+- [flac](https://xiph.org/flac/)
+- [sox](http://sox.sourceforge.net/)
+
+PyPI installable dependencies are listed in the [requirements.txt](https://github.com/whipper-team/whipper/blob/master/requirements.txt) file and can be installed issuing the following command:
+
+`pip install -r requirements.txt`
+
 ### Fetching the source code
 
 Change to a directory where you want to put whipper source code (for example, `$HOME/dev/ext` or `$HOME/prefix/src`)
