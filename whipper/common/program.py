@@ -574,7 +574,7 @@ class Program:
         return accurip.verify_result(self.result, responses, checksums)
 
     def write_m3u(self, discname):
-        m3uPath = u'%s.m3u' % discname
+        m3uPath = common.truncate_filename(discname + '.m3u')
         with open(m3uPath, 'w') as f:
             f.write(u'#EXTM3U\n'.encode('utf-8'))
             for track in self.result.tracks:
@@ -596,7 +596,7 @@ class Program:
 
     def writeCue(self, discName):
         assert self.result.table.canCue()
-        cuePath = '%s.cue' % discName
+        cuePath = common.truncate_filename(discName + '.cue')
         logger.debug('write .cue file to %s', cuePath)
         handle = open(cuePath, 'w')
         # FIXME: do we always want utf-8 ?
@@ -608,7 +608,7 @@ class Program:
         return cuePath
 
     def writeLog(self, discName, logger):
-        logPath = '%s.log' % discName
+        logPath = common.truncate_filename(discName + '.log')
         handle = open(logPath, 'w')
         log = logger.log(self.result)
         handle.write(log.encode('utf-8'))

@@ -481,8 +481,8 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         except IOError as e:
             if errno.ENAMETOOLONG != e.errno:
                 raise
-            path = common.shrinkPath(path)
-            tmpoutpath = path + u'.part'
+            path = common.truncate_filename(common.shrinkPath(path))
+            tmpoutpath = common.truncate_filename(path + u'.part')
             open(tmpoutpath, 'wb').close()
         self._tmppath = tmpoutpath
         self.path = path

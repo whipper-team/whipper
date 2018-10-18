@@ -152,6 +152,16 @@ class MissingFrames(Exception):
     """
     pass
 
+def truncate_filename(path):
+    """
+    Truncate filename to the max. len. allowed by the path's filesystem
+    Should handle unicode correctly too
+    """
+    p, f = os.path.split(os.path.normpath(path))
+    f, e = os.path.splitext(f)
+    fn_lim = os.pathconf(p, 'PC_NAME_MAX')
+    length = fn_lim - len(e)
+    return os.path.join(p, f[:length] + e)
 
 def shrinkPath(path):
     """
