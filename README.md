@@ -258,10 +258,9 @@ whipper cd rip -L what
 
 ### Official logger plugins
 
-Unfortunately both logger plugins are currently outdated and won't work with latest whipper versions.
+I suggest using whipper's default logger unless you've got particular requirements.
 
-- [morituri-eaclogger](https://github.com/JoeLametta/morituri-eaclogger) - eac-like logger attempting to maintain strict compatiility with EAC
-- [morituri-whatlogger](https://github.com/RecursiveForest/morituri-whatlogger) - eac-like logger containing the informational enhancements of the yamllogger, originally designed for use on What.CD
+- [whipper-plugin-eaclogger](https://github.com/whipper-team/whipper-plugin-eaclogger) - a plugin for whipper which provides EAC style log reports
 
 ## License
 
@@ -318,12 +317,19 @@ Thanks to:
 - [Merlijn Wajer](https://github.com/MerlijnWajer)
 - [Samantha Baldwin](https://github.com/RecursiveForest)
 
-And to all the [![GitHub contributors](https://img.shields.io/github/contributors/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/graphs/contributors).
+And to all the [contributors](https://github.com/JoeLametta/whipper/graphs/contributors).
 
 ## Links
 
-You can find us and talk about the project on IRC: [freenode](https://webchat.freenode.net/?channels=%23whipper), **#whipper** channel.
+You can find us and talk about the project on:
 
+- IRC: [freenode](https://webchat.freenode.net/?channels=%23whipper), **#whipper** channel
+- Matrix
+  - Access Matrix through the [Riot.im web client](https://riot.im/app/#/room/!wxdgcGzudITUpZMCrn:matrix.org)
+  - Join to the room named `!wxdgcGzudITUpZMCrn:matrix.org`
+  - You can also use Matrix's bridge to freenode IRC: join to the room named `#freenode_#whipper:matrix.org`
 - [Redacted thread (official)](https://redacted.ch/forums.php?action=viewthread&threadid=150)
+
+Other relevant links:
 - [Repology: versions for whipper](https://repology.org/metapackage/whipper/versions)
 - [Unattended ripping using whipper (by Thomas McWork)](https://github.com/thomas-mc-work/most-possible-unattended-rip)
