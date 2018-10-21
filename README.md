@@ -1,12 +1,12 @@
 # Whipper
 
-[![license](https://img.shields.io/github/license/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/blob/master/LICENSE)
-[![Build Status](https://travis-ci.com/JoeLametta/whipper.svg?branch=master)](https://travis-ci.com/JoeLametta/whipper)
-[![GitHub (pre-)release](https://img.shields.io/github/release/joelametta/whipper/all.svg)](https://github.com/JoeLametta/whipper/releases/latest)
+[![license](https://img.shields.io/github/license/whipper-team/whipper.svg)](https://github.com/whipper-team/whipper/blob/master/LICENSE)
+[![Build Status](https://travis-ci.com/whipper-team/whipper.svg?branch=master)](https://travis-ci.com/whipper-team/whipper)
+[![GitHub (pre-)release](https://img.shields.io/github/release/whipper-team/whipper/all.svg)](https://github.com/whipper-team/whipper/releases/latest)
 [![IRC](https://img.shields.io/badge/irc-%23whipper%40freenode-brightgreen.svg)](https://webchat.freenode.net/?channels=%23whipper)
-[![GitHub Stars](https://img.shields.io/github/stars/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/stargazers)
-[![GitHub Issues](https://img.shields.io/github/issues/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/issues)
-[![GitHub contributors](https://img.shields.io/github/contributors/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/graphs/contributors)
+[![GitHub Stars](https://img.shields.io/github/stars/whipper-team/whipper.svg)](https://github.com/whipper-team/whipper/stargazers)
+[![GitHub Issues](https://img.shields.io/github/issues/whipper-team/whipper.svg)](https://github.com/whipper-team/whipper/issues)
+[![GitHub contributors](https://img.shields.io/github/contributors/whipper-team/whipper.svg)](https://github.com/whipper-team/whipper/graphs/contributors)
 
 Whipper is a Python 2.7 CD-DA ripper based on the [morituri project](https://github.com/thomasvs/morituri) (_CDDA ripper for *nix systems aiming for accuracy over speed_). It enhances morituri which development seems to have halted merging old ignored pull requests, improving it with bugfixes and new features.
 
@@ -60,7 +60,7 @@ https://web.archive.org/web/20160528213242/https://thomas.apestaart.org/thomas/t
 
 ## Changelog
 
-See [CHANGELOG.md](https://github.com/JoeLametta/whipper/blob/master/CHANGELOG.md).
+See [CHANGELOG.md](https://github.com/whipper-team/whipper/blob/master/CHANGELOG.md).
 
 For detailed information, please check the commit history.
 
@@ -132,7 +132,7 @@ Whipper relies on the following packages in order to run correctly and provide a
 Change to a directory where you want to put whipper source code (for example, `$HOME/dev/ext` or `$HOME/prefix/src`)
 
 ```bash
-git clone https://github.com/JoeLametta/whipper.git
+git clone https://github.com/whipper-team/whipper.git
 cd whipper
 ```
 
@@ -289,13 +289,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 ## Contributing
 
 Make sure you have the latest copy from our [git
-repository](https://github.com/JoeLametta/whipper). Where possible,
+repository](https://github.com/whipper-team/whipper). Where possible,
 please include tests for new or changed functionality. You can run tests
 with `python -m unittest discover` from your source checkout.
 
 ### Bug reports & feature requests
 
-Please use the [issue tracker](https://github.com/JoeLametta/whipper/issues) to report any bugs or to file feature requests.
+Please use the [issue tracker](https://github.com/whipper-team/whipper/issues) to report any bugs or to file feature requests.
 
 When filing bug reports, please run the failing command with the environment variable `WHIPPER_DEBUG` set. For example:
 
@@ -317,7 +317,7 @@ Thanks to:
 - [Merlijn Wajer](https://github.com/MerlijnWajer)
 - [Samantha Baldwin](https://github.com/RecursiveForest)
 
-And to all the [contributors](https://github.com/JoeLametta/whipper/graphs/contributors).
+And to all the [contributors](https://github.com/whipper-team/whipper/graphs/contributors).
 
 ## Links
 
