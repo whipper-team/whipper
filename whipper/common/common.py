@@ -23,6 +23,7 @@ import os
 import os.path
 import math
 import subprocess
+import unicodedata
 
 from whipper.extern import asyncsub
 
@@ -156,13 +157,15 @@ class MissingFrames(Exception):
 def truncate_filename(path):
     """
     Truncate filename to the max. len. allowed by the path's filesystem
-    Should handle unicode correctly too
+    Hopefully it handles Unicode strings correctly
     """
     p, f = os.path.split(os.path.normpath(path))
     f, e = os.path.splitext(f)
-    fn_lim = os.pathconf(p, 'PC_NAME_MAX')
-    length = fn_lim - len(e)
-    return os.path.join(p, f[:length] + e)
+    fn_lim = os.pathconf(p, 'PC_NAME_MAX')  # max filenmae length in bytes
+    max = fn_lim - len(e.encode('utf-8'))
+    f = unicodedata.normalize('NFC', f)
+    f_trunc = unicode(f.encode('utf-8')[:max], 'utf-8', errors='ignore')
+    return os.path.join(p, f_trunc + e)
 
 
 def shrinkPath(path):
