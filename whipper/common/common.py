@@ -23,6 +23,7 @@ import os
 import os.path
 import math
 import subprocess
+import unicodedata
 
 from whipper.extern import asyncsub
 
@@ -151,6 +152,20 @@ class MissingFrames(Exception):
     Less frames decoded than expected.
     """
     pass
+
+
+def truncate_filename(path):
+    """
+    Truncate filename to the max. len. allowed by the path's filesystem
+    Hopefully it handles Unicode strings correctly
+    """
+    p, f = os.path.split(os.path.normpath(path))
+    f, e = os.path.splitext(f)
+    fn_lim = os.pathconf(p, 'PC_NAME_MAX')  # max filenmae length in bytes
+    max = fn_lim - len(e.encode('utf-8'))
+    f = unicodedata.normalize('NFC', f)
+    f_trunc = unicode(f.encode('utf-8')[:max], 'utf-8', errors='ignore')
+    return os.path.join(p, f_trunc + e)
 
 
 def shrinkPath(path):
