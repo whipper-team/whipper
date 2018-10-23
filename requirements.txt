@@ -1,0 +1,5 @@
+musicbrainzngs
+mutagen
+pycdio>0.20
+PyGObject
+requests
