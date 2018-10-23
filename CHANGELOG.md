@@ -1,11 +1,48 @@
 # Change Log
 
-## [Unreleased](https://github.com/JoeLametta/whipper/tree/HEAD)
+## [Unreleased](https://github.com/whipper-team/whipper/tree/HEAD)
 
-[Full Changelog](https://github.com/JoeLametta/whipper/compare/v0.7.0...HEAD)
+[Full Changelog](https://github.com/whipper-team/whipper/compare/v0.7.1...HEAD)
+
+## [v0.7.1](https://github.com/whipper-team/whipper/tree/v0.7.1) (2018-10-23)
+[Full Changelog](https://github.com/whipper-team/whipper/compare/v0.7.0...v0.7.1)
+
+**Implemented enhancements:**
+
+- Transfer repository ownership to GitHub organization [\#306](https://github.com/whipper-team/whipper/issues/306)
+- Add cdparanoia version to log file [\#267](https://github.com/whipper-team/whipper/issues/267)
+- Remove whipper's retag feature [\#262](https://github.com/whipper-team/whipper/issues/262)
+- Add a requirements.txt file [\#221](https://github.com/whipper-team/whipper/issues/221)
+- Limit length of filenames [\#197](https://github.com/whipper-team/whipper/issues/197)
+- Loggers [\#117](https://github.com/whipper-team/whipper/issues/117)
+
+**Fixed bugs:**
+
+- TypeError on whipper offset find [\#263](https://github.com/whipper-team/whipper/issues/263)
+- Catch DNS error [\#206](https://github.com/whipper-team/whipper/issues/206)
+
+**Closed issues:**
+
+- Disable eject button when ripping [\#308](https://github.com/whipper-team/whipper/issues/308)
+- Github repo [\#293](https://github.com/whipper-team/whipper/issues/293)
+
+**Merged pull requests:**
+
+- Limit length of filenames [\#311](https://github.com/whipper-team/whipper/pull/311) ([JoeLametta](https://github.com/JoeLametta))
+- Add a requirements.txt file [\#310](https://github.com/whipper-team/whipper/pull/310) ([JoeLametta](https://github.com/JoeLametta))
+- Reorder Dockerfile for performance [\#305](https://github.com/whipper-team/whipper/pull/305) ([anarcat](https://github.com/anarcat))
+- Handle FreeDB server errors gracefully  [\#304](https://github.com/whipper-team/whipper/pull/304) ([anarcat](https://github.com/anarcat))
+- Fix Docker invocation [\#300](https://github.com/whipper-team/whipper/pull/300) ([anarcat](https://github.com/anarcat))
+- Document Docker usage in the README [\#297](https://github.com/whipper-team/whipper/pull/297) ([thomas-mc-work](https://github.com/thomas-mc-work))
+- switch CDDB implementation to freedb.py from python-audio-tools [\#276](https://github.com/whipper-team/whipper/pull/276) ([mtdcr](https://github.com/mtdcr))
+- task: implement logging [\#272](https://github.com/whipper-team/whipper/pull/272) ([mtdcr](https://github.com/mtdcr))
+- Switch to PyGObject by default [\#271](https://github.com/whipper-team/whipper/pull/271) ([mtdcr](https://github.com/mtdcr))
+- Remove whipper's image retag feature [\#269](https://github.com/whipper-team/whipper/pull/269) ([JoeLametta](https://github.com/JoeLametta))
+- Incremental code modernization for \(future\) Python 3 port [\#268](https://github.com/whipper-team/whipper/pull/268) ([JoeLametta](https://github.com/JoeLametta))
+- Remove dead code from program.getFastToc [\#264](https://github.com/whipper-team/whipper/pull/264) ([mtdcr](https://github.com/mtdcr))
+- Add Dockerfile [\#237](https://github.com/whipper-team/whipper/pull/237) ([thomas-mc-work](https://github.com/thomas-mc-work))
 
 ## [v0.7.0](https://github.com/JoeLametta/whipper/tree/v0.7.0) (2018-04-09)
-
 [Full Changelog](https://github.com/JoeLametta/whipper/compare/v0.6.0...v0.7.0)
 
 **Implemented enhancements:**

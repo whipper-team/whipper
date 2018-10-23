@@ -337,10 +337,9 @@ And to all the [contributors](https://github.com/whipper-team/whipper/graphs/con
 You can find us and talk about the project on:
 
 - IRC: [freenode](https://webchat.freenode.net/?channels=%23whipper), **#whipper** channel
-- Matrix
-  - Access Matrix through the [Riot.im web client](https://riot.im/app/#/room/!wxdgcGzudITUpZMCrn:matrix.org)
-  - Join to the room named `!wxdgcGzudITUpZMCrn:matrix.org`
-  - You can also use Matrix's bridge to freenode IRC: join to the room named `#freenode_#whipper:matrix.org`
+- Matrix (the room is a bridge to freenode IRC)
+  - Access Matrix  through the [Riot.im web client](https://riot.im/app/#/room/!wxdgcGzudITUpZMCrn:matrix.org)
+  - Join to the room named `#freenode_#whipper:matrix.org`
 - [Redacted thread (official)](https://redacted.ch/forums.php?action=viewthread&threadid=150)
 
 Other relevant links:
