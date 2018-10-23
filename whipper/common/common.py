@@ -161,10 +161,10 @@ def truncate_filename(path):
     """
     p, f = os.path.split(os.path.normpath(path))
     f, e = os.path.splitext(f)
-    fn_lim = os.pathconf(p, 'PC_NAME_MAX')  # max filenmae length in bytes
-    max = fn_lim - len(e.encode('utf-8'))
+    fn_lim = os.pathconf(p, 'PC_NAME_MAX')  # max.filename length in bytes
+    f_max = fn_lim - len(e.encode('utf-8'))
     f = unicodedata.normalize('NFC', f)
-    f_trunc = unicode(f.encode('utf-8')[:max], 'utf-8', errors='ignore')
+    f_trunc = unicode(f.encode('utf-8')[:f_max], 'utf-8', errors='ignore')
     return os.path.join(p, f_trunc + e)
 
 
