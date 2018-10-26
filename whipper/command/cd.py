@@ -134,11 +134,18 @@ class _CD(BaseCommand):
                             "--cdr not passed")
             return -1
 
+        out_bpath = self.options.output_directory.decode('utf-8')
+        # Needed to preserve cdrdao's tocfile
+        out_fpath = self.program.getPath(out_bpath,
+                                         self.options.disc_template,
+                                         self.mbdiscid,
+                                         self.program.metadata)
         # now, read the complete index table, which is slower
         self.itable = self.program.getTable(self.runner,
                                             self.ittoc.getCDDBDiscId(),
                                             self.ittoc.getMusicBrainzDiscId(),
-                                            self.device, self.options.offset)
+                                            self.device, self.options.offset,
+                                            out_bpath, out_fpath)
 
         assert self.itable.getCDDBDiscId() == self.ittoc.getCDDBDiscId(), \
             "full table's id %s differs from toc id %s" % (
@@ -326,9 +333,6 @@ Log files will log the path to tracks relative to this directory.
                        dirname.encode('utf-8'))
                 logger.critical(msg)
                 raise RuntimeError(msg)
-            else:
-                sys.stdout.write("output directory %s already exists\n" %
-                                 dirname.encode('utf-8'))
         else:
             print("creating output directory %s" % dirname.encode('utf-8'))
             os.makedirs(dirname)

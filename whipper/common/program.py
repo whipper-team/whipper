@@ -104,7 +104,8 @@ class Program:
         assert toc.hasTOC()
         return toc
 
-    def getTable(self, runner, cddbdiscid, mbdiscid, device, offset):
+    def getTable(self, runner, cddbdiscid, mbdiscid, device, offset,
+                 out_bpath, out_fpath):
         """
         Retrieve the Table either from the cache or the drive.
 
@@ -126,7 +127,7 @@ class Program:
             logger.debug('getTable: cddbdiscid %s, mbdiscid %s not '
                          'in cache for offset %s, reading table' % (
                              cddbdiscid, mbdiscid, offset))
-            t = cdrdao.ReadTableTask(device)
+            t = cdrdao.ReadTableTask(device, out_bpath, out_fpath)
             itable = t.table
             tdict[offset] = itable
             ptable.persist(tdict)
