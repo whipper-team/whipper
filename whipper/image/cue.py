@@ -33,9 +33,9 @@ from whipper.image import table
 import logging
 logger = logging.getLogger(__name__)
 
-_REM_RE = re.compile("^REM\s(\w+)\s(.*)$")
-_PERFORMER_RE = re.compile("^PERFORMER\s(.*)$")
-_TITLE_RE = re.compile("^TITLE\s(.*)$")
+_REM_RE = re.compile(r"^REM\s(\w+)\s(.*)$")
+_PERFORMER_RE = re.compile(r"^PERFORMER\s(.*)$")
+_TITLE_RE = re.compile(r"^TITLE\s(.*)$")
 
 _FILE_RE = re.compile(r"""
     ^FILE                 # FILE
