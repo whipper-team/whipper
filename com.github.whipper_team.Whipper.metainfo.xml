@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2018 Frederik “Freso” S. Olesen -->
+<component type="console-application">
+  <id>com.github.whipper_team.Whipper</id>
+  <metadata_license>CC0-1.0</metadata_license>
+
+  <name>whipper</name>
+  <project_license>GPL-3.0-or-later</project_license>
+  <developer_name>The Whipper Team</developer_name>
+  <summary>A CD-DA ripper prioritising accuracy over speed</summary>
+  <description>
+    <p>
+      whipper is a command-line CD-DA ripper that focuses on making accurate
+      rips over fast ones.
+    </p>
+  </description>
+
+  <url type="homepage">https://github.com/whipper-team/whipper</url>
+  <url type="bugtracker">https://github.com/whipper-team/whipper/issues</url>
+  <url type="help">https://github.com/whipper-team/whipper/blob/master/README.md</url>
+
+  <categories>
+    <category>AudioVideo</category>
+    <category>Audio</category>
+    <category>Music</category>
+    <category>ConsoleOnly</category>
+  </categories>
+
+  <provides>
+    <binary>whipper</binary>
+    <python2>whipper</python2>
+  </provides>
+</component>
