@@ -157,11 +157,11 @@ class MissingFrames(Exception):
 def truncate_filename(path):
     """
     Truncate filename to the max. len. allowed by the path's filesystem
-    Hopefully it handles Unicode strings correctly
     """
     p, f = os.path.split(os.path.normpath(path))
     f, e = os.path.splitext(f)
-    fn_lim = os.pathconf(p, 'PC_NAME_MAX')  # max.filename length in bytes
+    # Get the filename length limit in bytes
+    fn_lim = os.pathconf(p.encode('utf-8'), 'PC_NAME_MAX')
     f_max = fn_lim - len(e.encode('utf-8'))
     f = unicodedata.normalize('NFC', f)
     f_trunc = unicode(f.encode('utf-8')[:f_max], 'utf-8', errors='ignore')
