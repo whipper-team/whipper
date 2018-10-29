@@ -6,6 +6,7 @@
 
   <name>whipper</name>
   <project_license>GPL-3.0-or-later</project_license>
+  <developer_name>The Whipper Team</developer_name>
   <summary>A CD-DA ripper prioritising accuracy over speed</summary>
   <description>
     <p>
