@@ -1,4 +1,4 @@
-Coverage.py 4.5.1 text report against whipper v0.7.1
+Coverage.py 4.5.1 text report against whipper v0.7.2
 
 $ coverage run --branch --omit='whipper/test/*' --source=whipper -m unittest discover
 $ coverage report -m
@@ -20,7 +20,7 @@ whipper/common/__init__.py            0      0      0      0   100%
 whipper/common/accurip.py           133      5     54      5    95%   123, 134, 143-145, 116->123, 127->134, 160->163, 252->258, 261->267
 whipper/common/cache.py             105     50     34      6    44%   66-90, 96, 99, 107-112, 115-116, 132, 144-149, 172-179, 203-208, 213-230, 95->96, 98->99, 131->132, 142->153, 143->144, 171->172
 whipper/common/checksum.py           26     14      2      0    43%   41-42, 45-46, 49-64
-whipper/common/common.py            142     22     32      6    83%   50-51, 118-119, 142-143, 162-168, 180, 274-280, 316-320, 117->118, 130->133, 179->180, 189->196, 270->274, 314->322
+whipper/common/common.py            142     22     32      6    83%   50-51, 118-119, 142-143, 161-168, 180, 274-280, 316-320, 117->118, 130->133, 179->180, 189->196, 270->274, 314->322
 whipper/common/config.py             92      8     18      4    89%   105-106, 124-125, 131, 142, 144, 146, 130->131, 141->142, 143->144, 145->146
 whipper/common/directory.py          21      8     10      2    55%   29, 39, 44-51, 28->29, 38->39
 whipper/common/drive.py              31     20      6      0    35%   35-40, 44-50, 54-60, 64-71
