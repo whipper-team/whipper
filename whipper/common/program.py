@@ -324,7 +324,7 @@ class Program:
                     self._stdout.write("Barcode : %s\n" % metadata.barcode)
                 if metadata.catalogNumber:
                     self._stdout.write("Cat no  : %s\n" %
-                                       metadata.catalogNumber)
+                                       metadata.catalogNumber.encode('utf-8'))
 
                 delta = abs(metadata.duration - ittoc.duration())
                 if delta not in deltas:
