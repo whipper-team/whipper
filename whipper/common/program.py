@@ -196,6 +196,10 @@ class Program:
         """
         assert isinstance(outdir, unicode), "%r is not unicode" % outdir
         assert isinstance(template, unicode), "%r is not unicode" % template
+        matches = re.findall(r"%[^A,S,d,y,r,R,x,X]", template)
+        if '%' in template and matches:
+            raise ValueError('disc template string contains invalid '
+                             'variable(s): {}.'.format(', '.join(matches)))
         v = {}
         v['A'] = 'Unknown Artist'
         v['d'] = mbdiscid  # fallback for title
