@@ -401,7 +401,7 @@ class Program:
         self._stdout.write('\n')
         return ret
 
-    def getTagList(self, number):
+    def getTagList(self, number, mbdiscid):
         """
         Based on the metadata, get a dict of tags for the given track.
 
@@ -421,7 +421,6 @@ class Program:
             disc = self.metadata.title
             mbidAlbum = self.metadata.mbid
             mbidTrackAlbum = self.metadata.mbidArtist
-            mbDiscId = self.metadata.discid
 
             if number > 0:
                 try:
@@ -438,6 +437,9 @@ class Program:
                 title = 'Hidden Track One Audio'
 
         tags = {}
+
+        if number > 0:
+            tags['MUSICBRAINZ_DISCID'] = mbdiscid
 
         if self.metadata and not self.metadata.various:
             tags['ALBUMARTIST'] = albumArtist
@@ -456,7 +458,6 @@ class Program:
                 tags['MUSICBRAINZ_ARTISTID'] = mbidTrackArtist
                 tags['MUSICBRAINZ_ALBUMID'] = mbidAlbum
                 tags['MUSICBRAINZ_ALBUMARTISTID'] = mbidTrackAlbum
-                tags['MUSICBRAINZ_DISCID'] = mbDiscId
 
         # TODO/FIXME: ISRC tag
 

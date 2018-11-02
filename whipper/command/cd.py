@@ -399,7 +399,7 @@ Log files will log the path to tracks relative to this directory.
                                               offset=int(self.options.offset),
                                               device=self.device,
                                               taglist=self.program.getTagList(
-                                                  number),
+                                                  number, self.mbdiscid),
                                               overread=self.options.overread,
                                               what='track %d of %d%s' % (
                                                   number,
