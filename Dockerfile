@@ -9,7 +9,7 @@ RUN apt-get update \
   && pip install pycdio==2.0.0
 
 # libcdio-paranoia / libcdio-utils are wrongfully packaged in Debian, thus built manually
-# see https://github.com/JoeLametta/whipper/pull/237#issuecomment-367985625
+# see https://github.com/whipper-team/whipper/pull/237#issuecomment-367985625
 RUN curl -o - 'https://ftp.gnu.org/gnu/libcdio/libcdio-2.0.0.tar.gz' | tar zxf - \
   && cd libcdio-2.0.0 \
   && autoreconf -fi \

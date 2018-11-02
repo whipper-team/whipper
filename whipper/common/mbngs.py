@@ -271,7 +271,7 @@ def musicbrainz(discid, country=None, record=False):
     import musicbrainzngs
 
     musicbrainzngs.set_useragent("whipper", whipper.__version__,
-                                 "https://github.com/JoeLametta/whipper")
+                                 "https://github.com/whipper-team/whipper")
     ret = []
 
     try:
