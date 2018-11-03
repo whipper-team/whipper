@@ -241,8 +241,11 @@ options:
 
 ```INI
 [main]
-path_filter_fat = True			; replace FAT file system unsafe characters in filenames with _
-path_filter_special = False		; replace special characters in filenames with _
+path_filter_dot = True			; replace leading dot with _
+path_filter_posix = True		; replace illegal chars in *nix OSes with _
+path_filter_vfat = False		; replace illegal chars in VFAT filesystems with _
+path_filter_whitespace = False		; replace all whitespace chars with _
+path_filter_printable = False		; replace all non printable ASCII chars with _
 
 [musicbrainz]
 server = https://musicbrainz.org	; use MusicBrainz server at host[:port]
