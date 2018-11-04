@@ -22,6 +22,7 @@
 import os
 import os.path
 import math
+import re
 import subprocess
 import unicodedata
 
@@ -278,6 +279,19 @@ def getRelativePath(targetPath, collectionPath):
             'getRelativePath: target and collection in different dir, %r' % rel
         )
         return os.path.join(rel, os.path.basename(targetPath))
+
+
+def validate_template(template, kind):
+    """
+    Raise exception if disc/track template includes invalid variables
+    """
+    if kind == 'disc':
+        matches = re.findall(r'%[^A,R,S,X,d,r,x,y]', template)
+    elif kind == 'track':
+        matches = re.findall(r'%[^A,R,S,X,a,d,n,r,s,t,x,y]', template)
+    if '%' in template and matches:
+        raise ValueError(kind + ' template string contains invalid '
+                         'variable(s): {}'.format(', '.join(matches)))
 
 
 class VersionGetter(object):
