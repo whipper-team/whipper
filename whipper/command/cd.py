@@ -28,6 +28,7 @@ from whipper.command.basecommand import BaseCommand
 from whipper.common import (
     accurip, config, drive, program, task
 )
+from whipper.common.common import validate_template
 from whipper.program import cdrdao, cdparanoia, utils
 from whipper.result import result
 
@@ -285,7 +286,9 @@ Log files will log the path to tracks relative to this directory.
 
         self.options.track_template = self.options.track_template.decode(
             'utf-8')
+        validate_template(self.options.track_template, 'track')
         self.options.disc_template = self.options.disc_template.decode('utf-8')
+        validate_template(self.options.disc_template, 'disc')
 
         if self.options.offset is None:
             raise ValueError("Drive offset is unconfigured.\n"
