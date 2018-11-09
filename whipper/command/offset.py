@@ -95,6 +95,7 @@ CD in the AccurateRip database."""
         except accurip.EntryNotFound:
             logger.warning("AccurateRip entry not found: drive offset "
                            "can't be determined, try again with another disc")
+            return
 
         if responses:
             logger.debug('%d AccurateRip responses found.' % len(responses))
