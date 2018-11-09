@@ -93,7 +93,8 @@ CD in the AccurateRip database."""
         try:
             responses = accurip.get_db_entry(table.accuraterip_path())
         except accurip.EntryNotFound:
-            print('Accuraterip entry not found')
+            logger.warning("AccurateRip entry not found: drive offset "
+                           "can't be determined, try again with another disc")
 
         if responses:
             logger.debug('%d AccurateRip responses found.' % len(responses))
