@@ -192,15 +192,16 @@ class ProgressParser:
         reads = self.reads
         logger.debug('getTrackQuality: frames %d, reads %d' % (frames, reads))
 
-        # don't go over a 100%; we know cdparanoia reads each frame at least
-        # twice
         try:
+            # don't go over a 100%
+            # we know that cdparanoia reads each frame at least twice
             return min(frames * 2.0 / reads, 1.0)
         except ZeroDivisionError:
-            return 0
-
+            raise RuntimeError("cdparanoia couldn't read any frames "
+                               "for the current track")
 
 # FIXME: handle errors
+
 
 class ReadTrackTask(task.Task):
     """
