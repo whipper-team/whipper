@@ -1,9 +1,10 @@
 import os
 import re
+import shutil
 import tempfile
 from subprocess import Popen, PIPE
 
-from whipper.common.common import EjectError
+from whipper.common.common import EjectError, truncate_filename
 from whipper.image.toc import TocFile
 
 import logging
@@ -12,7 +13,7 @@ logger = logging.getLogger(__name__)
 CDRDAO = 'cdrdao'
 
 
-def read_toc(device, fast_toc=False):
+def read_toc(device, fast_toc=False, toc_path=None):
     """
     Return cdrdao-generated table of contents for 'device'.
     """
@@ -43,6 +44,14 @@ def read_toc(device, fast_toc=False):
 
     toc = TocFile(tocfile)
     toc.parse()
+    if toc_path is not None:
+        t_comp = os.path.abspath(toc_path).split(os.sep)
+        t_dirn = os.sep.join(t_comp[:-1])
+        # If the output path doesn't exist, make it recursively
+        if not os.path.isdir(t_dirn):
+            os.makedirs(t_dirn)
+        t_dst = truncate_filename(os.path.join(t_dirn, t_comp[-1] + '.toc'))
+        shutil.copy(tocfile, os.path.join(t_dirn, t_dst))
     os.unlink(tocfile)
     return toc
 
@@ -86,11 +95,11 @@ def ReadTOCTask(device):
     return read_toc(device, fast_toc=True)
 
 
-def ReadTableTask(device):
+def ReadTableTask(device, toc_path=None):
     """
     stopgap morituri-insanity compatibility layer
     """
-    return read_toc(device)
+    return read_toc(device, toc_path=toc_path)
 
 
 def getCDRDAOVersion():
