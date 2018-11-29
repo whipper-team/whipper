@@ -166,7 +166,7 @@ class WhipperLogger(result.Logger):
         lines = []
 
         # Track number
-        lines.append("  %02d:" % trackResult.number)
+        lines.append("  %d:" % trackResult.number)
 
         # Filename (including path) of ripped track
         lines.append("    Filename: %s" % trackResult.filename)
