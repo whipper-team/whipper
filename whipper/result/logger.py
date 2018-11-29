@@ -89,7 +89,7 @@ class WhipperLogger(result.Logger):
             htoastart = htoa.absolute
             htoaend = table.getTrackEnd(0)
             htoalength = table.tracks[0].getIndex(1).absolute - htoastart
-            lines.append("  00:")
+            lines.append("  0:")
             lines.append("    Start: %s" % common.framesToMSF(htoastart))
             lines.append("    Length: %s" % common.framesToMSF(htoalength))
             lines.append("    Start sector: %d" % htoastart)
@@ -103,7 +103,7 @@ class WhipperLogger(result.Logger):
             start = t.getIndex(1).absolute
             length = table.getTrackLength(t.number)
             end = table.getTrackEnd(t.number)
-            lines.append("  %02d:" % t.number)
+            lines.append("  %d:" % t.number)
             lines.append("    Start: %s" % common.framesToMSF(start))
             lines.append("    Length: %s" % common.framesToMSF(length))
             lines.append("    Start sector: %d" % start)
