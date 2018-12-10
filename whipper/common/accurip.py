@@ -240,7 +240,7 @@ def verify_result(result, responses, checksums):
 
 def print_report(result):
     """
-    Print AccurateRip verification results to stdout.
+    Print AccurateRip verification results.
     """
     for i, track in enumerate(result.tracks):
         status = 'rip NOT accurate'

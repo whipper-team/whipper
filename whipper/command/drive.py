@@ -18,8 +18,6 @@
 # You should have received a copy of the GNU General Public License
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys
-
 from whipper.command.basecommand import BaseCommand
 from whipper.common import config, drive
 from whipper.extern.task import task
@@ -40,24 +38,21 @@ class Analyze(BaseCommand):
         runner.run(t)
 
         if t.defeatsCache is None:
-            sys.stdout.write(
-                'Cannot analyze the drive.  Is there a CD in it?\n')
+            logger.critical('cannot analyze the drive: is there a CD in it?')
             return
         if not t.defeatsCache:
-            sys.stdout.write(
-                'cdparanoia cannot defeat the audio cache on this drive.\n')
+            logger.info('cdparanoia cannot defeat the audio cache '
+                        'on this drive')
         else:
-            sys.stdout.write(
-                'cdparanoia can defeat the audio cache on this drive.\n')
+            logger.info('cdparanoia can defeat the audio cache on this drive')
 
         info = drive.getDeviceInfo(self.options.device)
         if not info:
-            sys.stdout.write('Drive caching behaviour not saved:'
-                             'could not get device info (requires pycdio).\n')
+            logger.error('Drive caching behaviour not saved: '
+                         'could not get device info')
             return
 
-        sys.stdout.write(
-            'Adding drive cache behaviour to configuration file.\n')
+        logger.info('adding drive cache behaviour to configuration file')
 
         config.Config().setDefeatsCache(
             info[0], info[1], info[2], t.defeatsCache)
@@ -72,48 +67,38 @@ class List(BaseCommand):
         self.config = config.Config()
 
         if not paths:
-            sys.stdout.write('No drives found.\n')
-            sys.stdout.write('Create /dev/cdrom if you have a CD drive, \n')
-            sys.stdout.write('or install pycdio for better detection.\n')
-
+            logger.critical('No drives found. Create /dev/cdrom '
+                            'if you have a CD drive, or install '
+                            'pycdio for better detection')
             return
 
         try:
             import cdio as _  # noqa: F401 (TODO: fix it in a separate PR?)
         except ImportError:
-            sys.stdout.write(
-                'Install pycdio for vendor/model/release detection.\n')
+            logger.error('install pycdio for vendor/model/release detection')
             return
 
         for path in paths:
             vendor, model, release = drive.getDeviceInfo(path)
-            sys.stdout.write(
-                "drive: %s, vendor: %s, model: %s, release: %s\n" % (
-                    path, vendor, model, release))
+            print("drive: %s, vendor: %s, model: %s, release: %s" % (
+                  path, vendor, model, release))
 
             try:
                 offset = self.config.getReadOffset(
                     vendor, model, release)
-                sys.stdout.write(
-                    "       Configured read offset: %d\n" % offset)
+                print("       Configured read offset: %d" % offset)
             except KeyError:
                 # Note spaces at the beginning for pretty terminal output
-                sys.stdout.write("       "
-                                 "No read offset found.  "
-                                 "Run 'whipper offset find'\n")
+                logger.warning("no read offset found. "
+                               "Run 'whipper offset find'")
 
             try:
                 defeats = self.config.getDefeatsCache(
                     vendor, model, release)
-                sys.stdout.write(
-                    "       Can defeat audio cache: %s\n" % defeats)
+                print("       Can defeat audio cache: %s" % defeats)
             except KeyError:
-                sys.stdout.write(
-                    "       Unknown whether audio cache can be defeated. "
-                    "Run 'whipper drive analyze'\n")
-
-        if not paths:
-            sys.stdout.write('No drives found.\n')
+                logger.warning("unknown whether audio cache can be "
+                               "defeated. Run 'whipper drive analyze'")
 
 
 class Drive(BaseCommand):

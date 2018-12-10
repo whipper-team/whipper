@@ -19,12 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 def main():
-    try:
-        server = config.Config().get_musicbrainz_server()
-    except KeyError as e:
-        sys.stderr.write('whipper: %s\n' % str(e))
-        sys.exit()
-
+    server = config.Config().get_musicbrainz_server()
     musicbrainzngs.set_hostname(server)
     # register plugins with pkg_resources
     distributions, _ = pkg_resources.working_set.find_plugins(
@@ -35,7 +30,7 @@ def main():
         cmd = Whipper(sys.argv[1:], os.path.basename(sys.argv[0]), None)
         ret = cmd.do()
     except SystemError as e:
-        sys.stderr.write('whipper: error: %s\n' % e)
+        logger.critical("SystemError: %s", e)
         if (isinstance(e, common.EjectError) and
                 cmd.options.eject in ('failure', 'always')):
             eject_device(e.device)
@@ -51,18 +46,17 @@ def main():
         if isinstance(e.exception, ImportError):
             raise ImportError(e.exception)
         elif isinstance(e.exception, common.MissingDependencyException):
-            sys.stderr.write('whipper: error: missing dependency "%s"\n' %
-                             e.exception.dependency)
+            logger.critical('missing dependency "%s"', e.exception.dependency)
             return 255
 
         if isinstance(e.exception, common.EmptyError):
             logger.debug("EmptyError: %r", str(e.exception))
-            sys.stderr.write('whipper: error: Could not create encoded file.\n')  # noqa: E501
+            logger.critical('could not create encoded file')
             return 255
 
         # in python3 we can instead do `raise e.exception` as that would show
         # the exception's original context
-        sys.stderr.write(e.exceptionMessage)
+        logger.critical(e.exceptionMessage)
         return 255
     return ret if ret else 0
 
