@@ -24,9 +24,37 @@ _LAST_TRACK_RE = re.compile(r"^(?P<track>[0-9]*)")
 _LEADOUT_RE = re.compile(
     r"^Leadout AUDIO\s*[0-9]\s*[0-9]*:[0-9]*:[0-9]*\([0-9]*\)")
 
+
 class ProgressParser:
+    tracks = 0
+    currentTrack = 0
+    oldline = ''  # for leadout/final track number detection
+
     def parse(self, line):
-       pass 
+        cdrdao_m = _BEGIN_CDRDAO_RE.match(line)
+
+        if cdrdao_m:
+            logger.debug("RE: Begin cdrdao toc-read")
+
+        leadout_m = _LEADOUT_RE.match(line)
+
+        if leadout_m:
+            logger.debug("RE: Reached leadout")
+            last_track_m = _LAST_TRACK_RE.match(self.oldline)
+            if last_track_m:
+                self.tracks = last_track_m.group('track')
+
+        track_s = _TRACK_RE.search(line)
+        if track_s:
+            logger.debug("RE: Began reading track: %d" 
+                    % int(track_s.group('track')))
+            self.currentTrack = int(track_s.group('track'))
+
+        crc_s = _CRC_RE.search(line)
+        if crc_s:
+            sys.stdout.write("Track %d finished, found %d Q sub-channels with CRC errors\n" % (self.currentTrack, int(crc_s.group('channels'))) )
+
+        self.oldline = line
         
 
 class ReadTOCTask(task.Task):
@@ -52,6 +80,9 @@ class ReadTOCTask(task.Task):
         self.fast_toc = fast_toc
         self.toc_path = toc_path
         self._buffer = ""  # accumulate characters
+        self._parser = ProgressParser()
+        
+        self.fd, self.tocfile = tempfile.mkstemp(suffix=u'.cdrdao.read-toc.whipper.task')
 
     def start(self, runner):
         task.Task.start(self, runner)
@@ -67,39 +98,9 @@ class ReadTOCTask(task.Task):
                                      stdout=subprocess.PIPE,
                                      stderr=subprocess.PIPE,
                                      close_fds=True)
-        def _read(self, runner):
-            ret = self._popen.recv_err()
-            if not ret:
-                if self._popen.poll() is not None:
-                    self._done()
-                    return
-                self.schedule(0.01, self._read, runner)
-                return
-            self._buffer += ret
-            
-            # parse buffer into lines if possible, and parse them
-            if "\n" in self._buffer:
-                lines = self._buffer.split('\n')
-                if lines[-1] != "\n":
-                    # last line didn't end yet
-                    self._buffer = lines[-1]
-                    del lines[-1]
-                else:
-                    self._buffer = ""
-
-                for line in lines:
-                    sys.stdout.write("%s\n" % line)
-
-                progress = float(num) / float(den)
-                if progress < 1.0:
-                    self.setProgress(progress)
-            
-            # 0 does not give us output before we complete, 1.0 gives us output
-            # too late
-            
-            self._start_time = time.time()
-            self.schedule(1.0, self._read, runner)
         
+        self.schedule(0.01, self._read, runner)
+
     def _read(self, runner):
         ret = self._popen.recv_err()
         if not ret:
@@ -112,7 +113,6 @@ class ReadTOCTask(task.Task):
 
         # parse buffer into lines if possible, and parse them
         if "\n" in self._buffer:
-
             lines = self._buffer.split('\n')
             if lines[-1] != "\n":
                 # last line didn't end yet
@@ -121,14 +121,17 @@ class ReadTOCTask(task.Task):
             else:
                 self._buffer = ""
             for line in lines:
-                sys.stdout.write("%s\n" % line)
+                self._parser.parse(line)
+                if (self._parser.currentTrack is not 0 and self._parser.tracks is not 0):
+                    progress = float('%d' % self._parser.currentTrack) / float(self._parser.tracks)
+                    if progress < 1.0:
+                        self.setProgress(progress)
 
         # 0 does not give us output before we complete, 1.0 gives us output
         # too late
         self.schedule(0.01, self._read, runner)
 
     def _poll(self, runner):
-
         if self._popen.poll() is None:
             self.schedule(1.0, self._poll, runner)
             return
