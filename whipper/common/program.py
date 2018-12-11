@@ -27,11 +27,12 @@ import re
 import os
 import time
 
-from whipper.common import accurip, cache, checksum, common, mbngs, path
+from whipper.common import accurip, checksum, common, mbngs, path
 from whipper.program import cdrdao, cdparanoia
 from whipper.image import image
 from whipper.extern import freedb
 from whipper.extern.task import task
+from whipper.result import result
 
 import logging
 logger = logging.getLogger(__name__)
@@ -63,7 +64,6 @@ class Program:
         @param record: whether to record results of API calls for playback.
         """
         self._record = record
-        self._cache = cache.ResultCache()
         self._config = config
 
         d = {}
@@ -95,42 +95,31 @@ class Program:
         if V(version) < V('1.2.3rc2'):
             logger.warning('cdrdao older than 1.2.3 has a pre-gap length bug.'
                            ' See http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=102171')  # noqa: E501
-        toc = cdrdao.ReadTOCTask(device).table
+
+        t = cdrdao.ReadTOC_Task(device)
+        runner.run(t)
+        toc = t.toc.table
+
         assert toc.hasTOC()
         return toc
 
     def getTable(self, runner, cddbdiscid, mbdiscid, device, offset,
-                 out_path):
+                 toc_path):
         """
-        Retrieve the Table either from the cache or the drive.
+        Retrieve the Table from the drive.
 
         @rtype: L{table.Table}
         """
-        tcache = cache.TableCache()
-        ptable = tcache.get(cddbdiscid, mbdiscid)
         itable = None
         tdict = {}
 
-        # Ignore old cache, since we do not know what offset it used.
-        if isinstance(ptable.object, dict):
-            tdict = ptable.object
-
-            if offset in tdict:
-                itable = tdict[offset]
-
-        if not itable:
-            logger.debug('getTable: cddbdiscid %s, mbdiscid %s not in cache '
-                         'for offset %s, reading table', cddbdiscid, mbdiscid,
-                         offset)
-            t = cdrdao.ReadTableTask(device, out_path)
-            itable = t.table
-            tdict[offset] = itable
-            ptable.persist(tdict)
-            logger.debug('getTable: read table %r', itable)
-        else:
-            logger.debug('getTable: cddbdiscid %s, mbdiscid %s in cache '
-                         'for offset %s', cddbdiscid, mbdiscid, offset)
-            logger.debug('getTable: loaded table %r', itable)
+        t = cdrdao.ReadTOC_Task(device)
+        t.description = "Reading table"
+        t.toc_path = toc_path
+        runner.run(t)
+        itable = t.toc.table
+        tdict[offset] = itable
+        logger.debug('getTable: read table %r' % itable)
 
         assert itable.hasTOC()
 
@@ -142,20 +131,14 @@ class Program:
 
     def getRipResult(self, cddbdiscid):
         """
-        Retrieve the persistable RipResult either from our cache (from a
-        previous, possibly aborted rip), or return a new one.
+        Return a RipResult object.
 
         @rtype: L{result.RipResult}
         """
         assert self.result is None
-
-        self._presult = self._cache.getRipResult(cddbdiscid)
-        self.result = self._presult.object
+        self.result = result.RipResult()
 
         return self.result
-
-    def saveRipResult(self):
-        self._presult.persist()
 
     def addDisambiguation(self, template_part, metadata):
         "Add disambiguation to template path part string."
