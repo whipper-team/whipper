@@ -20,7 +20,6 @@
 
 import argparse
 import os
-import sys
 import tempfile
 import logging
 from whipper.command.basecommand import BaseCommand
@@ -79,7 +78,7 @@ CD in the AccurateRip database."""
         device = self.options.device
 
         # if necessary, load and unmount
-        sys.stdout.write('Checking device %s\n' % device)
+        logger.info('checking device %s', device)
 
         utils.load_device(device)
         utils.unmount_device(device)
@@ -116,25 +115,22 @@ CD in the AccurateRip database."""
             return None, None
 
         for offset in self._offsets:
-            sys.stdout.write('Trying read offset %d ...\n' % offset)
+            logger.info('trying read offset %d...', offset)
             try:
                 archecksums = self._arcs(runner, table, 1, offset)
             except task.TaskException as e:
 
                 # let MissingDependency fall through
-                if isinstance(e.exception,
-                              common.MissingDependencyException):
+                if isinstance(e.exception, common.MissingDependencyException):
                     raise e
 
                 if isinstance(e.exception, cdparanoia.FileSizeError):
-                    sys.stdout.write(
-                        'WARNING: cannot rip with offset %d...\n' % offset)
+                    logger.warning('cannot rip with offset %d...' % offset)
                     continue
 
-                logger.warning("Unknown task exception for offset %d: %r" % (
+                logger.warning("unknown task exception for offset %d: %r" % (
                     offset, e))
-                sys.stdout.write(
-                    'WARNING: cannot rip with offset %d...\n' % offset)
+                logger.warning('cannot rip with offset %d...' % offset)
                 continue
 
             logger.debug('AR checksums calculated: %s %s' % archecksums)
@@ -142,10 +138,9 @@ CD in the AccurateRip database."""
             c, i = match(archecksums, 1, responses)
             if c:
                 count = 1
-                logger.debug('MATCHED against response %d' % i)
-                sys.stdout.write(
-                    'Offset of device is likely %d, confirming ...\n' %
-                    offset)
+                logger.debug('matched against response %d' % i)
+                logger.info('offset of device is likely %d, confirming...',
+                            offset)
 
                 # now try and rip all other tracks as well, except for the
                 # last one (to avoid readers that can't do overread
@@ -154,9 +149,8 @@ CD in the AccurateRip database."""
                         archecksums = self._arcs(runner, table, track, offset)
                     except task.TaskException as e:
                         if isinstance(e.exception, cdparanoia.FileSizeError):
-                            sys.stdout.write(
-                                'WARNING: cannot rip with offset %d...\n' %
-                                offset)
+                            logger.warning('cannot rip with offset %d...' %
+                                           offset)
                             continue
 
                     c, i = match(archecksums, track, responses)
@@ -169,16 +163,16 @@ CD in the AccurateRip database."""
                     self._foundOffset(device, offset)
                     return 0
                 else:
-                    sys.stdout.write(
-                        'Only %d of %d tracks matched, continuing ...\n' % (
-                            count, len(table.tracks)))
+                    logger.warning('only %d of %d tracks matched, '
+                                   'continuing...',
+                                   (count, len(table.tracks)))
 
-        sys.stdout.write('No matching offset found.\n')
-        sys.stdout.write('Consider trying again with a different disc.\n')
+        logger.error('no matching offset found. '
+                     'Consider trying again with a different disc')
 
     def _arcs(self, runner, table, track, offset):
         # rips the track with the given offset, return the arcs checksums
-        logger.debug('Ripping track %r with offset %d ...', track, offset)
+        logger.debug('ripping track %r with offset %d...', track, offset)
 
         fd, path = tempfile.mkstemp(
             suffix=u'.track%02d.offset%d.whipper.wav' % (
@@ -205,17 +199,15 @@ CD in the AccurateRip database."""
         return ("%08x" % v1, "%08x" % v2)
 
     def _foundOffset(self, device, offset):
-        sys.stdout.write('\nRead offset of device is: %d.\n' %
-                         offset)
+        print('\nRead offset of device is: %d.' % offset)
 
         info = drive.getDeviceInfo(device)
         if not info:
-            sys.stdout.write(
-                'Offset not saved: could not get '
-                'device info (requires pycdio).\n')
+            logger.error('offset not saved: '
+                         'could not get device info (requires pycdio)')
             return
 
-        sys.stdout.write('Adding read offset to configuration file.\n')
+        logger.info('adding read offset to configuration file')
 
         config.Config().setReadOffset(info[0], info[1], info[2],
                                       offset)

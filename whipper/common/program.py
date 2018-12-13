@@ -25,7 +25,6 @@ Common functionality and class for all programs using whipper.
 import musicbrainzngs
 import re
 import os
-import sys
 import time
 
 from whipper.common import accurip, cache, checksum, common, mbngs, path
@@ -59,15 +58,12 @@ class Program:
     outdir = None
     result = None
 
-    _stdout = None
-
-    def __init__(self, config, record=False, stdout=sys.stdout):
+    def __init__(self, config, record=False):
         """
         @param record: whether to record results of API calls for playback.
         """
         self._record = record
         self._cache = cache.ResultCache()
-        self._stdout = stdout
         self._config = config
 
         d = {}
@@ -87,7 +83,7 @@ class Program:
 
     def setWorkingDirectory(self, workingDirectory):
         if workingDirectory:
-            logger.info('Changing to working directory %s' % workingDirectory)
+            logger.info('changing to working directory %s', workingDirectory)
             os.chdir(workingDirectory)
 
     def getFastToc(self, runner, device):
@@ -97,9 +93,9 @@ class Program:
         from pkg_resources import parse_version as V
         version = cdrdao.getCDRDAOVersion()
         if V(version) < V('1.2.3rc2'):
-            sys.stdout.write('Warning: cdrdao older than 1.2.3 has a '
-                             'pre-gap length bug.\n'
-                             'See http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=102171\n')  # noqa: E501
+            logger.warning('cdrdao older than 1.2.3 has a '
+                           'pre-gap length bug. '
+                           'See http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=102171')  # noqa: E501
         toc = cdrdao.ReadTOCTask(device).table
         assert toc.hasTOC()
         return toc
@@ -125,23 +121,23 @@ class Program:
 
         if not itable:
             logger.debug('getTable: cddbdiscid %s, mbdiscid %s not '
-                         'in cache for offset %s, reading table' % (
+                         'in cache for offset %s, reading table', (
                              cddbdiscid, mbdiscid, offset))
             t = cdrdao.ReadTableTask(device, out_path)
             itable = t.table
             tdict[offset] = itable
             ptable.persist(tdict)
-            logger.debug('getTable: read table %r' % itable)
+            logger.debug('getTable: read table %r', itable)
         else:
             logger.debug('getTable: cddbdiscid %s, mbdiscid %s in cache '
-                         'for offset %s' % (cddbdiscid, mbdiscid, offset))
-            logger.debug('getTable: loaded table %r' % itable)
+                         'for offset %s', (cddbdiscid, mbdiscid, offset))
+            logger.debug('getTable: loaded table %r', itable)
 
         assert itable.hasTOC()
 
         self.result.table = itable
 
-        logger.debug('getTable: returning table with mb id %s' %
+        logger.debug('getTable: returning table with mb id %s',
                      itable.getMusicBrainzDiscId())
         return itable
 
@@ -253,12 +249,12 @@ class Program:
             return [item['DTITLE'] for item in md if 'DTITLE' in item] or None
 
         except ValueError as e:
-            self._stdout.write("WARNING: CDDB protocol error: %s\n" % e)
+            logger.warning("CDDB protocol error: %s", e)
 
         except IOError as e:
             # FIXME: for some reason errno is a str ?
             if e.errno == 'socket error':
-                self._stdout.write("WARNING: CDDB network error: %r\n" % (e, ))
+                logger.warning("CDDB network error: %r", (e, ))
             else:
                 raise
 
@@ -270,7 +266,7 @@ class Program:
         @type  ittoc: L{whipper.image.table.Table}
         """
         # look up disc on MusicBrainz
-        self._stdout.write('Disc duration: %s, %d audio tracks\n' % (
+        print('Disc duration: %s, %d audio tracks' % (
             common.formatTime(ittoc.duration() / 1000.0),
             ittoc.getAudioTracks()))
         logger.debug('MusicBrainz submit url: %r',
@@ -287,41 +283,37 @@ class Program:
                                               record=self._record)
                 break
             except mbngs.NotFoundException as e:
-                logger.warning("release not found: %r" % (e, ))
+                logger.warning("release not found: %r", (e, ))
                 break
             except musicbrainzngs.NetworkError as e:
-                logger.warning("network error: %r" % (e, ))
+                logger.warning("network error: %r", (e, ))
                 break
             except mbngs.MusicBrainzException as e:
-                logger.warning("musicbrainz exception: %r" % (e, ))
+                logger.warning("musicbrainz exception: %r", (e, ))
                 time.sleep(5)
                 continue
 
         if not metadatas:
-            self._stdout.write('Continuing without metadata\n')
+            logger.warning('continuing without metadata')
 
         if metadatas:
             deltas = {}
 
-            self._stdout.write('\nMatching releases:\n')
+            print('\nMatching releases:')
 
             for metadata in metadatas:
-                self._stdout.write('\n')
-                self._stdout.write('Artist  : %s\n' %
-                                   metadata.artist.encode('utf-8'))
-                self._stdout.write('Title   : %s\n' %
-                                   metadata.title.encode('utf-8'))
-                self._stdout.write('Duration: %s\n' %
-                                   common.formatTime(metadata.duration /
-                                                     1000.0))
-                self._stdout.write('URL     : %s\n' % metadata.url)
-                self._stdout.write('Release : %s\n' % metadata.mbid)
-                self._stdout.write('Type    : %s\n' % metadata.releaseType)
+                print('\nArtist  : %s' % metadata.artist.encode('utf-8'))
+                print('Title   : %s' % metadata.title.encode('utf-8'))
+                print('Duration: %s' % common.formatTime(
+                                           metadata.duration / 1000.0))
+                print('URL     : %s' % metadata.url)
+                print('Release : %s' % metadata.mbid)
+                print('Type    : %s' % metadata.releaseType)
                 if metadata.barcode:
-                    self._stdout.write("Barcode : %s\n" % metadata.barcode)
+                    print("Barcode : %s" % metadata.barcode)
                 if metadata.catalogNumber:
-                    self._stdout.write("Cat no  : %s\n" %
-                                       metadata.catalogNumber.encode('utf-8'))
+                    print("Cat no  : %s" %
+                          metadata.catalogNumber.encode('utf-8'))
 
                 delta = abs(metadata.duration - ittoc.duration())
                 if delta not in deltas:
@@ -344,20 +336,15 @@ class Program:
 
             if release:
                 metadatas = [m for m in metadatas if m.url.endswith(release)]
-                logger.debug('Asked for release %r, only kept %r',
+                logger.debug('asked for release %r, only kept %r',
                              release, metadatas)
                 if len(metadatas) == 1:
-                    self._stdout.write('\n')
-                    self._stdout.write('Picked requested release id %s\n' %
-                                       release)
-                    self._stdout.write('Artist : %s\n' %
-                                       metadatas[0].artist.encode('utf-8'))
-                    self._stdout.write('Title :  %s\n' %
-                                       metadatas[0].title.encode('utf-8'))
+                    logger.info('picked requested release id %s', release)
+                    print('Artist: %s' % metadatas[0].artist.encode('utf-8'))
+                    print('Title : %s' % metadatas[0].title.encode('utf-8'))
                 elif not metadatas:
-                    self._stdout.write(
-                        "Requested release id '%s', "
-                        "but none of the found releases match\n" % release)
+                    logger.warning("requested release id '%s', but none of "
+                                   "the found releases match", release)
                     return
             else:
                 if lowest:
@@ -370,32 +357,28 @@ class Program:
                 for i, metadata in enumerate(metadatas):
                     if not artist == metadata.artist:
                         logger.warning("artist 0: %r and artist %d: %r "
-                                       "are not the same" % (
+                                       "are not the same", (
                                            artist, i, metadata.artist))
                     if not releaseTitle == metadata.releaseTitle:
                         logger.warning("title 0: %r and title %d: %r "
-                                       "are not the same" % (
+                                       "are not the same", (
                                            releaseTitle, i,
                                            metadata.releaseTitle))
 
                 if (not release and len(list(deltas)) > 1):
-                    self._stdout.write('\n')
-                    self._stdout.write('Picked closest match in duration.\n')
-                    self._stdout.write('Others may be wrong in MusicBrainz, '
-                                       'please correct.\n')
-                    self._stdout.write('Artist : %s\n' %
-                                       artist.encode('utf-8'))
-                    self._stdout.write('Title :  %s\n' %
-                                       metadatas[0].title.encode('utf-8'))
+                    logger.warning('picked closest match in duration. '
+                                   'Others may be wrong in MusicBrainz, '
+                                   'please correct')
+                    print('Artist : %s' % artist.encode('utf-8'))
+                    print('Title :  %s' % metadatas[0].title.encode('utf-8'))
 
             # Select one of the returned releases. We just pick the first one.
             ret = metadatas[0]
         else:
-            self._stdout.write(
-                'Submit this disc to MusicBrainz at the above URL.\n')
+            print('Submit this disc to MusicBrainz at the above URL.')
             ret = None
 
-        self._stdout.write('\n')
+        print()
         return ret
 
     def getTagList(self, number, mbdiscid):
@@ -427,7 +410,7 @@ class Program:
                     mbidTrack = track.mbid
                     mbidTrackArtist = track.mbidArtist
                 except IndexError as e:
-                    print('ERROR: no track %d found, %r' % (number, e))
+                    logger.error('no track %d found, %r', (number, e))
                     raise
             else:
                 # htoa defaults to disc's artist
@@ -484,7 +467,7 @@ class Program:
             runner.run(t)
         except task.TaskException as e:
             if isinstance(e.exception, common.MissingFrames):
-                logger.warning('missing frames for %r' % trackResult.filename)
+                logger.warning('missing frames for %r', trackResult.filename)
                 return False
             else:
                 raise
@@ -528,9 +511,9 @@ class Program:
         runner.run(t)
 
         logger.debug('ripped track')
-        logger.debug('test speed %.3f/%.3f seconds' % (
+        logger.debug('test speed %.3f/%.3f seconds', (
             t.testspeed, t.testduration))
-        logger.debug('copy speed %.3f/%.3f seconds' % (
+        logger.debug('copy speed %.3f/%.3f seconds', (
             t.copyspeed, t.copyduration))
         trackResult.testcrc = t.testchecksum
         trackResult.copycrc = t.copychecksum
@@ -544,7 +527,7 @@ class Program:
 
         if trackResult.filename != t.path:
             trackResult.filename = t.path
-            logger.info('Filename changed to %r', trackResult.filename)
+            logger.info('filename changed to %r', trackResult.filename)
 
     def verifyImage(self, runner, table):
         """
@@ -565,7 +548,7 @@ class Program:
             return False
 
         responses = accurip.get_db_entry(table.accuraterip_path())
-        logger.info('%d AccurateRip response(s) found' % len(responses))
+        logger.info('%d AccurateRip response(s) found', len(responses))
 
         checksums = accurip.calculate_checksums([
             os.path.join(os.path.dirname(self.cuePath), t.indexes[1].path)

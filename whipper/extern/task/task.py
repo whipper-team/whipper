@@ -18,6 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function
 import logging
 import sys
 
@@ -539,16 +540,15 @@ class SyncRunner(TaskRunner, ITaskListener):
                     self._task.description, 100.0))
             else:
                 # clear with whitespace
-                sys.stdout.write("%s\r" % (' ' * self._longest, ))
+                print(("%s\r" % (' ' * self._longest, )), end='')
 
     def _output(self, what, newline=False, ret=True):
-        sys.stdout.write(what)
-        sys.stdout.write(' ' * (self._longest - len(what)))
+        print(what, end='')
+        print((' ' * (self._longest - len(what))), end='')
         if ret:
-            sys.stdout.write('\r')
+            print('\r', end='')
         if newline:
-            sys.stdout.write('\n')
-        sys.stdout.flush()
+            print()
         if len(what) > self._longest:
             self._longest = len(what)
 

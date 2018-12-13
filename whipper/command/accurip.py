@@ -18,8 +18,6 @@
 # You should have received a copy of the GNU General Public License
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys
-
 from whipper.command.basecommand import BaseCommand
 from whipper.common.accurip import get_db_entry, ACCURATERIP_URL
 
@@ -42,18 +40,17 @@ retrieves and display accuraterip data from the given URL
 
         count = responses[0].num_tracks
 
-        sys.stdout.write("Found %d responses for %d tracks\n\n" % (
-            len(responses), count))
+        logger.info("Found %d responses for %d tracks",
+                    (len(responses), count))
 
         for (i, r) in enumerate(responses):
             if r.num_tracks != count:
-                sys.stdout.write(
-                    "Warning: response %d has %d tracks instead of %d\n" % (
-                        i, r.num_tracks, count))
+                logger.warning("response %d has %d tracks instead of %d", (
+                               i, r.num_tracks, count))
 
         # checksum and confidence by track
         for track in range(count):
-            sys.stdout.write("Track %d:\n" % (track + 1))
+            print("Track %d:" % (track + 1))
             checksums = {}
 
             for (i, r) in enumerate(responses):
@@ -82,9 +79,9 @@ retrieves and display accuraterip data from the given URL
             sortedChecksums.reverse()
 
             for highest, checksum in sortedChecksums:
-                sys.stdout.write("  %d result(s) for checksum %s: %s\n" % (
-                    len(checksums[checksum]), checksum,
-                    str(checksums[checksum])))
+                print("  %d result(s) for checksum %s: %s" % (
+                      len(checksums[checksum]),
+                      checksum, str(checksums[checksum])))
 
 
 class AccuRip(BaseCommand):

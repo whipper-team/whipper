@@ -4,7 +4,7 @@ import sys
 
 __version__ = '0.7.2'
 
-level = logging.WARNING
+level = logging.INFO
 if 'WHIPPER_DEBUG' in os.environ:
     level = os.environ['WHIPPER_DEBUG'].upper()
 if 'WHIPPER_LOGFILE' in os.environ:
