@@ -167,7 +167,8 @@ class Task(LogStub):
                 value >= 1.0 or value == 0.0):
             self.progress = value
             self._notifyListeners('progressed', value)
-            self.log('notifying progress: %r on %r', value, self.description)
+            self.debug('notifying progress: %r on %r',
+                       value, self.description)
 
     def setDescription(self, description):
         if description != self.description:
@@ -367,23 +368,23 @@ class BaseMultiTask(Task, ITaskListener):
         Subclasses should chain up to me at the end of their implementation.
         They should fall through to chaining up if there is an exception.
         """
-        self.log('BaseMultiTask.stopped: task %r (%d of %d)',
-                 task, self.tasks.index(task) + 1, len(self.tasks))
+        self.debug('BaseMultiTask.stopped: task %r (%d of %d)',
+                   task, self.tasks.index(task) + 1, len(self.tasks))
         if task.exception:
-            self.log('BaseMultiTask.stopped: exception %r',
-                     task.exceptionMessage)
+            self.warning('BaseMultiTask.stopped: exception %r',
+                         task.exceptionMessage)
             self.exception = task.exception
             self.exceptionMessage = task.exceptionMessage
             self.stop()
             return
 
         if self._task == len(self.tasks):
-            self.log('BaseMultiTask.stopped: all tasks done')
+            self.debug('BaseMultiTask.stopped: all tasks done')
             self.stop()
             return
 
         # pick another
-        self.log('BaseMultiTask.stopped: pick next task')
+        self.debug('BaseMultiTask.stopped: pick next task')
         self.schedule(0, self.next)
 
 
@@ -512,8 +513,8 @@ class SyncRunner(TaskRunner, ITaskListener):
     def schedule(self, task, delta, callable, *args, **kwargs):
         def c():
             try:
-                self.log('schedule: calling %r(*args=%r, **kwargs=%r)',
-                         callable, args, kwargs)
+                self.debug('schedule: calling %r(*args=%r, **kwargs=%r)',
+                           callable, args, kwargs)
                 callable(*args, **kwargs)
                 return False
             except Exception as e:
@@ -522,8 +523,8 @@ class SyncRunner(TaskRunner, ITaskListener):
                 task.setException(e)
                 self.stopped(task)
                 raise
-        self.log('schedule: scheduling %r(*args=%r, **kwargs=%r)',
-                 callable, args, kwargs)
+        self.debug('schedule: scheduling %r(*args=%r, **kwargs=%r)',
+                   callable, args, kwargs)
 
         gobject.timeout_add(int(delta * 1000L), c)
 

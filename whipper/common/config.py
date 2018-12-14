@@ -47,8 +47,8 @@ class Config:
             with codecs.open(self._path, 'r', encoding='utf-8') as f:
                 self._parser.readfp(f)
 
-        logger.info('Loaded %d sections from config file' %
-                    len(self._parser.sections()))
+        logger.debug('loaded %d sections from config file',
+                     len(self._parser.sections()))
 
     def write(self):
         fd, path = tempfile.mkstemp(suffix=u'.whipperrc')
