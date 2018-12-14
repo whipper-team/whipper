@@ -334,7 +334,7 @@ Log files will log the path to tracks relative to this directory.
             if logs:
                 msg = ("output directory %s is a finished rip" %
                        dirname.encode('utf-8'))
-                logger.critical(msg)
+                logger.debug(msg)
                 raise RuntimeError(msg)
         else:
             logger.info("creating output directory %s",
