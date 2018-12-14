@@ -93,7 +93,7 @@ def _record(record, which, name, what):
         handle = open(filename, 'w')
         handle.write(json.dumps(what))
         handle.close()
-        logger.info('Wrote %s %s to %s', which, name, filename)
+        logger.info('wrote %s %s to %s', which, name, filename)
 
 # credit is of the form [dict, str, dict, ... ]
 # e.g. [
@@ -152,10 +152,9 @@ def _getMetadata(releaseShort, release, discid, country=None):
 
     @rtype: L{DiscMetadata} or None
     """
-    logger.debug('getMetadata for release id %r',
-                 release['id'])
+    logger.debug('getMetadata for release id %r', release['id'])
     if not release['id']:
-        logger.warning('No id for release %r', release)
+        logger.warning('no id for release %r', release)
         return None
 
     assert release['id'], 'Release does not have an id'
@@ -183,7 +182,7 @@ def _getMetadata(releaseShort, release, discid, country=None):
     discMD.artist = albumArtistName
     discMD.sortName = discCredit.getSortName()
     if 'date' not in release:
-        logger.warning("Release with ID '%s' (%s - %s) does not have a date",
+        logger.warning("release with ID '%s' (%s - %s) does not have a date",
                        release['id'], discMD.artist, release['title'])
     else:
         discMD.release = release['date']
@@ -235,9 +234,8 @@ def _getMetadata(releaseShort, release, discid, country=None):
                     # FIXME: unit of duration ?
                     track.duration = int(t['recording'].get('length', 0))
                     if not track.duration:
-                        logger.warning(
-                            'track %r (%r) does not have duration' %
-                            (track.title, track.mbid))
+                        logger.warning('track %r (%r) does not have duration',
+                                       track.title, track.mbid)
                         tainted = True
                     else:
                         duration += track.duration
@@ -271,7 +269,7 @@ def musicbrainz(discid, country=None, record=False):
     import musicbrainzngs
 
     musicbrainzngs.set_useragent("whipper", whipper.__version__,
-                                 "https://github.com/JoeLametta/whipper")
+                                 "https://github.com/whipper-team/whipper")
     ret = []
 
     try:
@@ -297,8 +295,8 @@ def musicbrainz(discid, country=None, record=False):
         import json
         for release in result['disc']['release-list']:
             formatted = json.dumps(release, sort_keys=False, indent=4)
-            logger.debug('result %s: artist %r, title %r' % (
-                formatted, release['artist-credit-phrase'], release['title']))
+            logger.debug('result %s: artist %r, title %r', formatted,
+                         release['artist-credit-phrase'], release['title'])
 
             # to get titles of recordings, we need to query the release with
             # artist-credits
@@ -309,7 +307,7 @@ def musicbrainz(discid, country=None, record=False):
             _record(record, 'release', release['id'], res)
             releaseDetail = res['release']
             formatted = json.dumps(releaseDetail, sort_keys=False, indent=4)
-            logger.debug('release %s' % formatted)
+            logger.debug('release %s', formatted)
 
             md = _getMetadata(release, releaseDetail, discid, country)
             if md:

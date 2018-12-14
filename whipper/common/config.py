@@ -47,8 +47,8 @@ class Config:
             with codecs.open(self._path, 'r', encoding='utf-8') as f:
                 self._parser.readfp(f)
 
-        logger.info('Loaded %d sections from config file' %
-                    len(self._parser.sections()))
+        logger.debug('loaded %d sections from config file',
+                     len(self._parser.sections()))
 
     def write(self):
         fd, path = tempfile.mkstemp(suffix=u'.whipperrc')
@@ -130,14 +130,13 @@ class Config:
             if not name.startswith('drive:'):
                 continue
 
-            logger.debug('Looking at section %r' % name)
+            logger.debug('looking at section %r', name)
             conf = {}
             for key in ['vendor', 'model', 'release']:
                 locals()[key] = locals()[key].strip()
                 conf[key] = self._parser.get(name, key)
-                logger.debug("%s: '%s' versus '%s'" % (
-                    key, locals()[key], conf[key]
-                ))
+                logger.debug("%s: '%s' versus '%s'",
+                             key, locals()[key], conf[key])
             if vendor.strip() != conf['vendor']:
                 continue
             if model.strip() != conf['model']:

@@ -36,17 +36,13 @@ def accuraterip_checksum(f, track_number, total_tracks, wave=False, v2=False):
     if not wave:
         flac.wait()
         if flac.returncode != 0:
-            logger.warning(
-                'ARC calculation failed: flac return code is non zero: %r' %
-                flac.returncode
-            )
+            logger.warning('ARC calculation failed: flac '
+                           'return code is non zero: %r', flac.returncode)
             return None
 
     if arc.returncode != 0:
-        logger.warning(
-            'ARC calculation failed: arc return code is non zero: %r' %
-            arc.returncode
-        )
+        logger.warning('ARC calculation failed: '
+                       'arc return code is non zero: %r', arc.returncode)
         return None
 
     try:

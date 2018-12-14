@@ -121,8 +121,8 @@ class ProgressParser:
 
     def _parse_read(self, wordOffset):
         if wordOffset % common.WORDS_PER_FRAME != 0:
-            logger.debug('THOMAS: not a multiple of %d: %d' % (
-                common.WORDS_PER_FRAME, wordOffset))
+            logger.debug('THOMAS: not a multiple of %d: %d',
+                         common.WORDS_PER_FRAME, wordOffset)
             return
 
         frameOffset = wordOffset / common.WORDS_PER_FRAME
@@ -190,17 +190,18 @@ class ProgressParser:
         """
         frames = self.stop - self.start + 1  # + 1 since stop is inclusive
         reads = self.reads
-        logger.debug('getTrackQuality: frames %d, reads %d' % (frames, reads))
+        logger.debug('getTrackQuality: frames %d, reads %d', frames, reads)
 
-        # don't go over a 100%; we know cdparanoia reads each frame at least
-        # twice
         try:
+            # don't go over a 100%
+            # we know that cdparanoia reads each frame at least twice
             return min(frames * 2.0 / reads, 1.0)
         except ZeroDivisionError:
-            return 0
-
+            raise RuntimeError("cdparanoia couldn't read any frames "
+                               "for the current track")
 
 # FIXME: handle errors
+
 
 class ReadTrackTask(task.Task):
     """
@@ -271,12 +272,11 @@ class ReadTrackTask(task.Task):
                 stopTrack = i + 1
                 stopOffset = self._stop - self._table.getTrackStart(i + 1)
 
-        logger.debug('Ripping from %d to %d (inclusive)',
-                     self._start, self._stop)
-        logger.debug('Starting at track %d, offset %d',
-                     startTrack, startOffset)
-        logger.debug('Stopping at track %d, offset %d',
-                     stopTrack, stopOffset)
+        logger.debug('ripping from %d to %d (inclusive)', self._start,
+                     self._stop)
+        logger.debug('starting at track %d, offset %d', startTrack,
+                     startOffset)
+        logger.debug('stopping at track %d, offset %d', stopTrack, stopOffset)
 
         bufsize = 1024
         if self._overread:
@@ -291,7 +291,7 @@ class ReadTrackTask(task.Task):
             startTrack, common.framesToHMSF(startOffset),
             stopTrack, common.framesToHMSF(stopOffset)),
             self.path])
-        logger.debug('Running %s' % (" ".join(argv), ))
+        logger.debug('running %s', (" ".join(argv), ))
         try:
             self._popen = asyncsub.Popen(argv,
                                          bufsize=bufsize,
@@ -371,7 +371,7 @@ class ReadTrackTask(task.Task):
             logger.warning('file size %d did not match expected size %d',
                            size, expected)
             if (size - expected) % common.BYTES_PER_FRAME == 0:
-                logger.warning('%d frames difference' % (
+                logger.warning('%d frames difference', (
                     (size - expected) / common.BYTES_PER_FRAME))
             else:
                 logger.warning('non-integral amount of frames difference')
@@ -451,7 +451,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         """
         task.MultiSeparateTask.__init__(self)
 
-        logger.debug('Creating read and verify task on %r', path)
+        logger.debug('creating read and verify task on %r', path)
 
         if taglist:
             logger.debug('read and verify with taglist %r', taglist)
@@ -520,12 +520,12 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
                 self.testchecksum = c1 = self.tasks[1].checksum
                 self.copychecksum = c2 = self.tasks[3].checksum
                 if c1 == c2:
-                    logger.info('Checksums match, %08x' % c1)
+                    logger.info('checksums match, %08x', c1)
                     self.checksum = self.testchecksum
                 else:
                     # FIXME: detect this before encoding
-                    logger.info('Checksums do not match, %08x %08x' % (
-                        c1, c2))
+                    logger.info('checksums do not match, %08x %08x',
+                                c1, c2)
                     self.exception = ChecksumException(
                         'read and verify failed: test checksum')
 
@@ -538,11 +538,11 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
 
                 if not self.exception:
                     try:
-                        logger.debug('Moving to final path %r', self.path)
+                        logger.debug('moving to final path %r', self.path)
                         os.rename(self._tmppath, self.path)
                     except Exception as e:
-                        logger.debug('Exception while moving to final '
-                                     'path %r: %r', self.path, str(e))
+                        logger.debug('exception while moving to final '
+                                     'path %r: %s', self.path, e)
                         self.exception = e
                 else:
                     os.unlink(self._tmppath)

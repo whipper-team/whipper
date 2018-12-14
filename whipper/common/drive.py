@@ -36,7 +36,7 @@ def getAllDevicePaths():
         # see https://savannah.gnu.org/bugs/index.php?38477
         return [str(dev) for dev in _getAllDevicePathsPyCdio()]
     except ImportError:
-        logger.info('Cannot import pycdio')
+        logger.info('cannot import pycdio')
         return _getAllDevicePathsStatic()
 
 

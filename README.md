@@ -117,7 +117,8 @@ If you are building from a source tarball or checkout, you can choose to use whi
 Whipper relies on the following packages in order to run correctly and provide all the supported features:
 
 - [cd-paranoia](https://www.gnu.org/software/libcdio/), for the actual ripping
-  - To avoid bugs it's advised to use `cd-paranoia` **10.2+0.94+2-2**
+  - To avoid bugs it's advised to use `cd-paranoia` version **10.2+0.94+2-2**
+  - The package named `libcdio-utils`, available on Debian and Ubuntu, is affected by a bug: it doesn't include the `cd-paranoia` binary (needed by whipper). For more details see: [#888053 (Debian)](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=888053), [#1750264 (Ubuntu)](https://bugs.launchpad.net/ubuntu/+source/libcdio/+bug/1750264).
 - [cdrdao](http://cdrdao.sourceforge.net/), for session, TOC, pre-gap, and ISRC extraction
 - [GObject Introspection](https://wiki.gnome.org/Projects/GObjectIntrospection), to provide GLib-2.0 methods used by `task.py`
 - [PyGObject](https://pypi.org/project/PyGObject/), required by `task.py`
@@ -126,7 +127,7 @@ Whipper relies on the following packages in order to run correctly and provide a
 - [python-setuptools](https://pypi.python.org/pypi/setuptools), for installation, plugins support
 - [python-requests](https://pypi.python.org/pypi/requests), for retrieving AccurateRip database entries
 - [pycdio](https://pypi.python.org/pypi/pycdio/), for drive identification (required for drive offset and caching behavior to be stored in the configuration file).
-  - To avoid bugs  it's advised to use `pycdio` **0.20** or **0.21** with `libcdio` ≥ **0.90** ≤ **0.94**. If using `libcdio` **0.83**, which is _too old_ to satisfy all the requirements of whipper, just stick to `pycdio` **0.17**. Altough it needs additional testing, `libcdio` **2.0.0** seems to work fine if used with `pycdio` **2.0.0**. All other combinations aren't guaranteed to work.
+  - To avoid bugs  it's advised to use `pycdio` **0.20** or **0.21** with `libcdio` ≥ **0.90** ≤ **0.94* or `pycdio` **2.0.0** with `libcdio` **2.0.0**. All other combinations won't probably work.
 - [libsndfile](http://www.mega-nerd.com/libsndfile/), for reading wav files
 - [flac](https://xiph.org/flac/), for reading flac files
 - [sox](http://sox.sourceforge.net/), for track peak detection
@@ -250,7 +251,7 @@ read_offset = 6			; drive read offset in positive/negative frames (no leading +)
 unknown = True
 output_directory = ~/My Music
 track_template = new/%%A/%%y - %%d/%%t - %%n	; note: the format char '%' must be represented '%%'
-disc_template = %(track_template)s
+disc_template =  new/%%A/%%y - %%d/%%A - %%d
 # ...
 ```
 
@@ -265,13 +266,30 @@ python2 -m whipper -h
 
 ## Logger plugins
 
-Whipper supports using external logger plugins to write rip `.log` files.
+Whipper allows using external logger plugins to customize the template of `.log` files.
 
-List available plugins with `whipper cd rip -h`. Specify a logger to rip with by passing `-L loggername`:
+The available plugins can be listed with `whipper cd rip -h`. Specify a logger to rip with by passing `-L loggername`:
 
 ```bash
-whipper cd rip -L what
+whipper cd rip -L eac
 ```
+
+Whipper searches for logger plugins in the following paths:
+
+- `$XDG_DATA_HOME/whipper/plugins`
+- Paths returned by the following Python instruction:
+
+  `[x + '/whipper/plugins' for x in site.getsitepackages()]`
+
+- If whipper is run in a `virtualenv`, it will use these alternative instructions (from `distutils.sysconfig`):
+  - `get_python_lib(plat_specific=False, standard_lib=False, prefix='/usr/local') + '/whipper/plugins'`
+  - `get_python_lib(plat_specific=False, standard_lib=False) + '/whipper/plugins'`
+
+On a default Debian/Ubuntu installation, the following paths are searched by whipper:
+
+- `$HOME/.local/share/whipper/plugins`
+- `/usr/local/lib/python2.7/dist-packages/whipper/plugins`
+- `/usr/lib/python2.7/dist-packages/whipper/plugins`
 
 ### Official logger plugins
 

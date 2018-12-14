@@ -78,8 +78,8 @@ class TestAccurateRipResponse(TestCase):
         self.assertEqual(responses[1].discId1, '0000f21c')
         self.assertEqual(responses[1].discId2, '00027ef8')
         self.assertEqual(responses[1].cddbDiscId, '05021002')
-        self.assertEqual(responses[1].confidences[0], 4)
-        self.assertEqual(responses[1].confidences[1], 4)
+        self.assertEqual(responses[1].confidences[0], 5)
+        self.assertEqual(responses[1].confidences[1], 5)
         self.assertEqual(responses[1].checksums[0], 'dc77f9ab')
         self.assertEqual(responses[1].checksums[1], 'dd97d2c3')
 
@@ -203,7 +203,7 @@ class TestVerifyResult(TestCase):
             'v2': {
                 'CRC': 'dc77f9ab',
                 'DBCRC': 'dc77f9ab',
-                'DBConfidence': 4,
+                'DBConfidence': 5,
             },
             'DBMaxConfidence': 12,
             'DBMaxConfidenceCRC': '284fc705',
@@ -217,7 +217,7 @@ class TestVerifyResult(TestCase):
             'v2': {
                 'CRC': 'dd97d2c3',
                 'DBCRC': 'dd97d2c3',
-                'DBConfidence': 4,
+                'DBConfidence': 5,
             },
             'DBMaxConfidence': 20,
             'DBMaxConfidenceCRC': '9cc1f32e',

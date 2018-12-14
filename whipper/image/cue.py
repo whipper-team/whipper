@@ -85,7 +85,7 @@ class CueFile(object):
         currentTrack = None
         counter = 0
 
-        logger.info('Parsing .cue file %r', self._path)
+        logger.info('parsing .cue file %r', self._path)
         handle = codecs.open(self._path, 'r', 'utf-8')
 
         for number, line in enumerate(handle.readlines()):

@@ -5,9 +5,9 @@ import os
 import sys
 import pkg_resources
 import musicbrainzngs
-
+import site
 import whipper
-
+from distutils.sysconfig import get_python_lib
 from whipper.command import cd, offset, drive, image, accurip, mblookup
 from whipper.command.basecommand import BaseCommand
 from whipper.common import common, directory, config
@@ -19,23 +19,30 @@ logger = logging.getLogger(__name__)
 
 
 def main():
-    try:
-        server = config.Config().get_musicbrainz_server()
-    except KeyError as e:
-        sys.stderr.write('whipper: %s\n' % str(e))
-        sys.exit()
-
+    server = config.Config().get_musicbrainz_server()
     musicbrainzngs.set_hostname(server)
+
+    # Find whipper's plugins paths (local paths have higher priority)
+    plugins_p = [directory.data_path('plugins')]  # local path (in $HOME)
+    if hasattr(sys, 'real_prefix'):  # no getsitepackages() in virtualenv
+        plugins_p.append(
+            get_python_lib(plat_specific=False, standard_lib=False,
+                           prefix='/usr/local') + '/whipper/plugins')
+        plugins_p.append(get_python_lib(plat_specific=False,
+                         standard_lib=False) + '/whipper/plugins')
+    else:
+        plugins_p += [x + '/whipper/plugins' for x in site.getsitepackages()]
+
     # register plugins with pkg_resources
     distributions, _ = pkg_resources.working_set.find_plugins(
-        pkg_resources.Environment([directory.data_path('plugins')])
+        pkg_resources.Environment(plugins_p)
     )
     list(map(pkg_resources.working_set.add, distributions))
     try:
         cmd = Whipper(sys.argv[1:], os.path.basename(sys.argv[0]), None)
         ret = cmd.do()
     except SystemError as e:
-        sys.stderr.write('whipper: error: %s\n' % e)
+        logger.critical("SystemError: %s", e)
         if (isinstance(e, common.EjectError) and
                 cmd.options.eject in ('failure', 'always')):
             eject_device(e.device)
@@ -51,18 +58,17 @@ def main():
         if isinstance(e.exception, ImportError):
             raise ImportError(e.exception)
         elif isinstance(e.exception, common.MissingDependencyException):
-            sys.stderr.write('whipper: error: missing dependency "%s"\n' %
-                             e.exception.dependency)
+            logger.critical('missing dependency "%s"', e.exception.dependency)
             return 255
 
         if isinstance(e.exception, common.EmptyError):
-            logger.debug("EmptyError: %r", str(e.exception))
-            sys.stderr.write('whipper: error: Could not create encoded file.\n')  # noqa: E501
+            logger.debug("EmptyError: %s", e.exception)
+            logger.critical('could not create encoded file')
             return 255
 
         # in python3 we can instead do `raise e.exception` as that would show
         # the exception's original context
-        sys.stderr.write(e.exceptionMessage)
+        logger.critical(e.exceptionMessage)
         return 255
     return ret if ret else 0
 

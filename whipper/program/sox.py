@@ -20,7 +20,7 @@ def peak_level(track_path):
     sox = Popen([SOX, track_path, "-n", "stats", "-b", "16"], stderr=PIPE)
     out, err = sox.communicate()
     if sox.returncode:
-        logger.warning("SoX peak detection failed: " + str(sox.returncode))
+        logger.warning("SoX peak detection failed: %s", sox.returncode)
         return None
     # relevant captured lines looks like this:
     # Min level     -26215

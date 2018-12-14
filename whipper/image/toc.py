@@ -109,8 +109,8 @@ class Sources:
         @type  counter: int
         @param offset:  the absolute disc offset where this source starts
         """
-        logger.debug('Appending source, counter %d, abs offset %d, '
-                     'source %r' % (counter, offset, source))
+        logger.debug('appending source, counter %d, abs offset %d, '
+                     'source %r', counter, offset, source)
         self._sources.append((counter, offset, source))
 
     def get(self, offset):
@@ -152,8 +152,8 @@ class TocFile(object):
         absolute = absoluteOffset + trackOffset
         # this may be in a new source, so calculate relative
         c, o, s = self._sources.get(absolute)
-        logger.debug('at abs offset %d, we are in source %r' % (
-            absolute, s))
+        logger.debug('at abs offset %d, we are in source %r',
+                     absolute, s)
         counterStart = self._sources.getCounterStart(c)
         relative = absolute - counterStart
 
@@ -161,10 +161,9 @@ class TocFile(object):
                            absolute=absolute,
                            relative=relative,
                            counter=c)
-        logger.debug(
-            '[track %02d index %02d] trackOffset %r, added %r',
-            currentTrack.number, i, trackOffset,
-            currentTrack.getIndex(i))
+        logger.debug('[track %02d index %02d] trackOffset %r, added %r',
+                     currentTrack.number, i, trackOffset,
+                     currentTrack.getIndex(i))
 
     def parse(self):
         currentFile = None
@@ -209,11 +208,11 @@ class TocFile(object):
                     # is a limitation of our parser approach
                     if state == 'HEADER':
                         self.table.cdtext[key] = value
-                        logger.debug('Found disc CD-Text %s: %r', key, value)
+                        logger.debug('found disc CD-Text %s: %r', key, value)
                     elif state == 'TRACK':
                         if key != 'ISRC' or not currentTrack \
                                 or currentTrack.isrc is not None:
-                            logger.debug('Found track CD-Text %s: %r',
+                            logger.debug('found track CD-Text %s: %r',
                                          key, value)
                             currentTrack.cdtext[key] = value
 
@@ -221,7 +220,7 @@ class TocFile(object):
             m = _CATALOG_RE.search(line)
             if m:
                 self.table.catalog = m.group('catalog')
-                logger.debug("Found catalog number %s", self.table.catalog)
+                logger.debug("found catalog number %s", self.table.catalog)
 
             # look for TRACK lines
             m = _TRACK_RE.search(line)
@@ -260,23 +259,23 @@ class TocFile(object):
             m = _PRE_EMPHASIS_RE.search(line)
             if m:
                 currentTrack.pre_emphasis = True
-                logger.debug('Track has PRE_EMPHASIS')
+                logger.debug('track has PRE_EMPHASIS')
 
             # look for ISRC lines
             m = _ISRC_RE.search(line)
             if m:
                 isrc = m.group('isrc')
                 currentTrack.isrc = isrc
-                logger.debug('Found ISRC code %s', isrc)
+                logger.debug('found ISRC code %s', isrc)
 
             # look for SILENCE lines
             m = _SILENCE_RE.search(line)
             if m:
                 length = m.group('length')
-                logger.debug('SILENCE of %r', length)
+                logger.debug('silence of %r', length)
                 self._sources.append(counter, absoluteOffset, None)
                 if currentFile is not None:
-                    logger.debug('SILENCE after FILE, increasing counter')
+                    logger.debug('silence after file, increasing counter')
                     counter += 1
                     relativeOffset = 0
                     currentFile = None
@@ -286,7 +285,7 @@ class TocFile(object):
             m = _ZERO_RE.search(line)
             if m:
                 if currentFile is not None:
-                    logger.debug('ZERO after FILE, increasing counter')
+                    logger.debug('zero after file, increasing counter')
                     counter += 1
                     relativeOffset = 0
                     currentFile = None
@@ -299,13 +298,13 @@ class TocFile(object):
                 filePath = m.group('name')
                 start = m.group('start')
                 length = m.group('length')
-                logger.debug('FILE %s, start %r, length %r',
+                logger.debug('file %s, start %r, length %r',
                              filePath, common.msfToFrames(start),
                              common.msfToFrames(length))
                 if not currentFile or filePath != currentFile.path:
                     counter += 1
                     relativeOffset = 0
-                    logger.debug('track %d, switched to new FILE, '
+                    logger.debug('track %d, switched to new file, '
                                  'increased counter to %d',
                                  trackNumber, counter)
                 currentFile = File(filePath, common.msfToFrames(start),
@@ -319,12 +318,12 @@ class TocFile(object):
             if m:
                 filePath = m.group('name')
                 length = m.group('length')
-                logger.debug('FILE %s, length %r',
+                logger.debug('file %s, length %r',
                              filePath, common.msfToFrames(length))
                 if not currentFile or filePath != currentFile.path:
                     counter += 1
                     relativeOffset = 0
-                    logger.debug('track %d, switched to new FILE, '
+                    logger.debug('track %d, switched to new file, '
                                  'increased counter to %d',
                                  trackNumber, counter)
                 # FIXME: assume that a MODE2_FORM_MIX track always starts at 0
@@ -343,8 +342,8 @@ class TocFile(object):
 
                 length = common.msfToFrames(m.group('length'))
                 c, o, s = self._sources.get(absoluteOffset)
-                logger.debug('at abs offset %d, we are in source %r' % (
-                    absoluteOffset, s))
+                logger.debug('at abs offset %d, we are in source %r',
+                             absoluteOffset, s)
                 counterStart = self._sources.getCounterStart(c)
                 relativeOffset = absoluteOffset - counterStart
 
