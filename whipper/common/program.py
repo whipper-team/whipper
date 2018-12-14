@@ -378,7 +378,7 @@ class Program:
             print('Submit this disc to MusicBrainz at the above URL.')
             ret = None
 
-        print()
+        print('')
         return ret
 
     def getTagList(self, number, mbdiscid):
