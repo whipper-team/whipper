@@ -87,7 +87,7 @@ class Persister:
         handle.close()
         # do an atomic move
         shutil.move(path, self._path)
-        logger.debug('saved persisted object to %r' % self._path)
+        logger.debug('saved persisted object to %r', self._path)
 
     def _unpickle(self, default=None):
         self.object = default
@@ -103,7 +103,7 @@ class Persister:
 
         try:
             self.object = pickle.load(handle)
-            logger.debug('loaded persisted object from %r' % self._path)
+            logger.debug('loaded persisted object from %r', self._path)
         except Exception as e:
             # TODO: restrict kind of caught exceptions?
             # can fail for various reasons; in that case, pretend we didn't
@@ -143,9 +143,8 @@ class PersistedCache:
             if hasattr(persister.object, 'instanceVersion'):
                 o = persister.object
                 if o.instanceVersion < o.__class__.classVersion:
-                    logger.debug(
-                        'key %r persisted object version %d is outdated',
-                        key, o.instanceVersion)
+                    logger.debug('key %r persisted object version %d '
+                                 'is outdated', key, o.instanceVersion)
                     persister.object = None
         # FIXME: don't delete old objects atm
         #             persister.delete()
@@ -216,12 +215,11 @@ class TableCache:
             ptable = self._pcache.get(cddbdiscid)
             if ptable.object:
                 if ptable.object.getMusicBrainzDiscId() != mbdiscid:
-                    logger.debug('cached table is for different mb id %r' % (
-                        ptable.object.getMusicBrainzDiscId()))
+                    logger.debug('cached table is for different mb id %r',
+                                 ptable.object.getMusicBrainzDiscId())
                 ptable.object = None
             else:
-                logger.debug('no valid cached table found for %r' %
-                             cddbdiscid)
+                logger.debug('no valid cached table found for %r', cddbdiscid)
 
         if not ptable.object:
             # get an empty persistable from the writable location

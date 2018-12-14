@@ -48,7 +48,7 @@ class Analyze(BaseCommand):
 
         info = drive.getDeviceInfo(self.options.device)
         if not info:
-            logger.error('Drive caching behaviour not saved: '
+            logger.error('drive caching behaviour not saved: '
                          'could not get device info')
             return
 
@@ -67,7 +67,7 @@ class List(BaseCommand):
         self.config = config.Config()
 
         if not paths:
-            logger.critical('No drives found. Create /dev/cdrom '
+            logger.critical('no drives found. Create /dev/cdrom '
                             'if you have a CD drive, or install '
                             'pycdio for better detection')
             return

@@ -50,7 +50,7 @@ def main():
             return 255
 
         if isinstance(e.exception, common.EmptyError):
-            logger.debug("EmptyError: %r", str(e.exception))
+            logger.debug("EmptyError: %s", e.exception)
             logger.critical('could not create encoded file')
             return 255
 

@@ -70,7 +70,7 @@ CD in the AccurateRip database."""
             else:
                 self._offsets.append(int(b))
 
-        logger.debug('Trying with offsets %r', self._offsets)
+        logger.debug('trying with offsets %r', self._offsets)
 
     def do(self):
         runner = ctask.SyncRunner()
@@ -97,7 +97,7 @@ CD in the AccurateRip database."""
             return
 
         if responses:
-            logger.debug('%d AccurateRip responses found.' % len(responses))
+            logger.debug('%d AccurateRip responses found.', len(responses))
             if responses[0].cddbDiscId != table.getCDDBDiscId():
                 logger.warning("AccurateRip response discid different: %s",
                                responses[0].cddbDiscId)
@@ -125,20 +125,20 @@ CD in the AccurateRip database."""
                     raise e
 
                 if isinstance(e.exception, cdparanoia.FileSizeError):
-                    logger.warning('cannot rip with offset %d...' % offset)
+                    logger.warning('cannot rip with offset %d...', offset)
                     continue
 
-                logger.warning("unknown task exception for offset %d: %r" % (
-                    offset, e))
-                logger.warning('cannot rip with offset %d...' % offset)
+                logger.warning("unknown task exception for offset %d: %s",
+                               offset, e)
+                logger.warning('cannot rip with offset %d...', offset)
                 continue
 
-            logger.debug('AR checksums calculated: %s %s' % archecksums)
+            logger.debug('AR checksums calculated: %s %s', archecksums)
 
             c, i = match(archecksums, 1, responses)
             if c:
                 count = 1
-                logger.debug('matched against response %d' % i)
+                logger.debug('matched against response %d', i)
                 logger.info('offset of device is likely %d, confirming...',
                             offset)
 
@@ -149,14 +149,14 @@ CD in the AccurateRip database."""
                         archecksums = self._arcs(runner, table, track, offset)
                     except task.TaskException as e:
                         if isinstance(e.exception, cdparanoia.FileSizeError):
-                            logger.warning('cannot rip with offset %d...' %
+                            logger.warning('cannot rip with offset %d...',
                                            offset)
                             continue
 
                     c, i = match(archecksums, track, responses)
                     if c:
-                        logger.debug('MATCHED track %d against response %d' % (
-                            track, i))
+                        logger.debug('matched track %d against response %d',
+                                     track, i)
                         count += 1
 
                 if count == len(table.tracks) - 1:
@@ -164,8 +164,8 @@ CD in the AccurateRip database."""
                     return 0
                 else:
                     logger.warning('only %d of %d tracks matched, '
-                                   'continuing...',
-                                   (count, len(table.tracks)))
+                                   'continuing...', count,
+                                   len(table.tracks))
 
         logger.error('no matching offset found. '
                      'Consider trying again with a different disc')

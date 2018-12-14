@@ -176,7 +176,7 @@ class _CD(BaseCommand):
                 self.program.result.cdparanoiaDefeatsCache = \
                     self.config.getDefeatsCache(*info)
             except KeyError as e:
-                logger.debug('Got key error: %r' % (e, ))
+                logger.debug('got key error: %r', (e, ))
         self.program.result.artist = self.program.metadata \
             and self.program.metadata.artist \
             or 'Unknown Artist'
@@ -344,14 +344,14 @@ Log files will log the path to tracks relative to this directory.
         # FIXME: turn this into a method
 
         def _ripIfNotRipped(number):
-            logger.debug('ripIfNotRipped for track %d' % number)
+            logger.debug('ripIfNotRipped for track %d', number)
             # we can have a previous result
             trackResult = self.program.result.getTrackResult(number)
             if not trackResult:
                 trackResult = result.TrackResult()
                 self.program.result.tracks.append(trackResult)
             else:
-                logger.debug('ripIfNotRipped have trackresult, path %r' %
+                logger.debug('ripIfNotRipped have trackresult, path %r',
                              trackResult.filename)
 
             path = self.program.getPath(self.program.outdir,
@@ -359,7 +359,7 @@ Log files will log the path to tracks relative to this directory.
                                         self.mbdiscid,
                                         self.program.metadata,
                                         track_number=number) + '.flac'
-            logger.debug('ripIfNotRipped: path %r' % path)
+            logger.debug('ripIfNotRipped: path %r', path)
             trackResult.number = number
 
             assert isinstance(path, unicode), "%r is not unicode" % path
@@ -376,18 +376,18 @@ Log files will log the path to tracks relative to this directory.
                 if path != trackResult.filename:
                     # the path is different (different name/template ?)
                     # but we can copy it
-                    logger.debug('previous result %r, expected %r' % (
-                        trackResult.filename, path))
+                    logger.debug('previous result %r, expected %r',
+                                 trackResult.filename, path)
 
-                logger.info('verifying track %d of %d: %s', (
+                logger.info('verifying track %d of %d: %s',
                             number, len(self.itable.tracks),
-                            os.path.basename(path).encode('utf-8')))
+                            os.path.basename(path).encode('utf-8'))
                 if not self.program.verifyTrack(self.runner, trackResult):
                     logger.warning('verification failed, reripping...')
                     os.unlink(path)
 
             if not os.path.exists(path):
-                logger.debug('path %r does not exist, ripping...' % path)
+                logger.debug('path %r does not exist, ripping...', path)
                 tries = 0
                 # we reset durations for test and copy here
                 trackResult.testduration = 0.0
@@ -397,9 +397,9 @@ Log files will log the path to tracks relative to this directory.
                     tries += 1
                     if tries > 1:
                         extra = " (try %d)" % tries
-                    logger.info('ripping track %d of %d%s: %s', (
+                    logger.info('ripping track %d of %d%s: %s',
                                 number, len(self.itable.tracks), extra,
-                                os.path.basename(path).encode('utf-8')))
+                                os.path.basename(path).encode('utf-8'))
                     try:
                         logger.debug('ripIfNotRipped: track %d, try %d',
                                      number, tries)
@@ -415,12 +415,11 @@ Log files will log the path to tracks relative to this directory.
                                                   extra))
                         break
                     except Exception as e:
-                        logger.debug('Got exception %r on try %d',
-                                     e, tries)
+                        logger.debug('got exception %r on try %d', e, tries)
 
                 if tries == MAX_TRIES:
-                    logger.critical('Giving up on track %d after %d times' % (
-                        number, tries))
+                    logger.critical('giving up on track %d after %d times',
+                                    number, tries)
                     raise RuntimeError(
                         "track can't be ripped. "
                         "Rip attempts number is equal to 'MAX_TRIES'")
@@ -439,12 +438,11 @@ Log files will log the path to tracks relative to this directory.
                 # HTOA goes on index 0 of track 1
                 # ignore silence in PREGAP
                 if trackResult.peak == SILENT:
-                    logger.debug(
-                        'HTOA peak %r is equal to the SILENT '
-                        'threshold, disregarding', trackResult.peak)
+                    logger.debug('HTOA peak %r is equal to the SILENT '
+                                 'threshold, disregarding', trackResult.peak)
                     self.itable.setFile(1, 0, None,
                                         self.ittoc.getTrackStart(1), number)
-                    logger.debug('Unlinking %r', trackResult.filename)
+                    logger.debug('unlinking %r', trackResult.filename)
                     os.unlink(trackResult.filename)
                     trackResult.filename = None
                     logger.info('HTOA discarded, contains digital silence')
@@ -461,15 +459,15 @@ Log files will log the path to tracks relative to this directory.
         htoa = self.program.getHTOA()
         if htoa:
             start, stop = htoa
-            logger.info('found Hidden Track One Audio from frame %d to %d', (
-                        start, stop))
+            logger.info('found Hidden Track One Audio from frame %d to %d',
+                        start, stop)
             _ripIfNotRipped(0)
 
         for i, track in enumerate(self.itable.tracks):
             # FIXME: rip data tracks differently
             if not track.audio:
                 logger.warning('skipping data track %d, not implemented',
-                               (i + 1))
+                               i + 1)
                 # FIXME: make it work for now
                 track.indexes[1].relative = 0
                 continue

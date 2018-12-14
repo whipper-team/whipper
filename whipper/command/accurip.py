@@ -40,13 +40,12 @@ retrieves and display accuraterip data from the given URL
 
         count = responses[0].num_tracks
 
-        logger.info("Found %d responses for %d tracks",
-                    (len(responses), count))
+        logger.info("found %d responses for %d tracks", len(responses), count)
 
         for (i, r) in enumerate(responses):
             if r.num_tracks != count:
-                logger.warning("response %d has %d tracks instead of %d", (
-                               i, r.num_tracks, count))
+                logger.warning("response %d has %d tracks instead of %d",
+                               i, r.num_tracks, count)
 
         # checksum and confidence by track
         for track in range(count):
@@ -81,7 +80,7 @@ retrieves and display accuraterip data from the given URL
             for highest, checksum in sortedChecksums:
                 print("  %d result(s) for checksum %s: %s" % (
                       len(checksums[checksum]),
-                      checksum, str(checksums[checksum])))
+                      checksum, checksums[checksum]))
 
 
 class AccuRip(BaseCommand):

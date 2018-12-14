@@ -93,9 +93,8 @@ class Program:
         from pkg_resources import parse_version as V
         version = cdrdao.getCDRDAOVersion()
         if V(version) < V('1.2.3rc2'):
-            logger.warning('cdrdao older than 1.2.3 has a '
-                           'pre-gap length bug. '
-                           'See http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=102171')  # noqa: E501
+            logger.warning('cdrdao older than 1.2.3 has a pre-gap length bug.'
+                           ' See http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=102171')  # noqa: E501
         toc = cdrdao.ReadTOCTask(device).table
         assert toc.hasTOC()
         return toc
@@ -120,9 +119,9 @@ class Program:
                 itable = tdict[offset]
 
         if not itable:
-            logger.debug('getTable: cddbdiscid %s, mbdiscid %s not '
-                         'in cache for offset %s, reading table', (
-                             cddbdiscid, mbdiscid, offset))
+            logger.debug('getTable: cddbdiscid %s, mbdiscid %s not in cache '
+                         'for offset %s, reading table', cddbdiscid, mbdiscid,
+                         offset)
             t = cdrdao.ReadTableTask(device, out_path)
             itable = t.table
             tdict[offset] = itable
@@ -130,7 +129,7 @@ class Program:
             logger.debug('getTable: read table %r', itable)
         else:
             logger.debug('getTable: cddbdiscid %s, mbdiscid %s in cache '
-                         'for offset %s', (cddbdiscid, mbdiscid, offset))
+                         'for offset %s', cddbdiscid, mbdiscid, offset)
             logger.debug('getTable: loaded table %r', itable)
 
         assert itable.hasTOC()
@@ -336,8 +335,8 @@ class Program:
 
             if release:
                 metadatas = [m for m in metadatas if m.url.endswith(release)]
-                logger.debug('asked for release %r, only kept %r',
-                             release, metadatas)
+                logger.debug('asked for release %r, only kept %r', release,
+                             metadatas)
                 if len(metadatas) == 1:
                     logger.info('picked requested release id %s', release)
                     print('Artist: %s' % metadatas[0].artist.encode('utf-8'))
@@ -356,14 +355,13 @@ class Program:
                 releaseTitle = metadatas[0].releaseTitle
                 for i, metadata in enumerate(metadatas):
                     if not artist == metadata.artist:
-                        logger.warning("artist 0: %r and artist %d: %r "
-                                       "are not the same", (
-                                           artist, i, metadata.artist))
+                        logger.warning("artist 0: %r and artist %d: %r are "
+                                       "not the same", artist, i,
+                                       metadata.artist)
                     if not releaseTitle == metadata.releaseTitle:
-                        logger.warning("title 0: %r and title %d: %r "
-                                       "are not the same", (
-                                           releaseTitle, i,
-                                           metadata.releaseTitle))
+                        logger.warning("title 0: %r and title %d: %r are "
+                                       "not the same", releaseTitle, i,
+                                       metadata.releaseTitle)
 
                 if (not release and len(list(deltas)) > 1):
                     logger.warning('picked closest match in duration. '
@@ -410,7 +408,7 @@ class Program:
                     mbidTrack = track.mbid
                     mbidTrackArtist = track.mbidArtist
                 except IndexError as e:
-                    logger.error('no track %d found, %r', (number, e))
+                    logger.error('no track %d found, %r', number, e)
                     raise
             else:
                 # htoa defaults to disc's artist
@@ -473,9 +471,8 @@ class Program:
                 raise
 
         ret = trackResult.testcrc == t.checksum
-        logger.debug('verifyTrack: track result crc %r, '
-                     'file crc %r, result %r',
-                     trackResult.testcrc, t.checksum, ret)
+        logger.debug('verifyTrack: track result crc %r, file crc %r, '
+                     'result %r', trackResult.testcrc, t.checksum, ret)
         return ret
 
     def ripTrack(self, runner, trackResult, offset, device, taglist,
@@ -511,10 +508,10 @@ class Program:
         runner.run(t)
 
         logger.debug('ripped track')
-        logger.debug('test speed %.3f/%.3f seconds', (
-            t.testspeed, t.testduration))
-        logger.debug('copy speed %.3f/%.3f seconds', (
-            t.copyspeed, t.copyduration))
+        logger.debug('test speed %.3f/%.3f seconds',
+                     t.testspeed, t.testduration)
+        logger.debug('copy speed %.3f/%.3f seconds',
+                     t.copyspeed, t.copyduration)
         trackResult.testcrc = t.testchecksum
         trackResult.copycrc = t.copychecksum
         trackResult.peak = t.peak

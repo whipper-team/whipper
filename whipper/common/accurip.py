@@ -107,17 +107,15 @@ def calculate_checksums(track_paths):
     track_count = len(track_paths)
     v1_checksums = []
     v2_checksums = []
-    logger.debug('checksumming %d tracks' % track_count)
+    logger.debug('checksumming %d tracks', track_count)
     # This is done sequentially because it is very fast.
     for i, path in enumerate(track_paths):
         v1_sum = accuraterip_checksum(
             path, i+1, track_count, wave=True, v2=False
         )
         if not v1_sum:
-            logger.error(
-                'could not calculate AccurateRip v1 checksum for track %d %r' %
-                (i+1, path)
-            )
+            logger.error('could not calculate AccurateRip v1 checksum '
+                         'for track %d %r', i + 1, path)
             v1_checksums.append(None)
         else:
             v1_checksums.append("%08x" % v1_sum)
@@ -125,10 +123,8 @@ def calculate_checksums(track_paths):
             path, i+1, track_count, wave=True, v2=True
         )
         if not v2_sum:
-            logger.error(
-                'could not calculate AccurateRip v2 checksum for track %d %r' %
-                (i+1, path)
-            )
+            logger.error('could not calculate AccurateRip v2 checksum '
+                         'for track %d %r', i + 1, path)
             v2_checksums.append(None)
         else:
             v2_checksums.append("%08x" % v2_sum)
@@ -141,12 +137,11 @@ def _download_entry(path):
     try:
         resp = requests.get(url)
     except requests.exceptions.ConnectionError as e:
-        logger.error('error retrieving AccurateRip entry: %r' % e)
+        logger.error('error retrieving AccurateRip entry: %r', e)
         return None
     if not resp.ok:
-        logger.error('error retrieving AccurateRip entry: %s %s %r' % (
-            resp.status_code, resp.reason, resp
-        ))
+        logger.error('error retrieving AccurateRip entry: %s %s %r',
+                     resp.status_code, resp.reason, resp)
         return None
     return resp.content
 
@@ -158,7 +153,7 @@ def _save_entry(raw_entry, path):
         makedirs(dirname(path))
     except OSError as e:
         if e.errno != EEXIST:
-            logger.error('could not save entry to %s: %r' % (path, str(e)))
+            logger.error('could not save entry to %s: %s', path, e)
             return
     open(path, 'wb').write(raw_entry)
 
@@ -211,10 +206,9 @@ def _match_responses(tracks, responses):
                         track.AR[v]['DBConfidence'] = r.confidences[i]
                         logger.debug(
                             'track %d matched response %s in AccurateRip'
-                            ' database: %s crc %s confidence %s' %
-                            (i, r.cddbDiscId, v, track.AR[v]['DBCRC'],
-                             track.AR[v]['DBConfidence'])
-                        )
+                            ' database: %s crc %s confidence %s',
+                            i, r.cddbDiscId, v, track.AR[v]['DBCRC'],
+                            track.AR[v]['DBConfidence'])
     return any((
         all([t.AR['v1']['DBCRC'] for t in tracks]),
         all([t.AR['v2']['DBCRC'] for t in tracks])
@@ -268,9 +262,7 @@ def print_report(result):
             print('track  0: unknown          (not tracked)')
             continue
         if not (track.AR['v1']['CRC'] or track.AR['v2']['CRC']):
-            logger.error(
-                'no track AR CRC on non-HTOA track %d' % track.number
-            )
+            logger.error('no track AR CRC on non-HTOA track %d', track.number)
             print('track %2d: unknown          (error)' % track.number)
         else:
             print('track %2d: %-16s %-23s v1 [%s], v2 [%s], DB [%s]' % (

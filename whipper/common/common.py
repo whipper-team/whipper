@@ -263,8 +263,8 @@ def getRelativePath(targetPath, collectionPath):
 
     Used to determine the path to use in .cue/.m3u files
     """
-    logger.debug('getRelativePath: target %r, collection %r' % (
-        targetPath, collectionPath))
+    logger.debug('getRelativePath: target %r, collection %r',
+                 targetPath, collectionPath)
 
     targetDir = os.path.dirname(targetPath)
     collectionDir = os.path.dirname(collectionPath)
@@ -275,9 +275,8 @@ def getRelativePath(targetPath, collectionPath):
         rel = os.path.relpath(
             targetDir + os.path.sep,
             collectionDir + os.path.sep)
-        logger.debug(
-            'getRelativePath: target and collection in different dir, %r' % rel
-        )
+        logger.debug('getRelativePath: target and collection '
+                     'in different dir, %r', rel)
         return os.path.join(rel, os.path.basename(targetPath))
 
 

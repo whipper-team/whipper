@@ -135,7 +135,7 @@ class ImageVerifyTask(task.MultiSeparateTask):
             self.addTask(taskk)
             self._tasks.append((0, track, taskk))
         except (KeyError, IndexError):
-            logger.debug('no htoa track')
+            logger.debug('no HTOA track')
 
         for trackIndex, track in enumerate(cue.table.tracks):
             logger.debug('verifying track %d', trackIndex + 1)
@@ -155,8 +155,8 @@ class ImageVerifyTask(task.MultiSeparateTask):
     def stop(self):
         for trackIndex, track, taskk in self._tasks:
             if taskk.exception:
-                logger.debug('subtask %r had exception %r, shutting down' % (
-                    taskk, taskk.exception))
+                logger.debug('subtask %r had exception %r, shutting down',
+                             taskk, taskk.exception)
                 self.setException(taskk.exception)
                 break
 
@@ -195,17 +195,16 @@ class ImageEncodeTask(task.MultiSeparateTask):
             root, ext = os.path.splitext(os.path.basename(path))
             outpath = os.path.join(outdir, root + '.' + 'flac')
             logger.debug('schedule encode to %r', outpath)
-            taskk = encode.FlacEncodeTask(path,
-                                          os.path.join(outdir,
-                                                       root + '.' + 'flac'))
+            taskk = encode.FlacEncodeTask(
+                path, os.path.join(outdir, root + '.' + 'flac'))
             self.addTask(taskk)
 
         try:
             htoa = cue.table.tracks[0].indexes[0]
-            logger.debug('encoding htoa track')
+            logger.debug('encoding HTOA track')
             add(htoa)
         except (KeyError, IndexError):
-            logger.debug('no htoa track')
+            logger.debug('no HTOA track')
             pass
 
         for trackIndex, track in enumerate(cue.table.tracks):

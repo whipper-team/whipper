@@ -77,7 +77,7 @@ def version():
     out, err = cdrdao.communicate()
     if cdrdao.returncode != 1:
         logger.warning("cdrdao version detection failed: "
-                       "return code is " + str(cdrdao.returncode))
+                       "return code is %s", cdrdao.returncode)
         return None
     m = re.compile(r'^Cdrdao version (?P<version>.*) - \(C\)').search(
         err.decode('utf-8'))

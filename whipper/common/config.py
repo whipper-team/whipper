@@ -130,14 +130,13 @@ class Config:
             if not name.startswith('drive:'):
                 continue
 
-            logger.debug('Looking at section %r' % name)
+            logger.debug('looking at section %r', name)
             conf = {}
             for key in ['vendor', 'model', 'release']:
                 locals()[key] = locals()[key].strip()
                 conf[key] = self._parser.get(name, key)
-                logger.debug("%s: '%s' versus '%s'" % (
-                    key, locals()[key], conf[key]
-                ))
+                logger.debug("%s: '%s' versus '%s'",
+                             key, locals()[key], conf[key])
             if vendor.strip() != conf['vendor']:
                 continue
             if model.strip() != conf['model']:

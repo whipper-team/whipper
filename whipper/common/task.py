@@ -51,8 +51,7 @@ class PopenTask(task.Task):
 
             raise
 
-        logger.debug('Started %r with pid %d', self.command,
-                     self._popen.pid)
+        logger.debug('started %r with pid %d', self.command, self._popen.pid)
 
         self.schedule(1.0, self._read, runner)
 
@@ -89,7 +88,7 @@ class PopenTask(task.Task):
 
             self._done()
         except Exception as e:
-            logger.debug('exception during _read(): %r', str(e))
+            logger.debug('exception during _read(): %s', e)
             self.setException(e)
             self.stop()
 
@@ -97,10 +96,9 @@ class PopenTask(task.Task):
         assert self._popen.returncode is not None, "No returncode"
 
         if self._popen.returncode >= 0:
-            logger.debug('Return code was %d', self._popen.returncode)
+            logger.debug('return code was %d', self._popen.returncode)
         else:
-            logger.debug('Terminated with signal %d',
-                         -self._popen.returncode)
+            logger.debug('terminated with signal %d', -self._popen.returncode)
 
         self.setProgress(1.0)
 
@@ -113,7 +111,7 @@ class PopenTask(task.Task):
         return
 
     def abort(self):
-        logger.debug('Aborting, sending SIGTERM to %d', self._popen.pid)
+        logger.debug('aborting, sending SIGTERM to %d', self._popen.pid)
         os.kill(self._popen.pid, signal.SIGTERM)
         # self.stop()
 
