@@ -243,8 +243,8 @@ Log files will log the path to tracks relative to this directory.
         self.parser.add_argument('-L', '--logger',
                                  action="store", dest="logger",
                                  default='whipper',
-                                 help="logger to use (choose from '"
-                                 "', '".join(loggers) + "')")
+                                 help=("logger to use (choose from: '%s" %
+                                       "', '".join(loggers) + "')"))
         # FIXME: get from config
         self.parser.add_argument('-o', '--offset',
                                  action="store", dest="offset",
