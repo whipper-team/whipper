@@ -265,13 +265,30 @@ python2 -m whipper -h
 
 ## Logger plugins
 
-Whipper supports using external logger plugins to write rip `.log` files.
+Whipper allows using external logger plugins to customize the template of `.log` files.
 
-List available plugins with `whipper cd rip -h`. Specify a logger to rip with by passing `-L loggername`:
+The available plugins can be listed with `whipper cd rip -h`. Specify a logger to rip with by passing `-L loggername`:
 
 ```bash
-whipper cd rip -L what
+whipper cd rip -L eac
 ```
+
+Whipper searches for logger plugins in the following paths:
+
+- `$XDG_DATA_HOME/whipper/plugins`
+- Paths returned by the following Python instruction:
+
+  `[x + '/whipper/plugins' for x in site.getsitepackages()]`
+
+- If whipper is run in a `virtualenv`, it will use these alternative instructions (from `distutils.sysconfig`):
+  - `get_python_lib(plat_specific=False, standard_lib=False, prefix='/usr/local') + '/whipper/plugins'`
+  - `get_python_lib(plat_specific=False, standard_lib=False) + '/whipper/plugins'`
+
+On a default Debian/Ubuntu installation, the following paths are searched by whipper:
+
+- `$HOME/.local/share/whipper/plugins`
+- `/usr/local/lib/python2.7/dist-packages/whipper/plugins`
+- `/usr/lib/python2.7/dist-packages/whipper/plugins`
 
 ### Official logger plugins
 

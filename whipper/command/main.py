@@ -5,9 +5,9 @@ import os
 import sys
 import pkg_resources
 import musicbrainzngs
-
+import site
 import whipper
-
+from distutils.sysconfig import get_python_lib
 from whipper.command import cd, offset, drive, image, accurip, mblookup
 from whipper.command.basecommand import BaseCommand
 from whipper.common import common, directory, config
@@ -21,9 +21,21 @@ logger = logging.getLogger(__name__)
 def main():
     server = config.Config().get_musicbrainz_server()
     musicbrainzngs.set_hostname(server)
+
+    # Find whipper's plugins paths (local paths have higher priority)
+    plugins_p = [directory.data_path('plugins')]  # local path (in $HOME)
+    if hasattr(sys, 'real_prefix'):  # no getsitepackages() in virtualenv
+        plugins_p.append(
+            get_python_lib(plat_specific=False, standard_lib=False,
+                           prefix='/usr/local') + '/whipper/plugins')
+        plugins_p.append(get_python_lib(plat_specific=False,
+                         standard_lib=False) + '/whipper/plugins')
+    else:
+        plugins_p += [x + '/whipper/plugins' for x in site.getsitepackages()]
+
     # register plugins with pkg_resources
     distributions, _ = pkg_resources.working_set.find_plugins(
-        pkg_resources.Environment([directory.data_path('plugins')])
+        pkg_resources.Environment(plugins_p)
     )
     list(map(pkg_resources.working_set.add, distributions))
     try:
