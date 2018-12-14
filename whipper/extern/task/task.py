@@ -550,6 +550,7 @@ class SyncRunner(TaskRunner, ITaskListener):
             print('\r', end='')
         if newline:
             print('')
+        sys.stdout.flush()
         if len(what) > self._longest:
             self._longest = len(what)
 
