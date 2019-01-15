@@ -276,6 +276,9 @@ Log files will log the path to tracks relative to this directory.
                                  action="store", dest="disc_template",
                                  default=DEFAULT_DISC_TEMPLATE,
                                  help="template for disc file naming")
+        self.parser.add_argument('--skip-htoa',
+                                 action="store_true", dest="skip_htoa",
+                                 help="Don't rip hidden track if present")
         self.parser.add_argument('-U', '--unknown',
                                  action="store_true", dest="unknown",
                                  help="whether to continue ripping if "
@@ -461,7 +464,10 @@ Log files will log the path to tracks relative to this directory.
             start, stop = htoa
             logger.info('found Hidden Track One Audio from frame %d to %d',
                         start, stop)
-            _ripIfNotRipped(0)
+            if not self.options.skip_htoa:
+                _ripIfNotRipped(0)
+            else:
+                logger.info("...As requested, not ripping")
 
         for i, track in enumerate(self.itable.tracks):
             # FIXME: rip data tracks differently
