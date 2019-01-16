@@ -317,6 +317,4 @@ def musicbrainz(discid, country=None, record=False):
         return ret
     elif result.get('cdstub'):
         logger.debug('query returned cdstub: ignored')
-        return None
-    else:
-        return None
+    return None

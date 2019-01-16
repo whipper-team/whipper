@@ -191,6 +191,8 @@ class _CD(BaseCommand):
         if self.options.eject in ('success', 'always'):
             utils.eject_device(self.device)
 
+        return None
+
     def doCommand(self):
         pass
 

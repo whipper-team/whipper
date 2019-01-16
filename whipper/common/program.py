@@ -141,7 +141,7 @@ class Program:
         return self.result
 
     def addDisambiguation(self, template_part, metadata):
-        "Add disambiguation to template path part string."
+        """Add disambiguation to template path part string."""
         if metadata.catalogNumber:
             template_part += ' (%s)' % metadata.catalogNumber
         elif metadata.barcode:
@@ -327,7 +327,7 @@ class Program:
                 elif not metadatas:
                     logger.warning("requested release id '%s', but none of "
                                    "the found releases match", release)
-                    return
+                    return None
             else:
                 if lowest:
                     metadatas = deltas[lowest]
@@ -346,7 +346,7 @@ class Program:
                                        "not the same", releaseTitle, i,
                                        metadata.releaseTitle)
 
-                if (not release and len(list(deltas)) > 1):
+                if not release and len(list(deltas)) > 1:
                     logger.warning('picked closest match in duration. '
                                    'Others may be wrong in MusicBrainz, '
                                    'please correct')
@@ -438,7 +438,7 @@ class Program:
 
         start = index.absolute
         stop = track.getIndex(1).absolute - 1
-        return (start, stop)
+        return start, stop
 
     def verifyTrack(self, runner, trackResult):
         is_wave = not trackResult.filename.endswith('.flac')

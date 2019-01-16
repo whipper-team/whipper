@@ -116,7 +116,7 @@ def formatTime(seconds, fractional=3):
     chunks = []
 
     if seconds < 0:
-        chunks.append(('-'))
+        chunks.append('-')
         seconds = -seconds
 
     hour = 60 * 60
@@ -271,13 +271,12 @@ def getRelativePath(targetPath, collectionPath):
     if targetDir == collectionDir:
         logger.debug('getRelativePath: target and collection in same dir')
         return os.path.basename(targetPath)
-    else:
-        rel = os.path.relpath(
-            targetDir + os.path.sep,
-            collectionDir + os.path.sep)
-        logger.debug('getRelativePath: target and collection '
-                     'in different dir, %r', rel)
-        return os.path.join(rel, os.path.basename(targetPath))
+    rel = os.path.relpath(
+        targetDir + os.path.sep,
+        collectionDir + os.path.sep)
+    logger.debug('getRelativePath: target and collection '
+                 'in different dir, %r', rel)
+    return os.path.join(rel, os.path.basename(targetPath))
 
 
 def validate_template(template, kind):

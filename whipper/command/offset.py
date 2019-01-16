@@ -94,7 +94,7 @@ CD in the AccurateRip database."""
         except accurip.EntryNotFound:
             logger.warning("AccurateRip entry not found: drive offset "
                            "can't be determined, try again with another disc")
-            return
+            return None
 
         if responses:
             logger.debug('%d AccurateRip responses found.', len(responses))
@@ -170,6 +170,8 @@ CD in the AccurateRip database."""
         logger.error('no matching offset found. '
                      'Consider trying again with a different disc')
 
+        return None
+
     def _arcs(self, runner, table, track, offset):
         # rips the track with the given offset, return the arcs checksums
         logger.debug('ripping track %r with offset %d...', track, offset)
@@ -196,7 +198,7 @@ CD in the AccurateRip database."""
             )
 
         os.unlink(path)
-        return ("%08x" % v1, "%08x" % v2)
+        return "%08x" % v1, "%08x" % v2
 
     def _foundOffset(self, device, offset):
         print('\nRead offset of device is: %d.' % offset)

@@ -74,11 +74,11 @@ def main():
 
 
 class Whipper(BaseCommand):
-    description = """whipper is a CD ripping utility focusing on accuracy over speed.
-
-whipper gives you a tree of subcommands to work with.
-You can get help on subcommands by using the -h option to the subcommand.
-"""
+    description = (
+        "whipper is a CD ripping utility focusing on accuracy over speed.\n\n"
+        "whipper gives you a tree of subcommands to work with.\n"
+        "You can get help on subcommands by using the -h option "
+        "to the subcommand.\n")
     no_add_help = True
     subcommands = {
         'accurip': accurip.AccuRip,

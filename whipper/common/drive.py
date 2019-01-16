@@ -68,4 +68,4 @@ def getDeviceInfo(path):
     device = cdio.Device(path)
     ok, vendor, model, release = device.get_hwinfo()
 
-    return (vendor, model, release)
+    return vendor, model, release

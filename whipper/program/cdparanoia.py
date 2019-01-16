@@ -159,11 +159,10 @@ class ProgressParser:
             markEnd = frameOffset
 
         # FIXME: doing this is way too slow even for a testcase, so disable
-        if False:
-            for frame in range(markStart, markEnd):
-                if frame not in list(self._reads.keys()):
-                    self._reads[frame] = 0
-                self._reads[frame] += 1
+        # for frame in range(markStart, markEnd):
+        #     if frame not in list(self._reads.keys()):
+        #         self._reads[frame] = 0
+        #     self._reads[frame] += 1
 
         # cdparanoia reads quite a bit beyond the current track before it
         # goes back to verify; don't count those
@@ -300,7 +299,6 @@ class ReadTrackTask(task.Task):
                                          stderr=subprocess.PIPE,
                                          close_fds=True)
         except OSError as e:
-            import errno
             if e.errno == errno.ENOENT:
                 raise common.MissingDependencyException('cd-paranoia')
 

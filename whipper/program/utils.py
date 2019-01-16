@@ -28,7 +28,7 @@ def unmount_device(device):
     If the given device is a symlink, the target will be checked.
     """
     device = os.path.realpath(device)
-    logger.debug('possibly unmount real path %r' % device)
+    logger.debug('possibly unmount real path %r', device)
     proc = open('/proc/mounts').read()
     if device in proc:
         print('Device %s is mounted, unmounting' % device)

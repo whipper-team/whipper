@@ -145,7 +145,7 @@ def perform_lookup(disc_id, freedb_server, freedb_port):
 
             response = RESPONSE.match(next(query))
             if response is not None:
-                # FIXME - check response code here
+                # FIXME: check response code here
                 freedb = {}
                 line = next(query)
                 while not line.startswith(u"."):

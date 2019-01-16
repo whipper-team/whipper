@@ -205,7 +205,6 @@ class ImageEncodeTask(task.MultiSeparateTask):
             add(htoa)
         except (KeyError, IndexError):
             logger.debug('no HTOA track')
-            pass
 
         for trackIndex, track in enumerate(cue.table.tracks):
             logger.debug('encoding track %d', trackIndex + 1)

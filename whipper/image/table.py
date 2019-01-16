@@ -824,7 +824,7 @@ class Table(object):
         discId1 &= 0xffffffff
         discId2 &= 0xffffffff
 
-        return ("%08x" % discId1, "%08x" % discId2)
+        return "%08x" % discId1, "%08x" % discId2
 
     def accuraterip_path(self):
         discId1, discId2 = self.accuraterip_ids()

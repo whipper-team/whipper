@@ -71,7 +71,7 @@ class TestCase(unittest.TestCase):
         ret = open(cuefile).read().decode('utf-8')
         ret = re.sub(
             'REM COMMENT "whipper.*',
-            'REM COMMENT "whipper %s"' % (whipper.__version__),
+            'REM COMMENT "whipper %s"' % whipper.__version__,
             ret, re.MULTILINE)
 
         return ret

@@ -21,9 +21,7 @@
 import os
 import tempfile
 
-"""
-Rename files on file system and inside metafiles in a resumable way.
-"""
+"""Rename files on file system and inside metafiles in a resumable way."""
 
 
 class Operator(object):
