@@ -210,13 +210,13 @@ class Task(LogStub):
         self.debug('set exception, %r, %r' % (
             exception, self.exceptionMessage))
 
-    def schedule(self, delta, callable, *args, **kwargs):
+    def schedule(self, delta, callable_task, *args, **kwargs):
         if not self.runner:
             print("ERROR: scheduling on a task that's altready stopped")
             import traceback
             traceback.print_stack()
             return
-        self.runner.schedule(self, delta, callable, *args, **kwargs)
+        self.runner.schedule(self, delta, callable_task, *args, **kwargs)
 
     def addListener(self, listener):
         """
@@ -446,7 +446,7 @@ class TaskRunner(LogStub):
         raise NotImplementedError
 
     # methods for tasks to call
-    def schedule(self, delta, callable, *args, **kwargs):
+    def schedule(self, delta, callable_task, *args, **kwargs):
         """
         Schedule a single future call.
 
@@ -507,21 +507,21 @@ class SyncRunner(TaskRunner, ITaskListener):
             self.debug('exception during start: %r', task.exceptionMessage)
             self.stopped(task)
 
-    def schedule(self, task, delta, callable, *args, **kwargs):
+    def schedule(self, task, delta, callable_task, *args, **kwargs):
         def c():
             try:
                 self.debug('schedule: calling %r(*args=%r, **kwargs=%r)',
-                           callable, args, kwargs)
-                callable(*args, **kwargs)
+                           callable_task, args, kwargs)
+                callable_task(*args, **kwargs)
                 return False
             except Exception as e:
                 self.debug('exception when calling scheduled callable %r',
-                           callable)
+                           callable_task)
                 task.setException(e)
                 self.stopped(task)
                 raise
         self.debug('schedule: scheduling %r(*args=%r, **kwargs=%r)',
-                   callable, args, kwargs)
+                   callable_task, args, kwargs)
 
         GLib.timeout_add(int(delta * 1000L), c)
 

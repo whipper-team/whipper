@@ -28,8 +28,8 @@ class Popen(subprocess.Popen):
     def recv_err(self, maxsize=None):
         return self._recv('stderr', maxsize)
 
-    def send_recv(self, input='', maxsize=None):
-        return self.send(input), self.recv(maxsize), self.recv_err(maxsize)
+    def send_recv(self, in_put='', maxsize=None):
+        return self.send(in_put), self.recv(maxsize), self.recv_err(maxsize)
 
     def get_conn_maxsize(self, which, maxsize):
         if maxsize is None:
@@ -44,13 +44,13 @@ class Popen(subprocess.Popen):
 
     if subprocess.mswindows:
 
-        def send(self, input):
+        def send(self, in_put):
             if not self.stdin:
                 return None
 
             try:
                 x = msvcrt.get_osfhandle(self.stdin.fileno())
-                (errCode, written) = WriteFile(x, input)
+                (errCode, written) = WriteFile(x, in_put)
             except ValueError:
                 return self._close('stdin')
             except (subprocess.pywintypes.error, Exception) as why:
@@ -85,7 +85,7 @@ class Popen(subprocess.Popen):
 
     else:
 
-        def send(self, input):
+        def send(self, in_put):
             if not self.stdin:
                 return None
 
@@ -93,7 +93,7 @@ class Popen(subprocess.Popen):
                 return 0
 
             try:
-                written = os.write(self.stdin.fileno(), input)
+                written = os.write(self.stdin.fileno(), in_put)
             except OSError as why:
                 if why.args[0] == errno.EPIPE:  # broken pipe
                     return self._close('stdin')

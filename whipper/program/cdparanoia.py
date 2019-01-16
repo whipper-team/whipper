@@ -590,8 +590,8 @@ class AnalyzeTask(ctask.PopenTask):
     def commandMissing(self):
         raise common.MissingDependencyException('cd-paranoia')
 
-    def readbyteserr(self, bytes):
-        self._output.append(bytes)
+    def readbyteserr(self, bytes_stderr):
+        self._output.append(bytes_stderr)
 
     def done(self):
         if self.cwd:

@@ -115,13 +115,13 @@ class PopenTask(task.Task):
         os.kill(self._popen.pid, signal.SIGTERM)
         # self.stop()
 
-    def readbytesout(self, bytes):
+    def readbytesout(self, bytes_stdout):
         """
         Called when bytes have been read from stdout.
         """
         pass
 
-    def readbyteserr(self, bytes):
+    def readbyteserr(self, bytes_stderr):
         """
         Called when bytes have been read from stderr.
         """

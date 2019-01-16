@@ -572,10 +572,10 @@ class Program:
 
         return cuePath
 
-    def writeLog(self, discName, logger):
+    def writeLog(self, discName, txt_logger):
         logPath = common.truncate_filename(discName + '.log')
         handle = open(logPath, 'w')
-        log = logger.log(self.result)
+        log = txt_logger.log(self.result)
         handle.write(log.encode('utf-8'))
         handle.close()
 

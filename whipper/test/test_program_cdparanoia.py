@@ -75,8 +75,8 @@ class AnalyzeFileTask(cdparanoia.AnalyzeTask):
     def __init__(self, path):
         self.command = ['cat', path]
 
-    def readbytesout(self, bytes):
-        self.readbyteserr(bytes)
+    def readbytesout(self, bytes_stdout):
+        self.readbyteserr(bytes_stdout)
 
 
 class CacheTestCase(common.TestCase):
