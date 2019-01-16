@@ -339,13 +339,9 @@ class Table(object):
         values = self._getMusicBrainzValues()
 
         # MusicBrainz disc id does not take into account data tracks
-        # P2.3
-        try:
-            import hashlib
-            sha1 = hashlib.sha1
-        except ImportError:
-            from sha import sha as sha1
         import base64
+        import hashlib
+        sha1 = hashlib.sha1
 
         sha = sha1()
 
