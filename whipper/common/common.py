@@ -285,9 +285,9 @@ def validate_template(template, kind):
     Raise exception if disc/track template includes invalid variables
     """
     if kind == 'disc':
-        matches = re.findall(r'%[^A,R,S,X,d,r,x,y]', template)
+        matches = re.findall(r'%[^ARSXdrxy]', template)
     elif kind == 'track':
-        matches = re.findall(r'%[^A,R,S,X,a,d,n,r,s,t,x,y]', template)
+        matches = re.findall(r'%[^ARSXadnrstxy]', template)
     if '%' in template and matches:
         raise ValueError(kind + ' template string contains invalid '
                          'variable(s): {}'.format(', '.join(matches)))
