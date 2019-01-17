@@ -263,7 +263,7 @@ class ReadTrackTask(task.Task):
         stopTrack = 0
         stopOffset = self._stop
 
-        for i, t in enumerate(self._table.tracks):
+        for i, _ in enumerate(self._table.tracks):
             if self._table.getTrackStart(i + 1) <= self._start:
                 startTrack = i + 1
                 startOffset = self._start - self._table.getTrackStart(i + 1)

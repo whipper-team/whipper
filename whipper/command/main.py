@@ -52,7 +52,7 @@ def main():
         return 1
     except KeyboardInterrupt:
         return 2
-    except ImportError as e:
+    except ImportError:
         raise
     except task.TaskException as e:
         if isinstance(e.exception, ImportError):

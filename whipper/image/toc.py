@@ -117,7 +117,7 @@ class Sources:
         """
         Retrieve the source used at the given offset.
         """
-        for i, (c, o, s) in enumerate(self._sources):
+        for i, (_, o, _) in enumerate(self._sources):
             if offset < o:
                 return self._sources[i - 1]
 
@@ -127,7 +127,7 @@ class Sources:
         """
         Retrieve the absolute offset of the first source for this counter
         """
-        for i, (c, o, s) in enumerate(self._sources):
+        for i, (c, _, _) in enumerate(self._sources):
             if c == counter:
                 return self._sources[i][1]
 
@@ -151,7 +151,7 @@ class TocFile(object):
     def _index(self, currentTrack, i, absoluteOffset, trackOffset):
         absolute = absoluteOffset + trackOffset
         # this may be in a new source, so calculate relative
-        c, o, s = self._sources.get(absolute)
+        c, _, s = self._sources.get(absolute)
         logger.debug('at abs offset %d, we are in source %r',
                      absolute, s)
         counterStart = self._sources.getCounterStart(c)
@@ -341,7 +341,7 @@ class TocFile(object):
                     continue
 
                 length = common.msfToFrames(m.group('length'))
-                c, o, s = self._sources.get(absoluteOffset)
+                c, _, s = self._sources.get(absoluteOffset)
                 logger.debug('at abs offset %d, we are in source %r',
                              absoluteOffset, s)
                 counterStart = self._sources.getCounterStart(c)

@@ -179,7 +179,7 @@ def version():
     Return cdrdao version as a string.
     """
     cdrdao = Popen(CDRDAO, stderr=PIPE)
-    out, err = cdrdao.communicate()
+    _, err = cdrdao.communicate()
     if cdrdao.returncode != 1:
         logger.warning("cdrdao version detection failed: "
                        "return code is %s", cdrdao.returncode)

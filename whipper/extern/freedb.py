@@ -134,7 +134,7 @@ def perform_lookup(disc_id, freedb_server, freedb_port):
 
     if len(matches) > 0:
         # for each result, query FreeDB for XMCD file data
-        for (category, disc_id, title) in matches:
+        for (category, disc_id, _) in matches:
             sleep(1)  # add a slight delay to keep the server happy
 
             query = freedb_command(freedb_server,

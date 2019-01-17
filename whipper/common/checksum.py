@@ -47,7 +47,7 @@ class CRC32Task(etask.Task):
 
     def _crc32(self):
         if not self.is_wave:
-            fd, tmpf = tempfile.mkstemp()
+            _, tmpf = tempfile.mkstemp()
 
             try:
                 subprocess.check_call(['flac', '-d', self.path, '-fo', tmpf])

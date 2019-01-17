@@ -259,10 +259,8 @@ class Program:
             ittoc.getAudioTracks()))
         logger.debug('MusicBrainz submit url: %r',
                      ittoc.getMusicBrainzSubmitURL())
-        ret = None
 
         metadatas = None
-        e = None
 
         for _ in range(0, 4):
             try:

@@ -88,7 +88,6 @@ CD in the AccurateRip database."""
         table = t.table
 
         logger.debug("CDDB disc id: %r", table.getCDDBDiscId())
-        responses = None
         try:
             responses = accurip.get_db_entry(table.accuraterip_path())
         except accurip.EntryNotFound:

@@ -156,7 +156,6 @@ class Config:
             section = 'drive:' + urllib.quote('%s:%s:%s' % (
                 vendor, model, release))
             self._parser.add_section(section)
-            __pychecker__ = 'no-local'
             for key in ['vendor', 'model', 'release']:
                 self._parser.set(section, key, locals()[key].strip())
 

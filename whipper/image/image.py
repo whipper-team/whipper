@@ -192,7 +192,7 @@ class ImageEncodeTask(task.MultiSeparateTask):
             path = image.getRealPath(index.path)
             assert isinstance(path, unicode), "%r is not unicode" % path
             logger.debug('schedule encode of %r', path)
-            root, ext = os.path.splitext(os.path.basename(path))
+            root, _ = os.path.splitext(os.path.basename(path))
             outpath = os.path.join(outdir, root + '.' + 'flac')
             logger.debug('schedule encode to %r', outpath)
             taskk = encode.FlacEncodeTask(
