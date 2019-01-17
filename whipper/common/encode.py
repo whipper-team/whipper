@@ -60,7 +60,7 @@ class FlacEncodeTask(task.Task):
         self.schedule(0.0, self._flac_encode)
 
     def _flac_encode(self):
-        self.new_path = flac.encode(self.track_path, self.track_out_path)
+        flac.encode(self.track_path, self.track_out_path)
         self.stop()
 
 
