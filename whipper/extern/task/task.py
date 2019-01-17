@@ -191,8 +191,8 @@ class Task(LogStub):
         # for now
         if str(exception):
             msg = ": %s" % str(exception)
-        line = "exception %(exc)s at %(filename)s:%(line)s: "
-        "%(func)s()%(msg)s" % locals()
+        line = ("exception %(exc)s at %(filename)s:%(line)s: "
+                "%(func)s()%(msg)s" % locals())
 
         self.exception = exception
         self.exceptionMessage = line
