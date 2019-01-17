@@ -168,10 +168,7 @@ def DetectCdr(device):
     cmd = [CDRDAO, 'disk-info', '-v1', '--device', device]
     logger.debug("executing %r", cmd)
     p = Popen(cmd, stdout=PIPE, stderr=PIPE)
-    if 'CD-R medium          : n/a' in p.stdout.read():
-        return False
-    else:
-        return True
+    return 'CD-R medium          : n/a' not in p.stdout.read()
 
 
 def version():

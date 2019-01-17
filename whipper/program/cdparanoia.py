@@ -598,10 +598,7 @@ class AnalyzeTask(ctask.PopenTask):
             shutil.rmtree(self.cwd)
         output = "".join(self._output)
         m = _OK_RE.search(output)
-        if m:
-            self.defeatsCache = True
-        else:
-            self.defeatsCache = False
+        self.defeatsCache = bool(m)
 
     def failed(self):
         # cdparanoia exits with return code 1 if it can't determine
