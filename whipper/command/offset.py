@@ -132,7 +132,7 @@ CD in the AccurateRip database."""
                 logger.warning('cannot rip with offset %d...', offset)
                 continue
 
-            logger.debug('AR checksums calculated: %s %s', archecksums)
+            logger.debug('AR checksums calculated: %s', archecksums)
 
             c, i = match(archecksums, 1, responses)
             if c:
