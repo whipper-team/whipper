@@ -62,7 +62,8 @@ class TestCase(unittest.TestCase):
 
     assertRaises = failUnlessRaises
 
-    def readCue(self, name):
+    @staticmethod
+    def readCue(name):
         """
         Read a .cue file, and replace the version comment with the current
         version so we can use it in comparisons.

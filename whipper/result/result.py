@@ -140,7 +140,8 @@ class Logger(object):
 class EntryPoint(object):
     name = 'whipper'
 
-    def load(self):
+    @staticmethod
+    def load():
         from whipper.result import logger
         return logger.WhipperLogger
 

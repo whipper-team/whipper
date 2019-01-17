@@ -200,7 +200,8 @@ CD in the AccurateRip database."""
         os.unlink(path)
         return "%08x" % v1, "%08x" % v2
 
-    def _foundOffset(self, device, offset):
+    @staticmethod
+    def _foundOffset(device, offset):
         print('\nRead offset of device is: %d.' % offset)
 
         info = drive.getDeviceInfo(device)

@@ -249,7 +249,8 @@ class Table(object):
         """
         return len([t for t in self.tracks if not t.audio]) > 0
 
-    def _cddbSum(self, i):
+    @staticmethod
+    def _cddbSum(i):
         ret = 0
         while i > 0:
             ret += (i % 10)
@@ -728,7 +729,8 @@ class Table(object):
         self.leadout += other.leadout + gap  # FIXME
         logger.debug('fixing leadout, now %d', self.leadout)
 
-    def _getSessionGap(self, session):
+    @staticmethod
+    def _getSessionGap(session):
         # From cdrecord multi-session info:
         # For the first additional session this is 11250 sectors
         # lead-out/lead-in overhead + 150 sectors for the pre-gap of the first

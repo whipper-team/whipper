@@ -74,13 +74,16 @@ class LogStub(object):
     I am a stub for a log interface.
     """
 
-    def log(self, message, *args):
+    @staticmethod
+    def log(message, *args):
         logger.info(message, *args)
 
-    def debug(self, message, *args):
+    @staticmethod
+    def debug(message, *args):
         logger.debug(message, *args)
 
-    def warning(self, message, *args):
+    @staticmethod
+    def warning(message, *args):
         logger.warning(message, *args)
 
 
