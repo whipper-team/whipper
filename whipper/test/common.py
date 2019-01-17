@@ -53,7 +53,7 @@ class TestCase(unittest.TestCase):
             return inst
         except exception as e:
             raise Exception('%s raised instead of %s:\n %s' %
-                            (sys.exec_info()[0], exception.__name__, str(e))
+                            (sys.exc_info()[0], exception.__name__, str(e))
                             )
         else:
             raise Exception('%s not raised (%r returned)' %
