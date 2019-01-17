@@ -182,7 +182,7 @@ class Program:
         template, filling in the variables and adding the file
         extension. Variables for both disc and track template are:
           - %A: album artist
-          - %S: album sort name
+          - %S: album artist sort name
           - %d: disc title
           - %y: release year
           - %r: release type, lowercase
