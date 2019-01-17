@@ -157,10 +157,6 @@ class _CD(BaseCommand):
             "full table's mb id %s differs from toc id mb %s" % (
             self.itable.getMusicBrainzDiscId(),
             self.ittoc.getMusicBrainzDiscId())
-        assert self.itable.accuraterip_path() == \
-            self.ittoc.accuraterip_path(), \
-            "full table's AR URL %s differs from toc AR URL %s" % (
-            self.itable.accuraterip_url(), self.ittoc.accuraterip_url())
 
         if self.program.metadata:
             self.program.metadata.discid = self.ittoc.getMusicBrainzDiscId()
