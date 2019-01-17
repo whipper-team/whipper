@@ -538,6 +538,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
                     try:
                         logger.debug('moving to final path %r', self.path)
                         os.rename(self._tmppath, self.path)
+                    # FIXME: catching too general exception (Exception)
                     except Exception as e:
                         logger.debug('exception while moving to final '
                                      'path %r: %s', self.path, e)
@@ -546,6 +547,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
                     os.unlink(self._tmppath)
             else:
                 logger.debug('stop: exception %r', self.exception)
+        # FIXME: catching too general exception (Exception)
         except Exception as e:
             print('WARNING: unhandled exception %r' % (e, ))
 

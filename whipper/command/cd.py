@@ -66,6 +66,7 @@ disc and track template are:
 class _CD(BaseCommand):
     eject = True
 
+    # XXX: Pylint, parameters differ from overridden 'add_arguments' method
     @staticmethod
     def add_arguments(parser):
         parser.add_argument('-R', '--release-id',
@@ -205,6 +206,7 @@ class Info(_CD):
 
     # Requires opts.device
 
+    # XXX: Pylint, parameters differ from overridden 'add_arguments' method
     def add_arguments(self):
         _CD.add_arguments(self.parser)
 
@@ -228,6 +230,7 @@ Log files will log the path to tracks relative to this directory.
     # Requires opts.record
     # Requires opts.device
 
+    # XXX: Pylint, parameters differ from overridden 'add_arguments' method
     def add_arguments(self):
         loggers = list(result.getLoggers())
         default_offset = None
@@ -246,7 +249,6 @@ Log files will log the path to tracks relative to this directory.
                                  default='whipper',
                                  help=("logger to use (choose from: '%s" %
                                        "', '".join(loggers) + "')"))
-        # FIXME: get from config
         self.parser.add_argument('-o', '--offset',
                                  action="store", dest="offset",
                                  default=default_offset,
@@ -415,6 +417,7 @@ Log files will log the path to tracks relative to this directory.
                                                   len(self.itable.tracks),
                                                   extra))
                         break
+                    # FIXME: catching too general exception (Exception)
                     except Exception as e:
                         logger.debug('got exception %r on try %d', e, tries)
 

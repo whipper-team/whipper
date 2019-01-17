@@ -87,6 +87,7 @@ class PopenTask(task.Task):
                 return
 
             self._done()
+        # FIXME: catching too general exception (Exception)
         except Exception as e:
             logger.debug('exception during _read(): %s', e)
             self.setException(e)

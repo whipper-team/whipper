@@ -46,6 +46,7 @@ class TestCase(unittest.TestCase):
     # and we'd like to check for the actual exception under TaskException,
     # so override the way twisted.trial.unittest does, without failure
 
+    # XXX: Pylint, method could be a function (no-self-use)
     def failUnlessRaises(self, exception, f, *args, **kwargs):
         try:
             result = f(*args, **kwargs)

@@ -134,6 +134,7 @@ def perform_lookup(disc_id, freedb_server, freedb_port):
 
     if len(matches) > 0:
         # for each result, query FreeDB for XMCD file data
+        # XXX: Pylint, redefining argument with the local name 'disc_id'
         for (category, disc_id, _) in matches:
             sleep(1)  # add a slight delay to keep the server happy
 

@@ -98,8 +98,6 @@ class WhipperLogger(result.Logger):
 
         # For every track include information in the TOC
         for t in table.tracks:
-            # FIXME: what happens to a track start over 60 minutes ?
-            # Answer: tested empirically, everything seems OK
             start = t.getIndex(1).absolute
             length = table.getTrackLength(t.number)
             end = table.getTrackEnd(t.number)

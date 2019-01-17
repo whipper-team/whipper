@@ -45,6 +45,7 @@ def main():
         logger.critical("SystemError: %s", e)
         if (isinstance(e, common.EjectError) and
                 cmd.options.eject in ('failure', 'always')):
+            # XXX: Pylint, instance of 'SystemError' has no 'device' member
             eject_device(e.device)
         return 255
     except RuntimeError as e:

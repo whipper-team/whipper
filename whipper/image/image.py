@@ -121,6 +121,7 @@ class ImageVerifyTask(task.MultiSeparateTask):
         task.MultiSeparateTask.__init__(self)
 
         self._image = image
+        # XXX: Pylint, redefining name 'cue' from outer scope (import)
         cue = image.cue
         self._tasks = []
         self.lengths = {}
@@ -183,6 +184,7 @@ class ImageEncodeTask(task.MultiSeparateTask):
         task.MultiSeparateTask.__init__(self)
 
         self._image = image
+        # XXX: Pylint, redefining name 'cue' from outer scope (import)
         cue = image.cue
         self._tasks = []
         self.lengths = {}
