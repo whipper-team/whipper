@@ -34,6 +34,8 @@ In order to track whipper's latest changes it's advised to check its commit hist
 - [Logger plugins](#logger-plugins)
 - [License](#license)
 - [Contributing](#contributing)
+  - [Developer Certificate of Origin (DCO)](#developer-certificate-of-origin-dco)
+    - [DCO Sign-Off Methods](#dco-sign-off-methods)
   - [Bug reports & feature requests](#bug-reports--feature-requests)
 - [Credits](#credits)
 - [Links](#links)
@@ -327,6 +329,65 @@ Make sure you have the latest copy from our [git
 repository](https://github.com/whipper-team/whipper). Where possible,
 please include tests for new or changed functionality. You can run tests
 with `python -m unittest discover` from your source checkout.
+
+### Developer Certificate of Origin (DCO)
+
+To make a good faith effort to ensure licensing criteria are met, this project requires the Developer Certificate of Origin (DCO) process to be followed.
+
+The Developer Certificate of Origin (DCO) is a document that certifies you own and/or have the right to contribute the work and license it appropriately. The DCO is used instead of a _much more annoying_
+[CLA (Contributor License Agreement)](https://en.wikipedia.org/wiki/Contributor_License_Agreement). With the DCO, you retain copyright of your own work :). The DCO originated in the Linux community, and is used by other projects like Git and Docker.
+
+The DCO agreement is shown below and it's also available online: [HERE](https://developercertificate.org/).
+
+```
+Developer Certificate of Origin
+Version 1.1
+
+Copyright (C) 2004, 2006 The Linux Foundation and its contributors.
+1 Letterman Drive
+Suite D4700
+San Francisco, CA, 94129
+
+Everyone is permitted to copy and distribute verbatim copies of this
+license document, but changing it is not allowed.
+
+
+Developer's Certificate of Origin 1.1
+
+By making a contribution to this project, I certify that:
+
+(a) The contribution was created in whole or in part by me and I
+    have the right to submit it under the open source license
+    indicated in the file; or
+
+(b) The contribution is based upon previous work that, to the best
+    of my knowledge, is covered under an appropriate open source
+    license and I have the right under that license to submit that
+    work with modifications, whether created in whole or in part
+    by me, under the same open source license (unless I am
+    permitted to submit under a different license), as indicated
+    in the file; or
+
+(c) The contribution was provided directly to me by some other
+    person who certified (a), (b) or (c) and I have not modified
+    it.
+
+(d) I understand and agree that this project and the contribution
+    are public and that a record of the contribution (including all
+    personal information I submit with it, including my sign-off) is
+    maintained indefinitely and may be redistributed consistent with
+    this project or the open source license(s) involved.
+```
+
+#### DCO Sign-Off Methods
+
+The DCO requires a sign-off message in the following format appear on each commit in the pull request:
+
+```
+Signed-off-by: Full Name <email>
+```
+
+The DCO text can either be manually added to your commit body, or you can add either `-s` or `--signoff` to your usual Git commit commands. If you forget to add the sign-off you can also amend a previous commit with the sign-off by running `git commit --amend -s`.
 
 ### Bug reports & feature requests
 
