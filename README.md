@@ -143,9 +143,9 @@ Some dependencies aren't available in the PyPI. They can be probably installed u
 - [flac](https://xiph.org/flac/)
 - [sox](http://sox.sourceforge.net/)
 
-PyPI installable dependencies are listed in the [requirements.txt](https://github.com/whipper-team/whipper/blob/master/requirements.txt) file and can be installed issuing the following command:
+PyPI installable dependencies are listed in the [setup.py](https://github.com/whipper-team/whipper/blob/master/setup.py) file and they are installed automatically when installing whipper with pip:
 
-`pip install -r requirements.txt`
+`python2 -m pip install -e .`
 
 ### Fetching the source code
 
@@ -171,9 +171,7 @@ cd ..
 
 ### Finalizing the build
 
-Install whipper: `python2 setup.py install`
-
-Note that, depending on the chosen installation path, this command may require elevated rights.
+Install whipper: `python2 -m pip install --user .`
 
 ## Usage
 
@@ -257,13 +255,12 @@ disc_template =  new/%%A/%%y - %%d/%%A - %%d
 # ...
 ```
 
-## Running uninstalled
+## Developing
 
-To make it easier for developers, you can run whipper straight from the
-source checkout:
+To make it easier for developers, whipper can be installed in live mode:
 
 ```bash
-python2 -m whipper -h
+python2 -m pip install --user -e .
 ```
 
 ## Logger plugins

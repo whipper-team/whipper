@@ -1,12 +1,10 @@
 FROM debian:buster
 
 RUN apt-get update \
-  && apt-get install -y cdrdao python-gobject-2 python-musicbrainzngs python-mutagen python-setuptools \
-  python-requests libsndfile1-dev flac sox \
-  libiso9660-dev python-pip swig make pkgconf \
+  && apt-get install -y cdrdao libcairo2-dev python-cddb libsndfile1-dev flac sox \
+  libiso9660-dev python-pip swig make pkgconf git \
   eject locales \
-  autoconf libtool curl \
-  && pip install pycdio==2.0.0
+  autoconf libtool curl
 
 # libcdio-paranoia / libcdio-utils are wrongfully packaged in Debian, thus built manually
 # see https://github.com/whipper-team/whipper/pull/237#issuecomment-367985625
@@ -24,7 +22,7 @@ RUN curl -o - 'https://ftp.gnu.org/gnu/libcdio/libcdio-paranoia-10.2+0.94+2.tar.
   && autoreconf -fi \
   && ./configure --disable-dependency-tracking --disable-example-progs --disable-static \
   && make install \
-  && cd .. \ 
+  && cd .. \
   && rm -rf libcdio-paranoia-10.2+0.94+2
 
 RUN ldconfig
@@ -46,7 +44,7 @@ RUN echo "LC_ALL=en_US.UTF-8" >> /etc/environment \
 RUN mkdir /whipper
 COPY . /whipper/
 RUN cd /whipper/src && make && make install \
-  && cd /whipper && python2 setup.py install \
+  && cd /whipper && python2 -m pip install --no-cache-dir . \
   && rm -rf /whipper \
   && whipper -v
 

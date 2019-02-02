@@ -1,5 +1,14 @@
 from setuptools import setup, find_packages
 
+INSTALL_DEPS = [
+    'musicbrainzngs',
+    'mutagen',
+    'pycdio>0.20',
+    'PyGObject',
+    'requests']
+TEST_DEPS = ['Twisted']
+LINT_DEPS = ['flake8']
+
 setup(
     name="whipper",
     use_scm_version=True,
@@ -18,4 +27,10 @@ setup(
     data_files=[
         ('share/metainfo', ['com.github.whipper_team.Whipper.metainfo.xml']),
     ],
+    python_requires='>=2.7, <3',
+    install_requires=INSTALL_DEPS,
+    extras_require={
+        'test': TEST_DEPS,
+        'lint': LINT_DEPS
+    },
 )
