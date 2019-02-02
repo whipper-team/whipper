@@ -353,7 +353,8 @@ class StrokesTestCase(common.TestCase):
                 'strokes-someday.eac.cue')).read()).decode('utf-8')
         common.diffStrings(ref, cue)
 
-    def _filterCue(self, output):
+    @staticmethod
+    def _filterCue(output):
         # helper to be able to compare our generated .cue with the
         # EAC-extracted one
         discard = ['TITLE', 'PERFORMER', 'FLAGS', 'REM']

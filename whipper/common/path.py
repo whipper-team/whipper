@@ -45,7 +45,7 @@ class PathFilter(object):
         def separators(path):
             # replace separators with a space-hyphen or hyphen
             path = re.sub(r'[:]', ' -', path, re.UNICODE)
-            path = re.sub(r'[\|]', '-', path, re.UNICODE)
+            path = re.sub(r'[|]', '-', path, re.UNICODE)
             return path
 
         # change all fancy single/double quotes to normal quotes
@@ -56,12 +56,12 @@ class PathFilter(object):
 
         if self._special:
             path = separators(path)
-            path = re.sub(r'[\*\?&!\'\"\$\(\)`{}\[\]<>]',
+            path = re.sub(r'[*?&!\'\"$()`{}\[\]<>]',
                           '_', path, re.UNICODE)
 
         if self._fat:
             path = separators(path)
             # : and | already gone, but leave them here for reference
-            path = re.sub(r'[:\*\?"<>|"]', '_', path, re.UNICODE)
+            path = re.sub(r'[:*?"<>|]', '_', path, re.UNICODE)
 
         return path

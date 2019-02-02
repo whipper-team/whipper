@@ -192,14 +192,14 @@ class File:
     I represent a FILE line in a cue file.
     """
 
-    def __init__(self, path, format):
+    def __init__(self, path, file_format):
         """
         @type  path: unicode
         """
         assert isinstance(path, unicode), "%r is not unicode" % path
 
         self.path = path
-        self.format = format
+        self.format = file_format
 
     def __repr__(self):
         return '<File %r of format %s>' % (self.path, self.format)

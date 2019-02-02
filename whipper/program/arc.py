@@ -31,7 +31,7 @@ def accuraterip_checksum(f, track_number, total_tracks, wave=False, v2=False):
     if not wave:
         flac.stdout.close()
 
-    out, err = arc.communicate()
+    out, _ = arc.communicate()
 
     if not wave:
         flac.wait()

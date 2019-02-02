@@ -35,11 +35,11 @@ class AudioLengthTask(ctask.PopenTask):
     def commandMissing(self):
         raise common.MissingDependencyException('soxi')
 
-    def readbytesout(self, bytes):
-        self._output.append(bytes)
+    def readbytesout(self, bytes_stdout):
+        self._output.append(bytes_stdout)
 
-    def readbyteserr(self, bytes):
-        self._error.append(bytes)
+    def readbyteserr(self, bytes_stderr):
+        self._error.append(bytes_stderr)
 
     def failed(self):
         self.setException(Exception("soxi failed: %s" % "".join(self._error)))

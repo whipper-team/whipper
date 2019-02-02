@@ -42,3 +42,5 @@ Example disc id: KnpGsLhvH.lPrNc1PBL21lb9Bg4-"""
                         j + 1, track.artist.encode('utf-8'),
                         track.title.encode('utf-8')
                     ))
+
+        return None

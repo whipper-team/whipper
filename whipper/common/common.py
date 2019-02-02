@@ -116,7 +116,7 @@ def formatTime(seconds, fractional=3):
     chunks = []
 
     if seconds < 0:
-        chunks.append(('-'))
+        chunks.append('-')
         seconds = -seconds
 
     hour = 60 * 60
@@ -271,13 +271,12 @@ def getRelativePath(targetPath, collectionPath):
     if targetDir == collectionDir:
         logger.debug('getRelativePath: target and collection in same dir')
         return os.path.basename(targetPath)
-    else:
-        rel = os.path.relpath(
-            targetDir + os.path.sep,
-            collectionDir + os.path.sep)
-        logger.debug('getRelativePath: target and collection '
-                     'in different dir, %r', rel)
-        return os.path.join(rel, os.path.basename(targetPath))
+    rel = os.path.relpath(
+        targetDir + os.path.sep,
+        collectionDir + os.path.sep)
+    logger.debug('getRelativePath: target and collection '
+                 'in different dir, %r', rel)
+    return os.path.join(rel, os.path.basename(targetPath))
 
 
 def validate_template(template, kind):
@@ -285,9 +284,9 @@ def validate_template(template, kind):
     Raise exception if disc/track template includes invalid variables
     """
     if kind == 'disc':
-        matches = re.findall(r'%[^A,R,S,X,d,r,x,y]', template)
+        matches = re.findall(r'%[^ARSXdrxy]', template)
     elif kind == 'track':
-        matches = re.findall(r'%[^A,R,S,X,a,d,n,r,s,t,x,y]', template)
+        matches = re.findall(r'%[^ARSXadnrstxy]', template)
     if '%' in template and matches:
         raise ValueError(kind + ' template string contains invalid '
                          'variable(s): {}'.format(', '.join(matches)))

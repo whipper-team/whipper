@@ -159,11 +159,10 @@ class ProgressParser:
             markEnd = frameOffset
 
         # FIXME: doing this is way too slow even for a testcase, so disable
-        if False:
-            for frame in range(markStart, markEnd):
-                if frame not in list(self._reads.keys()):
-                    self._reads[frame] = 0
-                self._reads[frame] += 1
+        # for frame in range(markStart, markEnd):
+        #     if frame not in list(self._reads.keys()):
+        #         self._reads[frame] = 0
+        #     self._reads[frame] += 1
 
         # cdparanoia reads quite a bit beyond the current track before it
         # goes back to verify; don't count those
@@ -264,7 +263,7 @@ class ReadTrackTask(task.Task):
         stopTrack = 0
         stopOffset = self._stop
 
-        for i, t in enumerate(self._table.tracks):
+        for i, _ in enumerate(self._table.tracks):
             if self._table.getTrackStart(i + 1) <= self._start:
                 startTrack = i + 1
                 startOffset = self._start - self._table.getTrackStart(i + 1)
@@ -300,7 +299,6 @@ class ReadTrackTask(task.Task):
                                          stderr=subprocess.PIPE,
                                          close_fds=True)
         except OSError as e:
-            import errno
             if e.errno == errno.ENOENT:
                 raise common.MissingDependencyException('cd-paranoia')
 
@@ -540,6 +538,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
                     try:
                         logger.debug('moving to final path %r', self.path)
                         os.rename(self._tmppath, self.path)
+                    # FIXME: catching too general exception (Exception)
                     except Exception as e:
                         logger.debug('exception while moving to final '
                                      'path %r: %s', self.path, e)
@@ -548,6 +547,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
                     os.unlink(self._tmppath)
             else:
                 logger.debug('stop: exception %r', self.exception)
+        # FIXME: catching too general exception (Exception)
         except Exception as e:
             print('WARNING: unhandled exception %r' % (e, ))
 
@@ -592,18 +592,15 @@ class AnalyzeTask(ctask.PopenTask):
     def commandMissing(self):
         raise common.MissingDependencyException('cd-paranoia')
 
-    def readbyteserr(self, bytes):
-        self._output.append(bytes)
+    def readbyteserr(self, bytes_stderr):
+        self._output.append(bytes_stderr)
 
     def done(self):
         if self.cwd:
             shutil.rmtree(self.cwd)
         output = "".join(self._output)
         m = _OK_RE.search(output)
-        if m:
-            self.defeatsCache = True
-        else:
-            self.defeatsCache = False
+        self.defeatsCache = bool(m)
 
     def failed(self):
         # cdparanoia exits with return code 1 if it can't determine

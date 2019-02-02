@@ -66,6 +66,7 @@ disc and track template are:
 class _CD(BaseCommand):
     eject = True
 
+    # XXX: Pylint, parameters differ from overridden 'add_arguments' method
     @staticmethod
     def add_arguments(parser):
         parser.add_argument('-R', '--release-id',
@@ -156,10 +157,6 @@ class _CD(BaseCommand):
             "full table's mb id %s differs from toc id mb %s" % (
             self.itable.getMusicBrainzDiscId(),
             self.ittoc.getMusicBrainzDiscId())
-        assert self.itable.accuraterip_path() == \
-            self.ittoc.accuraterip_path(), \
-            "full table's AR URL %s differs from toc AR URL %s" % (
-            self.itable.accuraterip_url(), self.ittoc.accuraterip_url())
 
         if self.program.metadata:
             self.program.metadata.discid = self.ittoc.getMusicBrainzDiscId()
@@ -191,6 +188,8 @@ class _CD(BaseCommand):
         if self.options.eject in ('success', 'always'):
             utils.eject_device(self.device)
 
+        return None
+
     def doCommand(self):
         pass
 
@@ -203,6 +202,7 @@ class Info(_CD):
 
     # Requires opts.device
 
+    # XXX: Pylint, parameters differ from overridden 'add_arguments' method
     def add_arguments(self):
         _CD.add_arguments(self.parser)
 
@@ -226,6 +226,7 @@ Log files will log the path to tracks relative to this directory.
     # Requires opts.record
     # Requires opts.device
 
+    # XXX: Pylint, parameters differ from overridden 'add_arguments' method
     def add_arguments(self):
         loggers = list(result.getLoggers())
         default_offset = None
@@ -244,7 +245,6 @@ Log files will log the path to tracks relative to this directory.
                                  default='whipper',
                                  help=("logger to use (choose from: '%s" %
                                        "', '".join(loggers) + "')"))
-        # FIXME: get from config
         self.parser.add_argument('-o', '--offset',
                                  action="store", dest="offset",
                                  default=default_offset,
@@ -413,6 +413,7 @@ Log files will log the path to tracks relative to this directory.
                                                   len(self.itable.tracks),
                                                   extra))
                         break
+                    # FIXME: catching too general exception (Exception)
                     except Exception as e:
                         logger.debug('got exception %r on try %d', e, tries)
 

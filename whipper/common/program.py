@@ -81,7 +81,8 @@ class Program:
 
         self._filter = path.PathFilter(**d)
 
-    def setWorkingDirectory(self, workingDirectory):
+    @staticmethod
+    def setWorkingDirectory(workingDirectory):
         if workingDirectory:
             logger.info('changing to working directory %s', workingDirectory)
             os.chdir(workingDirectory)
@@ -140,8 +141,12 @@ class Program:
 
         return self.result
 
-    def addDisambiguation(self, template_part, metadata):
-        "Add disambiguation to template path part string."
+    def saveRipResult(self):
+        self._presult.persist()
+
+    @staticmethod
+    def addDisambiguation(template_part, metadata):
+        """Add disambiguation to template path part string."""
         if metadata.catalogNumber:
             template_part += ' (%s)' % metadata.catalogNumber
         elif metadata.barcode:
@@ -218,7 +223,8 @@ class Program:
         template = re.sub(r'%(\w)', r'%(\1)s', template)
         return os.path.join(outdir, template % v)
 
-    def getCDDB(self, cddbdiscid):
+    @staticmethod
+    def getCDDB(cddbdiscid):
         """
         @param cddbdiscid: list of id, tracks, offsets, seconds
 
@@ -253,10 +259,8 @@ class Program:
             ittoc.getAudioTracks()))
         logger.debug('MusicBrainz submit url: %r',
                      ittoc.getMusicBrainzSubmitURL())
-        ret = None
 
         metadatas = None
-        e = None
 
         for _ in range(0, 4):
             try:
@@ -293,6 +297,7 @@ class Program:
                 print('Type    : %s' % metadata.releaseType)
                 if metadata.barcode:
                     print("Barcode : %s" % metadata.barcode)
+                # TODO: Add test for non ASCII catalog numbers: see issue #215
                 if metadata.catalogNumber:
                     print("Cat no  : %s" %
                           metadata.catalogNumber.encode('utf-8'))
@@ -327,7 +332,7 @@ class Program:
                 elif not metadatas:
                     logger.warning("requested release id '%s', but none of "
                                    "the found releases match", release)
-                    return
+                    return None
             else:
                 if lowest:
                     metadatas = deltas[lowest]
@@ -346,7 +351,7 @@ class Program:
                                        "not the same", releaseTitle, i,
                                        metadata.releaseTitle)
 
-                if (not release and len(list(deltas)) > 1):
+                if not release and len(list(deltas)) > 1:
                     logger.warning('picked closest match in duration. '
                                    'Others may be wrong in MusicBrainz, '
                                    'please correct')
@@ -438,9 +443,10 @@ class Program:
 
         start = index.absolute
         stop = track.getIndex(1).absolute - 1
-        return (start, stop)
+        return start, stop
 
-    def verifyTrack(self, runner, trackResult):
+    @staticmethod
+    def verifyTrack(runner, trackResult):
         is_wave = not trackResult.filename.endswith('.flac')
         t = checksum.CRC32Task(trackResult.filename, is_wave=is_wave)
 
@@ -572,10 +578,10 @@ class Program:
 
         return cuePath
 
-    def writeLog(self, discName, logger):
+    def writeLog(self, discName, txt_logger):
         logPath = common.truncate_filename(discName + '.log')
         handle = open(logPath, 'w')
-        log = logger.log(self.result)
+        log = txt_logger.log(self.result)
         handle.write(log.encode('utf-8'))
         handle.close()
 

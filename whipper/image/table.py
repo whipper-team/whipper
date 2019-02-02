@@ -249,7 +249,8 @@ class Table(object):
         """
         return len([t for t in self.tracks if not t.audio]) > 0
 
-    def _cddbSum(self, i):
+    @staticmethod
+    def _cddbSum(i):
         ret = 0
         while i > 0:
             ret += (i % 10)
@@ -339,13 +340,9 @@ class Table(object):
         values = self._getMusicBrainzValues()
 
         # MusicBrainz disc id does not take into account data tracks
-        # P2.3
-        try:
-            import hashlib
-            sha1 = hashlib.sha1
-        except ImportError:
-            from sha import sha as sha1
         import base64
+        import hashlib
+        sha1 = hashlib.sha1
 
         sha = sha1()
 
@@ -732,7 +729,8 @@ class Table(object):
         self.leadout += other.leadout + gap  # FIXME
         logger.debug('fixing leadout, now %d', self.leadout)
 
-    def _getSessionGap(self, session):
+    @staticmethod
+    def _getSessionGap(session):
         # From cdrecord multi-session info:
         # For the first additional session this is 11250 sectors
         # lead-out/lead-in overhead + 150 sectors for the pre-gap of the first
@@ -824,7 +822,7 @@ class Table(object):
         discId1 &= 0xffffffff
         discId2 &= 0xffffffff
 
-        return ("%08x" % discId1, "%08x" % discId2)
+        return "%08x" % discId1, "%08x" % discId2
 
     def accuraterip_path(self):
         discId1, discId2 = self.accuraterip_ids()

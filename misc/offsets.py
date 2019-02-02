@@ -64,4 +64,4 @@ if len(line) > 11:
     line = line[:-2] + '"'
     lines.append(line)
 
-print "\n".join(lines)
+print("\n".join(lines))

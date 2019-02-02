@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 # options) to the child command.
 
 
-class BaseCommand():
+class BaseCommand:
     """
     Register and handle whipper command arguments with ArgumentParser.
 

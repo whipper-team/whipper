@@ -125,8 +125,8 @@ class ReadTOCTask(task.Task):
                 self._buffer = ""
             for line in lines:
                 self._parser.parse(line)
-                if (self._parser.currentTrack is not 0 and
-                        self._parser.tracks is not 0):
+                if (self._parser.currentTrack != 0 and
+                        self._parser.tracks != 0):
                     progress = (float('%d' % self._parser.currentTrack) /
                                 float(self._parser.tracks))
                     if progress < 1.0:
@@ -168,10 +168,7 @@ def DetectCdr(device):
     cmd = [CDRDAO, 'disk-info', '-v1', '--device', device]
     logger.debug("executing %r", cmd)
     p = Popen(cmd, stdout=PIPE, stderr=PIPE)
-    if 'CD-R medium          : n/a' in p.stdout.read():
-        return False
-    else:
-        return True
+    return 'CD-R medium          : n/a' not in p.stdout.read()
 
 
 def version():
@@ -179,7 +176,7 @@ def version():
     Return cdrdao version as a string.
     """
     cdrdao = Popen(CDRDAO, stderr=PIPE)
-    out, err = cdrdao.communicate()
+    _, err = cdrdao.communicate()
     if cdrdao.returncode != 1:
         logger.warning("cdrdao version detection failed: "
                        "return code is %s", cdrdao.returncode)

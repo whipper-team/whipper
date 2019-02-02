@@ -236,7 +236,7 @@ def print_report(result):
     """
     Print AccurateRip verification results.
     """
-    for i, track in enumerate(result.tracks):
+    for _, track in enumerate(result.tracks):
         status = 'rip NOT accurate'
         conf = '(not found)'
         db = 'notfound'
