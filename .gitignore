@@ -15,3 +15,6 @@ whipper.egg-info/
 
 # From coverage report
 .coverage
+
+# tox cache
+.tox/

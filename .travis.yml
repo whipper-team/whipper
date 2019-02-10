@@ -1,11 +1,9 @@
 dist: xenial
 sudo: required
 
-language: bash
-
-env:
-    - FLAKE8=false
-    - FLAKE8=true
+language: python
+python:
+  - "2.7"
 
 install:
     # Dependencies
@@ -20,15 +18,14 @@ install:
     - ./configure
     - sudo make install
     - popd
-    
-    # Testing dependencies
-    - sudo pip install .[test,lint]
 
     # Build bundled C utils
     - pushd src
     - sudo make install
     - popd
+      #
+    # Testing dependencies
+    - sudo pip install tox-travis
 
-script:
-    - if [ ! "$FLAKE8" = true ]; then python -m unittest discover; fi
-    - if [ "$FLAKE8" = true ]; then flake8 --benchmark --statistics; fi
+
+script: tox
