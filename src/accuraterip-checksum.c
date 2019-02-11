@@ -2,9 +2,9 @@
  ============================================================================
  Name        : accuraterip-checksum.c
  Author      : Leo Bogert (http://leo.bogert.de)
- Git         : http://leo.bogert.de/accuraterip-checksum
+ Git         : https://github.com/leo-bogert/accuraterip-checksum
  Version     : See global variable "version"
- Copyright   : GPL
+ Copyright   : GPLv3
  Description : A C99 commandline program to compute the AccurateRip checksum of singletrack WAV files.
  	 	 	   Implemented according to http://www.hydrogenaudio.org/forums/index.php?showtopic=97603
  ============================================================================
@@ -18,7 +18,7 @@
 #include <stdint.h>
 #include <sndfile.h>
 
-const char *const version = "1.4";
+const char *const version = "1.5";
 
 bool check_fileformat(const SF_INFO* sfinfo) {
 #ifdef DEBUG
@@ -91,7 +91,7 @@ uint32_t compute_v1_checksum(const uint32_t* audio_data, const size_t audio_data
 
 uint32_t compute_v2_checksum(const uint32_t* audio_data, const size_t audio_data_size, const int track_number, const int total_tracks) {
 #define DWORD uint32_t
-#define __int64 uint64_t
+#define QWORD uint64_t
 
 	const DWORD *pAudioData = audio_data;	// this should point entire track audio data
 	int DataSize = 	audio_data_size;	// size of the data
@@ -117,9 +117,9 @@ uint32_t compute_v2_checksum(const uint32_t* audio_data, const size_t audio_data
 		{
 			DWORD Value = pAudioData[i];
 
-			uint64_t CalcCRCNEW = (uint64_t)Value * (uint64_t)MulBy;
-			DWORD LOCalcCRCNEW = (DWORD)(CalcCRCNEW & (uint64_t)0xFFFFFFFF);
-			DWORD HICalcCRCNEW = (DWORD)(CalcCRCNEW / (uint64_t)0x100000000);
+			QWORD CalcCRCNEW = (QWORD)Value * (QWORD)MulBy;
+			DWORD LOCalcCRCNEW = (DWORD)(CalcCRCNEW & (QWORD)0xFFFFFFFF);
+			DWORD HICalcCRCNEW = (DWORD)(CalcCRCNEW / (QWORD)0x100000000);
 			AC_CRCNEW+=HICalcCRCNEW;
 			AC_CRCNEW+=LOCalcCRCNEW;
 		}
