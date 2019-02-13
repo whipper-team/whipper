@@ -174,7 +174,7 @@ class Program:
           - %d: disc title
           - %y: release year
           - %r: release type, lowercase
-          - %R: Release type, normal case
+          - %R: release type, normal case
           - %x: audio extension, lowercase
           - %X: audio extension, uppercase
         """
