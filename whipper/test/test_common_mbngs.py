@@ -182,6 +182,10 @@ class MetadataTestCase(unittest.TestCase):
         self.assertEqual(track1.mbidArtist,
                          u'38bfaa7f-ee98-48cb-acd0-946d7aeecd76'
                          ';4b462375-c508-432a-8c88-ceeec38b16ae')
+        self.assertEqual(track1.mbid,
+                         u'1cc96e78-28ed-3820-b0b6-614c35b121ac')
+        self.assertEqual(track1.mbidRecording,
+                         u'fde5622c-ce23-4ebb-975d-51d4a926f901')
 
         track2 = metadata.tracks[1]
 
@@ -190,3 +194,7 @@ class MetadataTestCase(unittest.TestCase):
         self.assertEqual(track2.mbidArtist,
                          u'38bfaa7f-ee98-48cb-acd0-946d7aeecd76'
                          ';4b462375-c508-432a-8c88-ceeec38b16ae')
+        self.assertEqual(track2.mbid,
+                         u'f16db4bf-9a34-3d5a-a975-c9375ab7a2ca')
+        self.assertEqual(track2.mbidRecording,
+                         u'5f19758e-7421-4c71-a599-9a9575d8e1b0')

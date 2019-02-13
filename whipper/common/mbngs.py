@@ -52,6 +52,7 @@ class TrackMetadata(object):
     mbid = None
     sortName = None
     mbidArtist = None
+    mbidRecording = None
 
 
 class DiscMetadata(object):
@@ -229,7 +230,8 @@ def _getMetadata(releaseShort, release, discid, country=None):
                     track.mbidArtist = trackCredit.getIds()
 
                     track.title = t['recording']['title']
-                    track.mbid = t['recording']['id']
+                    track.mbid = t['id']
+                    track.mbidRecording = t['recording']['id']
 
                     # FIXME: unit of duration ?
                     track.duration = int(t['recording'].get('length', 0))
