@@ -12,13 +12,15 @@ from whipper.common import mbngs
 class MetadataTestCase(unittest.TestCase):
 
     # Generated with rip -R cd info
-    def testJeffEverybodySingle(self):
-        filename = 'whipper.release.3451f29c-9bb8-4cc5-bfcc-bd50104b94f8.json'
+    def testMissingReleaseDate(self):
+        # Using: The KLF - Space & Chill Out
+        # https://musicbrainz.org/release/c56ff16e-1d81-47de-926f-ba22891bd2bd
+        filename = 'whipper.release.c56ff16e-1d81-47de-926f-ba22891bd2bd.json'
         path = os.path.join(os.path.dirname(__file__), filename)
         handle = open(path, "rb")
         response = json.loads(handle.read())
         handle.close()
-        discid = "wbjbST2jUHRZaB1inCyxxsL7Eqc-"
+        discid = "b.yqPuCBdsV5hrzDvYrw52iK_jE-"
 
         metadata = mbngs._getMetadata({}, response['release'], discid)
 
