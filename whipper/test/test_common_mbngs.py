@@ -12,13 +12,15 @@ from whipper.common import mbngs
 class MetadataTestCase(unittest.TestCase):
 
     # Generated with rip -R cd info
-    def testJeffEverybodySingle(self):
-        filename = 'whipper.release.3451f29c-9bb8-4cc5-bfcc-bd50104b94f8.json'
+    def testMissingReleaseDate(self):
+        # Using: The KLF - Space & Chill Out
+        # https://musicbrainz.org/release/c56ff16e-1d81-47de-926f-ba22891bd2bd
+        filename = 'whipper.release.c56ff16e-1d81-47de-926f-ba22891bd2bd.json'
         path = os.path.join(os.path.dirname(__file__), filename)
         handle = open(path, "rb")
         response = json.loads(handle.read())
         handle.close()
-        discid = "wbjbST2jUHRZaB1inCyxxsL7Eqc-"
+        discid = "b.yqPuCBdsV5hrzDvYrw52iK_jE-"
 
         metadata = mbngs._getMetadata({}, response['release'], discid)
 
@@ -112,44 +114,45 @@ class MetadataTestCase(unittest.TestCase):
                          ';ec07a209-55ff-4084-bc41-9d4d1764e075'
                          ';f626b92e-07b1-4a19-ad13-c09d690db66c')
 
-    def testNorthernGateway(self):
+    def testUnknownArtist(self):
         """
         check the received metadata for artists tagged with [unknown]
         and artists tagged with an alias in MusicBrainz
 
         see https://github.com/whipper-team/whipper/issues/155
         """
-        filename = 'whipper.release.38b05c7d-65fe-4dc0-9c10-33a391b86703.json'
+        # Using: CunninLynguists - Sloppy Seconds, Volume 1
+        # https://musicbrainz.org/release/8478d4da-0cda-4e46-ae8c-1eeacfa5cf37
+        filename = 'whipper.release.8478d4da-0cda-4e46-ae8c-1eeacfa5cf37.json'
         path = os.path.join(os.path.dirname(__file__), filename)
         handle = open(path, "rb")
         response = json.loads(handle.read())
         handle.close()
-        discid = "rzGHHqfPWIq1GsOLhhlBcZuqo.I-"
+        discid = "RhrwgVb0hZNkabQCw1dZIhdbMFg-"
 
         metadata = mbngs._getMetadata({}, response['release'], discid)
-        self.assertEqual(metadata.artist, u'Various Artists')
-        self.assertEqual(metadata.release, u'2010')
+        self.assertEqual(metadata.artist, u'CunninLynguists')
+        self.assertEqual(metadata.release, u'2003')
         self.assertEqual(metadata.mbidArtist,
-                         u'89ad4ac3-39f7-470e-963a-56509c546377')
+                         u'69c4cc43-8163-41c5-ac81-30946d27bb69')
 
-        self.assertEqual(len(metadata.tracks), 10)
+        self.assertEqual(len(metadata.tracks), 30)
 
-        track2 = metadata.tracks[1]
+        track8 = metadata.tracks[7]
 
-        self.assertEqual(track2.artist, u'Twisted Reaction feat. Danielle')
-        self.assertEqual(track2.sortName,
-                         u'Twisted Reaction feat. [unknown]')
-        self.assertEqual(track2.mbidArtist,
-                         u'4f69f624-73ea-4a16-b822-bd2ca58032bf'
-                         ';125ec42a-7229-4250-afc5-e057484327fe')
+        self.assertEqual(track8.artist, u'???')
+        self.assertEqual(track8.sortName, u'[unknown]')
+        self.assertEqual(track8.mbidArtist,
+                         u'125ec42a-7229-4250-afc5-e057484327fe')
 
-        track4 = metadata.tracks[3]
+        track9 = metadata.tracks[8]
 
-        self.assertEqual(track4.artist, u'BioGenesis')
-        self.assertEqual(track4.sortName,
-                         u'Bio Genesis')
-        self.assertEqual(track4.mbidArtist,
-                         u'dd61b86c-c015-43e1-9a28-58fceb0975c8')
+        self.assertEqual(track9.artist, u'CunninLynguists feat. Tonedeff')
+        self.assertEqual(track9.sortName,
+                         u'CunninLynguists feat. Tonedeff')
+        self.assertEqual(track9.mbidArtist,
+                         u'69c4cc43-8163-41c5-ac81-30946d27bb69'
+                         ';b3869d83-9fb5-4eac-b5ca-2d155fcbee12')
 
     def testNenaAndKimWildSingle(self):
         """
