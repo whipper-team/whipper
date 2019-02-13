@@ -182,6 +182,10 @@ class MetadataTestCase(unittest.TestCase):
         self.assertEqual(track1.mbidArtist,
                          u'38bfaa7f-ee98-48cb-acd0-946d7aeecd76'
                          ';4b462375-c508-432a-8c88-ceeec38b16ae')
+        self.assertEqual(track1.mbid,
+                         u'1cc96e78-28ed-3820-b0b6-614c35b121ac')
+        self.assertEqual(track1.mbidRecording,
+                         u'fde5622c-ce23-4ebb-975d-51d4a926f901')
 
         track2 = metadata.tracks[1]
 
@@ -190,3 +194,54 @@ class MetadataTestCase(unittest.TestCase):
         self.assertEqual(track2.mbidArtist,
                          u'38bfaa7f-ee98-48cb-acd0-946d7aeecd76'
                          ';4b462375-c508-432a-8c88-ceeec38b16ae')
+        self.assertEqual(track2.mbid,
+                         u'f16db4bf-9a34-3d5a-a975-c9375ab7a2ca')
+        self.assertEqual(track2.mbidRecording,
+                         u'5f19758e-7421-4c71-a599-9a9575d8e1b0')
+
+    def testAllAvailableMetadata(self):
+        """Check that all possible metadata gets assigned."""
+        # Using: David Rovics - The Other Side
+        # https://musicbrainz.org/release/6109ceed-7e21-490b-b5ad-3a66b4e4cfbb
+        filename = 'whipper.release.6109ceed-7e21-490b-b5ad-3a66b4e4cfbb.json'
+        path = os.path.join(os.path.dirname(__file__), filename)
+        handle = open(path, "rb")
+        response = json.loads(handle.read())
+        handle.close()
+        discid = "cHW1Uutl_kyWNaLJsLmTGTe4rnE-"
+
+        metadata = mbngs._getMetadata({}, response['release'], discid)
+        self.assertEqual(metadata.artist, u'David Rovics')
+        self.assertEqual(metadata.sortName, u'Rovics, David')
+        self.assertFalse(metadata.various)
+        self.assertIsInstance(metadata.tracks, list)
+        self.assertEqual(metadata.release, u'2015')
+        self.assertEqual(metadata.releaseTitle, u'The Other Side')
+        self.assertEqual(metadata.releaseType, u'Album')
+        self.assertEqual(metadata.mbid,
+                         u'6109ceed-7e21-490b-b5ad-3a66b4e4cfbb')
+        self.assertEqual(metadata.mbidReleaseGroup,
+                         u'99850b41-a06e-4fb8-992c-75c191a77803')
+        self.assertEqual(metadata.mbidArtist,
+                         u'4d56eb9f-13b3-4f05-9db7-50195378d49f')
+        self.assertEqual(metadata.url,
+                         u'https://musicbrainz.org/release'
+                         '/6109ceed-7e21-490b-b5ad-3a66b4e4cfbb')
+        self.assertEqual(metadata.catalogNumber, u'[none]')
+        self.assertEqual(metadata.barcode, u'700261430249')
+
+        self.assertEqual(len(metadata.tracks), 16)
+
+        track1 = metadata.tracks[0]
+        self.assertEqual(track1.artist, u'David Rovics')
+        self.assertEqual(track1.title, u'Waiting for the Hurricane')
+        self.assertEqual(track1.duration, 176320)
+        self.assertEqual(track1.mbid,
+                         u'4116eea3-b9c2-452a-8d63-92f1e585b225')
+        self.assertEqual(track1.sortName, u'Rovics, David')
+        self.assertEqual(track1.mbidArtist,
+                         u'4d56eb9f-13b3-4f05-9db7-50195378d49f')
+        self.assertEqual(track1.mbidRecording,
+                         u'b191794d-b7c6-4d6f-971e-0a543959b5ad')
+        self.assertEqual(track1.mbidWorks,
+                         [u'90d5be68-0b29-45a3-ba01-c27ad78e3625'])

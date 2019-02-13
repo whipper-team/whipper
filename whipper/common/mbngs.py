@@ -52,6 +52,8 @@ class TrackMetadata(object):
     mbid = None
     sortName = None
     mbidArtist = None
+    mbidRecording = None
+    mbidWorks = []
 
 
 class DiscMetadata(object):
@@ -75,6 +77,7 @@ class DiscMetadata(object):
     releaseType = None
 
     mbid = None
+    mbidReleaseGroup = None
     mbidArtist = None
     url = None
 
@@ -144,6 +147,19 @@ class _Credit(list):
                            joinString=";")
 
 
+def _getWorks(recording):
+    """Get "performance of" works out of a recording."""
+    works = []
+    valid_work_rel_types = [
+        u'a3005666-a872-32c3-ad06-98af558e99b0',  # "Performance"
+    ]
+    if 'work-relation-list' in recording:
+        for work in recording['work-relation-list']:
+            if work['type-id'] in valid_work_rel_types:
+                works.append(work['work']['id'])
+    return works
+
+
 def _getMetadata(releaseShort, release, discid, country=None):
     """
     @type  release: C{dict}
@@ -165,7 +181,7 @@ def _getMetadata(releaseShort, release, discid, country=None):
 
     discMD = DiscMetadata()
 
-    discMD.releaseType = releaseShort.get('release-group', {}).get('type')
+    discMD.releaseType = release['release-group']['type']
     discCredit = _Credit(release['artist-credit'])
 
     # FIXME: is there a better way to check for VA ?
@@ -188,6 +204,7 @@ def _getMetadata(releaseShort, release, discid, country=None):
         discMD.release = release['date']
 
     discMD.mbid = release['id']
+    discMD.mbidReleaseGroup = release['release-group']['id']
     discMD.mbidArtist = discCredit.getIds()
     discMD.url = 'https://musicbrainz.org/release/' + release['id']
 
@@ -229,7 +246,9 @@ def _getMetadata(releaseShort, release, discid, country=None):
                     track.mbidArtist = trackCredit.getIds()
 
                     track.title = t['recording']['title']
-                    track.mbid = t['recording']['id']
+                    track.mbid = t['id']
+                    track.mbidRecording = t['recording']['id']
+                    track.mbidWorks = _getWorks(t['recording'])
 
                     # FIXME: unit of duration ?
                     track.duration = int(t['recording'].get('length', 0))
@@ -304,7 +323,9 @@ def musicbrainz(discid, country=None, record=False):
 
             res = musicbrainzngs.get_release_by_id(
                 release['id'], includes=["artists", "artist-credits",
-                                         "recordings", "discids", "labels"])
+                                         "recordings", "discids", "labels",
+                                         "recording-level-rels", "work-rels",
+                                         "release-groups"])
             _record(record, 'release', release['id'], res)
             releaseDetail = res['release']
             formatted = json.dumps(releaseDetail, sort_keys=False, indent=4)
