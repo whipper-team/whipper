@@ -160,7 +160,7 @@ def _getWorks(recording):
     return works
 
 
-def _getMetadata(releaseShort, release, discid, country=None):
+def _getMetadata(release, discid, country=None):
     """
     @type  release: C{dict}
     @param release: a release dict as returned in the value for key release
@@ -331,7 +331,7 @@ def musicbrainz(discid, country=None, record=False):
             formatted = json.dumps(releaseDetail, sort_keys=False, indent=4)
             logger.debug('release %s', formatted)
 
-            md = _getMetadata(release, releaseDetail, discid, country)
+            md = _getMetadata(releaseDetail, discid, country)
             if md:
                 logger.debug('duration %r', md.duration)
                 ret.append(md)

@@ -22,7 +22,7 @@ class MetadataTestCase(unittest.TestCase):
         handle.close()
         discid = "b.yqPuCBdsV5hrzDvYrw52iK_jE-"
 
-        metadata = mbngs._getMetadata({}, response['release'], discid)
+        metadata = mbngs._getMetadata(response['release'], discid)
 
         self.assertFalse(metadata.release)
 
@@ -35,7 +35,7 @@ class MetadataTestCase(unittest.TestCase):
         handle.close()
         discid = "f7XO36a7n1LCCskkCiulReWbwZA-"
 
-        metadata = mbngs._getMetadata({}, response['release'], discid)
+        metadata = mbngs._getMetadata(response['release'], discid)
 
         self.assertEqual(metadata.artist, u'Various Artists')
         self.assertEqual(metadata.release, u'2001-10-15')
@@ -62,7 +62,7 @@ class MetadataTestCase(unittest.TestCase):
         handle.close()
         discid = "xAq8L4ELMW14.6wI6tt7QAcxiDI-"
 
-        metadata = mbngs._getMetadata({}, response['release'], discid)
+        metadata = mbngs._getMetadata(response['release'], discid)
 
         self.assertEqual(metadata.artist, u'Isobel Campbell & Mark Lanegan')
         self.assertEqual(metadata.sortName,
@@ -94,7 +94,7 @@ class MetadataTestCase(unittest.TestCase):
         handle.close()
         discid = "u0aKVpO.59JBy6eQRX2vYcoqQZ0-"
 
-        metadata = mbngs._getMetadata({}, response['release'], discid)
+        metadata = mbngs._getMetadata(response['release'], discid)
 
         self.assertEqual(metadata.artist, u'Mala')
         self.assertEqual(metadata.sortName, u'Mala')
@@ -130,7 +130,7 @@ class MetadataTestCase(unittest.TestCase):
         handle.close()
         discid = "RhrwgVb0hZNkabQCw1dZIhdbMFg-"
 
-        metadata = mbngs._getMetadata({}, response['release'], discid)
+        metadata = mbngs._getMetadata(response['release'], discid)
         self.assertEqual(metadata.artist, u'CunninLynguists')
         self.assertEqual(metadata.release, u'2003')
         self.assertEqual(metadata.mbidArtist,
@@ -166,7 +166,7 @@ class MetadataTestCase(unittest.TestCase):
         handle.close()
         discid = "X2c2IQ5vUy5x6Jh7Xi_DGHtA1X8-"
 
-        metadata = mbngs._getMetadata({}, response['release'], discid)
+        metadata = mbngs._getMetadata(response['release'], discid)
         self.assertEqual(metadata.artist, u'Nena & Kim Wilde')
         self.assertEqual(metadata.release, u'2003-05-19')
         self.assertEqual(metadata.mbidArtist,
@@ -210,7 +210,7 @@ class MetadataTestCase(unittest.TestCase):
         handle.close()
         discid = "cHW1Uutl_kyWNaLJsLmTGTe4rnE-"
 
-        metadata = mbngs._getMetadata({}, response['release'], discid)
+        metadata = mbngs._getMetadata(response['release'], discid)
         self.assertEqual(metadata.artist, u'David Rovics')
         self.assertEqual(metadata.sortName, u'Rovics, David')
         self.assertFalse(metadata.various)
