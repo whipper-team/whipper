@@ -268,6 +268,7 @@ def musicbrainz(discid, country=None, record=False):
     logger.debug('looking up results for discid %r', discid)
     import musicbrainzngs
 
+    logging.getLogger("musicbrainzngs").setLevel(logging.WARNING)
     musicbrainzngs.set_useragent("whipper", whipper.__version__,
                                  "https://github.com/whipper-team/whipper")
     ret = []
