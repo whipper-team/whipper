@@ -35,7 +35,7 @@ Example disc id: KnpGsLhvH.lPrNc1PBL21lb9Bg4-"""
             if md.catalogNumber:
                 print('    Cat no: %s' % md.catalogNumber)
             if md.barcode:
-                print('   Barcode: %s' % md.barcode)
+                print('    Barcode: %s' % md.barcode)
 
                 for j, track in enumerate(md.tracks):
                     print('      Track %2d: %s - %s' % (
