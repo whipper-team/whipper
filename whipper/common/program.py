@@ -393,7 +393,7 @@ class Program:
                     track = self.metadata.tracks[number - 1]
                     trackArtist = track.artist
                     title = track.title
-                    mbidTrack = track.mbid
+                    mbidRecording = track.mbid
                     mbidTrackArtist = track.mbidArtist
                 except IndexError as e:
                     logger.error('no track %d found, %r', number, e)
@@ -420,7 +420,7 @@ class Program:
                 tags['DATE'] = self.metadata.release
 
             if number > 0:
-                tags['MUSICBRAINZ_TRACKID'] = mbidTrack
+                tags['MUSICBRAINZ_TRACKID'] = mbidRecording
                 tags['MUSICBRAINZ_ARTISTID'] = mbidTrackArtist
                 tags['MUSICBRAINZ_ALBUMID'] = mbidRelease
                 tags['MUSICBRAINZ_ALBUMARTISTID'] = mbidReleaseArtist
