@@ -169,8 +169,8 @@ class Program:
         Disc files (.cue, .log, .m3u) are named according to the disc
         template, filling in the variables and adding the file
         extension. Variables for both disc and track template are:
-          - %A: album artist
-          - %S: album artist sort name
+          - %A: release artist
+          - %S: release artist sort name
           - %d: disc title
           - %y: release year
           - %r: release type, lowercase
@@ -377,16 +377,16 @@ class Program:
         @rtype: dict
         """
         trackArtist = u'Unknown Artist'
-        albumArtist = u'Unknown Artist'
+        releaseArtist = u'Unknown Artist'
         disc = u'Unknown Disc'
         title = u'Unknown Track'
 
         if self.metadata:
             trackArtist = self.metadata.artist
-            albumArtist = self.metadata.artist
+            releaseArtist = self.metadata.artist
             disc = self.metadata.title
-            mbidAlbum = self.metadata.mbid
-            mbidTrackAlbum = self.metadata.mbidArtist
+            mbidRelease = self.metadata.mbid
+            mbidReleaseArtist = self.metadata.mbidArtist
 
             if number > 0:
                 try:
@@ -408,7 +408,7 @@ class Program:
             tags['MUSICBRAINZ_DISCID'] = mbdiscid
 
         if self.metadata and not self.metadata.various:
-            tags['ALBUMARTIST'] = albumArtist
+            tags['ALBUMARTIST'] = releaseArtist
         tags['ARTIST'] = trackArtist
         tags['TITLE'] = title
         tags['ALBUM'] = disc
@@ -422,8 +422,8 @@ class Program:
             if number > 0:
                 tags['MUSICBRAINZ_TRACKID'] = mbidTrack
                 tags['MUSICBRAINZ_ARTISTID'] = mbidTrackArtist
-                tags['MUSICBRAINZ_ALBUMID'] = mbidAlbum
-                tags['MUSICBRAINZ_ALBUMARTISTID'] = mbidTrackAlbum
+                tags['MUSICBRAINZ_ALBUMID'] = mbidRelease
+                tags['MUSICBRAINZ_ALBUMARTISTID'] = mbidReleaseArtist
 
         # TODO/FIXME: ISRC tag
 

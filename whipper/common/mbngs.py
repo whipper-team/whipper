@@ -57,7 +57,7 @@ class TrackMetadata(object):
 class DiscMetadata(object):
     """
     @param artist:       artist(s) name
-    @param sortName:     album artist sort name
+    @param sortName:     release artist sort name
     @param release:      earliest release date, in YYYY-MM-DD
     @type  release:      unicode
     @param title:        title of the disc (with disambiguation)
@@ -176,10 +176,10 @@ def _getMetadata(releaseShort, release, discid, country=None):
     if len(discCredit) > 1:
         logger.debug('artist-credit more than 1: %r', discCredit)
 
-    albumArtistName = discCredit.getName()
+    releaseArtistName = discCredit.getName()
 
     # getUniqueName gets disambiguating names like Muse (UK rock band)
-    discMD.artist = albumArtistName
+    discMD.artist = releaseArtistName
     discMD.sortName = discCredit.getSortName()
     if 'date' not in release:
         logger.warning("release with ID '%s' (%s - %s) does not have a date",
