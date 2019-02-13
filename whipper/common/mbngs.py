@@ -143,8 +143,9 @@ class _Credit(list):
                                            i.get('artist').get('name', None)))
 
     def getIds(self):
+        # split()'s the joined string so we get a proper list of MBIDs
         return self.joiner(lambda i: i.get('artist').get('id', None),
-                           joinString=";")
+                           joinString=";").split(';')
 
 
 def _getWorks(recording):
