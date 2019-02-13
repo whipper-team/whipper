@@ -305,8 +305,8 @@ Licensed under the [GNU GPLv3 license](http://www.gnu.org/licenses/gpl-3.0).
 
 ```Text
 Copyright (C) 2009 Thomas Vander Stichele
-Copyright (C) 2016-2019 The Whipper Team: JoeLametta, Frederik Olesen,
-			Samantha Baldwin, Merlijn Wajer, et al.
+Copyright (C) 2016-2019 The Whipper Team: JoeLametta, Samantha Baldwin,
+                        Merlijn Wajer, Frederik “Freso” S. Olesen, et al.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
