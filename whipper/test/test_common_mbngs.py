@@ -243,3 +243,5 @@ class MetadataTestCase(unittest.TestCase):
                          u'4d56eb9f-13b3-4f05-9db7-50195378d49f')
         self.assertEqual(track1.mbidRecording,
                          u'b191794d-b7c6-4d6f-971e-0a543959b5ad')
+        self.assertEqual(track1.mbidWorks,
+                         [u'90d5be68-0b29-45a3-ba01-c27ad78e3625'])
