@@ -386,6 +386,7 @@ class Program:
             releaseArtist = self.metadata.artist
             disc = self.metadata.title
             mbidRelease = self.metadata.mbid
+            mbidReleaseGroup = self.metadata.mbidReleaseGroup
             mbidReleaseArtist = self.metadata.mbidArtist
 
             if number > 0:
@@ -425,6 +426,7 @@ class Program:
                 tags['MUSICBRAINZ_TRACKID'] = mbidRecording
                 tags['MUSICBRAINZ_ARTISTID'] = mbidTrackArtist
                 tags['MUSICBRAINZ_ALBUMID'] = mbidRelease
+                tags['MUSICBRAINZ_RELEASEGROUPID'] = mbidReleaseGroup
                 tags['MUSICBRAINZ_ALBUMARTISTID'] = mbidReleaseArtist
 
         # TODO/FIXME: ISRC tag

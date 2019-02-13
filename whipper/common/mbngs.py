@@ -76,6 +76,7 @@ class DiscMetadata(object):
     releaseType = None
 
     mbid = None
+    mbidReleaseGroup = None
     mbidArtist = None
     url = None
 
@@ -189,6 +190,7 @@ def _getMetadata(releaseShort, release, discid, country=None):
         discMD.release = release['date']
 
     discMD.mbid = release['id']
+    discMD.mbidReleaseGroup = release['release-group']['id']
     discMD.mbidArtist = discCredit.getIds()
     discMD.url = 'https://musicbrainz.org/release/' + release['id']
 
@@ -305,7 +307,8 @@ def musicbrainz(discid, country=None, record=False):
 
             res = musicbrainzngs.get_release_by_id(
                 release['id'], includes=["artists", "artist-credits",
-                                         "recordings", "discids", "labels"])
+                                         "recordings", "discids", "labels",
+                                         "release-groups"])
             _record(record, 'release', release['id'], res)
             releaseDetail = res['release']
             formatted = json.dumps(releaseDetail, sort_keys=False, indent=4)
