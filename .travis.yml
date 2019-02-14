@@ -11,7 +11,7 @@ install:
     - sudo apt-get -qq update
     - sudo pip install --upgrade -qq pip
     - sudo apt-get -qq install cdparanoia cdrdao flac gir1.2-glib-2.0 libcdio-dev libiso9660-dev libsndfile1-dev python-cddb python-gi python-musicbrainzngs python-mutagen python-setuptools sox swig libcdio-utils
-    - sudo pip install pycdio==0.21 requests
+    - sudo pip install pycdio==0.21 requests setuptools_scm
 
     # Testing dependencies
     - sudo apt-get -qq install python-twisted-core
