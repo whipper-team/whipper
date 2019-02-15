@@ -3,3 +3,4 @@ mutagen
 pycdio>0.20
 PyGObject
 requests
+setuptools_scm
