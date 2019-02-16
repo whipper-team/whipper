@@ -1,6 +1,12 @@
 sudo: required
 
-language: bash
+language: python
+python:
+  - "2.7"
+virtualenv:
+  system_site_packages: true
+
+cache: pip
 
 env:
     - FLAKE8=false
@@ -9,13 +15,12 @@ env:
 install:
     # Dependencies
     - sudo apt-get -qq update
-    - sudo pip install --upgrade -qq pip
-    - sudo apt-get -qq install cdparanoia cdrdao flac gir1.2-glib-2.0 libcdio-dev libiso9660-dev libsndfile1-dev python-gi python-musicbrainzngs python-mutagen python-setuptools sox swig libcdio-utils
-    - sudo pip install pycdio==0.21 requests setuptools_scm
+    - pip install --upgrade -qq pip
+    - sudo apt-get -qq install cdparanoia cdrdao flac gir1.2-glib-2.0 libcdio-dev libiso9660-dev libsndfile1-dev python-gi sox swig libcdio-utils
+    - pip install musicbrainzngs mutagen pycdio==0.21 PyGObject requests setuptools setuptools_scm
 
     # Testing dependencies
-    - sudo apt-get -qq install python-twisted-core
-    - sudo pip install flake8
+    - pip install twisted flake8
 
     # Build bundled C utils
     - cd src
@@ -23,7 +28,7 @@ install:
     - cd ..
 
     # Installing
-    - sudo python setup.py install
+    - python setup.py install
 
 script:
     - if [ ! "$FLAKE8" = true ]; then python -m unittest discover; fi
