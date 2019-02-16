@@ -2,7 +2,7 @@ FROM debian:buster
 
 RUN apt-get update \
   && apt-get install -y cdrdao python-gobject-2 python-musicbrainzngs python-mutagen python-setuptools \
-  python-cddb python-requests libsndfile1-dev flac sox \
+  python-requests libsndfile1-dev flac sox \
   libiso9660-dev python-pip swig make pkgconf \
   eject locales \
   autoconf libtool curl \
