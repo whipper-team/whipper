@@ -27,12 +27,11 @@ import re
 import os
 import time
 
-from whipper.common import accurip, checksum, common, mbngs, path
+from whipper.common import accurip, cache, checksum, common, mbngs, path
 from whipper.program import cdrdao, cdparanoia
 from whipper.image import image
 from whipper.extern import freedb
 from whipper.extern.task import task
-from whipper.result import result
 
 import logging
 logger = logging.getLogger(__name__)
@@ -64,6 +63,7 @@ class Program:
         @param record: whether to record results of API calls for playback.
         """
         self._record = record
+        self._cache = cache.ResultCache()
         self._config = config
 
         d = {}
@@ -107,20 +107,38 @@ class Program:
     def getTable(self, runner, cddbdiscid, mbdiscid, device, offset,
                  toc_path):
         """
-        Retrieve the Table from the drive.
+        Retrieve the Table either from the cache or the drive.
 
         @rtype: L{table.Table}
         """
+        tcache = cache.TableCache()
+        ptable = tcache.get(cddbdiscid, mbdiscid)
         itable = None
         tdict = {}
 
-        t = cdrdao.ReadTOCTask(device)
-        t.description = "Reading table"
-        t.toc_path = toc_path
-        runner.run(t)
-        itable = t.toc.table
-        tdict[offset] = itable
-        logger.debug('getTable: read table %r' % itable)
+        # Ignore old cache, since we do not know what offset it used.
+        if isinstance(ptable.object, dict):
+            tdict = ptable.object
+
+            if offset in tdict:
+                itable = tdict[offset]
+
+        if not itable:
+            logger.debug('getTable: cddbdiscid %s, mbdiscid %s not in cache '
+                         'for offset %s, reading table', cddbdiscid, mbdiscid,
+                         offset)
+            t = cdrdao.ReadTOCTask(device)
+            t.description = "Reading table"
+            t.toc_path = toc_path
+            runner.run(t)
+            itable = t.toc.table
+            tdict[offset] = itable
+            ptable.persist(tdict)
+            logger.debug('getTable: read table %r', itable)
+        else:
+            logger.debug('getTable: cddbdiscid %s, mbdiscid %s in cache '
+                         'for offset %s', cddbdiscid, mbdiscid, offset)
+            logger.debug('getTable: loaded table %r', itable)
 
         assert itable.hasTOC()
 
@@ -132,12 +150,15 @@ class Program:
 
     def getRipResult(self, cddbdiscid):
         """
-        Return a RipResult object.
+        Retrieve the persistable RipResult either from our cache (from a
+        previous, possibly aborted rip), or return a new one.
 
         @rtype: L{result.RipResult}
         """
         assert self.result is None
-        self.result = result.RipResult()
+
+        self._presult = self._cache.getRipResult(cddbdiscid)
+        self.result = self._presult.object
 
         return self.result
 
