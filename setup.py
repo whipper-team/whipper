@@ -8,6 +8,7 @@ setup(
     maintainer=['The Whipper Team'],
     url='https://github.com/whipper-team/whipper',
     license='GPL3',
+    python_requires='>=2.7,<3',
     packages=find_packages(),
     setup_requires=['setuptools_scm'],
     entry_points={
