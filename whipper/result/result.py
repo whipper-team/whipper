@@ -72,6 +72,8 @@ class RipResult:
     @ivar offset: sample read offset
     @ivar table:  the full index table
     @type table:  L{whipper.image.table.Table}
+    @ivar metadata: disc metadata from MusicBrainz (if available)
+    @type metadata: L{whipper.common.mbngs.DiscMetadata}
 
     @ivar vendor:  vendor of the CD drive
     @ivar model:   model of the CD drive
@@ -88,6 +90,7 @@ class RipResult:
     table = None
     artist = None
     title = None
+    metadata = None
 
     vendor = None
     model = None

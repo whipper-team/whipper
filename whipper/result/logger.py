@@ -72,6 +72,9 @@ class WhipperLogger(result.Logger):
                      ripResult. table.getMusicBrainzDiscId())
         lines.append("  MusicBrainz lookup url: %s" %
                      ripResult. table.getMusicBrainzSubmitURL())
+        if ripResult.metadata:
+            lines.append("  MusicBrainz Release url: %s" %
+                         ripResult.metadata.url)
         lines.append("")
 
         # TOC section
