@@ -2,5 +2,6 @@ musicbrainzngs
 mutagen
 pycdio>0.20
 PyGObject
+pyyaml
 requests
 setuptools_scm

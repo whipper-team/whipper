@@ -130,6 +130,7 @@ Whipper relies on the following packages in order to run correctly and provide a
 - [python-requests](https://pypi.python.org/pypi/requests), for retrieving AccurateRip database entries
 - [pycdio](https://pypi.python.org/pypi/pycdio/), for drive identification (required for drive offset and caching behavior to be stored in the configuration file).
   - To avoid bugs  it's advised to use `pycdio` **0.20** or **0.21** with `libcdio` ≥ **0.90** ≤ **0.94* or `pycdio` **2.0.0** with `libcdio` **2.0.0**. All other combinations won't probably work.
+- [PyYAML](https://pyyaml.org/wiki/PyYAML), for the standard rip logger
 - [libsndfile](http://www.mega-nerd.com/libsndfile/), for reading wav files
 - [flac](https://xiph.org/flac/), for reading flac files
 - [sox](http://sox.sourceforge.net/), for track peak detection
