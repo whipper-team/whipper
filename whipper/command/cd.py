@@ -182,6 +182,7 @@ class _CD(BaseCommand):
         _, self.program.result.vendor, self.program.result.model, \
             self.program.result.release = \
             cdio.Device(self.device).get_hwinfo()
+        self.program.result.metadata = self.program.metadata
 
         self.doCommand()
 
