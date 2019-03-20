@@ -19,9 +19,9 @@
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-Reading .toc files
+Read .toc files.
 
-The .toc file format is described in the man page of cdrdao
+The .toc file format is described in the man page of cdrdao.
 """
 
 import re
@@ -93,7 +93,8 @@ _INDEX_RE = re.compile(r"""
 
 class Sources:
     """
-    I represent the list of sources used in the .toc file.
+    Represent the list of sources used in the .toc file.
+
     Each SILENCE and each FILE is a source.
     If the filename for FILE doesn't change, the counter is not increased.
     """
@@ -103,19 +104,22 @@ class Sources:
 
     def append(self, counter, offset, source):
         """
+        Append ``(counter, offset, source)`` tuple to the ``sources`` list.
+
         :param counter: the source counter; updates for each different
                         data source (silence or different file path)
-        :type  counter: int
-        :param offset:  the absolute disc offset where this source starts
+        :type counter: int
+        :param offset: the absolute disc offset where this source starts
+        :type offset: int
+        :param source: data source
+        :type source: File or None
         """
         logger.debug('appending source, counter %d, abs offset %d, '
                      'source %r', counter, offset, source)
         self._sources.append((counter, offset, source))
 
     def get(self, offset):
-        """
-        Retrieve the source used at the given offset.
-        """
+        """Retrieve the source used at the given offset."""
         for i, (_, o, _) in enumerate(self._sources):
             if offset < o:
                 return self._sources[i - 1]
@@ -124,7 +128,11 @@ class Sources:
 
     def getCounterStart(self, counter):
         """
-        Retrieve the absolute offset of the first source for this counter
+        Retrieve the absolute offset of the first source for this counter.
+
+        :param counter: the source counter; updates for each different
+                        data source (silence or different file path)
+        :type counter: int
         """
         for i, (c, _, _) in enumerate(self._sources):
             if c == counter:
@@ -137,7 +145,10 @@ class TocFile:
 
     def __init__(self, path):
         """
-        :type  path: str
+        Init TocFile.
+
+        :param path: path to track
+        :type path: str
         """
         assert isinstance(path, str), "%r is not str" % path
         self._path = path
@@ -379,14 +390,19 @@ class TocFile:
         """
         Add a message about a given line in the cue file.
 
-        :param number: line number, counting from 0.
+        :param number: line number, counting from 0
+        :type number: int
+        :param message: a text line in the cue sheet
+        :type message: str
         """
         self._messages.append((number + 1, message))
 
     def getTrackLength(self, track):
         """
-        Returns the length of the given track, from its INDEX 01 to the next
-        track's INDEX 01
+        Return the length of the given track, in CD frames.
+
+        The track length is calculated from its INDEX 01 to the next
+        track's INDEX 01.
         """
         # returns track length in frames, or -1 if can't be determined and
         # complete file should be assumed
@@ -411,22 +427,25 @@ class TocFile:
         """
         Translate the .toc's FILE to an existing path.
 
-        :type  path: str
+        :param path: path to track
+        :type path: str
         """
         return common.getRealPath(self._path, path)
 
 
 class File:
-    """
-    I represent a FILE line in a .toc file.
-    """
+    """Represent a FILE line in a .toc file."""
 
     def __init__(self, path, start, length):
         """
-        :type  path:   str
-        :type  start:  int
-        :param start:  starting point for the track in this file, in frames
+        Init File.
+
+        :param path: path to track
+        :type path: unicode
+        :param start: starting point for the track in this file, in frames
+        :type start: int
         :param length: length for the track in this file, in frames
+        :type length: int
         """
         assert isinstance(path, str), "%r is not str" % path
 

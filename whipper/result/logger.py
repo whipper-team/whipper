@@ -17,13 +17,11 @@ class WhipperLogger(result.Logger):
     _errors = False
 
     def log(self, ripResult, epoch=time.time()):
-        """Returns big str: logfile joined text lines"""
-
+        """Return logfile as string."""
         return self.logRip(ripResult, epoch)
 
     def logRip(self, ripResult, epoch):
-        """Returns logfile lines list"""
-
+        """Return logfile as list of lines."""
         riplog = OrderedDict()
 
         # Ripper version
@@ -189,8 +187,7 @@ class WhipperLogger(result.Logger):
         return riplog
 
     def trackLog(self, trackResult):
-        """Returns Tracks section lines: data picked from trackResult"""
-
+        """Return Tracks section lines: data picked from trackResult."""
         track = OrderedDict()
 
         # Filename (including path) of ripped track

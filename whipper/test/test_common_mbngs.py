@@ -158,10 +158,10 @@ class MetadataTestCase(unittest.TestCase):
 
     def testUnknownArtist(self):
         """
-        check the received metadata for artists tagged with [unknown]
-        and artists tagged with an alias in MusicBrainz
+        Check the received metadata for artists tagged with [unknown]
+        and artists tagged with an alias in MusicBrainz.
 
-        see https://github.com/whipper-team/whipper/issues/155
+        See https://github.com/whipper-team/whipper/issues/155
         """
         # Using: CunninLynguists - Sloppy Seconds, Volume 1
         # https://musicbrainz.org/release/8478d4da-0cda-4e46-ae8c-1eeacfa5cf37
@@ -199,8 +199,8 @@ class MetadataTestCase(unittest.TestCase):
 
     def testNenaAndKimWildSingle(self):
         """
-        check the received metadata for artists that differ between
-        named on release and named in recording
+        Check the received metadata for artists that differ between
+        named on release and named in recording.
         """
         filename = 'whipper.release.f484a9fc-db21-4106-9408-bcd105c90047.json'
         path = os.path.join(os.path.dirname(__file__), filename)

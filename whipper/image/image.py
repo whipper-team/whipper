@@ -18,9 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
-"""
-Wrap on-disk CD images based on the .cue file.
-"""
+"""Wrap on-disk CD images based on the .cue file."""
 
 import os
 
@@ -36,15 +34,19 @@ logger = logging.getLogger(__name__)
 
 class Image:
     """
-    :ivar table:    The Table of Contents for this image.
+    Represent a CD image based on the .cue file.
+
+    :ivar table: The Table of Contents for this image
     :vartype table: table.Table
     """
     logCategory = 'Image'
 
     def __init__(self, path):
         """
-        :type  path: str
+        Init Image.
+
         :param path: .cue path
+        :type path: str
         """
         assert isinstance(path, str), "%r is not str" % path
 
@@ -61,6 +63,7 @@ class Image:
         Translate the .cue's FILE to an existing path.
 
         :param path: .cue path
+        :type path: unicode
         """
         assert isinstance(path, str), "%r is not str" % path
 
@@ -68,8 +71,10 @@ class Image:
 
     def setup(self, runner):
         """
-        Do initial setup, like figuring out track lengths, and
-        constructing the Table of Contents.
+        Perform initial setup.
+
+        Like figuring out track lengths, and constructing
+        the Table of Contents.
         """
         logger.debug('setup image start')
         verify = ImageVerifyTask(self)
@@ -108,9 +113,7 @@ class Image:
 
 
 class ImageVerifyTask(task.MultiSeparateTask):
-    """
-    I verify a disk image and get the necessary track lengths.
-    """
+    """Verify a disk image and get the necessary track lengths."""
 
     logCategory = 'ImageVerifyTask'
 
@@ -174,9 +177,7 @@ class ImageVerifyTask(task.MultiSeparateTask):
 
 
 class ImageEncodeTask(task.MultiSeparateTask):
-    """
-    I encode a disk image to a different format.
-    """
+    """Encode a disk image to a different format."""
 
     description = "Encoding tracks"
 

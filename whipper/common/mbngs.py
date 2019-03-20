@@ -18,9 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
-"""
-Handles communication with the MusicBrainz server using NGS.
-"""
+"""Handle communication with the MusicBrainz server using NGS."""
 from urllib.error import HTTPError
 
 import whipper
@@ -62,16 +60,19 @@ class TrackMetadata:
 
 class DiscMetadata:
     """
-    :param artist:       artist(s) name
-    :param sortName:     release artist sort name
-    :param release:      earliest release date, in YYYY-MM-DD
-    :type  release:      str
-    :param title:        title of the disc (with disambiguation)
-    :param releaseTitle: title of the release (without disambiguation)
-    :type  tracks:       list of :any:`TrackMetadata`
-    :param countries:    MusicBrainz release countries
-    :type  countries:    list or None
+    Represent the disc metadata.
+
+    :cvar artist: artist(s) name
+    :cvar sortName: release artist sort name
+    :cvar release: earliest release date, in YYYY-MM-DD
+    :vartype release: str
+    :cvar title: title of the disc (with disambiguation)
+    :cvar releaseTitle: title of the release (without disambiguation)
+    :vartype tracks: list of :any:`TrackMetadata`
+    :cvar countries: MusicBrainz release countries
+    :vartype countries: list or None
     """
+
     artist = None
     sortName = None
     title = None
@@ -123,10 +124,7 @@ def _record(record, which, name, what):
 
 
 class _Credit(list):
-    """
-    I am a representation of an artist-credit in MusicBrainz for a disc
-    or track.
-    """
+    """Represent an artist-credit in MusicBrainz for a disc or track."""
 
     def joiner(self, attributeGetter, joinString=None):
         res = []
@@ -217,10 +215,11 @@ def _getPerformers(recording):
 
 def _getMetadata(release, discid=None, country=None):
     """
-    :type  release: dict
+    Get disc metadata based upon the provided release id.
+
     :param release: a release dict as returned in the value for key release
                     from get_release_by_id
-
+    :type release: dict
     :rtype: DiscMetadata or None
     """
     logger.debug('getMetadata for release id %r', release['id'])
@@ -378,14 +377,16 @@ def getReleaseMetadata(release_id, discid=None, country=None, record=False):
 
 def musicbrainz(discid, country=None, record=False):
     """
-    Based on a MusicBrainz disc id, get a list of DiscMetadata objects
-    for the given disc id.
+    Get a list of DiscMetadata objects for the given MusicBrainz disc id.
 
-    Example disc id: Mj48G109whzEmAbPBoGvd4KyCS4-
+    Example disc id: ``Mj48G109whzEmAbPBoGvd4KyCS4-``
 
-    :type  discid: str
-
+    :type discid: str
     :rtype: list of :any:`DiscMetadata`
+    :param country: country name used to filter releases by provenance
+    :type country: str
+    :param record: whether to record to disc as a JSON serialization
+    :type record: bool
     """
     logger.debug('looking up results for discid %r', discid)
 
