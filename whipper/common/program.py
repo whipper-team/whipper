@@ -44,12 +44,11 @@ class Program:
     """
     I maintain program state and functionality.
 
-    @ivar metadata:
-    @type metadata: L{mbngs.DiscMetadata}
-    @ivar result:   the rip's result
-    @type result:   L{result.RipResult}
-    @type outdir:   unicode
-    @type config:   L{whipper.common.config.Config}
+    :vartype metadata: mbngs.DiscMetadata
+    :cvar result:      the rip's result
+    :vartype result:   result.RipResult
+    :vartype outdir:   unicode
+    :vartype config:   whipper.common.config.Config
     """
 
     cuePath = None
@@ -60,7 +59,7 @@ class Program:
 
     def __init__(self, config, record=False):
         """
-        @param record: whether to record results of API calls for playback.
+        :param record: whether to record results of API calls for playback.
         """
         self._record = record
         self._cache = cache.ResultCache()
@@ -109,7 +108,7 @@ class Program:
         """
         Retrieve the Table either from the cache or the drive.
 
-        @rtype: L{table.Table}
+        :rtype: table.Table
         """
         tcache = cache.TableCache()
         ptable = tcache.get(cddbdiscid, mbdiscid)
@@ -153,7 +152,7 @@ class Program:
         Retrieve the persistable RipResult either from our cache (from a
         previous, possibly aborted rip), or return a new one.
 
-        @rtype: L{result.RipResult}
+        :rtype: result.RipResult
         """
         assert self.result is None
 
@@ -247,9 +246,9 @@ class Program:
     @staticmethod
     def getCDDB(cddbdiscid):
         """
-        @param cddbdiscid: list of id, tracks, offsets, seconds
+        :param cddbdiscid: list of id, tracks, offsets, seconds
 
-        @rtype: str
+        :rtype: str
         """
         # FIXME: convert to nonblocking?
         try:
@@ -272,7 +271,7 @@ class Program:
     def getMusicBrainz(self, ittoc, mbdiscid, release=None, country=None,
                        prompt=False):
         """
-        @type  ittoc: L{whipper.image.table.Table}
+        :type  ittoc: whipper.image.table.Table
         """
         # look up disc on MusicBrainz
         print('Disc duration: %s, %d audio tracks' % (
@@ -392,10 +391,10 @@ class Program:
         """
         Based on the metadata, get a dict of tags for the given track.
 
-        @param number:   track number (0 for HTOA)
-        @type  number:   int
+        :param number:   track number (0 for HTOA)
+        :type  number:   int
 
-        @rtype: dict
+        :rtype: dict
         """
         trackArtist = u'Unknown Artist'
         releaseArtist = u'Unknown Artist'
@@ -461,7 +460,7 @@ class Program:
         """
         Check if we have hidden track one audio.
 
-        @returns: tuple of (start, stop), or None
+        :returns: tuple of (start, stop), or None
         """
         track = self.result.table.tracks[0]
         try:
@@ -498,8 +497,8 @@ class Program:
         Ripping the track may change the track's filename as stored in
         trackResult.
 
-        @param trackResult: the object to store information in.
-        @type  trackResult: L{result.TrackResult}
+        :param trackResult: the object to store information in.
+        :type  trackResult: result.TrackResult
         """
         if trackResult.number == 0:
             start, stop = self.getHTOA()

@@ -69,12 +69,12 @@ class ReadTOCTask(task.Task):
         """
         Read the TOC for 'device'.
 
-        @param device:  block device to read TOC from
-        @type  device:  str
-        @param fast_toc:  If to use fast-toc cdrdao mode
-        @type  fast_toc: bool
-        @param toc_path: Where to save TOC if wanted.
-        @type  toc_path: str
+        :param device:  block device to read TOC from
+        :type  device:  str
+        :param fast_toc:  If to use fast-toc cdrdao mode
+        :type  fast_toc: bool
+        :param toc_path: Where to save TOC if wanted.
+        :type  toc_path: str
         """
 
         self.device = device

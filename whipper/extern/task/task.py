@@ -97,8 +97,8 @@ class Task(LogStub):
     stopping myself from running.
     The listener can then handle the Task.exception.
 
-    @ivar  description: what am I doing
-    @ivar  exception:   set if an exception happened during the task
+    :cvar  description: what am I doing
+    :cvar  exception:   set if an exception happened during the task
                         execution.  Will be raised through run() at the end.
     """
     logCategory = 'Task'
@@ -254,16 +254,16 @@ class ITaskListener(object):
         """
         Implement me to be informed about progress.
 
-        @type  value: float
-        @param value: progress, from 0.0 to 1.0
+        :type  value: float
+        :param value: progress, from 0.0 to 1.0
         """
 
     def described(self, task, description):
         """
         Implement me to be informed about description changes.
 
-        @type  description: str
-        @param description: description
+        :type  description: str
+        :param description: description
         """
 
     def started(self, task):
@@ -298,8 +298,8 @@ class BaseMultiTask(Task, ITaskListener):
     """
     I perform multiple tasks.
 
-    @ivar tasks: the tasks to run
-    @type tasks: list of L{Task}
+    :ivar tasks: the tasks to run
+    :type tasks: list of :any:`Task`
     """
 
     description = 'Doing various tasks'
@@ -313,7 +313,7 @@ class BaseMultiTask(Task, ITaskListener):
         """
         Add a task.
 
-        @type task: L{Task}
+        :type task: Task
         """
         if self.tasks is None:
             self.tasks = []
@@ -446,7 +446,7 @@ class TaskRunner(LogStub):
         """
         Run the given task.
 
-        @type  task: Task
+        :type  task: Task
         """
         raise NotImplementedError
 
@@ -457,8 +457,8 @@ class TaskRunner(LogStub):
 
         Subclasses should implement this.
 
-        @type  delta: float
-        @param delta: time in the future to schedule call for, in seconds.
+        :type  delta: float
+        :param delta: time in the future to schedule call for, in seconds.
         """
         raise NotImplementedError
 

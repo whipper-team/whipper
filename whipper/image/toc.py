@@ -104,10 +104,10 @@ class Sources:
 
     def append(self, counter, offset, source):
         """
-        @param counter: the source counter; updates for each different
+        :param counter: the source counter; updates for each different
                         data source (silence or different file path)
-        @type  counter: int
-        @param offset:  the absolute disc offset where this source starts
+        :type  counter: int
+        :param offset:  the absolute disc offset where this source starts
         """
         logger.debug('appending source, counter %d, abs offset %d, '
                      'source %r', counter, offset, source)
@@ -138,7 +138,7 @@ class TocFile(object):
 
     def __init__(self, path):
         """
-        @type  path: unicode
+        :type  path: unicode
         """
         assert isinstance(path, unicode), "%r is not unicode" % path
         self._path = path
@@ -380,7 +380,7 @@ class TocFile(object):
         """
         Add a message about a given line in the cue file.
 
-        @param number: line number, counting from 0.
+        :param number: line number, counting from 0.
         """
         self._messages.append((number + 1, message))
 
@@ -412,7 +412,7 @@ class TocFile(object):
         """
         Translate the .toc's FILE to an existing path.
 
-        @type  path: unicode
+        :type  path: unicode
         """
         return common.getRealPath(self._path, path)
 
@@ -424,10 +424,10 @@ class File:
 
     def __init__(self, path, start, length):
         """
-        @type  path:   C{unicode}
-        @type  start:  C{int}
-        @param start:  starting point for the track in this file, in frames
-        @param length: length for the track in this file, in frames
+        :type  path:   unicode
+        :type  start:  int
+        :param start:  starting point for the track in this file, in frames
+        :param length: length for the track in this file, in frames
         """
         assert isinstance(path, unicode), "%r is not unicode" % path
 
