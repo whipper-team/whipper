@@ -102,10 +102,10 @@ class Whipper(BaseCommand):
                                  help="show this help message and exit")
         self.parser.add_argument('-e', '--eject',
                                  action="store", dest="eject",
-                                 default="always",
+                                 default="success",
                                  choices=('never', 'failure',
                                           'success', 'always'),
-                                 help="when to eject disc (default: always)")
+                                 help="when to eject disc (default: success)")
 
     def handle_arguments(self):
         if self.options.help:
