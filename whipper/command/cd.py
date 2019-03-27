@@ -134,14 +134,19 @@ class _CD(BaseCommand):
             return -1
 
         # Change working directory before cdrdao's task
-        if self.options.working_directory is not None:
+        if getattr(self.options, 'working_directory', False):
             os.chdir(os.path.expanduser(self.options.working_directory))
-        out_bpath = self.options.output_directory.decode('utf-8')
-        # Needed to preserve cdrdao's tocfile
-        out_fpath = self.program.getPath(out_bpath,
-                                         self.options.disc_template,
-                                         self.mbdiscid,
-                                         self.program.metadata)
+
+        if hasattr(self.options, 'output_directory'):
+            out_bpath = self.options.output_directory.decode('utf-8')
+            # Needed to preserve cdrdao's tocfile
+            out_fpath = self.program.getPath(out_bpath,
+                                             self.options.disc_template,
+                                             self.mbdiscid,
+                                             self.program.metadata)
+        else:
+            out_fpath = None
+
         # now, read the complete index table, which is slower
         self.itable = self.program.getTable(self.runner,
                                             self.ittoc.getCDDBDiscId(),
