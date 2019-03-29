@@ -163,7 +163,7 @@ class _CD(BaseCommand):
 
         # result
 
-        self.program.result.cdrdaoVersion = cdrdao.getCDRDAOVersion()
+        self.program.result.cdrdaoVersion = cdrdao.version()
         self.program.result.cdparanoiaVersion = \
             cdparanoia.getCdParanoiaVersion()
         info = drive.getDeviceInfo(self.device)

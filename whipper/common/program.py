@@ -92,7 +92,7 @@ class Program:
         Also warn about buggy cdrdao versions.
         """
         from pkg_resources import parse_version as V
-        version = cdrdao.getCDRDAOVersion()
+        version = cdrdao.version()
         if V(version) < V('1.2.3rc2'):
             logger.warning('cdrdao older than 1.2.3 has a pre-gap length bug.'
                            ' See http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=102171')  # noqa: E501

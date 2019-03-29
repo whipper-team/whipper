@@ -188,10 +188,3 @@ def version():
                        "could not find version")
         return None
     return m.group('version')
-
-
-def getCDRDAOVersion():
-    """
-    stopgap morituri-insanity compatibility layer
-    """
-    return version()

@@ -9,7 +9,7 @@ from whipper.test import common
 
 class VersionTestCase(common.TestCase):
     def testGetVersion(self):
-        v = cdrdao.getCDRDAOVersion()
+        v = cdrdao.version()
         self.assertTrue(v)
         # make sure it starts with a digit
         self.assertTrue(int(v[0]))
