@@ -142,6 +142,8 @@ Some dependencies aren't available in the PyPI. They can be probably installed u
 - [libsndfile](http://www.mega-nerd.com/libsndfile/)
 - [flac](https://xiph.org/flac/)
 - [sox](http://sox.sourceforge.net/)
+- [git](https://git-scm.com/) or [mercurial](https://www.mercurial-scm.org/)
+  - Required either when running whipper without installing it or when building it from its source code (code cloned from a git/mercurial repository).
 
 PyPI installable dependencies are listed in the [requirements.txt](https://github.com/whipper-team/whipper/blob/master/requirements.txt) file and can be installed issuing the following command:
 
