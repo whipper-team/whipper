@@ -84,7 +84,7 @@ It's recommended to create an alias for a convenient usage:
 alias whipper="docker run -ti --rm --device=/dev/cdrom \
     -v ~/.config/whipper:/home/worker/.config/whipper \
     -v ${PWD}/output:/output \
-    whipper/whipper"
+    joelametta/whipper"
 ```
 
 You should put this e.g. into your `.bash_aliases`. Also keep in mind to substitute the path definitions to something that fits to your needs (e.g. replace `… -v ${PWD}/output:/output …` with `… -v ${HOME}/ripped:/output \ …`).
