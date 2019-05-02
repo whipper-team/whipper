@@ -182,7 +182,10 @@ def _getMetadata(release, discid, country=None):
 
     discMD = DiscMetadata()
 
-    discMD.releaseType = release['release-group']['type']
+    if 'type' in release['release-group']:
+        discMD.releaseType = release['release-group']['type']
+    else:
+        discMD.releaseType = u''
     discCredit = _Credit(release['artist-credit'])
 
     # FIXME: is there a better way to check for VA ?
