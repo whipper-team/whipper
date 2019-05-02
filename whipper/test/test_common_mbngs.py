@@ -1,5 +1,5 @@
 # -*- Mode: Python; test-case-name: whipper.test.test_common_mbngs -*-
-# vi:si:et:sw=4:sts=4:ts=4
+# vi:si:et:sw=4:sts=4:ts=4:set fileencoding=utf-8
 
 import os
 import json
@@ -206,6 +206,20 @@ class MetadataTestCase(unittest.TestCase):
                          u'f16db4bf-9a34-3d5a-a975-c9375ab7a2ca')
         self.assertEqual(track2.mbidRecording,
                          u'5f19758e-7421-4c71-a599-9a9575d8e1b0')
+
+    def testMissingReleaseGroupType(self):
+        """Check that whipper doesn't break if there's no type."""
+        # Using: Gustafsson, Österberg & Cowle - What's Up? 8 (disc 4)
+        # https://musicbrainz.org/release/d8e6153a-2c47-4804-9d73-0aac1081c3b1
+        filename = 'whipper.release.d8e6153a-2c47-4804-9d73-0aac1081c3b1.json'
+        path = os.path.join(os.path.dirname(__file__), filename)
+        handle = open(path, "rb")
+        response = json.loads(handle.read())
+        handle.close()
+        discid = "xu338_M8WukSRi0J.KTlDoflB8Y-"  # disc 4
+
+        metadata = mbngs._getMetadata(response['release'], discid)
+        self.assertEqual(metadata.releaseType, u'')
 
     def testAllAvailableMetadata(self):
         """Check that all possible metadata gets assigned."""
