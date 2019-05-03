@@ -412,8 +412,9 @@ Thanks to:
 
 - [Thomas Vander Stichele](https://github.com/thomasvs)
 - [Joe Lametta](https://github.com/JoeLametta)
-- [Merlijn Wajer](https://github.com/MerlijnWajer)
 - [Samantha Baldwin](https://github.com/RecursiveForest)
+- [Frederik “Freso” S. Olesen](https://github.com/Freso)
+- [Merlijn Wajer](https://github.com/MerlijnWajer)
 
 And to all the [contributors](https://github.com/whipper-team/whipper/graphs/contributors).
 
