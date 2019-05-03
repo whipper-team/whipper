@@ -219,7 +219,7 @@ class MetadataTestCase(unittest.TestCase):
         discid = "xu338_M8WukSRi0J.KTlDoflB8Y-"  # disc 4
 
         metadata = mbngs._getMetadata(response['release'], discid)
-        self.assertEqual(metadata.releaseType, u'')
+        self.assertEqual(metadata.releaseType, None)
 
     def testAllAvailableMetadata(self):
         """Check that all possible metadata gets assigned."""
