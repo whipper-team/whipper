@@ -19,9 +19,6 @@ install:
     - pip install --upgrade -qq pip setuptools
     - sudo apt-get -qq install cdparanoia cdrdao flac gir1.2-glib-2.0 libcdio-dev libgirepository1.0-dev libiso9660-dev libsndfile1-dev sox swig libcdio-utils
 
-    # Testing dependencies
-    - pip install twisted flake8
-
     # Build bundled C utils
     - cd src
     - sudo make install
@@ -31,5 +28,5 @@ install:
     - python setup.py install
 
 script:
-    - if [ ! "$FLAKE8" = true ]; then python -m unittest discover; fi
-    - if [ "$FLAKE8" = true ]; then flake8 --benchmark --statistics; fi
+    - if [ ! "$FLAKE8" = true ]; then pip install .[test] && python -m unittest discover; fi
+    - if [ "$FLAKE8" = true ]; then pip install .[lint] && flake8 --benchmark --statistics; fi

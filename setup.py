@@ -18,6 +18,10 @@ setup(
         'PyGObject',
         'requests',
     ],
+    extras_require={
+        'test': ['twisted'],
+        'lint': ['flake8'],
+    },
     entry_points={
         'console_scripts': [
             'whipper = whipper.command.main:main'
