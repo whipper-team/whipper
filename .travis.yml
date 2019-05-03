@@ -27,7 +27,7 @@ install:
     - cd ..
 
     # Installing
-    - python setup.py install
+    - pip install .
 
 script:
     - if [ ! "$FLAKE8" = true ]; then pip install .[test] && python -m unittest discover; fi
