@@ -26,4 +26,16 @@ setup(
     data_files=[
         ('share/metainfo', ['com.github.whipper_team.Whipper.metainfo.xml']),
     ],
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Environment :: Console',
+        'Intended Audience :: End Users/Desktop',
+        'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',  # noqa: E501
+        'Natural Language :: English',
+        'Operating System :: POSIX :: Linux',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 2 :: Only',
+        'Topic :: Multimedia :: Sound/Audio :: CD Audio :: CD Ripping',
+    ],
 )
