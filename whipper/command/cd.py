@@ -186,7 +186,8 @@ class _CD(BaseCommand):
 
         self.doCommand()
 
-        if self.options.eject in ('success', 'always'):
+        if (self.options.eject == 'success' and self.eject or
+                self.options.eject == 'always'):
             utils.eject_device(self.device)
 
         return None
