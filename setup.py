@@ -11,6 +11,13 @@ setup(
     python_requires='>=2.7,<3',
     packages=find_packages(),
     setup_requires=['setuptools_scm'],
+    install_requires=[
+        'musicbrainzngs',
+        'mutagen',
+        'pycdio>0.20',
+        'PyGObject',
+        'requests',
+    ],
     entry_points={
         'console_scripts': [
             'whipper = whipper.command.main:main'
