@@ -13,7 +13,7 @@ class AudioLengthTask(ctask.PopenTask):
     """
     I calculate the length of a track in audio samples.
 
-    @ivar  length: length of the decoded audio file, in audio samples.
+    :cvar  length: length of the decoded audio file, in audio samples.
     """
     logCategory = 'AudioLengthTask'
     description = 'Getting length of audio track'
@@ -21,7 +21,7 @@ class AudioLengthTask(ctask.PopenTask):
 
     def __init__(self, path):
         """
-        @type  path: unicode
+        :type  path: unicode
         """
         assert isinstance(path, unicode), "%r is not unicode" % path
 

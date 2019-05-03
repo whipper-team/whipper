@@ -57,17 +57,18 @@ class Track:
     """
     I represent a track entry in an Table.
 
-    @ivar number:       track number (1-based)
-    @type number:       int
-    @ivar audio:        whether the track is audio
-    @type audio:        bool
-    @type indexes:      dict of number -> L{Index}
-    @ivar isrc:         ISRC code (12 alphanumeric characters)
-    @type isrc:         str
-    @ivar cdtext:       dictionary of CD Text information; see L{CDTEXT_KEYS}.
-    @type cdtext:       str -> unicode
-    @ivar pre_emphasis: whether track is pre-emphasised
-    @type pre_emphasis: bool
+    :cvar number:          track number (1-based)
+    :vartype number:       int
+    :cvar audio:           whether the track is audio
+    :vartype audio:        bool
+    :vartype indexes:      dict of number -> :any:`Index`
+    :cvar isrc:            ISRC code (12 alphanumeric characters)
+    :vartype isrc:         str
+    :cvar cdtext:          dictionary of CD Text information;
+                           :any:`see CDTEXT_KEYS`
+    :vartype cdtext:       str -> unicode
+    :cvar pre_emphasis:    whether track is pre-emphasised
+    :vartype pre_emphasis: bool
     """
 
     number = None
@@ -90,7 +91,7 @@ class Track:
     def index(self, number, absolute=None, path=None, relative=None,
               counter=None):
         """
-        @type path:  unicode or None
+        :type path:  unicode or None
         """
         if path is not None:
             assert isinstance(path, unicode), "%r is not unicode" % path
@@ -130,9 +131,9 @@ class Track:
 
 class Index:
     """
-    @ivar counter: counter for the index source; distinguishes between
+    :cvar counter: counter for the index source; distinguishes between
                    the matching FILE lines in .cue files for example
-    @type path:    unicode or None
+    :vartype path:    unicode or None
     """
     number = None
     absolute = None
@@ -161,11 +162,11 @@ class Table(object):
     """
     I represent a table of indexes on a CD.
 
-    @ivar tracks:  tracks on this CD
-    @type tracks:  list of L{Track}
-    @ivar catalog: catalog number
-    @type catalog: str
-    @type cdtext:  dict of str -> str
+    :cvar tracks:     tracks on this CD
+    :vartype tracks:  list of :any:`Track`
+    :cvar catalog:    catalog number
+    :vartype catalog: str
+    :vartype cdtext:  dict of str -> str
     """
 
     tracks = None  # list of Track
@@ -193,22 +194,22 @@ class Table(object):
 
     def getTrackStart(self, number):
         """
-        @param number: the track number, 1-based
-        @type  number: int
+        :param number: the track number, 1-based
+        :type  number: int
 
-        @returns: the start of the given track number's index 1, in CD frames
-        @rtype:   int
+        :returns: the start of the given track number's index 1, in CD frames
+        :rtype:   int
         """
         track = self.tracks[number - 1]
         return track.getIndex(1).absolute
 
     def getTrackEnd(self, number):
         """
-        @param number: the track number, 1-based
-        @type  number: int
+        :param number: the track number, 1-based
+        :type  number: int
 
-        @returns: the end of the given track number (ie index 1 of next track)
-        @rtype:   int
+        :returns: the end of the given track number (ie index 1 of next track)
+        :rtype:   int
         """
         # default to end of disc
         end = self.leadout - 1
@@ -228,24 +229,24 @@ class Table(object):
 
     def getTrackLength(self, number):
         """
-        @param number: the track number, 1-based
-        @type  number: int
+        :param number: the track number, 1-based
+        :type  number: int
 
-        @returns: the length of the given track number, in CD frames
-        @rtype:   int
+        :returns: the length of the given track number, in CD frames
+        :rtype:   int
         """
         return self.getTrackEnd(number) - self.getTrackStart(number) + 1
 
     def getAudioTracks(self):
         """
-        @returns: the number of audio tracks on the CD
-        @rtype:   int
+        :returns: the number of audio tracks on the CD
+        :rtype:   int
         """
         return len([t for t in self.tracks if t.audio])
 
     def hasDataTracks(self):
         """
-        @returns: whether this disc contains data tracks
+        :returns: whether this disc contains data tracks
         """
         return len([t for t in self.tracks if not t.audio]) > 0
 
@@ -268,7 +269,7 @@ class Table(object):
          - offset of index 1 of each track
          - length of disc in seconds (including data track)
 
-        @rtype:   list of int
+        :rtype:   list of int
         """
         offsets = []
 
@@ -320,8 +321,8 @@ class Table(object):
         """
         Calculate the CDDB disc ID.
 
-        @rtype:   str
-        @returns: the 8-character hexadecimal disc ID
+        :rtype:   str
+        :returns: the 8-character hexadecimal disc ID
         """
         values = self.getCDDBValues()
         return "%08x" % int(values)
@@ -330,8 +331,8 @@ class Table(object):
         """
         Calculate the MusicBrainz disc ID.
 
-        @rtype:   str
-        @returns: the 28-character base64-encoded disc ID
+        :rtype:   str
+        :returns: the 28-character base64-encoded disc ID
         """
         if self.mbdiscid:
             logger.debug('getMusicBrainzDiscId: returning cached %r',
@@ -401,7 +402,7 @@ class Table(object):
         """
         Get the length in frames (excluding HTOA)
 
-        @param data: whether to include the data tracks in the length
+        :param data: whether to include the data tracks in the length
         """
         # the 'real' leadout, not offset by 150 frames
         if data:
@@ -431,7 +432,7 @@ class Table(object):
          - leadout of disc
          - offset of index 1 of each track
 
-        @rtype:   list of int
+        :rtype:   list of int
         """
         # MusicBrainz disc id does not take into account data tracks
 
@@ -470,13 +471,13 @@ class Table(object):
 
     def cue(self, cuePath='', program='whipper'):
         """
-        @param cuePath: path to the cue file to be written. If empty,
+        :param cuePath: path to the cue file to be written. If empty,
                         will treat paths as if in current directory.
 
 
         Dump our internal representation to a .cue file content.
 
-        @rtype: C{unicode}
+        :rtype: unicode
         """
         logger.debug('generating .cue for cuePath %r', cuePath)
 
@@ -633,8 +634,8 @@ class Table(object):
 
         Assumes all indexes have an absolute offset and will raise if not.
 
-        @type  track: C{int}
-        @type  index: C{int}
+        :type  track: int
+        :type  index: int
         """
         logger.debug('setFile: track %d, index %d, path %r, length %r, '
                      'counter %r', track, index, path, length, counter)
@@ -704,7 +705,7 @@ class Table(object):
         The other table is assumed to be from an additional session,
 
 
-        @type  other: L{Table}
+        :type  other: Table
         """
         gap = self._getSessionGap(session)
 
@@ -751,11 +752,11 @@ class Table(object):
         """
         Return the next track and index.
 
-        @param track: track number, 1-based
+        :param track: track number, 1-based
 
-        @raises IndexError: on last index
+        :raises IndexError: on last index
 
-        @rtype: tuple of (int, int)
+        :rtype: tuple of (int, int)
         """
         t = self.tracks[track - 1]
         indexes = list(t.indexes)

@@ -69,18 +69,18 @@ class RipResult:
     I hold information about the result for rips.
     I can be used to write log files.
 
-    @ivar offset: sample read offset
-    @ivar table:  the full index table
-    @type table:  L{whipper.image.table.Table}
-    @ivar metadata: disc metadata from MusicBrainz (if available)
-    @type metadata: L{whipper.common.mbngs.DiscMetadata}
+    :cvar offset: sample read offset
+    :cvar table:  the full index table
+    :vartype table:  whipper.image.table.Table
+    :cvar metadata: disc metadata from MusicBrainz (if available)
+    :vartype metadata: whipper.common.mbngs.DiscMetadata
 
-    @ivar vendor:  vendor of the CD drive
-    @ivar model:   model of the CD drive
-    @ivar release: release of the CD drive
+    :cvar vendor:  vendor of the CD drive
+    :cvar model:   model of the CD drive
+    :cvar release: release of the CD drive
 
-    @ivar cdrdaoVersion:     version of cdrdao used for the rip
-    @ivar cdparanoiaVersion: version of cdparanoia used for the rip
+    :cvar cdrdaoVersion:     version of cdrdao used for the rip
+    :cvar cdparanoiaVersion: version of cdparanoia used for the rip
     """
 
     offset = 0
@@ -107,10 +107,10 @@ class RipResult:
 
     def getTrackResult(self, number):
         """
-        @param number: the track number (0 for HTOA)
+        :param number: the track number (0 for HTOA)
 
-        @type  number: int
-        @rtype: L{TrackResult}
+        :type  number: int
+        :rtype: TrackResult
         """
         for t in self.tracks:
             if t.number == number:
@@ -128,11 +128,11 @@ class Logger(object):
         """
         Create a log from the given ripresult.
 
-        @param epoch:     when the log file gets generated
-        @type  epoch:     float
-        @type  ripResult: L{RipResult}
+        :param epoch:     when the log file gets generated
+        :type  epoch:     float
+        :type  ripResult: RipResult
 
-        @rtype: str
+        :rtype: str
         """
         raise NotImplementedError
 
@@ -153,7 +153,7 @@ def getLoggers():
     """
     Get all logger plugins with entry point 'whipper.logger'.
 
-    @rtype: dict of C{str} -> C{Logger}
+    :rtype: dict of :class:`str` -> :any:`Logger`
     """
     d = {}
 

@@ -39,7 +39,7 @@ class Persister:
     Call persist to store the object to disk; it will get stored if it
     changed from the on-disk object.
 
-    @ivar object: the persistent object
+    :ivar object: the persistent object
     """
 
     def __init__(self, path=None, default=None):
@@ -162,7 +162,7 @@ class ResultCache:
         Retrieve the persistable RipResult either from our cache (from a
         previous, possibly aborted rip), or return a new one.
 
-        @rtype: L{Persistable} for L{result.RipResult}
+        :rtype: :any:`Persistable` for :any:`result.RipResult`
         """
         presult = self._pcache.get(cddbdiscid)
 

@@ -36,15 +36,15 @@ logger = logging.getLogger(__name__)
 
 class Image(object):
     """
-    @ivar table: The Table of Contents for this image.
-    @type table: L{table.Table}
+    :ivar table:    The Table of Contents for this image.
+    :vartype table: table.Table
     """
     logCategory = 'Image'
 
     def __init__(self, path):
         """
-        @type  path: unicode
-        @param path: .cue path
+        :type  path: unicode
+        :param path: .cue path
         """
         assert isinstance(path, unicode), "%r is not unicode" % path
 
@@ -60,7 +60,7 @@ class Image(object):
         """
         Translate the .cue's FILE to an existing path.
 
-        @param path: .cue path
+        :param path: .cue path
         """
         assert isinstance(path, unicode), "%r is not unicode" % path
 
