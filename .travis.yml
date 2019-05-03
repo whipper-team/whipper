@@ -18,6 +18,8 @@ install:
     - sudo apt-get -qq update
     - pip install --upgrade -qq pip setuptools
     - sudo apt-get -qq install cdparanoia cdrdao flac gir1.2-glib-2.0 libcdio-dev libgirepository1.0-dev libiso9660-dev libsndfile1-dev sox swig libcdio-utils
+    # Additional dependencies for PyGObject
+    - sudo apt-get -qq install libglib2.0-dev libcairo2-dev libcairo2-dev libffi-dev
 
     # Build bundled C utils
     - cd src
