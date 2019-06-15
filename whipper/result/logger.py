@@ -40,26 +40,24 @@ class WhipperLogger(result.Logger):
         lines.append("  Extraction engine: cdparanoia %s" %
                      ripResult.cdparanoiaVersion)
         if ripResult.cdparanoiaDefeatsCache is None:
-            defeat = "Unknown"
+            defeat = "null"
         elif ripResult.cdparanoiaDefeatsCache:
-            defeat = "Yes"
+            defeat = "true"
         else:
-            defeat = "No"
+            defeat = "false"
         lines.append("  Defeat audio cache: %s" % defeat)
         lines.append("  Read offset correction: %+d" % ripResult.offset)
         # Currently unsupported by the official cdparanoia package
-        over = "No"
+        over = "false"
         # Only implemented in whipper (ripResult.overread)
         if ripResult.overread:
-            over = "Yes"
+            over = "true"
         lines.append("  Overread into lead-out: %s" % over)
         # Next one fully works only using the patched cdparanoia package
-        # lines.append("Fill up missing offset samples with silence: Yes")
+        # lines.append("Fill up missing offset samples with silence: true")
         lines.append("  Gap detection: cdrdao %s" % ripResult.cdrdaoVersion)
-        if ripResult.isCdr:
-            isCdr = "Yes"
-        else:
-            isCdr = "No"
+
+        isCdr = "true" if ripResult.isCdr else "false"
         lines.append("  CD-R detected: %s" % isCdr)
         lines.append("")
 
@@ -184,10 +182,7 @@ class WhipperLogger(result.Logger):
 
         # Pre-emphasis status
         # Only implemented in whipper (trackResult.pre_emphasis)
-        if trackResult.pre_emphasis:
-            preEmph = "Yes"
-        else:
-            preEmph = "No"
+        preEmph = "true" if trackResult.pre_emphasis else "false"
         lines.append("    Pre-emphasis: %s" % preEmph)
 
         # Extraction speed
