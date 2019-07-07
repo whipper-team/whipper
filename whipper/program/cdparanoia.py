@@ -566,6 +566,7 @@ def getCdParanoiaVersion():
 
 _OK_RE = re.compile(r'Drive tests OK with Paranoia.')
 _WARNING_RE = re.compile(r'WARNING! PARANOIA MAY NOT BE')
+_ABORTING_RE = re.compile(r'aborting test\.')
 
 
 class AnalyzeTask(ctask.PopenTask):
@@ -604,7 +605,7 @@ class AnalyzeTask(ctask.PopenTask):
         # whether it can defeat the audio cache
         output = "".join(self._output)
         m = _WARNING_RE.search(output)
-        if m:
+        if m or _ABORTING_RE.search(output):
             self.defeatsCache = False
         if self.cwd:
             shutil.rmtree(self.cwd)
