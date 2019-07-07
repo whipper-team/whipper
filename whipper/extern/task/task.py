@@ -516,8 +516,6 @@ class SyncRunner(TaskRunner, ITaskListener):
     def schedule(self, task, delta, callable_task, *args, **kwargs):
         def c():
             try:
-                self.debug('schedule: calling %r(*args=%r, **kwargs=%r)',
-                           callable_task, args, kwargs)
                 callable_task(*args, **kwargs)
                 return False
             except Exception as e:
@@ -526,8 +524,6 @@ class SyncRunner(TaskRunner, ITaskListener):
                 task.setException(e)
                 self.stopped(task)
                 raise
-        self.debug('schedule: scheduling %r(*args=%r, **kwargs=%r)',
-                   callable_task, args, kwargs)
 
         GLib.timeout_add(int(delta * 1000L), c)
 
