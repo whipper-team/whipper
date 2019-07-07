@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 import logging
 logger = logging.getLogger(__name__)
@@ -9,7 +10,12 @@ def eject_device(device):
     Eject the given device.
     """
     logger.debug("ejecting device %s", device)
-    os.system('eject %s' % device)
+    try:
+        # `eject device` prints nothing to stdout
+        subprocess.check_output(['eject', device], stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as e:
+        logger.warning(e.cmd, 'returned with exit code: ', e.returncode,
+                       e.output)
 
 
 def load_device(device):
@@ -17,7 +23,13 @@ def load_device(device):
     Load the given device.
     """
     logger.debug("loading (eject -t) device %s", device)
-    os.system('eject -t %s' % device)
+    try:
+        # `eject -t device` prints nothing to stdout
+        subprocess.check_output(['eject', '-t', device],
+                                stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as e:
+        logger.warning(e.cmd, 'returned with exit code: ', e.returncode,
+                       e.output)
 
 
 def unmount_device(device):
