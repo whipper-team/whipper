@@ -452,7 +452,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
             logger.debug('read and verify with taglist %r', taglist)
         # FIXME: choose a dir on the same disk/dir as the final path
         fd, tmppath = tempfile.mkstemp(suffix='.whipper.wav')
-        os.fchmod(fd, 0644)
+        os.fchmod(fd, 0o644)
         os.close(fd)
         self._tmpwavpath = tmppath
 

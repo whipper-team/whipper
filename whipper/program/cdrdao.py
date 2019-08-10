@@ -151,8 +151,7 @@ class ReadTOCTask(task.Task):
             t_comp = os.path.abspath(self.toc_path).split(os.sep)
             t_dirn = os.sep.join(t_comp[:-1])
             # If the output path doesn't exist, make it recursively
-            if not os.path.isdir(t_dirn):
-                os.makedirs(t_dirn)
+            os.makedirs(t_dirn, exist_ok=True)
             t_dst = truncate_filename(
                 os.path.join(t_dirn, t_comp[-1] + '.toc'))
             shutil.copy(self.tocfile, os.path.join(t_dirn, t_dst))

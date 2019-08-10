@@ -17,16 +17,13 @@
 # USA
 
 
-import sys
-
-
 def digit_sum(i):
     """returns the sum of all digits for the given integer"""
 
     return sum(map(int, str(i)))
 
 
-class DiscID(object):
+class DiscID:
     def __init__(self, offsets, total_length, track_count, playable_length):
         """offsets is a list of track offsets, in CD frames
         total_length is the total length of the disc, in seconds

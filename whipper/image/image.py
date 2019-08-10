@@ -34,7 +34,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class Image(object):
+class Image:
     """
     :ivar table:    The Table of Contents for this image.
     :vartype table: table.Table

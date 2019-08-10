@@ -68,7 +68,7 @@ def _getExceptionMessage(exception, frame=-1, filename=None):
         % locals()
 
 
-class LogStub(object):
+class LogStub:
     """
     I am a stub for a log interface.
     """
@@ -243,7 +243,7 @@ class Task(LogStub):
 
 
 # FIXME: should this become a real interface, like in zope ?
-class ITaskListener(object):
+class ITaskListener:
     """
     I am an interface for objects listening to tasks.
     """

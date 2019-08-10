@@ -24,7 +24,7 @@ import tempfile
 """Rename files on file system and inside metafiles in a resumable way."""
 
 
-class Operator(object):
+class Operator:
 
     def __init__(self, statePath, key):
         self._todo = []
@@ -116,7 +116,7 @@ class FileRenamer(Operator):
         """
 
 
-class Operation(object):
+class Operation:
 
     def verify(self):
         """

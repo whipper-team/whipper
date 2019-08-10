@@ -45,7 +45,7 @@ class NotFoundException(MusicBrainzException):
         return "Disc not found in MusicBrainz"
 
 
-class TrackMetadata(object):
+class TrackMetadata:
     artist = None
     title = None
     duration = None  # in ms
@@ -56,7 +56,7 @@ class TrackMetadata(object):
     mbidWorks = []
 
 
-class DiscMetadata(object):
+class DiscMetadata:
     """
     :param artist:       artist(s) name
     :param sortName:     release artist sort name

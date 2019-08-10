@@ -333,7 +333,7 @@ class Program:
 
                 if prompt:
                     guess = (deltas[lowest])[0].mbid
-                    release = raw_input(
+                    release = input(
                         "\nPlease select a release [%s]: " % guess)
 
                     if not release:
@@ -505,8 +505,7 @@ class Program:
             stop = self.result.table.getTrackEnd(trackResult.number)
 
         dirname = os.path.dirname(trackResult.filename)
-        if not os.path.exists(dirname):
-            os.makedirs(dirname)
+        os.makedirs(dirname, exist_ok=True)
 
         if not what:
             what = 'track %d' % (trackResult.number, )

@@ -292,7 +292,7 @@ def validate_template(template, kind):
                          'variable(s): {}'.format(', '.join(matches)))
 
 
-class VersionGetter(object):
+class VersionGetter:
     """
     I get the version of a program by looking for it in command output
     according to a regexp.

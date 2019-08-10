@@ -21,7 +21,7 @@
 import re
 
 
-class PathFilter(object):
+class PathFilter:
     """
     I filter path components for safe storage on file systems.
     """

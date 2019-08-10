@@ -58,7 +58,7 @@ _INDEX_RE = re.compile(r"""
 """, re.VERBOSE)
 
 
-class CueFile(object):
+class CueFile:
     """
     I represent a .cue file as an object.
 
@@ -138,8 +138,8 @@ class CueFile(object):
                 seconds = int(m.expand('\\3'))
                 frames = int(m.expand('\\4'))
                 frameOffset = int(frames
-                    + seconds * common.FRAMES_PER_SECOND
-                    + minutes * common.FRAMES_PER_SECOND * 60)
+                                  + seconds * common.FRAMES_PER_SECOND
+                                  + minutes * common.FRAMES_PER_SECOND * 60)
 
                 logger.debug('found index %d of track %r in %r:%d',
                              indexNumber, currentTrack, currentFile.path,

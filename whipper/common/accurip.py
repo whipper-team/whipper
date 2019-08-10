@@ -21,7 +21,6 @@
 
 import requests
 import struct
-from errno import EEXIST
 from os import makedirs
 from os.path import dirname, exists, join
 
@@ -40,7 +39,7 @@ class EntryNotFound(Exception):
     pass
 
 
-class _AccurateRipResponse(object):
+class _AccurateRipResponse:
     """
     An AccurateRip response contains a collection of metadata identifying a
     particular digital audio compact disc.
@@ -143,13 +142,11 @@ def _download_entry(path):
 
 def _save_entry(raw_entry, path):
     logger.debug('saving AccurateRip entry to %s', path)
-    # XXX: os.makedirs(exist_ok=True) in py3
     try:
-        makedirs(dirname(path))
+        makedirs(dirname(path), exist_ok=True)
     except OSError as e:
-        if e.errno != EEXIST:
-            logger.error('could not save entry to %s: %s', path, e)
-            return
+        logger.error('could not save entry to %s: %s', path, e)
+        return
     open(path, 'wb').write(raw_entry)
 
 

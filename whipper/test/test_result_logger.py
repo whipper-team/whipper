@@ -163,7 +163,8 @@ class LoggerTestCase(unittest.TestCase):
                 Dumper=ruamel.yaml.RoundTripDumper
             )
         )
+        log_body = "\n".join(actualLines[:-1]).encode()
         self.assertEqual(
             parsedLog['SHA-256 hash'],
-            hashlib.sha256("\n".join(actualLines[:-1])).hexdigest().upper()
+            hashlib.sha256(log_body).hexdigest().upper()
         )

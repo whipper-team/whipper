@@ -134,7 +134,7 @@ class Sources:
         return self._sources[-1][1]
 
 
-class TocFile(object):
+class TocFile:
 
     def __init__(self, path):
         """
