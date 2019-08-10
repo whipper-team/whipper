@@ -17,7 +17,7 @@ Example disc id: KnpGsLhvH.lPrNc1PBL21lb9Bg4-"""
 
     def do(self):
         try:
-            discId = unicode(self.options.mbdiscid)
+            discId = str(self.options.mbdiscid)
         except IndexError:
             print('Please specify a MusicBrainz disc id.')
             return 3
@@ -29,7 +29,7 @@ Example disc id: KnpGsLhvH.lPrNc1PBL21lb9Bg4-"""
             print('- Release %d:' % (i + 1, ))
             print('    Artist: %s' % md.artist.encode('utf-8'))
             print('    Title:  %s' % md.title.encode('utf-8'))
-            print('    Type:   %s' % unicode(md.releaseType).encode('utf-8'))  # noqa: E501
+            print('    Type:   %s' % str(md.releaseType).encode('utf-8'))  # noqa: E501
             print('    URL:    %s' % md.url)
             print('    Tracks: %d' % len(md.tracks))
             if md.catalogNumber:

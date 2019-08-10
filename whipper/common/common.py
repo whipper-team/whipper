@@ -165,7 +165,7 @@ def truncate_filename(path):
     fn_lim = os.pathconf(p.encode('utf-8'), 'PC_NAME_MAX')
     f_max = fn_lim - len(e.encode('utf-8'))
     f = unicodedata.normalize('NFC', f)
-    f_trunc = unicode(f.encode('utf-8')[:f_max], 'utf-8', errors='ignore')
+    f_trunc = f.encode()[:f_max].decode('utf-8', errors='ignore')
     return os.path.join(p, f_trunc + e)
 
 
@@ -196,7 +196,7 @@ def shrinkPath(path):
 
     name = " ".join(pieces)
     # ext includes period
-    parts[-1] = u'%s%s' % (name, ext)
+    parts[-1] = '%s%s' % (name, ext)
     path = os.path.join(*parts)
     return path
 
@@ -209,11 +209,11 @@ def getRealPath(refPath, filePath):
 
     :param refPath:  path to the file from which the track is referenced;
                      for example, path to the .cue file in the same directory
-    :type  refPath:  unicode
+    :type  refPath:  str
 
-    :type  filePath: unicode
+    :type  filePath: str
     """
-    assert isinstance(filePath, unicode), "%r is not unicode" % filePath
+    assert isinstance(filePath, str), "%r is not str" % filePath
 
     if os.path.exists(filePath):
         return filePath
@@ -321,7 +321,7 @@ class VersionGetter(object):
                                stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE, close_fds=True)
             p.wait()
-            output = asyncsub.recv_some(p, e=0, stderr=1)
+            output = asyncsub.recv_some(p, e=0, stderr=1).decode()
             vre = self._regexp.search(output)
             if vre:
                 version = self._expander % vre.groupdict()

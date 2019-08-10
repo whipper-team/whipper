@@ -14,7 +14,7 @@ from whipper.test import common
 class CureTestCase(common.TestCase):
 
     def setUp(self):
-        self.path = os.path.join(os.path.dirname(__file__), u'cure.toc')
+        self.path = os.path.join(os.path.dirname(__file__), 'cure.toc')
         self.toc = toc.TocFile(self.path)
         self.toc.parse()
         self.assertEqual(len(self.toc.table.tracks), 13)
@@ -93,8 +93,8 @@ class CureTestCase(common.TestCase):
                          '3/c/4/dBAR-013-0019d4c3-00fe8924-b90c650d.bin')
 
     def testGetRealPath(self):
-        self.assertRaises(KeyError, self.toc.getRealPath, u'track01.wav')
-        (fd, path) = tempfile.mkstemp(suffix=u'.whipper.test.wav')
+        self.assertRaises(KeyError, self.toc.getRealPath, 'track01.wav')
+        (fd, path) = tempfile.mkstemp(suffix='.whipper.test.wav')
         self.assertEqual(self.toc.getRealPath(path), path)
 
         winpath = path.replace('/', '\\')
@@ -108,7 +108,7 @@ class CureTestCase(common.TestCase):
 class BlocTestCase(common.TestCase):
 
     def setUp(self):
-        self.path = os.path.join(os.path.dirname(__file__), u'bloc.toc')
+        self.path = os.path.join(os.path.dirname(__file__), 'bloc.toc')
         self.toc = toc.TocFile(self.path)
         self.toc.parse()
         self.assertEqual(len(self.toc.table.tracks), 13)
@@ -173,7 +173,7 @@ class BlocTestCase(common.TestCase):
 class BreedersTestCase(common.TestCase):
 
     def setUp(self):
-        self.path = os.path.join(os.path.dirname(__file__), u'breeders.toc')
+        self.path = os.path.join(os.path.dirname(__file__), 'breeders.toc')
         self.toc = toc.TocFile(self.path)
         self.toc.parse()
         self.assertEqual(len(self.toc.table.tracks), 13)
@@ -200,7 +200,7 @@ class BreedersTestCase(common.TestCase):
 class LadyhawkeTestCase(common.TestCase):
 
     def setUp(self):
-        self.path = os.path.join(os.path.dirname(__file__), u'ladyhawke.toc')
+        self.path = os.path.join(os.path.dirname(__file__), 'ladyhawke.toc')
         self.toc = toc.TocFile(self.path)
         self.toc.parse()
         self.assertEqual(len(self.toc.table.tracks), 13)
@@ -237,13 +237,13 @@ class CapitalMergeTestCase(common.TestCase):
 
     def setUp(self):
         self.toc1 = toc.TocFile(os.path.join(os.path.dirname(__file__),
-                                             u'capital.1.toc'))
+                                             'capital.1.toc'))
         self.toc1.parse()
         self.assertEqual(len(self.toc1.table.tracks), 11)
         self.assertTrue(self.toc1.table.tracks[-1].audio)
 
         self.toc2 = toc.TocFile(os.path.join(os.path.dirname(__file__),
-                                             u'capital.2.toc'))
+                                             'capital.2.toc'))
         self.toc2.parse()
         self.assertEqual(len(self.toc2.table.tracks), 1)
         self.assertFalse(self.toc2.table.tracks[-1].audio)
@@ -278,8 +278,8 @@ class UnicodeTestCase(common.TestCase, common.UnicodeTestMixin):
         # we copy the normal non-utf8 filename to a utf-8 filename
         # in this test because builds with LANG=C fail if we include
         # utf-8 filenames in the dist
-        path = u'Jos\xe9Gonz\xe1lez.toc'
-        self._performer = u'Jos\xe9 Gonz\xe1lez'
+        path = 'Jos\xe9Gonz\xe1lez.toc'
+        self._performer = 'Jos\xe9 Gonz\xe1lez'
         source = os.path.join(os.path.dirname(__file__), 'jose.toc')
         (fd, self.dest) = tempfile.mkstemp(suffix=path)
         os.close(fd)
@@ -311,7 +311,7 @@ class UnicodeTestCase(common.TestCase, common.UnicodeTestMixin):
 class TOTBLTestCase(common.TestCase):
 
     def setUp(self):
-        self.path = os.path.join(os.path.dirname(__file__), u'totbl.fast.toc')
+        self.path = os.path.join(os.path.dirname(__file__), 'totbl.fast.toc')
         self.toc = toc.TocFile(self.path)
         self.toc.parse()
         self.assertEqual(len(self.toc.table.tracks), 11)
@@ -324,7 +324,7 @@ class GentlemenTestCase(common.TestCase):
 
     def setUp(self):
         self.path = os.path.join(os.path.dirname(__file__),
-                                 u'gentlemen.fast.toc')
+                                 'gentlemen.fast.toc')
         self.toc = toc.TocFile(self.path)
         self.toc.parse()
         self.assertEquals(len(self.toc.table.tracks), 11)
@@ -341,7 +341,7 @@ class StrokesTestCase(common.TestCase):
 
     def setUp(self):
         self.path = os.path.join(os.path.dirname(__file__),
-                                 u'strokes-someday.toc')
+                                 'strokes-someday.toc')
         self.toc = toc.TocFile(self.path)
         self.toc.parse()
         self.assertEqual(len(self.toc.table.tracks), 1)
@@ -358,7 +358,7 @@ class StrokesTestCase(common.TestCase):
         self.assertEqual(i1.relative, 0)
         self.assertEqual(i1.absolute, 1)
         self.assertEqual(i1.counter, 1)
-        self.assertEqual(i1.path, u'data.wav')
+        self.assertEqual(i1.path, 'data.wav')
 
         cue = self._filterCue(self.toc.table.cue())
         ref = self._filterCue(
@@ -400,7 +400,7 @@ class StrokesTestCase(common.TestCase):
 class SurferRosaTestCase(common.TestCase):
 
     def setUp(self):
-        self.path = os.path.join(os.path.dirname(__file__), u'surferrosa.toc')
+        self.path = os.path.join(os.path.dirname(__file__), 'surferrosa.toc')
         self.toc = toc.TocFile(self.path)
         self.toc.parse()
         self.assertEqual(len(self.toc.table.tracks), 21)

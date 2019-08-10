@@ -69,9 +69,9 @@ class CueFile(object):
 
     def __init__(self, path):
         """
-        :type  path: unicode
+        :type  path: str
         """
-        assert isinstance(path, unicode), "%r is not unicode" % path
+        assert isinstance(path, str), "%r is not str" % path
 
         self._path = path
         self._rems = {}
@@ -137,9 +137,9 @@ class CueFile(object):
                 minutes = int(m.expand('\\2'))
                 seconds = int(m.expand('\\3'))
                 frames = int(m.expand('\\4'))
-                frameOffset = frames \
-                    + seconds * common.FRAMES_PER_SECOND \
-                    + minutes * common.FRAMES_PER_SECOND * 60
+                frameOffset = int(frames
+                    + seconds * common.FRAMES_PER_SECOND
+                    + minutes * common.FRAMES_PER_SECOND * 60)
 
                 logger.debug('found index %d of track %r in %r:%d',
                              indexNumber, currentTrack, currentFile.path,
@@ -182,7 +182,7 @@ class CueFile(object):
         """
         Translate the .cue's FILE to an existing path.
 
-        :type  path: unicode
+        :type  path: str
         """
         return common.getRealPath(self._path, path)
 
@@ -194,9 +194,9 @@ class File:
 
     def __init__(self, path, file_format):
         """
-        :type  path: unicode
+        :type  path: str
         """
-        assert isinstance(path, unicode), "%r is not unicode" % path
+        assert isinstance(path, str), "%r is not str" % path
 
         self.path = path
         self.format = file_format

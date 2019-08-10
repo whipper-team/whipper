@@ -60,7 +60,7 @@ class _AccurateRipResponse(object):
         position, so track 1 will have array index 0, track 2 will have array
         index 1, and so forth. HTOA and other hidden tracks are not included.
         """
-        self.num_tracks = struct.unpack("B", data[0])[0]
+        self.num_tracks = data[0]
         self.discId1 = "%08x" % struct.unpack("<L", data[1:5])[0]
         self.discId2 = "%08x" % struct.unpack("<L", data[5:9])[0]
         self.cddbDiscId = "%08x" % struct.unpack("<L", data[9:13])[0]
@@ -69,7 +69,7 @@ class _AccurateRipResponse(object):
         self.checksums = []
         pos = 13
         for _ in range(self.num_tracks):
-            confidence = struct.unpack("B", data[pos])[0]
+            confidence = data[pos]
             checksum = "%08x" % struct.unpack("<L", data[pos + 1:pos + 5])[0]
             self.confidences.append(confidence)
             self.checksums.append(checksum)
@@ -88,7 +88,7 @@ class _AccurateRipResponse(object):
 def _split_responses(raw_entry):
     responses = []
     while raw_entry:
-        track_count = struct.unpack("B", raw_entry[0])[0]
+        track_count = raw_entry[0]
         nbytes = 1 + 12 + track_count * (1 + 8)
         responses.append(_AccurateRipResponse(raw_entry[:nbytes]))
         raw_entry = raw_entry[nbytes:]

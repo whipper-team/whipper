@@ -8,7 +8,7 @@ from whipper.extern.task import task
 from whipper.program.soxi import AudioLengthTask
 from whipper.test import common as tcommon
 
-base_track_file = os.path.join(os.path.dirname(__file__), u'track.flac')
+base_track_file = os.path.join(os.path.dirname(__file__), 'track.flac')
 base_track_length = 10 * common.SAMPLES_PER_FRAME
 
 
@@ -39,26 +39,18 @@ class AudioLengthPathTestCase(tcommon.TestCase):
 class NormalAudioLengthPathTestCase(AudioLengthPathTestCase):
 
     def testSingleQuote(self):
-        self._testSuffix(u"whipper.test.Guns 'N Roses.flac")
+        self._testSuffix("whipper.test.Guns 'N Roses.flac")
 
     def testDoubleQuote(self):
         # This test makes sure we can checksum files with double quote in
         # their name
-        self._testSuffix(u'whipper.test.12" edit.flac')
-
-
-class UnicodeAudioLengthPathTestCase(AudioLengthPathTestCase,
-                                     tcommon.UnicodeTestMixin):
-
-    def testUnicodePath(self):
-        # this test makes sure we can checksum a unicode path
-        self._testSuffix(u'whipper.test.B\xeate Noire.empty.flac')
+        self._testSuffix('whipper.test.12" edit.flac')
 
 
 class AbsentFileAudioLengthPathTestCase(AudioLengthPathTestCase):
     def testAbsentFile(self):
         tempdir = tempfile.mkdtemp()
-        path = os.path.join(tempdir, u"nonexistent.flac")
+        path = os.path.join(tempdir, "nonexistent.flac")
 
         t = AudioLengthTask(path)
         runner = task.SyncRunner()

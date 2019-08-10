@@ -138,9 +138,9 @@ class TocFile(object):
 
     def __init__(self, path):
         """
-        :type  path: unicode
+        :type  path: str
         """
-        assert isinstance(path, unicode), "%r is not unicode" % path
+        assert isinstance(path, str), "%r is not string" % path
         self._path = path
         self._messages = []
         self.table = table.Table()
@@ -202,7 +202,7 @@ class TocFile(object):
                 # usually, value is encoded with octal escapes and in latin-1
                 # FIXME: other encodings are possible, does cdrdao handle
                 # them ?
-                value = value.decode('string-escape').decode('latin-1')
+                value = value.encode().decode('unicode_escape')
                 if key in table.CDTEXT_FIELDS:
                     # FIXME: consider ISRC separate for now, but this
                     # is a limitation of our parser approach
@@ -412,7 +412,7 @@ class TocFile(object):
         """
         Translate the .toc's FILE to an existing path.
 
-        :type  path: unicode
+        :type  path: str
         """
         return common.getRealPath(self._path, path)
 
@@ -424,12 +424,12 @@ class File:
 
     def __init__(self, path, start, length):
         """
-        :type  path:   unicode
+        :type  path:   str
         :type  start:  int
         :param start:  starting point for the track in this file, in frames
         :param length: length for the track in this file, in frames
         """
-        assert isinstance(path, unicode), "%r is not unicode" % path
+        assert isinstance(path, str), "%r is not str" % path
 
         self.path = path
         self.start = start

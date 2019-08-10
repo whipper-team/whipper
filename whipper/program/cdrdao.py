@@ -84,7 +84,7 @@ class ReadTOCTask(task.Task):
         self._parser = ProgressParser()
 
         self.fd, self.tocfile = tempfile.mkstemp(
-            suffix=u'.cdrdao.read-toc.whipper.task')
+            suffix='.cdrdao.read-toc.whipper.task')
 
     def start(self, runner):
         task.Task.start(self, runner)
@@ -112,7 +112,7 @@ class ReadTOCTask(task.Task):
                 return
             self.schedule(0.01, self._read, runner)
             return
-        self._buffer += ret
+        self._buffer += ret.decode()
 
         # parse buffer into lines if possible, and parse them
         if "\n" in self._buffer:
@@ -168,7 +168,7 @@ def DetectCdr(device):
     cmd = [CDRDAO, 'disk-info', '-v1', '--device', device]
     logger.debug("executing %r", cmd)
     p = Popen(cmd, stdout=PIPE, stderr=PIPE)
-    return 'CD-R medium          : n/a' not in p.stdout.read()
+    return 'CD-R medium          : n/a' not in p.stdout.read().decode()
 
 
 def version():

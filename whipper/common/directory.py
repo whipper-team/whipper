@@ -23,16 +23,16 @@ from os.path import join, expanduser, exists
 
 
 def config_path():
-    path = join(getenv('XDG_CONFIG_HOME') or join(expanduser('~'), u'.config'),
-                u'whipper')
+    path = join(getenv('XDG_CONFIG_HOME') or join(expanduser('~'), '.config'),
+                'whipper')
     if not exists(path):
         makedirs(path)
-    return join(path, u'whipper.conf')
+    return join(path, 'whipper.conf')
 
 
 def cache_path(name=None):
-    path = join(getenv('XDG_CACHE_HOME') or join(expanduser('~'), u'.cache'),
-                u'whipper')
+    path = join(getenv('XDG_CACHE_HOME') or join(expanduser('~'), '.cache'),
+                'whipper')
     if name:
         path = join(path, name)
     if not exists(path):
@@ -42,8 +42,8 @@ def cache_path(name=None):
 
 def data_path(name=None):
     path = join(getenv('XDG_DATA_HOME') or
-                join(expanduser('~'), u'.local/share'),
-                u'whipper')
+                join(expanduser('~'), '.local/share'),
+                'whipper')
     if name:
         path = join(path, name)
     if not exists(path):

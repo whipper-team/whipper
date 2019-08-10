@@ -11,7 +11,7 @@ import sys
 
 PIPE = subprocess.PIPE
 
-if subprocess.mswindows:
+if sys.platform == 'win32':
     from win32file import ReadFile, WriteFile
     from win32pipe import PeekNamedPipe
     import msvcrt
@@ -42,7 +42,7 @@ class Popen(subprocess.Popen):
         getattr(self, which).close()
         setattr(self, which, None)
 
-    if subprocess.mswindows:
+    if sys.platform == 'win32':
 
         def send(self, in_put):
             if not self.stdin:
@@ -149,7 +149,7 @@ def recv_some(p, t=.1, e=1, tr=5, stderr=0):
             y.append(r)
         else:
             time.sleep(max((x - time.time()) / tr, 0))
-    return ''.join(y)
+    return ''.join(x.decode() for x in y).encode()
 
 
 def send_all(p, data):

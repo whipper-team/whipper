@@ -124,11 +124,7 @@ class PersistedCache:
 
     def __init__(self, path):
         self.path = path
-        try:
-            os.makedirs(self.path)
-        except OSError as e:
-            if e.errno != os.errno.EEXIST:  # FIXME: errno 17 is 'File Exists'
-                raise
+        os.makedirs(self.path, exist_ok=True)
 
     def _getPath(self, key):
         return os.path.join(self.path, '%s.pickle' % key)

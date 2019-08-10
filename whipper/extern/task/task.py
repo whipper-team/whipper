@@ -18,7 +18,6 @@
 # You should have received a copy of the GNU General Public License
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function
 import logging
 import sys
 
@@ -484,7 +483,7 @@ class SyncRunner(TaskRunner, ITaskListener):
         self._task.addListener(self)
         # only start the task after going into the mainloop,
         # otherwise the task might complete before we are in it
-        GLib.timeout_add(0L, self._startWrap, self._task)
+        GLib.timeout_add(0, self._startWrap, self._task)
         self.debug('run loop')
         self._loop.run()
 
@@ -525,7 +524,7 @@ class SyncRunner(TaskRunner, ITaskListener):
                 self.stopped(task)
                 raise
 
-        GLib.timeout_add(int(delta * 1000L), c)
+        GLib.timeout_add(int(delta * 1000), c)
 
     # ITaskListener methods
     def progressed(self, task, value):

@@ -37,8 +37,8 @@ logger = logging.getLogger(__name__)
 SILENT = 0
 MAX_TRIES = 5
 
-DEFAULT_TRACK_TEMPLATE = u'%r/%A - %d/%t. %a - %n'
-DEFAULT_DISC_TEMPLATE = u'%r/%A - %d/%A - %d'
+DEFAULT_TRACK_TEMPLATE = '%r/%A - %d/%t. %a - %n'
+DEFAULT_DISC_TEMPLATE = '%r/%A - %d/%A - %d'
 
 TEMPLATE_DESCRIPTION = '''
 Tracks are named according to the track template, filling in the variables
@@ -137,7 +137,7 @@ class _CD(BaseCommand):
         if getattr(self.options, 'working_directory', False):
             os.chdir(os.path.expanduser(self.options.working_directory))
         if hasattr(self.options, 'output_directory'):
-            out_bpath = self.options.output_directory.decode('utf-8')
+            out_bpath = self.options.output_directory
             # Needed to preserve cdrdao's tocfile
             out_fpath = self.program.getPath(out_bpath,
                                              self.options.disc_template,
@@ -295,10 +295,9 @@ Log files will log the path to tracks relative to this directory.
         self.options.output_directory = os.path.expanduser(
             self.options.output_directory)
 
-        self.options.track_template = self.options.track_template.decode(
-            'utf-8')
+        self.options.track_template = self.options.track_template
         validate_template(self.options.track_template, 'track')
-        self.options.disc_template = self.options.disc_template.decode('utf-8')
+        self.options.disc_template = self.options.disc_template
         validate_template(self.options.disc_template, 'disc')
 
         if self.options.offset is None:
@@ -323,7 +322,7 @@ Log files will log the path to tracks relative to this directory.
 
     def doCommand(self):
         self.program.setWorkingDirectory(self.options.working_directory)
-        self.program.outdir = self.options.output_directory.decode('utf-8')
+        self.program.outdir = self.options.output_directory
         self.program.result.offset = int(self.options.offset)
         self.program.result.overread = self.options.overread
         self.program.result.logger = self.options.logger
@@ -336,13 +335,11 @@ Log files will log the path to tracks relative to this directory.
         if os.path.exists(dirname):
             logs = glob.glob(os.path.join(dirname, '*.log'))
             if logs:
-                msg = ("output directory %s is a finished rip" %
-                       dirname.encode('utf-8'))
+                msg = ("output directory %s is a finished rip" % dirname)
                 logger.debug(msg)
                 raise RuntimeError(msg)
         else:
-            logger.info("creating output directory %s",
-                        dirname.encode('utf-8'))
+            logger.info("creating output directory %s", dirname)
             os.makedirs(dirname)
 
         # FIXME: turn this into a method
@@ -366,7 +363,7 @@ Log files will log the path to tracks relative to this directory.
             logger.debug('ripIfNotRipped: path %r', path)
             trackResult.number = number
 
-            assert isinstance(path, unicode), "%r is not unicode" % path
+            assert isinstance(path, str), "%r is not str" % path
             trackResult.filename = path
             if number > 0:
                 trackResult.pregap = self.itable.tracks[number - 1].getPregap()
@@ -385,7 +382,7 @@ Log files will log the path to tracks relative to this directory.
 
                 logger.info('verifying track %d of %d: %s',
                             number, len(self.itable.tracks),
-                            os.path.basename(path).encode('utf-8'))
+                            os.path.basename(path))
                 if not self.program.verifyTrack(self.runner, trackResult):
                     logger.warning('verification failed, reripping...')
                     os.unlink(path)
@@ -403,7 +400,7 @@ Log files will log the path to tracks relative to this directory.
                         extra = " (try %d)" % tries
                     logger.info('ripping track %d of %d%s: %s',
                                 number, len(self.itable.tracks), extra,
-                                os.path.basename(path).encode('utf-8'))
+                                os.path.basename(path))
                     try:
                         logger.debug('ripIfNotRipped: track %d, try %d',
                                      number, tries)
