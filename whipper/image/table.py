@@ -220,10 +220,12 @@ class Table:
             # if on a session border, subtract the session leadin
             thisTrack = self.tracks[number - 1]
             nextTrack = self.tracks[number]
-            if None not in [thisTrack.session, nextTrack.session]:
-                if nextTrack.session > thisTrack.session:
-                    gap = self._getSessionGap(nextTrack.session)
-                    end -= gap
+            # The session attribute of a track is None by default (session 1)
+            # with value > 1 if the track is in another session. Py3 doesn't
+            # allow NoneType comparisons so we compare against 1 in that case
+            if int(nextTrack.session or 1) > int(thisTrack.session or 1):
+                gap = self._getSessionGap(nextTrack.session)
+                end -= gap
 
         return end
 
@@ -286,7 +288,7 @@ class Table:
             offset = self.getTrackStart(track.number) + delta
             offsets.append(offset)
             debug.append(str(offset))
-            seconds = offset / common.FRAMES_PER_SECOND
+            seconds = offset // common.FRAMES_PER_SECOND
             n += self._cddbSum(seconds)
 
         # the 'real' leadout, not offset by 150 frames
@@ -389,11 +391,11 @@ class Table:
         discid = self.getMusicBrainzDiscId()
         values = self._getMusicBrainzValues()
 
-        query = urlencode({
-            'id': discid,
-            'toc': ' '.join([str(v) for v in values]),
-            'tracks': self.getAudioTracks(),
-        })
+        query = urlencode([
+            ('toc', ' '.join([str(v) for v in values])),
+            ('tracks', self.getAudioTracks()),
+            ('id', discid),
+        ])
 
         return urlunparse((
             'https', host, '/cdtoc/attach', '', query, ''))

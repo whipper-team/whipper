@@ -13,7 +13,7 @@ class RenameInFileTestcase(unittest.TestCase):
 
     def setUp(self):
         (fd, self._path) = tempfile.mkstemp(suffix='.whipper.renamer.infile')
-        os.write(fd, 'This is a test\nThis is another\n')
+        os.write(fd, 'This is a test\nThis is another\n'.encode())
         os.close(fd)
 
     def testVerify(self):
@@ -43,7 +43,7 @@ class RenameFileTestcase(unittest.TestCase):
 
     def setUp(self):
         (fd, self._source) = tempfile.mkstemp(suffix='.whipper.renamer.file')
-        os.write(fd, 'This is a test\nThis is another\n')
+        os.write(fd, 'This is a test\nThis is another\n'.encode())
         os.close(fd)
         (fd, self._destination) = tempfile.mkstemp(
             suffix='.whipper.renamer.file')
@@ -87,7 +87,7 @@ class OperatorTestCase(unittest.TestCase):
 
         (fd, self._source) = tempfile.mkstemp(
             suffix='.whipper.renamer.operator')
-        os.write(fd, 'This is a test\nThis is another\n')
+        os.write(fd, 'This is a test\nThis is another\n'.encode())
         os.close(fd)
         (fd, self._destination) = tempfile.mkstemp(
             suffix='.whipper.renamer.operator')

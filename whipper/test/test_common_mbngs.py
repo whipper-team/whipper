@@ -18,7 +18,7 @@ class MetadataTestCase(unittest.TestCase):
         filename = 'whipper.release.c56ff16e-1d81-47de-926f-ba22891bd2bd.json'
         path = os.path.join(os.path.dirname(__file__), filename)
         handle = open(path, "rb")
-        response = json.loads(handle.read())
+        response = json.loads(handle.read().decode('utf-8'))
         handle.close()
         discid = "b.yqPuCBdsV5hrzDvYrw52iK_jE-"
 
@@ -31,7 +31,7 @@ class MetadataTestCase(unittest.TestCase):
         filename = 'whipper.release.a76714e0-32b1-4ed4-b28e-f86d99642193.json'
         path = os.path.join(os.path.dirname(__file__), filename)
         handle = open(path, "rb")
-        response = json.loads(handle.read())
+        response = json.loads(handle.read().decode('utf-8'))
         handle.close()
         discid = "f7XO36a7n1LCCskkCiulReWbwZA-"
 
@@ -59,7 +59,7 @@ class MetadataTestCase(unittest.TestCase):
         filename = 'whipper.release.e32ae79a-336e-4d33-945c-8c5e8206dbd3.json'
         path = os.path.join(os.path.dirname(__file__), filename)
         handle = open(path, "rb")
-        response = json.loads(handle.read())
+        response = json.loads(handle.read().decode('utf-8'))
         handle.close()
         discid = "xAq8L4ELMW14.6wI6tt7QAcxiDI-"
 
@@ -93,7 +93,7 @@ class MetadataTestCase(unittest.TestCase):
         filename = 'whipper.release.61c6fd9b-18f8-4a45-963a-ba3c5d990cae.json'
         path = os.path.join(os.path.dirname(__file__), filename)
         handle = open(path, "rb")
-        response = json.loads(handle.read())
+        response = json.loads(handle.read().decode('utf-8'))
         handle.close()
         discid = "u0aKVpO.59JBy6eQRX2vYcoqQZ0-"
 
@@ -130,7 +130,7 @@ class MetadataTestCase(unittest.TestCase):
         filename = 'whipper.release.8478d4da-0cda-4e46-ae8c-1eeacfa5cf37.json'
         path = os.path.join(os.path.dirname(__file__), filename)
         handle = open(path, "rb")
-        response = json.loads(handle.read())
+        response = json.loads(handle.read().decode('utf-8'))
         handle.close()
         discid = "RhrwgVb0hZNkabQCw1dZIhdbMFg-"
 
@@ -167,7 +167,7 @@ class MetadataTestCase(unittest.TestCase):
         filename = 'whipper.release.f484a9fc-db21-4106-9408-bcd105c90047.json'
         path = os.path.join(os.path.dirname(__file__), filename)
         handle = open(path, "rb")
-        response = json.loads(handle.read())
+        response = json.loads(handle.read().decode('utf-8'))
         handle.close()
         discid = "X2c2IQ5vUy5x6Jh7Xi_DGHtA1X8-"
 
@@ -214,7 +214,7 @@ class MetadataTestCase(unittest.TestCase):
         filename = 'whipper.release.d8e6153a-2c47-4804-9d73-0aac1081c3b1.json'
         path = os.path.join(os.path.dirname(__file__), filename)
         handle = open(path, "rb")
-        response = json.loads(handle.read())
+        response = json.loads(handle.read().decode('utf-8'))
         handle.close()
         discid = "xu338_M8WukSRi0J.KTlDoflB8Y-"  # disc 4
 
@@ -228,7 +228,7 @@ class MetadataTestCase(unittest.TestCase):
         filename = 'whipper.release.6109ceed-7e21-490b-b5ad-3a66b4e4cfbb.json'
         path = os.path.join(os.path.dirname(__file__), filename)
         handle = open(path, "rb")
-        response = json.loads(handle.read())
+        response = json.loads(handle.read().decode('utf-8'))
         handle.close()
         discid = "cHW1Uutl_kyWNaLJsLmTGTe4rnE-"
 

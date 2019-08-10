@@ -2,7 +2,7 @@
 # vi:si:et:sw=4:sts=4:ts=4
 
 import sys
-from StringIO import StringIO
+from io import StringIO
 from os import chmod, makedirs
 from os.path import dirname, exists, join
 from shutil import copy, rmtree
@@ -22,7 +22,7 @@ class TestAccurateRipResponse(TestCase):
     def setUpClass(cls):
         cls.path = 'c/1/2/dBAR-002-0000f21c-00027ef8-05021002.bin'
         cls.entry = _split_responses(
-            open(join(dirname(__file__), cls.path[6:])).read()
+            open(join(dirname(__file__), cls.path[6:]), "rb").read()
         )
         cls.other_path = '4/8/2/dBAR-011-0010e284-009228a3-9809ff0b.bin'
 
@@ -101,7 +101,7 @@ class TestVerifyResult(TestCase):
     def setUpClass(cls):
         path = 'c/1/2/dBAR-002-0000f21c-00027ef8-05021002.bin'
         cls.responses = _split_responses(
-            open(join(dirname(__file__), path[6:])).read()
+            open(join(dirname(__file__), path[6:]), "rb").read()
         )
         cls.checksums = {
             'v1': ['284fc705', '9cc1f32e'],

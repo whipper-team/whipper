@@ -44,7 +44,7 @@ class Config:
         # Open the file with the correct encoding
         if os.path.exists(self._path):
             with codecs.open(self._path, 'r', encoding='utf-8') as f:
-                self._parser.readfp(f)
+                self._parser.read_file(f)
 
         logger.debug('loaded %d sections from config file',
                      len(self._parser.sections()))

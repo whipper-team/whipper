@@ -98,7 +98,7 @@ class Persister:
         if not os.path.exists(self._path):
             return
 
-        handle = open(self._path)
+        handle = open(self._path, 'rb')
         import pickle
 
         try:

@@ -16,7 +16,7 @@ class MBLookupTestCase(unittest.TestCase):
         """Mock function for whipper.common.mbngs.musicbrainz function."""
         filename = "whipper.discid.{}.pickle".format(discid)
         path = os.path.join(os.path.dirname(__file__), filename)
-        with open(path) as p:
+        with open(path, "rb") as p:
             return pickle.load(p)
 
     def testMissingReleaseType(self):

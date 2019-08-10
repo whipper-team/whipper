@@ -364,7 +364,7 @@ class StrokesTestCase(common.TestCase):
         ref = self._filterCue(
             open(os.path.join(
                 os.path.dirname(__file__),
-                'strokes-someday.eac.cue')).read()).decode('utf-8')
+                'strokes-someday.eac.cue')).read())
         common.diffStrings(ref, cue)
 
     @staticmethod

@@ -193,7 +193,8 @@ def _match_responses(tracks, responses):
         for i, track in enumerate(tracks):
             for v in ('v1', 'v2'):
                 if track.AR[v]['CRC'] == r.checksums[i]:
-                    if r.confidences[i] > track.AR[v]['DBConfidence']:
+                    if (track.AR[v]['DBConfidence'] is None or
+                            r.confidences[i] > track.AR[v]['DBConfidence']):
                         track.AR[v]['DBCRC'] = r.checksums[i]
                         track.AR[v]['DBConfidence'] = r.confidences[i]
                         logger.debug(
@@ -242,7 +243,8 @@ def print_report(result):
                     track.AR['v2']['DBCRC']
                 ) if _f])
             max_conf = max(
-                [track.AR[v]['DBConfidence'] for v in ('v1', 'v2')]
+                [track.AR[v]['DBConfidence'] for v in ('v1', 'v2')
+                 if track.AR[v]['DBConfidence'] is not None], default=None
             )
             if max_conf:
                 if max_conf < track.AR['DBMaxConfidence']:
