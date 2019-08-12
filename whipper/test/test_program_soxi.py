@@ -27,7 +27,8 @@ class AudioLengthPathTestCase(tcommon.TestCase):
     def _testSuffix(self, suffix):
         fd, path = tempfile.mkstemp(suffix=suffix)
         with os.fdopen(fd, "wb") as temptrack:
-            temptrack.write(open(base_track_file, "rb").read())
+            with open(base_track_file, "rb") as f:
+                temptrack.write(f.read())
 
         t = AudioLengthTask(path)
         runner = task.SyncRunner()

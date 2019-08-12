@@ -21,9 +21,8 @@ class TestAccurateRipResponse(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.path = 'c/1/2/dBAR-002-0000f21c-00027ef8-05021002.bin'
-        cls.entry = _split_responses(
-            open(join(dirname(__file__), cls.path[6:]), "rb").read()
-        )
+        with open(join(dirname(__file__), cls.path[6:]), 'rb') as f:
+            cls.entry = _split_responses(f.read())
         cls.other_path = '4/8/2/dBAR-011-0010e284-009228a3-9809ff0b.bin'
 
     def setUp(self):
@@ -100,9 +99,8 @@ class TestVerifyResult(TestCase):
     @classmethod
     def setUpClass(cls):
         path = 'c/1/2/dBAR-002-0000f21c-00027ef8-05021002.bin'
-        cls.responses = _split_responses(
-            open(join(dirname(__file__), path[6:]), "rb").read()
-        )
+        with open(join(dirname(__file__), path[6:]), 'rb') as f:
+            cls.responses = _split_responses(f.read())
         cls.checksums = {
             'v1': ['284fc705', '9cc1f32e'],
             'v2': ['dc77f9ab', 'dd97d2c3'],

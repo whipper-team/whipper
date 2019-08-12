@@ -25,7 +25,6 @@ The .toc file format is described in the man page of cdrdao
 """
 
 import re
-import codecs
 
 from whipper.common import common
 from whipper.image import table
@@ -189,9 +188,9 @@ class TocFile:
         # the first track's INDEX 1 can only be gotten from the .toc
         # file once the first pregap is calculated; so we add INDEX 1
         # at the end of each parsed  TRACK record
-        handle = codecs.open(self._path, "r", "utf-8")
-
-        for number, line in enumerate(handle.readlines()):
+        with open(self._path) as f:
+            content = f.readlines()
+        for number, line in enumerate(content):
             line = line.rstrip()
 
             # look for CDTEXT stuff in either header or tracks

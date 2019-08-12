@@ -361,10 +361,9 @@ class StrokesTestCase(common.TestCase):
         self.assertEqual(i1.path, 'data.wav')
 
         cue = self._filterCue(self.toc.table.cue())
-        ref = self._filterCue(
-            open(os.path.join(
-                os.path.dirname(__file__),
-                'strokes-someday.eac.cue')).read())
+        with open(os.path.join(os.path.dirname(__file__),
+                               'strokes-someday.eac.cue')) as f:
+            ref = self._filterCue(f.read())
         common.diffStrings(ref, cue)
 
     @staticmethod

@@ -70,7 +70,8 @@ class TestCase(unittest.TestCase):
         version so we can use it in comparisons.
         """
         cuefile = os.path.join(os.path.dirname(__file__), name)
-        ret = open(cuefile).read()
+        with open(cuefile) as f:
+            ret = f.read()
         ret = re.sub(
             'REM COMMENT "whipper.*',
             'REM COMMENT "whipper %s"' % whipper.__version__,

@@ -147,7 +147,8 @@ def _save_entry(raw_entry, path):
     except OSError as e:
         logger.error('could not save entry to %s: %s', path, e)
         return
-    open(path, 'wb').write(raw_entry)
+    with open(path, 'wb') as f:
+        f.write(raw_entry)
 
 
 def get_db_entry(path):
@@ -160,7 +161,8 @@ def get_db_entry(path):
     cached_path = join(_CACHE_DIR, path)
     if exists(cached_path):
         logger.debug('found accuraterip entry at %s', cached_path)
-        raw_entry = open(cached_path, 'rb').read()
+        with open(cached_path, 'rb') as f:
+            raw_entry = f.read()
     else:
         raw_entry = _download_entry(path)
         if raw_entry:

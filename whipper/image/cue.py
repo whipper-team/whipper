@@ -25,7 +25,6 @@ See http://digitalx.org/cuesheetsyntax.php
 """
 
 import re
-import codecs
 
 from whipper.common import common
 from whipper.image import table
@@ -86,9 +85,9 @@ class CueFile:
         counter = 0
 
         logger.info('parsing .cue file %r', self._path)
-        handle = codecs.open(self._path, 'r', 'utf-8')
-
-        for number, line in enumerate(handle.readlines()):
+        with open(self._path) as f:
+            content = f.readlines()
+        for number, line in enumerate(content):
             line = line.rstrip()
 
             m = _REM_RE.search(line)
