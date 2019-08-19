@@ -76,7 +76,7 @@ def framesToMSF(frames, frameDelimiter=':'):
     f = frames % FRAMES_PER_SECOND
     frames -= f
     s = (frames / FRAMES_PER_SECOND) % 60
-    frames -= s * 60
+    frames -= s * FRAMES_PER_SECOND
     m = frames / FRAMES_PER_SECOND / 60
 
     return "%02d:%02d%s%02d" % (m, s, frameDelimiter, f)
