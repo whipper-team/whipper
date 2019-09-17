@@ -1,5 +1,8 @@
 import time
 import hashlib
+import re
+import ruamel.yaml as yaml
+from ruamel.yaml.comments import CommentedMap as OrderedDict
 
 import whipper
 
@@ -16,68 +19,57 @@ class WhipperLogger(result.Logger):
     def log(self, ripResult, epoch=time.time()):
         """Returns big str: logfile joined text lines"""
 
-        lines = self.logRip(ripResult, epoch=epoch)
-        return "\n".join(lines)
+        return self.logRip(ripResult, epoch)
 
     def logRip(self, ripResult, epoch):
         """Returns logfile lines list"""
 
-        lines = []
+        riplog = OrderedDict()
 
         # Ripper version
-        lines.append("Log created by: whipper %s (internal logger)" %
-                     whipper.__version__)
+        riplog["Log created by"] = "whipper %s (internal logger)" % (
+            whipper.__version__)
 
         # Rip date
         date = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(epoch)).strip()
-        lines.append("Log creation date: %s" % date)
-        lines.append("")
+        riplog["Log creation date"] = date
 
         # Rip technical settings
-        lines.append("Ripping phase information:")
-        lines.append("  Drive: %s%s (revision %s)" % (
-            ripResult.vendor, ripResult.model, ripResult.release))
-        lines.append("  Extraction engine: cdparanoia %s" %
-                     ripResult.cdparanoiaVersion)
-        if ripResult.cdparanoiaDefeatsCache is None:
-            defeat = "null"
-        elif ripResult.cdparanoiaDefeatsCache:
-            defeat = "true"
-        else:
-            defeat = "false"
-        lines.append("  Defeat audio cache: %s" % defeat)
-        lines.append("  Read offset correction: %+d" % ripResult.offset)
+        data = OrderedDict()
+
+        data["Drive"] = "%s%s (revision %s)" % (
+            ripResult.vendor, ripResult.model, ripResult.release)
+        data["Extraction engine"] = "cdparanoia %s" % (
+            ripResult.cdparanoiaVersion)
+        data["Defeat audio cache"] = ripResult.cdparanoiaDefeatsCache
+        data["Read offset correction"] = ripResult.offset
+
         # Currently unsupported by the official cdparanoia package
-        over = "false"
         # Only implemented in whipper (ripResult.overread)
-        if ripResult.overread:
-            over = "true"
-        lines.append("  Overread into lead-out: %s" % over)
+        data["Overread into lead-out"] = True if ripResult.overread else False
         # Next one fully works only using the patched cdparanoia package
         # lines.append("Fill up missing offset samples with silence: true")
-        lines.append("  Gap detection: cdrdao %s" % ripResult.cdrdaoVersion)
+        data["Gap detection"] = "cdrdao %s" % ripResult.cdrdaoVersion
 
-        isCdr = "true" if ripResult.isCdr else "false"
-        lines.append("  CD-R detected: %s" % isCdr)
-        lines.append("")
+        data["CD-R detected"] = ripResult.isCdr
+        riplog["Ripping phase information"] = data
 
         # CD metadata
-        lines.append("CD metadata:")
-        lines.append("  Release:")
-        lines.append("    Artist: %s" % ripResult.artist)
-        lines.append("    Title: %s" % ripResult.title)
-        lines.append("  CDDB Disc ID: %s" % ripResult. table.getCDDBDiscId())
-        lines.append("  MusicBrainz Disc ID: %s" %
-                     ripResult. table.getMusicBrainzDiscId())
-        lines.append("  MusicBrainz lookup URL: %s" %
-                     ripResult. table.getMusicBrainzSubmitURL())
+        release = OrderedDict()
+        release["Artist"] = ripResult.artist
+        release["Title"] = ripResult.title
+        data = OrderedDict()
+        data["Release"] = release
+        data["CDDB Disc ID"] = ripResult.table.getCDDBDiscId()
+        data["MusicBrainz Disc ID"] = ripResult.table.getMusicBrainzDiscId()
+        data["MusicBrainz lookup URL"] = (
+            ripResult.table.getMusicBrainzSubmitURL())
         if ripResult.metadata:
-            lines.append("  MusicBrainz Release URL: %s" %
-                         ripResult.metadata.url)
-        lines.append("")
+            data["MusicBrainz Release URL"] = ripResult.metadata.url
+        riplog["CD metadata"] = data
 
         # TOC section
-        lines.append("TOC:")
+        data = OrderedDict()
         table = ripResult.table
 
         # Test for HTOA presence
@@ -92,149 +84,171 @@ class WhipperLogger(result.Logger):
             htoastart = htoa.absolute
             htoaend = table.getTrackEnd(0)
             htoalength = table.tracks[0].getIndex(1).absolute - htoastart
-            lines.append("  0:")
-            lines.append("    Start: %s" % common.framesToMSF(htoastart))
-            lines.append("    Length: %s" % common.framesToMSF(htoalength))
-            lines.append("    Start sector: %d" % htoastart)
-            lines.append("    End sector: %d" % htoaend)
-            lines.append("")
+            track = OrderedDict()
+            track["Start"] = common.framesToMSF(htoastart)
+            track["Length"] = common.framesToMSF(htoalength)
+            track["Start sector"] = htoastart
+            track["End sector"] = htoaend
+            data[0] = track
 
         # For every track include information in the TOC
         for t in table.tracks:
             start = t.getIndex(1).absolute
             length = table.getTrackLength(t.number)
             end = table.getTrackEnd(t.number)
-            lines.append("  %d:" % t.number)
-            lines.append("    Start: %s" % common.framesToMSF(start))
-            lines.append("    Length: %s" % common.framesToMSF(length))
-            lines.append("    Start sector: %d" % start)
-            lines.append("    End sector: %d" % end)
-            lines.append("")
+            track = OrderedDict()
+            track["Start"] = common.framesToMSF(start)
+            track["Length"] = common.framesToMSF(length)
+            track["Start sector"] = start
+            track["End sector"] = end
+            data[t.number] = track
+        riplog["TOC"] = data
 
         # Tracks section
-        lines.append("Tracks:")
+        data = OrderedDict()
         duration = 0.0
         for t in ripResult.tracks:
             if not t.filename:
                 continue
-            track_lines, ARDB_entry, ARDB_match = self.trackLog(t)
+            track_dict, ARDB_entry, ARDB_match = self.trackLog(t)
             self._inARDatabase += int(ARDB_entry)
             self._accuratelyRipped += int(ARDB_match)
-            lines.extend(track_lines)
-            lines.append("")
+            data[t.number] = track_dict
             duration += t.testduration + t.copyduration
+        riplog["Tracks"] = data
 
         # Status report
-        lines.append("Conclusive status report:")
-        arHeading = "  AccurateRip summary:"
+        data = OrderedDict()
         if self._inARDatabase == 0:
-            lines.append("%s None of the tracks are present in the "
-                         "AccurateRip database" % arHeading)
+            message = ("None of the tracks are present in the "
+                       "AccurateRip database")
         else:
             nonHTOA = len(ripResult.tracks)
             if ripResult.tracks[0].number == 0:
                 nonHTOA -= 1
             if self._accuratelyRipped == 0:
-                lines.append("%s No tracks could be verified as accurate "
-                             "(you may have a different pressing from the "
-                             "one(s) in the database)" % arHeading)
+                message = ("No tracks could be verified as accurate "
+                           "(you may have a different pressing from the "
+                           "one(s) in the database)")
             elif self._accuratelyRipped < nonHTOA:
                 accurateTracks = nonHTOA - self._accuratelyRipped
-                lines.append("%s Some tracks could not be verified as "
-                             "accurate (%d/%d got no match)" % (
-                                 arHeading, accurateTracks, nonHTOA))
+                message = ("Some tracks could not be verified as "
+                           "accurate (%d/%d got no match)") % (
+                        accurateTracks, nonHTOA)
             else:
-                lines.append("%s All tracks accurately ripped" % arHeading)
+                message = "All tracks accurately ripped"
+        data["AccurateRip summary"] = message
 
-        hsHeading = "  Health status:"
         if self._errors:
-            lines.append("%s There were errors" % hsHeading)
+            message = "There were errors"
         else:
-            lines.append("%s No errors occurred" % hsHeading)
-        lines.append("  EOF: End of status report")
-        lines.append("")
+            message = "No errors occurred"
+        data["Health Status"] = message
+        data["EOF"] = "End of status report"
+        riplog["Conclusive status report"] = data
+
+        riplog = yaml.dump(
+            riplog,
+            default_flow_style=False,
+            width=4000,
+            Dumper=yaml.RoundTripDumper
+        )
+        # Add a newline after the "Log creation date" line
+        riplog = re.sub(
+            r'^(Log creation date: .*)$',
+            "\\1\n",
+            riplog,
+            flags=re.MULTILINE
+        )
+        # Add a newline after a dictionary ends and returns to top-level
+        riplog = re.sub(
+            r"^(\s{2})([^\n]*)\n([A-Z][^\n]+)",
+            "\\1\\2\n\n\\3",
+            riplog,
+            flags=re.MULTILINE
+        )
+        # Add a newline after a track closes
+        riplog = re.sub(
+            r"^(\s{4}[^\n]*)\n(\s{2}[0-9]+)",
+            "\\1\n\n\\2",
+            riplog,
+            flags=re.MULTILINE
+        )
+        # Remove single quotes around the "Log creation date" value
+        riplog = re.sub(
+            r"^(Log creation date: )'(.*)'",
+            "\\1\\2",
+            riplog,
+            flags=re.MULTILINE
+        )
 
         # Log hash
         hasher = hashlib.sha256()
-        hasher.update("\n".join(lines).encode("utf-8"))
-        lines.append("SHA-256 hash: %s" % hasher.hexdigest().upper())
-        lines.append("")
-        return lines
+        hasher.update(riplog.encode("utf-8"))
+        riplog += "\nSHA-256 hash: %s\n" % hasher.hexdigest().upper()
+        return riplog
 
     def trackLog(self, trackResult):
         """Returns Tracks section lines: data picked from trackResult"""
 
-        lines = []
-
-        # Track number
-        lines.append("  %d:" % trackResult.number)
+        track = OrderedDict()
 
         # Filename (including path) of ripped track
-        lines.append("    Filename: %s" % trackResult.filename)
+        track["Filename"] = trackResult.filename
 
         # Pre-gap length
         pregap = trackResult.pregap
         if pregap:
-            lines.append("    Pre-gap length: %s" % common.framesToMSF(pregap))
+            track["Pre-gap length"] = common.framesToMSF(pregap)
 
         # Peak level
         peak = trackResult.peak / 32768.0
-        lines.append("    Peak level: %.6f" % peak)
+        track["Peak level"] = float("%.6f" % peak)
 
         # Pre-emphasis status
         # Only implemented in whipper (trackResult.pre_emphasis)
-        preEmph = "true" if trackResult.pre_emphasis else "false"
-        lines.append("    Pre-emphasis: %s" % preEmph)
+        track["Pre-emphasis"] = trackResult.pre_emphasis
 
         # Extraction speed
         if trackResult.copyspeed:
-            lines.append("    Extraction speed: %.1f X" % (
-                trackResult.copyspeed))
+            track["Extraction speed"] = "%.1f X" % trackResult.copyspeed
 
         # Extraction quality
         if trackResult.quality and trackResult.quality > 0.001:
-            lines.append("    Extraction quality: %.2f %%" %
-                         (trackResult.quality * 100.0, ))
+            track["Extraction quality"] = "%.2f %%" % (
+                trackResult.quality * 100.0, )
 
         # Ripper Test CRC
         if trackResult.testcrc is not None:
-            lines.append("    Test CRC: %08X" % trackResult.testcrc)
+            track["Test CRC"] = "%08X" % trackResult.testcrc
 
         # Ripper Copy CRC
         if trackResult.copycrc is not None:
-            lines.append("    Copy CRC: %08X" % trackResult.copycrc)
+            track["Copy CRC"] = "%08X" % trackResult.copycrc
 
         # AccurateRip track status
         ARDB_entry = 0
         ARDB_match = 0
         for v in ("v1", "v2"):
+            data = OrderedDict()
             if trackResult.AR[v]["DBCRC"]:
-                lines.append("    AccurateRip %s:" % v)
                 ARDB_entry += 1
                 if trackResult.AR[v]["CRC"] == trackResult.AR[v]["DBCRC"]:
-                    lines.append("      Result: Found, exact match")
+                    data["Result"] = "Found, exact match"
                     ARDB_match += 1
                 else:
-                    lines.append("      Result: Found, NO exact match")
-                lines.append(
-                    "      Confidence: %d" % trackResult.AR[v]["DBConfidence"]
-                )
-                lines.append(
-                    "      Local CRC: %s" % trackResult.AR[v]["CRC"].upper()
-                )
-                lines.append(
-                    "      Remote CRC: %s" % trackResult.AR[v]["DBCRC"].upper()
-                )
+                    data["Result"] = "Found, NO exact match"
+                data["Confidence"] = trackResult.AR[v]["DBConfidence"]
+                data["Local CRC"] = trackResult.AR[v]["CRC"].upper()
+                data["Remote CRC"] = trackResult.AR[v]["DBCRC"].upper()
             elif trackResult.number != 0:
-                lines.append("    AccurateRip %s:" % v)
-                lines.append(
-                    "      Result: Track not present in AccurateRip database"
-                )
+                data["Result"] = "Track not present in AccurateRip database"
+            track["AccurateRip %s" % v] = data
 
         # Check if Test & Copy CRCs are equal
         if trackResult.testcrc == trackResult.copycrc:
-            lines.append("    Status: Copy OK")
+            track["Status"] = "Copy OK"
         else:
             self._errors = True
-            lines.append("    Status: Error, CRC mismatch")
-        return lines, bool(ARDB_entry), bool(ARDB_match)
+            track["Status"] = "Error, CRC mismatch"
+        return track, bool(ARDB_entry), bool(ARDB_match)

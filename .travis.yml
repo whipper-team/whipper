@@ -18,7 +18,10 @@ install:
     - sudo apt-get -qq update
     - pip install --upgrade -qq pip
     - sudo apt-get -qq install cdparanoia cdrdao flac gir1.2-glib-2.0 libcdio-dev libgirepository1.0-dev libiso9660-dev libsndfile1-dev sox swig libcdio-utils
-    - pip install musicbrainzngs mutagen pycdio==0.21 PyGObject requests setuptools setuptools_scm
+    # newer version of pydcio requires newer version of libcdio than travis has
+    - pip install pycdio==0.21
+    # install rest of dependencies
+    - pip install -r requirements.txt
 
     # Testing dependencies
     - pip install twisted flake8
