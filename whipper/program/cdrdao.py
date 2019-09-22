@@ -19,7 +19,7 @@ _TRACK_RE = re.compile(r"^Analyzing track (?P<track>[0-9]*) \(AUDIO\): start (?P
 _CRC_RE = re.compile(
     r"Found (?P<channels>[0-9]*) Q sub-channels with CRC errors")
 _BEGIN_CDRDAO_RE = re.compile(r"-" * 60)
-_LAST_TRACK_RE = re.compile(r"^(?P<track>[0-9]*)")
+_LAST_TRACK_RE = re.compile(r"^[ ]?(?P<track>[0-9]*)")
 _LEADOUT_RE = re.compile(
     r"^Leadout AUDIO\s*[0-9]\s*[0-9]*:[0-9]*:[0-9]*\([0-9]*\)")
 
