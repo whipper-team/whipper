@@ -443,17 +443,17 @@ Log files will log the path to tracks relative to this directory.
                     logger.debug('HTOA peak %r is equal to the SILENT '
                                  'threshold, disregarding', trackResult.peak)
                     self.itable.setFile(1, 0, None,
-                                        self.ittoc.getTrackStart(1), number)
+                                        self.itable.getTrackStart(1), number)
                     logger.debug('unlinking %r', trackResult.filename)
                     os.unlink(trackResult.filename)
                     trackResult.filename = None
                     logger.info('HTOA discarded, contains digital silence')
                 else:
                     self.itable.setFile(1, 0, trackResult.filename,
-                                        self.ittoc.getTrackStart(1), number)
+                                        self.itable.getTrackStart(1), number)
             else:
                 self.itable.setFile(number, 1, trackResult.filename,
-                                    self.ittoc.getTrackLength(number), number)
+                                    self.itable.getTrackLength(number), number)
 
             self.program.saveRipResult()
 
@@ -482,7 +482,7 @@ Log files will log the path to tracks relative to this directory.
         self.program.write_m3u(discName)
 
         try:
-            self.program.verifyImage(self.runner, self.ittoc)
+            self.program.verifyImage(self.runner, self.itable)
         except accurip.EntryNotFound:
             logger.warning('AccurateRip entry not found')
 
