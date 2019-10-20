@@ -24,4 +24,7 @@ setup(
     data_files=[
         ('share/metainfo', ['com.github.whipper_team.Whipper.metainfo.xml']),
     ],
+    scripts=[
+        'scripts/accuraterip-checksum',
+    ],
 )

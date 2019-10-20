@@ -1,0 +1,35 @@
+#!/usr/bin/env python
+# SPDX-License-Identifier: GPL-3.0-only
+
+import accuraterip
+import sys
+
+
+if len(sys.argv) == 2 and sys.argv[1] == '--version':
+    print('accuraterip-checksum version 2.0')
+    exit(0)
+
+use_v1 = None
+if len(sys.argv) == 4:
+    offset = 0
+    use_v1 = False
+elif len(sys.argv) == 5:
+    offset = 1
+    if sys.argv[1] == '--accuraterip-v1':
+        use_v1 = True
+    elif sys.argv[1] == '--accuraterip-v2':
+        use_v1 = False
+
+if use_v1 is None:
+    print('Syntax: accuraterip-checksum [--version / --accuraterip-v1 / --accuraterip-v2 (default)] filename track_number total_tracks')
+    exit(1)
+
+filename = sys.argv[offset + 1]
+track_number = int(sys.argv[offset + 2])
+total_tracks = int(sys.argv[offset + 3])
+
+v1, v2 = accuraterip.compute(filename, track_number, total_tracks)
+if use_v1:
+    print('%08X' % v1)
+else:
+    print('%08X' % v2)
