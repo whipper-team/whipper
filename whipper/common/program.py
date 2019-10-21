@@ -126,9 +126,8 @@ class Program:
             logger.debug('getTable: cddbdiscid %s, mbdiscid %s not in cache '
                          'for offset %s, reading table', cddbdiscid, mbdiscid,
                          offset)
-            t = cdrdao.ReadTOCTask(device)
+            t = cdrdao.ReadTOCTask(device, toc_path=toc_path)
             t.description = "Reading table"
-            t.toc_path = toc_path
             runner.run(t)
             itable = t.toc.table
             tdict[offset] = itable
