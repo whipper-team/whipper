@@ -63,8 +63,9 @@ class WhipperLogger(result.Logger):
 
         # CD metadata
         lines.append("CD metadata:")
-        lines.append("  Release: %s - %s" %
-                     (ripResult.artist, ripResult.title))
+        lines.append("  Release:")
+        lines.append("    Artist: %s" % ripResult.artist)
+        lines.append("    Title: %s" % ripResult.title)
         lines.append("  CDDB Disc ID: %s" % ripResult. table.getCDDBDiscId())
         lines.append("  MusicBrainz Disc ID: %s" %
                      ripResult. table.getMusicBrainzDiscId())
