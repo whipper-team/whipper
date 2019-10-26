@@ -42,7 +42,7 @@ DEFAULT_DISC_TEMPLATE = u'%r/%A - %d/%A - %d'
 
 TEMPLATE_DESCRIPTION = '''
 Tracks are named according to the track template, filling in the variables
-and adding the file extension.  Variables exclusive to the track template are:
+and adding the file extension. Variables exclusive to the track template are:
  - %t: track number
  - %a: track artist
  - %n: track title
@@ -198,7 +198,7 @@ class _CD(BaseCommand):
 
 class Info(_CD):
     summary = "retrieve information about the currently inserted CD"
-    description = ("Display MusicBrainz, CDDB/FreeDB, and AccurateRip"
+    description = ("Display MusicBrainz, CDDB/FreeDB, and AccurateRip "
                    "information for the currently inserted CD.")
     eject = False
 
