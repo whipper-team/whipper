@@ -14,8 +14,8 @@ def eject_device(device):
         # `eject device` prints nothing to stdout
         subprocess.check_output(['eject', device], stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
-        logger.warning(e.cmd, 'returned with exit code: ', e.returncode,
-                       e.output)
+        logger.warning("command '%s' returned with exit code '%d' (%s)",
+                       ' '.join(e.cmd), e.returncode, e.output.rstrip())
 
 
 def load_device(device):
@@ -28,8 +28,8 @@ def load_device(device):
         subprocess.check_output(['eject', '-t', device],
                                 stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
-        logger.warning(e.cmd, 'returned with exit code: ', e.returncode,
-                       e.output)
+        logger.warning("command '%s' returned with exit code '%d' (%s)",
+                       ' '.join(e.cmd), e.returncode, e.output.rstrip())
 
 
 def unmount_device(device):
