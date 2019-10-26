@@ -45,8 +45,7 @@ RUN echo "LC_ALL=en_US.UTF-8" >> /etc/environment \
 # install whipper
 RUN mkdir /whipper
 COPY . /whipper/
-RUN cd /whipper/src && make && make install \
-  && cd /whipper && python2 setup.py install \
+RUN cd /whipper && python2 setup.py install \
   && rm -rf /whipper \
   && whipper -v
 
