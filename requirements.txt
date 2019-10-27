@@ -3,3 +3,5 @@ mutagen
 pycdio>0.20
 PyGObject
 requests
+ruamel.yaml
+setuptools_scm

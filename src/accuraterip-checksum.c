@@ -1,12 +1,10 @@
 /*
  ============================================================================
  Name        : accuraterip-checksum.c
- Author      : Leo Bogert (http://leo.bogert.de)
- Git         : http://leo.bogert.de/accuraterip-checksum
- Version     : See global variable "version"
- Copyright   : GPL
- Description : A C99 commandline program to compute the AccurateRip checksum of singletrack WAV files.
- 	 	 	   Implemented according to http://www.hydrogenaudio.org/forums/index.php?showtopic=97603
+ Authors     : Leo Bogert (http://leo.bogert.de), Andreas Oberritter
+ License     : GPLv3
+ Description : A Python C extension to compute the AccurateRip checksum of WAV or FLAC tracks.
+               Implemented according to http://www.hydrogenaudio.org/forums/index.php?showtopic=97603
  ============================================================================
  */
 
@@ -17,10 +15,10 @@
 #include <string.h>
 #include <stdint.h>
 #include <sndfile.h>
+#include <Python.h>
 
-const char *const version = "1.4";
-
-bool check_fileformat(const SF_INFO* sfinfo) {
+static bool check_fileformat(const SF_INFO *sfinfo)
+{
 #ifdef DEBUG
 	printf("Channels: %i\n", sfinfo->channels);
 	printf("Format: %X\n", sfinfo->format);
@@ -30,27 +28,25 @@ bool check_fileformat(const SF_INFO* sfinfo) {
 	printf("Seekable: %i\n", sfinfo->seekable);
 #endif
 
-	if(sfinfo->channels != 2) return false;
-	if((sfinfo->format & SF_FORMAT_TYPEMASK & SF_FORMAT_WAV) != SF_FORMAT_WAV) return false;
-	if((sfinfo->format & SF_FORMAT_SUBMASK & SF_FORMAT_PCM_16) != SF_FORMAT_PCM_16) return false;
-	//if((sfinfo->format & SF_FORMAT_ENDMASK & SF_ENDIAN_LITTLE) != SF_ENDIAN_LITTLE) return false;
-	if(sfinfo->samplerate != 44100) return false;
+	switch (sfinfo->format & SF_FORMAT_TYPEMASK) {
+	case SF_FORMAT_WAV:
+	case SF_FORMAT_FLAC:
+		return (sfinfo->channels == 2) &&
+		       (sfinfo->samplerate == 44100) &&
+		       ((sfinfo->format & SF_FORMAT_SUBMASK) == SF_FORMAT_PCM_16);
+	}
 
-	return true;
+	return false;
 }
 
-size_t get_full_audiodata_size(const SF_INFO* sfinfo) {
-	// 16bit = samplesize, 8 bit = bitcount in byte
-	return sfinfo->frames * sfinfo->channels * (16 / 8);
-}
-
-uint32_t* load_full_audiodata(SNDFILE* sndfile, const SF_INFO* sfinfo) {
-	uint32_t* data = (uint32_t*)malloc(get_full_audiodata_size(sfinfo));
+static void *load_full_audiodata(SNDFILE *sndfile, const SF_INFO *sfinfo, size_t size)
+{
+	void *data = malloc(size);
 
 	if(data == NULL)
 		return NULL;
 
-	if(sf_readf_short(sndfile, (short*)data, sfinfo->frames) !=  sfinfo->frames) {
+	if(sf_readf_short(sndfile, data, sfinfo->frames) !=  sfinfo->frames) {
 		free(data);
 		return NULL;
 	}
@@ -58,170 +54,100 @@ uint32_t* load_full_audiodata(SNDFILE* sndfile, const SF_INFO* sfinfo) {
 	return data;
 }
 
-uint32_t compute_v1_checksum(const uint32_t* audio_data, const size_t audio_data_size, const int track_number, const int total_tracks) {
-#define DWORD uint32_t
+static void compute_checksums(const uint32_t *audio_data, size_t audio_data_size, size_t track_number, size_t total_tracks, uint32_t *v1, uint32_t *v2)
+{
+	uint32_t csum_hi = 0;
+	uint32_t csum_lo = 0;
+	uint32_t AR_CRCPosCheckFrom = 0;
+	size_t Datauint32_tSize = audio_data_size / sizeof(uint32_t);
+	uint32_t AR_CRCPosCheckTo = Datauint32_tSize;
+	const size_t SectorBytes = 2352;		// each sector
+	uint32_t MulBy = 1;
+	size_t i;
 
-	const DWORD *pAudioData = audio_data;	// this should point entire track audio data
-	int DataSize = 	audio_data_size;	// size of the data
-	int TrackNumber = track_number;	// actual track number on disc, note that for the first & last track the first and last 5 sectors are skipped
-	int AudioTrackCount = total_tracks;	// CD track count
+	if (track_number == 1)			// first?
+		AR_CRCPosCheckFrom += ((SectorBytes * 5) / sizeof(uint32_t));
+	if (track_number == total_tracks)		// last?
+		AR_CRCPosCheckTo -= ((SectorBytes * 5) / sizeof(uint32_t));
 
-	//---------AccurateRip CRC checks------------
-	DWORD AR_CRC = 0, AR_CRCPosMulti = 1;
-	DWORD AR_CRCPosCheckFrom = 0;
-	DWORD AR_CRCPosCheckTo = DataSize / sizeof(DWORD);
-#define SectorBytes 2352		// each sector
-	if (TrackNumber == 1)			// first?
-		AR_CRCPosCheckFrom+= ((SectorBytes * 5) / sizeof(DWORD));
-	if (TrackNumber == AudioTrackCount)		// last?
-		AR_CRCPosCheckTo-=((SectorBytes * 5) / sizeof(DWORD));
-
-
-	int DataDWORDSize = DataSize / sizeof(DWORD);
-	for (int i = 0; i < DataDWORDSize; i++)
-	{
-		if (AR_CRCPosMulti >= AR_CRCPosCheckFrom && AR_CRCPosMulti <= AR_CRCPosCheckTo)
-			AR_CRC+=(AR_CRCPosMulti * pAudioData[i]);
-
-		AR_CRCPosMulti++;
-	}
-
-	return AR_CRC;
-}
-
-uint32_t compute_v2_checksum(const uint32_t* audio_data, const size_t audio_data_size, const int track_number, const int total_tracks) {
-#define DWORD uint32_t
-#define __int64 uint64_t
-
-	const DWORD *pAudioData = audio_data;	// this should point entire track audio data
-	int DataSize = 	audio_data_size;	// size of the data
-	int TrackNumber = track_number;	// actual track number on disc, note that for the first & last track the first and last 5 sectors are skipped
-	int AudioTrackCount = total_tracks;	// CD track count
-
-	//---------AccurateRip CRC checks------------
-	DWORD AR_CRCPosCheckFrom = 0;
-	DWORD AR_CRCPosCheckTo = DataSize / sizeof(DWORD);
-#define SectorBytes 2352		// each sector
-	if (TrackNumber == 1)			// first?
-		AR_CRCPosCheckFrom+= ((SectorBytes * 5) / sizeof(DWORD));
-	if (TrackNumber == AudioTrackCount)		// last?
-		AR_CRCPosCheckTo-=((SectorBytes * 5) / sizeof(DWORD));
-
-	int DataDWORDSize = DataSize / sizeof(DWORD);
-
-    DWORD AC_CRCNEW = 0;
-	DWORD MulBy = 1;
-	for (int i = 0; i < DataDWORDSize; i++)
-	{
-		if (MulBy >= AR_CRCPosCheckFrom && MulBy <= AR_CRCPosCheckTo)
-		{
-			DWORD Value = pAudioData[i];
-
-			uint64_t CalcCRCNEW = (uint64_t)Value * (uint64_t)MulBy;
-			DWORD LOCalcCRCNEW = (DWORD)(CalcCRCNEW & (uint64_t)0xFFFFFFFF);
-			DWORD HICalcCRCNEW = (DWORD)(CalcCRCNEW / (uint64_t)0x100000000);
-			AC_CRCNEW+=HICalcCRCNEW;
-			AC_CRCNEW+=LOCalcCRCNEW;
+	for (i = 0; i < Datauint32_tSize; i++) {
+		if (MulBy >= AR_CRCPosCheckFrom && MulBy <= AR_CRCPosCheckTo) {
+			uint64_t product = (uint64_t)audio_data[i] * (uint64_t)MulBy;
+			csum_hi += (uint32_t)(product >> 32);
+			csum_lo += (uint32_t)(product);
 		}
-        MulBy++;
+		MulBy++;
 	}
 
-	return AC_CRCNEW;
+	*v1 = csum_lo;
+	*v2 = csum_lo + csum_hi;
 }
 
-void print_syntax_to_stderr() {
-	fprintf(stderr, "Syntax: accuraterip-checksum [--version / --accuraterip-v1 / --accuraterip-v2 (default)] filename track_number total_tracks\n");
-}
+static PyObject *accuraterip_compute(PyObject *self, PyObject *args)
+{
+	const char *filename;
+	unsigned int track_number;
+	unsigned int total_tracks;
+	uint32_t v1, v2;
+	void *audio_data;
+	size_t size;
+	SF_INFO sfinfo;
+	SNDFILE *sndfile = NULL;
 
-int main(int argc, const char** argv) {
-	int arg_offset;
-	bool use_v1;
+	if (!PyArg_ParseTuple(args, "sII", &filename, &track_number, &total_tracks))
+		goto err;
 
-	switch(argc) {
-		case 2:
-			if(strcmp(argv[1], "--version") != 0) {
-				print_syntax_to_stderr();
-				return EXIT_FAILURE;
-			}
-			printf("accuraterip-checksum version %s\n", version);
-			return EXIT_SUCCESS;
-		case 4:
-			arg_offset = 0;
-			use_v1 = false;
-			break;
-		case 5:
-			arg_offset = 1;
-			if(!strcmp(argv[1], "--accuraterip-v1")) {
-				use_v1 = true;
-			} else if(!strcmp(argv[1], "--accuraterip-v2")) {
-				use_v1 = false;
-			} else {
-				print_syntax_to_stderr();
-				return EXIT_FAILURE;
-			}
-			break;
-		default:
-			print_syntax_to_stderr();
-			return EXIT_FAILURE;
-	}
-
-	const char* filename = argv[1 + arg_offset];
-	const char* track_number_string = argv[2 + arg_offset];
-	const char* total_tracks_string = argv[3 + arg_offset];
-
-	const int track_number = atoi(track_number_string);
-	const int total_tracks = atoi(total_tracks_string);
-
-	if(track_number < 1 || track_number > total_tracks) {
+	if (track_number < 1 || track_number > total_tracks) {
 		fprintf(stderr, "Invalid track_number!\n");
-		return EXIT_FAILURE;
+		goto err;
 	}
 
-	if(total_tracks < 1 || total_tracks > 99) {
+	if (total_tracks < 1 || total_tracks > 99) {
 		fprintf(stderr, "Invalid total_tracks!\n");
-		return EXIT_FAILURE;
+		goto err;
 	}
 
 #ifdef DEBUG
 	printf("Reading %s\n", filename);
 #endif
 
-	SF_INFO sfinfo;
-	sfinfo.channels = 0;
-	sfinfo.format = 0;
-	sfinfo.frames = 0;
-	sfinfo.samplerate = 0;
-	sfinfo.sections = 0;
-	sfinfo.seekable = 0;
-
-	SNDFILE* sndfile = sf_open(filename, SFM_READ, &sfinfo);
-
-	if(sndfile == NULL) {
+	memset(&sfinfo, 0, sizeof(sfinfo));
+	sndfile = sf_open(filename, SFM_READ, &sfinfo);
+	if (sndfile == NULL) {
 		fprintf(stderr, "sf_open failed! sf_error==%i\n", sf_error(NULL));
-		return EXIT_FAILURE;
+		goto err;
 	}
 
-	if(!check_fileformat(&sfinfo)) {
+	if (!check_fileformat(&sfinfo)) {
 		fprintf(stderr, "check_fileformat failed!\n");
-		sf_close(sndfile);
-		return EXIT_FAILURE;
+		goto err;
 	}
 
-	uint32_t* audio_data = load_full_audiodata(sndfile, &sfinfo);
-	if(audio_data == NULL) {
+	size = sfinfo.frames * sfinfo.channels * sizeof(uint16_t);
+	audio_data = load_full_audiodata(sndfile, &sfinfo, size);
+	if (audio_data == NULL) {
 		fprintf(stderr, "load_full_audiodata failed!\n");
-		sf_close(sndfile);
-		return EXIT_FAILURE;
+		goto err;
 	}
 
-	const int checksum = use_v1 ?
-			compute_v1_checksum(audio_data, get_full_audiodata_size(&sfinfo), track_number, total_tracks)
-			: compute_v2_checksum(audio_data, get_full_audiodata_size(&sfinfo), track_number, total_tracks);
-
-	printf("%08X\n", checksum);
-
-	sf_close(sndfile);
+	compute_checksums(audio_data, size, track_number, total_tracks, &v1, &v2);
 	free(audio_data);
+	sf_close(sndfile);
 
-	return EXIT_SUCCESS;
+	return Py_BuildValue("II", v1, v2);
+
+err:
+	if (sndfile)
+		sf_close(sndfile);
+	return Py_BuildValue("OO", Py_None, Py_None);
+}
+
+static PyMethodDef accuraterip_methods[] = {
+	{ "compute", accuraterip_compute, METH_VARARGS, "Compute AccurateRip v1 and v2 checksums" },
+	{ NULL, NULL, 0, NULL },
+};
+
+PyMODINIT_FUNC initaccuraterip(void)
+{
+	Py_InitModule("accuraterip", accuraterip_methods);
 }

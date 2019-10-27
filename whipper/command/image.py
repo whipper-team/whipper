@@ -70,7 +70,7 @@ Verifies the image from the given .cue files against the AccurateRip database.
 class Image(BaseCommand):
     summary = "handle images"
     description = """
-Handle disc images.  Disc images are described by a .cue file.
+Handle disc images. Disc images are described by a .cue file.
 Disc images can be verified.
 """
     subcommands = {

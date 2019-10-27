@@ -52,17 +52,19 @@ class TrackMetadata(object):
     mbid = None
     sortName = None
     mbidArtist = None
+    mbidRecording = None
+    mbidWorks = []
 
 
 class DiscMetadata(object):
     """
-    @param artist:       artist(s) name
-    @param sortName:     album artist sort name
-    @param release:      earliest release date, in YYYY-MM-DD
-    @type  release:      unicode
-    @param title:        title of the disc (with disambiguation)
-    @param releaseTitle: title of the release (without disambiguation)
-    @type  tracks:       C{list} of L{TrackMetadata}
+    :param artist:       artist(s) name
+    :param sortName:     release artist sort name
+    :param release:      earliest release date, in YYYY-MM-DD
+    :type  release:      unicode
+    :param title:        title of the disc (with disambiguation)
+    :param releaseTitle: title of the release (without disambiguation)
+    :type  tracks:       list of :any:`TrackMetadata`
     """
     artist = None
     sortName = None
@@ -75,6 +77,7 @@ class DiscMetadata(object):
     releaseType = None
 
     mbid = None
+    mbidReleaseGroup = None
     mbidArtist = None
     url = None
 
@@ -140,17 +143,31 @@ class _Credit(list):
                                            i.get('artist').get('name', None)))
 
     def getIds(self):
+        # split()'s the joined string so we get a proper list of MBIDs
         return self.joiner(lambda i: i.get('artist').get('id', None),
-                           joinString=";")
+                           joinString=";").split(';')
 
 
-def _getMetadata(releaseShort, release, discid, country=None):
+def _getWorks(recording):
+    """Get "performance of" works out of a recording."""
+    works = []
+    valid_work_rel_types = [
+        u'a3005666-a872-32c3-ad06-98af558e99b0',  # "Performance"
+    ]
+    if 'work-relation-list' in recording:
+        for work in recording['work-relation-list']:
+            if work['type-id'] in valid_work_rel_types:
+                works.append(work['work']['id'])
+    return works
+
+
+def _getMetadata(release, discid, country=None):
     """
-    @type  release: C{dict}
-    @param release: a release dict as returned in the value for key release
+    :type  release: dict
+    :param release: a release dict as returned in the value for key release
                     from get_release_by_id
 
-    @rtype: L{DiscMetadata} or None
+    :rtype: DiscMetadata or None
     """
     logger.debug('getMetadata for release id %r', release['id'])
     if not release['id']:
@@ -165,7 +182,8 @@ def _getMetadata(releaseShort, release, discid, country=None):
 
     discMD = DiscMetadata()
 
-    discMD.releaseType = releaseShort.get('release-group', {}).get('type')
+    if 'type' in release['release-group']:
+        discMD.releaseType = release['release-group']['type']
     discCredit = _Credit(release['artist-credit'])
 
     # FIXME: is there a better way to check for VA ?
@@ -176,10 +194,10 @@ def _getMetadata(releaseShort, release, discid, country=None):
     if len(discCredit) > 1:
         logger.debug('artist-credit more than 1: %r', discCredit)
 
-    albumArtistName = discCredit.getName()
+    releaseArtistName = discCredit.getName()
 
     # getUniqueName gets disambiguating names like Muse (UK rock band)
-    discMD.artist = albumArtistName
+    discMD.artist = releaseArtistName
     discMD.sortName = discCredit.getSortName()
     if 'date' not in release:
         logger.warning("release with ID '%s' (%s - %s) does not have a date",
@@ -188,6 +206,7 @@ def _getMetadata(releaseShort, release, discid, country=None):
         discMD.release = release['date']
 
     discMD.mbid = release['id']
+    discMD.mbidReleaseGroup = release['release-group']['id']
     discMD.mbidArtist = discCredit.getIds()
     discMD.url = 'https://musicbrainz.org/release/' + release['id']
 
@@ -229,7 +248,9 @@ def _getMetadata(releaseShort, release, discid, country=None):
                     track.mbidArtist = trackCredit.getIds()
 
                     track.title = t['recording']['title']
-                    track.mbid = t['recording']['id']
+                    track.mbid = t['id']
+                    track.mbidRecording = t['recording']['id']
+                    track.mbidWorks = _getWorks(t['recording'])
 
                     # FIXME: unit of duration ?
                     track.duration = int(t['recording'].get('length', 0))
@@ -261,13 +282,14 @@ def musicbrainz(discid, country=None, record=False):
 
     Example disc id: Mj48G109whzEmAbPBoGvd4KyCS4-
 
-    @type  discid: str
+    :type  discid: str
 
-    @rtype: list of L{DiscMetadata}
+    :rtype: list of :any:`DiscMetadata`
     """
     logger.debug('looking up results for discid %r', discid)
     import musicbrainzngs
 
+    logging.getLogger("musicbrainzngs").setLevel(logging.WARNING)
     musicbrainzngs.set_useragent("whipper", whipper.__version__,
                                  "https://github.com/whipper-team/whipper")
     ret = []
@@ -303,13 +325,15 @@ def musicbrainz(discid, country=None, record=False):
 
             res = musicbrainzngs.get_release_by_id(
                 release['id'], includes=["artists", "artist-credits",
-                                         "recordings", "discids", "labels"])
+                                         "recordings", "discids", "labels",
+                                         "recording-level-rels", "work-rels",
+                                         "release-groups"])
             _record(record, 'release', release['id'], res)
             releaseDetail = res['release']
             formatted = json.dumps(releaseDetail, sort_keys=False, indent=4)
             logger.debug('release %s', formatted)
 
-            md = _getMetadata(release, releaseDetail, discid, country)
+            md = _getMetadata(releaseDetail, discid, country)
             if md:
                 logger.debug('duration %r', md.duration)
                 ret.append(md)
@@ -317,6 +341,4 @@ def musicbrainz(discid, country=None, record=False):
         return ret
     elif result.get('cdstub'):
         logger.debug('query returned cdstub: ignored')
-        return None
-    else:
-        return None
+    return None

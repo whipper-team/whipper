@@ -56,11 +56,11 @@ def msfToFrames(msf):
     """
     Converts a string value in MM:SS:FF to frames.
 
-    @param msf: the MM:SS:FF value to convert
-    @type  msf: str
+    :param msf: the MM:SS:FF value to convert
+    :type  msf: str
 
-    @rtype:   int
-    @returns: number of frames
+    :rtype:   int
+    :returns: number of frames
     """
     if ':' not in msf:
         return int(msf)
@@ -76,7 +76,7 @@ def framesToMSF(frames, frameDelimiter=':'):
     f = frames % FRAMES_PER_SECOND
     frames -= f
     s = (frames / FRAMES_PER_SECOND) % 60
-    frames -= s * 60
+    frames -= s * FRAMES_PER_SECOND
     m = frames / FRAMES_PER_SECOND / 60
 
     return "%02d:%02d%s%02d" % (m, s, frameDelimiter, f)
@@ -104,19 +104,19 @@ def formatTime(seconds, fractional=3):
     If it is greater than 0, we will show seconds and fractions of seconds.
     As a side consequence, there is no way to show seconds without fractions.
 
-    @param seconds:    the time in seconds to format.
-    @type  seconds:    int or float
-    @param fractional: how many digits to show for the fractional part of
+    :param seconds:    the time in seconds to format.
+    :type  seconds:    int or float
+    :param fractional: how many digits to show for the fractional part of
                        seconds.
-    @type  fractional: int
+    :type  fractional: int
 
-    @rtype: string
-    @returns: a nicely formatted time string.
+    :rtype: string
+    :returns: a nicely formatted time string.
     """
     chunks = []
 
     if seconds < 0:
-        chunks.append(('-'))
+        chunks.append('-')
         seconds = -seconds
 
     hour = 60 * 60
@@ -207,11 +207,11 @@ def getRealPath(refPath, filePath):
     Does Windows path translation.
     Will look for the given file name, but with .flac and .wav as extensions.
 
-    @param refPath:  path to the file from which the track is referenced;
+    :param refPath:  path to the file from which the track is referenced;
                      for example, path to the .cue file in the same directory
-    @type  refPath:  unicode
+    :type  refPath:  unicode
 
-    @type  filePath: unicode
+    :type  filePath: unicode
     """
     assert isinstance(filePath, unicode), "%r is not unicode" % filePath
 
@@ -271,13 +271,12 @@ def getRelativePath(targetPath, collectionPath):
     if targetDir == collectionDir:
         logger.debug('getRelativePath: target and collection in same dir')
         return os.path.basename(targetPath)
-    else:
-        rel = os.path.relpath(
-            targetDir + os.path.sep,
-            collectionDir + os.path.sep)
-        logger.debug('getRelativePath: target and collection '
-                     'in different dir, %r', rel)
-        return os.path.join(rel, os.path.basename(targetPath))
+    rel = os.path.relpath(
+        targetDir + os.path.sep,
+        collectionDir + os.path.sep)
+    logger.debug('getRelativePath: target and collection '
+                 'in different dir, %r', rel)
+    return os.path.join(rel, os.path.basename(targetPath))
 
 
 def validate_template(template, kind):
@@ -285,9 +284,9 @@ def validate_template(template, kind):
     Raise exception if disc/track template includes invalid variables
     """
     if kind == 'disc':
-        matches = re.findall(r'%[^A,R,S,X,d,r,x,y]', template)
+        matches = re.findall(r'%[^ARSXdrxy]', template)
     elif kind == 'track':
-        matches = re.findall(r'%[^A,R,S,X,a,d,n,r,s,t,x,y]', template)
+        matches = re.findall(r'%[^ARSXadnrstxy]', template)
     if '%' in template and matches:
         raise ValueError(kind + ' template string contains invalid '
                          'variable(s): {}'.format(', '.join(matches)))
@@ -301,11 +300,11 @@ class VersionGetter(object):
 
     def __init__(self, dependency, args, regexp, expander):
         """
-        @param dependency: name of the dependency providing the program
-        @param args:       the arguments to invoke to show the version
-        @type  args:       list of str
-        @param regexp:     the regular expression to get the version
-        @param expander:   the expansion string for the version using the
+        :param dependency: name of the dependency providing the program
+        :param args:       the arguments to invoke to show the version
+        :type  args:       list of str
+        :param regexp:     the regular expression to get the version
+        :param expander:   the expansion string for the version using the
                            regexp group dict
         """
 

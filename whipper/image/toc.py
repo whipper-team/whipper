@@ -104,10 +104,10 @@ class Sources:
 
     def append(self, counter, offset, source):
         """
-        @param counter: the source counter; updates for each different
+        :param counter: the source counter; updates for each different
                         data source (silence or different file path)
-        @type  counter: int
-        @param offset:  the absolute disc offset where this source starts
+        :type  counter: int
+        :param offset:  the absolute disc offset where this source starts
         """
         logger.debug('appending source, counter %d, abs offset %d, '
                      'source %r', counter, offset, source)
@@ -117,7 +117,7 @@ class Sources:
         """
         Retrieve the source used at the given offset.
         """
-        for i, (c, o, s) in enumerate(self._sources):
+        for i, (_, o, _) in enumerate(self._sources):
             if offset < o:
                 return self._sources[i - 1]
 
@@ -127,7 +127,7 @@ class Sources:
         """
         Retrieve the absolute offset of the first source for this counter
         """
-        for i, (c, o, s) in enumerate(self._sources):
+        for i, (c, _, _) in enumerate(self._sources):
             if c == counter:
                 return self._sources[i][1]
 
@@ -138,7 +138,7 @@ class TocFile(object):
 
     def __init__(self, path):
         """
-        @type  path: unicode
+        :type  path: unicode
         """
         assert isinstance(path, unicode), "%r is not unicode" % path
         self._path = path
@@ -151,7 +151,7 @@ class TocFile(object):
     def _index(self, currentTrack, i, absoluteOffset, trackOffset):
         absolute = absoluteOffset + trackOffset
         # this may be in a new source, so calculate relative
-        c, o, s = self._sources.get(absolute)
+        c, _, s = self._sources.get(absolute)
         logger.debug('at abs offset %d, we are in source %r',
                      absolute, s)
         counterStart = self._sources.getCounterStart(c)
@@ -341,7 +341,7 @@ class TocFile(object):
                     continue
 
                 length = common.msfToFrames(m.group('length'))
-                c, o, s = self._sources.get(absoluteOffset)
+                c, _, s = self._sources.get(absoluteOffset)
                 logger.debug('at abs offset %d, we are in source %r',
                              absoluteOffset, s)
                 counterStart = self._sources.getCounterStart(c)
@@ -380,7 +380,7 @@ class TocFile(object):
         """
         Add a message about a given line in the cue file.
 
-        @param number: line number, counting from 0.
+        :param number: line number, counting from 0.
         """
         self._messages.append((number + 1, message))
 
@@ -412,7 +412,7 @@ class TocFile(object):
         """
         Translate the .toc's FILE to an existing path.
 
-        @type  path: unicode
+        :type  path: unicode
         """
         return common.getRealPath(self._path, path)
 
@@ -424,10 +424,10 @@ class File:
 
     def __init__(self, path, start, length):
         """
-        @type  path:   C{unicode}
-        @type  start:  C{int}
-        @param start:  starting point for the track in this file, in frames
-        @param length: length for the track in this file, in frames
+        :type  path:   unicode
+        :type  start:  int
+        :param start:  starting point for the track in this file, in frames
+        :param length: length for the track in this file, in frames
         """
         assert isinstance(path, unicode), "%r is not unicode" % path
 

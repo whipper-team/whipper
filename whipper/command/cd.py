@@ -42,7 +42,7 @@ DEFAULT_DISC_TEMPLATE = u'%r/%A - %d/%A - %d'
 
 TEMPLATE_DESCRIPTION = '''
 Tracks are named according to the track template, filling in the variables
-and adding the file extension.  Variables exclusive to the track template are:
+and adding the file extension. Variables exclusive to the track template are:
  - %t: track number
  - %a: track artist
  - %n: track title
@@ -51,12 +51,12 @@ and adding the file extension.  Variables exclusive to the track template are:
 Disc files (.cue, .log, .m3u) are named according to the disc template,
 filling in the variables and adding the file extension. Variables for both
 disc and track template are:
- - %A: album artist
- - %S: album sort name
+ - %A: release artist
+ - %S: release sort name
  - %d: disc title
  - %y: release year
  - %r: release type, lowercase
- - %R: Release type, normal case
+ - %R: release type, normal case
  - %x: audio extension, lowercase
  - %X: audio extension, uppercase
 
@@ -66,6 +66,7 @@ disc and track template are:
 class _CD(BaseCommand):
     eject = True
 
+    # XXX: Pylint, parameters differ from overridden 'add_arguments' method
     @staticmethod
     def add_arguments(parser):
         parser.add_argument('-R', '--release-id',
@@ -94,7 +95,6 @@ class _CD(BaseCommand):
         utils.unmount_device(self.device)
 
         # first, read the normal TOC, which is fast
-        logger.info("reading TOC...")
         self.ittoc = self.program.getFastToc(self.runner, self.device)
 
         # already show us some info based on this
@@ -134,20 +134,23 @@ class _CD(BaseCommand):
             return -1
 
         # Change working directory before cdrdao's task
-        if self.options.working_directory is not None:
+        if getattr(self.options, 'working_directory', False):
             os.chdir(os.path.expanduser(self.options.working_directory))
-        out_bpath = self.options.output_directory.decode('utf-8')
-        # Needed to preserve cdrdao's tocfile
-        out_fpath = self.program.getPath(out_bpath,
-                                         self.options.disc_template,
-                                         self.mbdiscid,
-                                         self.program.metadata)
+        if hasattr(self.options, 'output_directory'):
+            out_bpath = self.options.output_directory.decode('utf-8')
+            # Needed to preserve cdrdao's tocfile
+            out_fpath = self.program.getPath(out_bpath,
+                                             self.options.disc_template,
+                                             self.mbdiscid,
+                                             self.program.metadata)
+        else:
+            out_fpath = None
         # now, read the complete index table, which is slower
+        offset = getattr(self.options, 'offset', 0)
         self.itable = self.program.getTable(self.runner,
                                             self.ittoc.getCDDBDiscId(),
                                             self.ittoc.getMusicBrainzDiscId(),
-                                            self.device, self.options.offset,
-                                            out_fpath)
+                                            self.device, offset, out_fpath)
 
         assert self.itable.getCDDBDiscId() == self.ittoc.getCDDBDiscId(), \
             "full table's id %s differs from toc id %s" % (
@@ -157,17 +160,13 @@ class _CD(BaseCommand):
             "full table's mb id %s differs from toc id mb %s" % (
             self.itable.getMusicBrainzDiscId(),
             self.ittoc.getMusicBrainzDiscId())
-        assert self.itable.accuraterip_path() == \
-            self.ittoc.accuraterip_path(), \
-            "full table's AR URL %s differs from toc AR URL %s" % (
-            self.itable.accuraterip_url(), self.ittoc.accuraterip_url())
 
         if self.program.metadata:
             self.program.metadata.discid = self.ittoc.getMusicBrainzDiscId()
 
         # result
 
-        self.program.result.cdrdaoVersion = cdrdao.getCDRDAOVersion()
+        self.program.result.cdrdaoVersion = cdrdao.version()
         self.program.result.cdparanoiaVersion = \
             cdparanoia.getCdParanoiaVersion()
         info = drive.getDeviceInfo(self.device)
@@ -186,11 +185,15 @@ class _CD(BaseCommand):
         _, self.program.result.vendor, self.program.result.model, \
             self.program.result.release = \
             cdio.Device(self.device).get_hwinfo()
+        self.program.result.metadata = self.program.metadata
 
         self.doCommand()
 
-        if self.options.eject in ('success', 'always'):
+        if (self.options.eject == 'success' and self.eject or
+                self.options.eject == 'always'):
             utils.eject_device(self.device)
+
+        return None
 
     def doCommand(self):
         pass
@@ -198,12 +201,13 @@ class _CD(BaseCommand):
 
 class Info(_CD):
     summary = "retrieve information about the currently inserted CD"
-    description = ("Display MusicBrainz, CDDB/FreeDB, and AccurateRip"
+    description = ("Display MusicBrainz, CDDB/FreeDB, and AccurateRip "
                    "information for the currently inserted CD.")
     eject = False
 
     # Requires opts.device
 
+    # XXX: Pylint, parameters differ from overridden 'add_arguments' method
     def add_arguments(self):
         _CD.add_arguments(self.parser)
 
@@ -227,6 +231,7 @@ Log files will log the path to tracks relative to this directory.
     # Requires opts.record
     # Requires opts.device
 
+    # XXX: Pylint, parameters differ from overridden 'add_arguments' method
     def add_arguments(self):
         loggers = list(result.getLoggers())
         default_offset = None
@@ -245,7 +250,6 @@ Log files will log the path to tracks relative to this directory.
                                  default='whipper',
                                  help=("logger to use (choose from: '%s" %
                                        "', '".join(loggers) + "')"))
-        # FIXME: get from config
         self.parser.add_argument('-o', '--offset',
                                  action="store", dest="offset",
                                  default=default_offset,
@@ -414,6 +418,7 @@ Log files will log the path to tracks relative to this directory.
                                                   len(self.itable.tracks),
                                                   extra))
                         break
+                    # FIXME: catching too general exception (Exception)
                     except Exception as e:
                         logger.debug('got exception %r on try %d', e, tries)
 
@@ -441,17 +446,17 @@ Log files will log the path to tracks relative to this directory.
                     logger.debug('HTOA peak %r is equal to the SILENT '
                                  'threshold, disregarding', trackResult.peak)
                     self.itable.setFile(1, 0, None,
-                                        self.ittoc.getTrackStart(1), number)
+                                        self.itable.getTrackStart(1), number)
                     logger.debug('unlinking %r', trackResult.filename)
                     os.unlink(trackResult.filename)
                     trackResult.filename = None
                     logger.info('HTOA discarded, contains digital silence')
                 else:
                     self.itable.setFile(1, 0, trackResult.filename,
-                                        self.ittoc.getTrackStart(1), number)
+                                        self.itable.getTrackStart(1), number)
             else:
                 self.itable.setFile(number, 1, trackResult.filename,
-                                    self.ittoc.getTrackLength(number), number)
+                                    self.itable.getTrackLength(number), number)
 
             self.program.saveRipResult()
 
@@ -480,7 +485,7 @@ Log files will log the path to tracks relative to this directory.
         self.program.write_m3u(discName)
 
         try:
-            self.program.verifyImage(self.runner, self.ittoc)
+            self.program.verifyImage(self.runner, self.itable)
         except accurip.EntryNotFound:
             logger.warning('AccurateRip entry not found')
 

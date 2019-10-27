@@ -36,15 +36,15 @@ logger = logging.getLogger(__name__)
 
 class Image(object):
     """
-    @ivar table: The Table of Contents for this image.
-    @type table: L{table.Table}
+    :ivar table:    The Table of Contents for this image.
+    :vartype table: table.Table
     """
     logCategory = 'Image'
 
     def __init__(self, path):
         """
-        @type  path: unicode
-        @param path: .cue path
+        :type  path: unicode
+        :param path: .cue path
         """
         assert isinstance(path, unicode), "%r is not unicode" % path
 
@@ -60,7 +60,7 @@ class Image(object):
         """
         Translate the .cue's FILE to an existing path.
 
-        @param path: .cue path
+        :param path: .cue path
         """
         assert isinstance(path, unicode), "%r is not unicode" % path
 
@@ -121,6 +121,7 @@ class ImageVerifyTask(task.MultiSeparateTask):
         task.MultiSeparateTask.__init__(self)
 
         self._image = image
+        # XXX: Pylint, redefining name 'cue' from outer scope (import)
         cue = image.cue
         self._tasks = []
         self.lengths = {}
@@ -183,6 +184,7 @@ class ImageEncodeTask(task.MultiSeparateTask):
         task.MultiSeparateTask.__init__(self)
 
         self._image = image
+        # XXX: Pylint, redefining name 'cue' from outer scope (import)
         cue = image.cue
         self._tasks = []
         self.lengths = {}
@@ -192,7 +194,7 @@ class ImageEncodeTask(task.MultiSeparateTask):
             path = image.getRealPath(index.path)
             assert isinstance(path, unicode), "%r is not unicode" % path
             logger.debug('schedule encode of %r', path)
-            root, ext = os.path.splitext(os.path.basename(path))
+            root, _ = os.path.splitext(os.path.basename(path))
             outpath = os.path.join(outdir, root + '.' + 'flac')
             logger.debug('schedule encode to %r', outpath)
             taskk = encode.FlacEncodeTask(
@@ -205,7 +207,6 @@ class ImageEncodeTask(task.MultiSeparateTask):
             add(htoa)
         except (KeyError, IndexError):
             logger.debug('no HTOA track')
-            pass
 
         for trackIndex, track in enumerate(cue.table.tracks):
             logger.debug('encoding track %d', trackIndex + 1)

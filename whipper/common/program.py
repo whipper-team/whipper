@@ -44,12 +44,11 @@ class Program:
     """
     I maintain program state and functionality.
 
-    @ivar metadata:
-    @type metadata: L{mbngs.DiscMetadata}
-    @ivar result:   the rip's result
-    @type result:   L{result.RipResult}
-    @type outdir:   unicode
-    @type config:   L{whipper.common.config.Config}
+    :vartype metadata: mbngs.DiscMetadata
+    :cvar result:      the rip's result
+    :vartype result:   result.RipResult
+    :vartype outdir:   unicode
+    :vartype config:   whipper.common.config.Config
     """
 
     cuePath = None
@@ -60,7 +59,7 @@ class Program:
 
     def __init__(self, config, record=False):
         """
-        @param record: whether to record results of API calls for playback.
+        :param record: whether to record results of API calls for playback.
         """
         self._record = record
         self._cache = cache.ResultCache()
@@ -81,7 +80,8 @@ class Program:
 
         self._filter = path.PathFilter(**d)
 
-    def setWorkingDirectory(self, workingDirectory):
+    @staticmethod
+    def setWorkingDirectory(workingDirectory):
         if workingDirectory:
             logger.info('changing to working directory %s', workingDirectory)
             os.chdir(workingDirectory)
@@ -91,20 +91,24 @@ class Program:
         Also warn about buggy cdrdao versions.
         """
         from pkg_resources import parse_version as V
-        version = cdrdao.getCDRDAOVersion()
+        version = cdrdao.version()
         if V(version) < V('1.2.3rc2'):
             logger.warning('cdrdao older than 1.2.3 has a pre-gap length bug.'
                            ' See http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=102171')  # noqa: E501
-        toc = cdrdao.ReadTOCTask(device).table
+
+        t = cdrdao.ReadTOCTask(device, fast_toc=True)
+        runner.run(t)
+        toc = t.toc.table
+
         assert toc.hasTOC()
         return toc
 
     def getTable(self, runner, cddbdiscid, mbdiscid, device, offset,
-                 out_path):
+                 toc_path):
         """
         Retrieve the Table either from the cache or the drive.
 
-        @rtype: L{table.Table}
+        :rtype: table.Table
         """
         tcache = cache.TableCache()
         ptable = tcache.get(cddbdiscid, mbdiscid)
@@ -122,8 +126,10 @@ class Program:
             logger.debug('getTable: cddbdiscid %s, mbdiscid %s not in cache '
                          'for offset %s, reading table', cddbdiscid, mbdiscid,
                          offset)
-            t = cdrdao.ReadTableTask(device, out_path)
-            itable = t.table
+            t = cdrdao.ReadTOCTask(device, toc_path=toc_path)
+            t.description = "Reading table"
+            runner.run(t)
+            itable = t.toc.table
             tdict[offset] = itable
             ptable.persist(tdict)
             logger.debug('getTable: read table %r', itable)
@@ -145,7 +151,7 @@ class Program:
         Retrieve the persistable RipResult either from our cache (from a
         previous, possibly aborted rip), or return a new one.
 
-        @rtype: L{result.RipResult}
+        :rtype: result.RipResult
         """
         assert self.result is None
 
@@ -157,8 +163,9 @@ class Program:
     def saveRipResult(self):
         self._presult.persist()
 
-    def addDisambiguation(self, template_part, metadata):
-        "Add disambiguation to template path part string."
+    @staticmethod
+    def addDisambiguation(template_part, metadata):
+        """Add disambiguation to template path part string."""
         if metadata.catalogNumber:
             template_part += ' (%s)' % metadata.catalogNumber
         elif metadata.barcode:
@@ -181,12 +188,12 @@ class Program:
         Disc files (.cue, .log, .m3u) are named according to the disc
         template, filling in the variables and adding the file
         extension. Variables for both disc and track template are:
-          - %A: album artist
-          - %S: album artist sort name
+          - %A: release artist
+          - %S: release artist sort name
           - %d: disc title
           - %y: release year
           - %r: release type, lowercase
-          - %R: Release type, normal case
+          - %R: release type, normal case
           - %x: audio extension, lowercase
           - %X: audio extension, uppercase
         """
@@ -235,11 +242,12 @@ class Program:
         template = re.sub(r'%(\w)', r'%(\1)s', template)
         return os.path.join(outdir, template % v)
 
-    def getCDDB(self, cddbdiscid):
+    @staticmethod
+    def getCDDB(cddbdiscid):
         """
-        @param cddbdiscid: list of id, tracks, offsets, seconds
+        :param cddbdiscid: list of id, tracks, offsets, seconds
 
-        @rtype: str
+        :rtype: str
         """
         # FIXME: convert to nonblocking?
         try:
@@ -262,7 +270,7 @@ class Program:
     def getMusicBrainz(self, ittoc, mbdiscid, release=None, country=None,
                        prompt=False):
         """
-        @type  ittoc: L{whipper.image.table.Table}
+        :type  ittoc: whipper.image.table.Table
         """
         # look up disc on MusicBrainz
         print('Disc duration: %s, %d audio tracks' % (
@@ -270,10 +278,8 @@ class Program:
             ittoc.getAudioTracks()))
         logger.debug('MusicBrainz submit url: %r',
                      ittoc.getMusicBrainzSubmitURL())
-        ret = None
 
         metadatas = None
-        e = None
 
         for _ in range(0, 4):
             try:
@@ -310,6 +316,7 @@ class Program:
                 print('Type    : %s' % metadata.releaseType)
                 if metadata.barcode:
                     print("Barcode : %s" % metadata.barcode)
+                # TODO: Add test for non ASCII catalog numbers: see issue #215
                 if metadata.catalogNumber:
                     print("Cat no  : %s" %
                           metadata.catalogNumber.encode('utf-8'))
@@ -344,7 +351,7 @@ class Program:
                 elif not metadatas:
                     logger.warning("requested release id '%s', but none of "
                                    "the found releases match", release)
-                    return
+                    return None
             else:
                 if lowest:
                     metadatas = deltas[lowest]
@@ -363,7 +370,7 @@ class Program:
                                        "not the same", releaseTitle, i,
                                        metadata.releaseTitle)
 
-                if (not release and len(list(deltas)) > 1):
+                if not release and len(list(deltas)) > 1:
                     logger.warning('picked closest match in duration. '
                                    'Others may be wrong in MusicBrainz, '
                                    'please correct')
@@ -383,30 +390,33 @@ class Program:
         """
         Based on the metadata, get a dict of tags for the given track.
 
-        @param number:   track number (0 for HTOA)
-        @type  number:   int
+        :param number:   track number (0 for HTOA)
+        :type  number:   int
 
-        @rtype: dict
+        :rtype: dict
         """
         trackArtist = u'Unknown Artist'
-        albumArtist = u'Unknown Artist'
+        releaseArtist = u'Unknown Artist'
         disc = u'Unknown Disc'
         title = u'Unknown Track'
 
         if self.metadata:
             trackArtist = self.metadata.artist
-            albumArtist = self.metadata.artist
+            releaseArtist = self.metadata.artist
             disc = self.metadata.title
-            mbidAlbum = self.metadata.mbid
-            mbidTrackAlbum = self.metadata.mbidArtist
+            mbidRelease = self.metadata.mbid
+            mbidReleaseGroup = self.metadata.mbidReleaseGroup
+            mbidReleaseArtist = self.metadata.mbidArtist
 
             if number > 0:
                 try:
                     track = self.metadata.tracks[number - 1]
                     trackArtist = track.artist
                     title = track.title
+                    mbidRecording = track.mbidRecording
                     mbidTrack = track.mbid
                     mbidTrackArtist = track.mbidArtist
+                    mbidWorks = track.mbidWorks
                 except IndexError as e:
                     logger.error('no track %d found, %r', number, e)
                     raise
@@ -420,7 +430,7 @@ class Program:
             tags['MUSICBRAINZ_DISCID'] = mbdiscid
 
         if self.metadata and not self.metadata.various:
-            tags['ALBUMARTIST'] = albumArtist
+            tags['ALBUMARTIST'] = releaseArtist
         tags['ARTIST'] = trackArtist
         tags['TITLE'] = title
         tags['ALBUM'] = disc
@@ -432,10 +442,14 @@ class Program:
                 tags['DATE'] = self.metadata.release
 
             if number > 0:
-                tags['MUSICBRAINZ_TRACKID'] = mbidTrack
+                tags['MUSICBRAINZ_RELEASETRACKID'] = mbidTrack
+                tags['MUSICBRAINZ_TRACKID'] = mbidRecording
                 tags['MUSICBRAINZ_ARTISTID'] = mbidTrackArtist
-                tags['MUSICBRAINZ_ALBUMID'] = mbidAlbum
-                tags['MUSICBRAINZ_ALBUMARTISTID'] = mbidTrackAlbum
+                tags['MUSICBRAINZ_ALBUMID'] = mbidRelease
+                tags['MUSICBRAINZ_RELEASEGROUPID'] = mbidReleaseGroup
+                tags['MUSICBRAINZ_ALBUMARTISTID'] = mbidReleaseArtist
+                if len(mbidWorks) > 0:
+                    tags['MUSICBRAINZ_WORKID'] = mbidWorks
 
         # TODO/FIXME: ISRC tag
 
@@ -445,7 +459,7 @@ class Program:
         """
         Check if we have hidden track one audio.
 
-        @returns: tuple of (start, stop), or None
+        :returns: tuple of (start, stop), or None
         """
         track = self.result.table.tracks[0]
         try:
@@ -455,9 +469,10 @@ class Program:
 
         start = index.absolute
         stop = track.getIndex(1).absolute - 1
-        return (start, stop)
+        return start, stop
 
-    def verifyTrack(self, runner, trackResult):
+    @staticmethod
+    def verifyTrack(runner, trackResult):
         is_wave = not trackResult.filename.endswith('.flac')
         t = checksum.CRC32Task(trackResult.filename, is_wave=is_wave)
 
@@ -481,8 +496,8 @@ class Program:
         Ripping the track may change the track's filename as stored in
         trackResult.
 
-        @param trackResult: the object to store information in.
-        @type  trackResult: L{result.TrackResult}
+        :param trackResult: the object to store information in.
+        :type  trackResult: result.TrackResult
         """
         if trackResult.number == 0:
             start, stop = self.getHTOA()
@@ -589,10 +604,10 @@ class Program:
 
         return cuePath
 
-    def writeLog(self, discName, logger):
+    def writeLog(self, discName, txt_logger):
         logPath = common.truncate_filename(discName + '.log')
         handle = open(logPath, 'w')
-        log = logger.log(self.result)
+        log = txt_logger.log(self.result)
         handle.write(log.encode('utf-8'))
         handle.close()
 

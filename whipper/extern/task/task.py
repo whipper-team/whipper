@@ -22,10 +22,7 @@ from __future__ import print_function
 import logging
 import sys
 
-try:
-    from gi.repository import GLib as gobject
-except ImportError:
-    import gobject
+from gi.repository import GLib as GLib
 
 logger = logging.getLogger(__name__)
 
@@ -77,13 +74,16 @@ class LogStub(object):
     I am a stub for a log interface.
     """
 
-    def log(self, message, *args):
+    @staticmethod
+    def log(message, *args):
         logger.info(message, *args)
 
-    def debug(self, message, *args):
+    @staticmethod
+    def debug(message, *args):
         logger.debug(message, *args)
 
-    def warning(self, message, *args):
+    @staticmethod
+    def warning(message, *args):
         logger.warning(message, *args)
 
 
@@ -97,8 +97,8 @@ class Task(LogStub):
     stopping myself from running.
     The listener can then handle the Task.exception.
 
-    @ivar  description: what am I doing
-    @ivar  exception:   set if an exception happened during the task
+    :cvar  description: what am I doing
+    :cvar  exception:   set if an exception happened during the task
                         execution.  Will be raised through run() at the end.
     """
     logCategory = 'Task'
@@ -191,8 +191,8 @@ class Task(LogStub):
         # for now
         if str(exception):
             msg = ": %s" % str(exception)
-        line = "exception %(exc)s at %(filename)s:%(line)s: "
-        "%(func)s()%(msg)s" % locals()
+        line = ("exception %(exc)s at %(filename)s:%(line)s: "
+                "%(func)s()%(msg)s" % locals())
 
         self.exception = exception
         self.exceptionMessage = line
@@ -213,13 +213,13 @@ class Task(LogStub):
         self.debug('set exception, %r, %r' % (
             exception, self.exceptionMessage))
 
-    def schedule(self, delta, callable, *args, **kwargs):
+    def schedule(self, delta, callable_task, *args, **kwargs):
         if not self.runner:
             print("ERROR: scheduling on a task that's altready stopped")
             import traceback
             traceback.print_stack()
             return
-        self.runner.schedule(self, delta, callable, *args, **kwargs)
+        self.runner.schedule(self, delta, callable_task, *args, **kwargs)
 
     def addListener(self, listener):
         """
@@ -238,6 +238,7 @@ class Task(LogStub):
                 method = getattr(l, methodName)
                 try:
                     method(self, *args, **kwargs)
+                # FIXME: catching too general exception (Exception)
                 except Exception as e:
                     self.setException(e)
 
@@ -253,16 +254,16 @@ class ITaskListener(object):
         """
         Implement me to be informed about progress.
 
-        @type  value: float
-        @param value: progress, from 0.0 to 1.0
+        :type  value: float
+        :param value: progress, from 0.0 to 1.0
         """
 
     def described(self, task, description):
         """
         Implement me to be informed about description changes.
 
-        @type  description: str
-        @param description: description
+        :type  description: str
+        :param description: description
         """
 
     def started(self, task):
@@ -297,8 +298,8 @@ class BaseMultiTask(Task, ITaskListener):
     """
     I perform multiple tasks.
 
-    @ivar tasks: the tasks to run
-    @type tasks: list of L{Task}
+    :ivar tasks: the tasks to run
+    :type tasks: list of :any:`Task`
     """
 
     description = 'Doing various tasks'
@@ -312,7 +313,7 @@ class BaseMultiTask(Task, ITaskListener):
         """
         Add a task.
 
-        @type task: L{Task}
+        :type task: Task
         """
         if self.tasks is None:
             self.tasks = []
@@ -350,6 +351,7 @@ class BaseMultiTask(Task, ITaskListener):
             task.start(self.runner)
             self.debug('BaseMultiTask.next(): started task %d of %d: %r',
                        self._task, len(self.tasks), task)
+        # FIXME: catching too general exception (Exception)
         except Exception as e:
             self.setException(e)
             self.debug('Got exception during next: %r', self.exceptionMessage)
@@ -444,26 +446,26 @@ class TaskRunner(LogStub):
         """
         Run the given task.
 
-        @type  task: Task
+        :type  task: Task
         """
         raise NotImplementedError
 
     # methods for tasks to call
-    def schedule(self, delta, callable, *args, **kwargs):
+    def schedule(self, delta, callable_task, *args, **kwargs):
         """
         Schedule a single future call.
 
         Subclasses should implement this.
 
-        @type  delta: float
-        @param delta: time in the future to schedule call for, in seconds.
+        :type  delta: float
+        :param delta: time in the future to schedule call for, in seconds.
         """
         raise NotImplementedError
 
 
 class SyncRunner(TaskRunner, ITaskListener):
     """
-    I run the task synchronously in a gobject MainLoop.
+    I run the task synchronously in a GObject MainLoop.
     """
 
     def __init__(self, verbose=True):
@@ -478,11 +480,11 @@ class SyncRunner(TaskRunner, ITaskListener):
             self._verboseRun = verbose
         self._skip = skip
 
-        self._loop = gobject.MainLoop()
+        self._loop = GLib.MainLoop()
         self._task.addListener(self)
         # only start the task after going into the mainloop,
         # otherwise the task might complete before we are in it
-        gobject.timeout_add(0L, self._startWrap, self._task)
+        GLib.timeout_add(0L, self._startWrap, self._task)
         self.debug('run loop')
         self._loop.run()
 
@@ -503,6 +505,7 @@ class SyncRunner(TaskRunner, ITaskListener):
         try:
             self.debug('start task %r' % task)
             task.start(self)
+        # FIXME: catching too general exception (Exception)
         except Exception as e:
             # getExceptionMessage uses global exception state that doesn't
             # hang around, so store the message
@@ -510,23 +513,19 @@ class SyncRunner(TaskRunner, ITaskListener):
             self.debug('exception during start: %r', task.exceptionMessage)
             self.stopped(task)
 
-    def schedule(self, task, delta, callable, *args, **kwargs):
+    def schedule(self, task, delta, callable_task, *args, **kwargs):
         def c():
             try:
-                self.debug('schedule: calling %r(*args=%r, **kwargs=%r)',
-                           callable, args, kwargs)
-                callable(*args, **kwargs)
+                callable_task(*args, **kwargs)
                 return False
             except Exception as e:
                 self.debug('exception when calling scheduled callable %r',
-                           callable)
+                           callable_task)
                 task.setException(e)
                 self.stopped(task)
                 raise
-        self.debug('schedule: scheduling %r(*args=%r, **kwargs=%r)',
-                   callable, args, kwargs)
 
-        gobject.timeout_add(int(delta * 1000L), c)
+        GLib.timeout_add(int(delta * 1000L), c)
 
     # ITaskListener methods
     def progressed(self, task, value):

@@ -88,10 +88,10 @@ class ProgressParser:
 
     def __init__(self, start, stop):
         """
-        @param start:  first frame to rip
-        @type  start:  int
-        @param stop:   last frame to rip (inclusive)
-        @type  stop:   int
+        :param start:  first frame to rip
+        :type  start:  int
+        :param stop:   last frame to rip (inclusive)
+        :type  stop:   int
         """
         self.start = start
         self.stop = stop
@@ -159,11 +159,10 @@ class ProgressParser:
             markEnd = frameOffset
 
         # FIXME: doing this is way too slow even for a testcase, so disable
-        if False:
-            for frame in range(markStart, markEnd):
-                if frame not in list(self._reads.keys()):
-                    self._reads[frame] = 0
-                self._reads[frame] += 1
+        # for frame in range(markStart, markEnd):
+        #     if frame not in list(self._reads.keys()):
+        #         self._reads[frame] = 0
+        #     self._reads[frame] += 1
 
         # cdparanoia reads quite a bit beyond the current track before it
         # goes back to verify; don't count those
@@ -206,8 +205,6 @@ class ProgressParser:
 class ReadTrackTask(task.Task):
     """
     I am a task that reads a track using cdparanoia.
-
-    @ivar reads: how many reads were done to rip the track
     """
 
     description = "Reading track"
@@ -222,22 +219,22 @@ class ReadTrackTask(task.Task):
         """
         Read the given track.
 
-        @param path:   where to store the ripped track
-        @type  path:   unicode
-        @param table:  table of contents of CD
-        @type  table:  L{table.Table}
-        @param start:  first frame to rip
-        @type  start:  int
-        @param stop:   last frame to rip (inclusive); >= start
-        @type  stop:   int
-        @param offset: read offset, in samples
-        @type  offset: int
-        @param device: the device to rip from
-        @type  device: str
-        @param action: a string representing the action; e.g. Read/Verify
-        @type  action: str
-        @param what:   a string representing what's being read; e.g. Track
-        @type  what:   str
+        :param path:   where to store the ripped track
+        :type  path:   unicode
+        :param table:  table of contents of CD
+        :type  table:  table.Table
+        :param start:  first frame to rip
+        :type  start:  int
+        :param stop:   last frame to rip (inclusive); >= start
+        :type  stop:   int
+        :param offset: read offset, in samples
+        :type  offset: int
+        :param device: the device to rip from
+        :type  device: str
+        :param action: a string representing the action; e.g. Read/Verify
+        :type  action: str
+        :param what:   a string representing what's being read; e.g. Track
+        :type  what:   str
         """
         assert isinstance(path, unicode), "%r is not unicode" % path
 
@@ -264,7 +261,7 @@ class ReadTrackTask(task.Task):
         stopTrack = 0
         stopOffset = self._stop
 
-        for i, t in enumerate(self._table.tracks):
+        for i, _ in enumerate(self._table.tracks):
             if self._table.getTrackStart(i + 1) <= self._start:
                 startTrack = i + 1
                 startOffset = self._start - self._table.getTrackStart(i + 1)
@@ -300,7 +297,6 @@ class ReadTrackTask(task.Task):
                                          stderr=subprocess.PIPE,
                                          close_fds=True)
         except OSError as e:
-            import errno
             if e.errno == errno.ENOENT:
                 raise common.MissingDependencyException('cd-paranoia')
 
@@ -405,17 +401,16 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
     The path where the file is stored can be changed if necessary, for
     example if the file name is too long.
 
-    @ivar path:         the path where the file is to be stored.
-    @ivar checksum:     the checksum of the track; set if they match.
-    @ivar testchecksum: the test checksum of the track.
-    @ivar copychecksum: the copy checksum of the track.
-    @ivar testspeed:    the test speed of the track, as a multiple of
+    :cvar checksum:     the checksum of the track; set if they match.
+    :cvar testchecksum: the test checksum of the track.
+    :cvar copychecksum: the copy checksum of the track.
+    :cvar testspeed:    the test speed of the track, as a multiple of
                         track duration.
-    @ivar copyspeed:    the copy speed of the track, as a multiple of
+    :cvar copyspeed:    the copy speed of the track, as a multiple of
                         track duration.
-    @ivar testduration: the test duration of the track, in seconds.
-    @ivar copyduration: the copy duration of the track, in seconds.
-    @ivar peak:         the peak level of the track
+    :cvar testduration: the test duration of the track, in seconds.
+    :cvar copyduration: the copy duration of the track, in seconds.
+    :cvar peak:         the peak level of the track
     """
 
     checksum = None
@@ -434,20 +429,20 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
     def __init__(self, path, table, start, stop, overread, offset=0,
                  device=None, taglist=None, what="track"):
         """
-        @param path:    where to store the ripped track
-        @type  path:    str
-        @param table:   table of contents of CD
-        @type  table:   L{table.Table}
-        @param start:   first frame to rip
-        @type  start:   int
-        @param stop:    last frame to rip (inclusive)
-        @type  stop:    int
-        @param offset:  read offset, in samples
-        @type  offset:  int
-        @param device:  the device to rip from
-        @type  device:  str
-        @param taglist: a dict of tags
-        @type  taglist: dict
+        :param path:    where to store the ripped track
+        :type  path:    str
+        :param table:   table of contents of CD
+        :type  table:   table.Table
+        :param start:   first frame to rip
+        :type  start:   int
+        :param stop:    last frame to rip (inclusive)
+        :type  stop:    int
+        :param offset:  read offset, in samples
+        :type  offset:  int
+        :param device:  the device to rip from
+        :type  device:  str
+        :param taglist: a dict of tags
+        :type  taglist: dict
         """
         task.MultiSeparateTask.__init__(self)
 
@@ -458,6 +453,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         # FIXME: choose a dir on the same disk/dir as the final path
         fd, tmppath = tempfile.mkstemp(suffix='.whipper.wav')
         tmppath = unicode(tmppath)
+        os.fchmod(fd, 0644)
         os.close(fd)
         self._tmpwavpath = tmppath
 
@@ -540,6 +536,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
                     try:
                         logger.debug('moving to final path %r', self.path)
                         os.rename(self._tmppath, self.path)
+                    # FIXME: catching too general exception (Exception)
                     except Exception as e:
                         logger.debug('exception while moving to final '
                                      'path %r: %s', self.path, e)
@@ -548,6 +545,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
                     os.unlink(self._tmppath)
             else:
                 logger.debug('stop: exception %r', self.exception)
+        # FIXME: catching too general exception (Exception)
         except Exception as e:
             print('WARNING: unhandled exception %r' % (e, ))
 
@@ -569,6 +567,7 @@ def getCdParanoiaVersion():
 
 _OK_RE = re.compile(r'Drive tests OK with Paranoia.')
 _WARNING_RE = re.compile(r'WARNING! PARANOIA MAY NOT BE')
+_ABORTING_RE = re.compile(r'aborting test\.')
 
 
 class AnalyzeTask(ctask.PopenTask):
@@ -592,25 +591,22 @@ class AnalyzeTask(ctask.PopenTask):
     def commandMissing(self):
         raise common.MissingDependencyException('cd-paranoia')
 
-    def readbyteserr(self, bytes):
-        self._output.append(bytes)
+    def readbyteserr(self, bytes_stderr):
+        self._output.append(bytes_stderr)
 
     def done(self):
         if self.cwd:
             shutil.rmtree(self.cwd)
         output = "".join(self._output)
         m = _OK_RE.search(output)
-        if m:
-            self.defeatsCache = True
-        else:
-            self.defeatsCache = False
+        self.defeatsCache = bool(m)
 
     def failed(self):
         # cdparanoia exits with return code 1 if it can't determine
         # whether it can defeat the audio cache
         output = "".join(self._output)
         m = _WARNING_RE.search(output)
-        if m:
+        if m or _ABORTING_RE.search(output):
             self.defeatsCache = False
         if self.cwd:
             shutil.rmtree(self.cwd)

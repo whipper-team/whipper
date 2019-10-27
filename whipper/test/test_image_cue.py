@@ -59,7 +59,8 @@ class KanyeMixedTestCase(unittest.TestCase):
 
 class WriteCueFileTestCase(unittest.TestCase):
 
-    def testWrite(self):
+    @staticmethod
+    def testWrite():
         fd, path = tempfile.mkstemp(suffix=u'.whipper.test.cue')
         os.close(fd)
 

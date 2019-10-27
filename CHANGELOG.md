@@ -2,7 +2,66 @@
 
 ## [Unreleased](https://github.com/whipper-team/whipper/tree/HEAD)
 
-[Full Changelog](https://github.com/whipper-team/whipper/compare/v0.7.3...HEAD)
+[Full Changelog](https://github.com/whipper-team/whipper/compare/v0.8.0...HEAD)
+
+## [v0.8.0](https://github.com/whipper-team/whipper/tree/v0.8.0) (2019-10-27)
+[Full Changelog](https://github.com/whipper-team/whipper/compare/v0.7.3...v0.8.0)
+
+**Fixed bugs:**
+
+- whipper bails out if MusicBrainz release group doesn’t have a type [\#396](https://github.com/whipper-team/whipper/issues/396)
+- object has no attribute 'working\_directory' when running cd info [\#375](https://github.com/whipper-team/whipper/issues/375)
+- Failure to rip CD: "ValueError: could not convert string to float: " [\#374](https://github.com/whipper-team/whipper/issues/374)
+- "AttributeError: Program instance has no attribute '\_presult'" when ripping [\#369](https://github.com/whipper-team/whipper/issues/369)
+- Drive analysis fails [\#361](https://github.com/whipper-team/whipper/issues/361)
+- Eliminate warning "eject: CD-ROM tray close command failed" [\#354](https://github.com/whipper-team/whipper/issues/354)
+- Flac file permissions [\#284](https://github.com/whipper-team/whipper/issues/284)
+
+**Closed issues:**
+
+- Separate out Release in log into two value map [\#416](https://github.com/whipper-team/whipper/issues/416)
+- Network issue [\#412](https://github.com/whipper-team/whipper/issues/412)
+- RequestsDependencyWarning: urllib3 \(1.25.2\) or chardet \(3.0.4\) doesn't match a supported version [\#400](https://github.com/whipper-team/whipper/issues/400)
+- Run script after rip [\#394](https://github.com/whipper-team/whipper/issues/394)
+- Add git/mercurial dependency to the README [\#386](https://github.com/whipper-team/whipper/issues/386)
+- Include MusicBrainz Release ID in the log file [\#381](https://github.com/whipper-team/whipper/issues/381)
+- Rip while entering MusicBrainz data [\#360](https://github.com/whipper-team/whipper/issues/360)
+- Doesn't eject - "eject: unable to eject" \(but manual eject works\) [\#355](https://github.com/whipper-team/whipper/issues/355)
+- Note in the whipper output/log if development version was used [\#337](https://github.com/whipper-team/whipper/issues/337)
+- fedora 29, whipper 0.72, Error While Executing Any Command [\#332](https://github.com/whipper-team/whipper/issues/332)
+- read-toc progress information [\#299](https://github.com/whipper-team/whipper/issues/299)
+- ripping fails frequently, but not repeatably [\#290](https://github.com/whipper-team/whipper/issues/290)
+- Look into adding more MusicBrainz identifiers to ripped files [\#200](https://github.com/whipper-team/whipper/issues/200)
+
+**Merged pull requests:**
+
+- Fix ripping discs with less than ten tracks [\#418](https://github.com/whipper-team/whipper/pull/418) ([mtdcr](https://github.com/mtdcr))
+- Make getFastToc\(\) fast again [\#417](https://github.com/whipper-team/whipper/pull/417) ([mtdcr](https://github.com/mtdcr))
+- Use ruamel.yaml for formatting and outputting rip .log file [\#415](https://github.com/whipper-team/whipper/pull/415) ([itismadness](https://github.com/itismadness))
+- Handle missing self.options for whipper cd info [\#410](https://github.com/whipper-team/whipper/pull/410) ([JoeLametta](https://github.com/JoeLametta))
+- Fix erroneous result message for whipper drive analyze [\#409](https://github.com/whipper-team/whipper/pull/409) ([JoeLametta](https://github.com/JoeLametta))
+- Report eject's failures as logger warnings [\#408](https://github.com/whipper-team/whipper/pull/408) ([JoeLametta](https://github.com/JoeLametta))
+- Set FLAC files permissions to 0644 [\#407](https://github.com/whipper-team/whipper/pull/407) ([JoeLametta](https://github.com/JoeLametta))
+- Fix offset find command [\#406](https://github.com/whipper-team/whipper/pull/406) ([vmx](https://github.com/vmx))
+- Make whipper not break on missing release type [\#398](https://github.com/whipper-team/whipper/pull/398) ([Freso](https://github.com/Freso))
+- Set default for eject to: success [\#392](https://github.com/whipper-team/whipper/pull/392) ([gorgobacka](https://github.com/gorgobacka))
+- Use eject value of the class again [\#391](https://github.com/whipper-team/whipper/pull/391) ([gorgobacka](https://github.com/gorgobacka))
+- Convert documentation from epydoc to reStructuredText [\#387](https://github.com/whipper-team/whipper/pull/387) ([JoeLametta](https://github.com/JoeLametta))
+- Include MusicBrainz Release URL in log output [\#382](https://github.com/whipper-team/whipper/pull/382) ([Freso](https://github.com/Freso))
+- Specify supported version\(s\) of Python in setup.py [\#378](https://github.com/whipper-team/whipper/pull/378) ([Freso](https://github.com/Freso))
+- Fix critical regressions introduced in 3e79032 and 16b0d8d [\#371](https://github.com/whipper-team/whipper/pull/371) ([JoeLametta](https://github.com/JoeLametta))
+- Use git to get whipper's version [\#370](https://github.com/whipper-team/whipper/pull/370) ([Freso](https://github.com/Freso))
+- Handle artist MBIDs as multivalue tags [\#367](https://github.com/whipper-team/whipper/pull/367) ([Freso](https://github.com/Freso))
+- Add Track, Release Group, and Work MBIDs to ripped files [\#366](https://github.com/whipper-team/whipper/pull/366) ([Freso](https://github.com/Freso))
+- Refresh MusicBrainz JSON responses used for testing [\#365](https://github.com/whipper-team/whipper/pull/365) ([Freso](https://github.com/Freso))
+- Clean up MusicBrainz nomenclature [\#364](https://github.com/whipper-team/whipper/pull/364) ([Freso](https://github.com/Freso))
+- Fix misaligned output in command.mblookup [\#363](https://github.com/whipper-team/whipper/pull/363) ([Freso](https://github.com/Freso))
+- Update accuraterip-checksum [\#362](https://github.com/whipper-team/whipper/pull/362) ([Freso](https://github.com/Freso))
+- Require Developer Certificate of Origin sign-off [\#358](https://github.com/whipper-team/whipper/pull/358) ([JoeLametta](https://github.com/JoeLametta))
+- Address warnings/errors from various static analysis tools [\#357](https://github.com/whipper-team/whipper/pull/357) ([JoeLametta](https://github.com/JoeLametta))
+- Clarify format option for disc template [\#353](https://github.com/whipper-team/whipper/pull/353) ([rekh127](https://github.com/rekh127))
+- Refactor cdrdao toc/table functions into Task and provide progress output [\#345](https://github.com/whipper-team/whipper/pull/345) ([jtl999](https://github.com/jtl999))
+- accuraterip-checksum: convert to python C extension [\#274](https://github.com/whipper-team/whipper/pull/274) ([mtdcr](https://github.com/mtdcr))
 
 ## [v0.7.3](https://github.com/whipper-team/whipper/tree/v0.7.3) (2018-12-14)
 [Full Changelog](https://github.com/whipper-team/whipper/compare/v0.7.2...v0.7.3)
@@ -15,7 +74,6 @@
 - Possible HTOA error [\#281](https://github.com/whipper-team/whipper/issues/281)
 - Disc template KeyError [\#279](https://github.com/whipper-team/whipper/issues/279)
 - Enhanced CD causes computer to freeze. [\#256](https://github.com/whipper-team/whipper/issues/256)
-- pycdio & libcdio issues [\#238](https://github.com/whipper-team/whipper/issues/238)
 - Unicode issues [\#215](https://github.com/whipper-team/whipper/issues/215)
 - whipper offset find exception [\#208](https://github.com/whipper-team/whipper/issues/208)
 - ZeroDivisionError: float division by zero [\#202](https://github.com/whipper-team/whipper/issues/202)
@@ -26,7 +84,9 @@
 - On Ubuntu 18.10 cd-paranoia binary is called cdparanoia [\#347](https://github.com/whipper-team/whipper/issues/347)
 - WARNING:whipper.common.program:network error: NetworkError\(\) [\#338](https://github.com/whipper-team/whipper/issues/338)
 - Can not install [\#314](https://github.com/whipper-team/whipper/issues/314)
+- use standard logging [\#303](https://github.com/whipper-team/whipper/issues/303)
 - Write musicbrainz\_discid tag when disc is unknown [\#280](https://github.com/whipper-team/whipper/issues/280)
+- pycdio & libcdio issues [\#238](https://github.com/whipper-team/whipper/issues/238)
 - Write .toc files in addition to .cue files to support cdrdao and non-compliant .cue sheets [\#214](https://github.com/whipper-team/whipper/issues/214)
 
 **Merged pull requests:**
@@ -198,7 +258,6 @@
 - Add flake8 testing to CI [\#151](https://github.com/whipper-team/whipper/pull/151) ([Freso](https://github.com/Freso))
 - Clean up files in misc/ [\#150](https://github.com/whipper-team/whipper/pull/150) ([Freso](https://github.com/Freso))
 - Update .gitignore [\#148](https://github.com/whipper-team/whipper/pull/148) ([Freso](https://github.com/Freso))
-- Fix references to morituri. [\#109](https://github.com/whipper-team/whipper/pull/109) ([Freso](https://github.com/Freso))
 
 ## [v0.5.1](https://github.com/whipper-team/whipper/tree/v0.5.1) (2017-04-24)
 [Full Changelog](https://github.com/whipper-team/whipper/compare/v0.5.0...v0.5.1)
@@ -271,6 +330,7 @@
 
 **Merged pull requests:**
 
+- Fix references to morituri. [\#109](https://github.com/whipper-team/whipper/pull/109) ([Freso](https://github.com/Freso))
 - Small cleanups of setup.py [\#102](https://github.com/whipper-team/whipper/pull/102) ([Freso](https://github.com/Freso))
 - Persist False value for defeats\_cache correctly [\#98](https://github.com/whipper-team/whipper/pull/98) ([ribbons](https://github.com/ribbons))
 - Update suggested commands given by `drive list` [\#97](https://github.com/whipper-team/whipper/pull/97) ([ribbons](https://github.com/ribbons))

@@ -1,6 +1,13 @@
+dist: xenial
 sudo: required
 
-language: bash
+language: python
+python:
+  - "2.7"
+virtualenv:
+  system_site_packages: false
+
+cache: pip
 
 env:
     - FLAKE8=false
@@ -9,21 +16,18 @@ env:
 install:
     # Dependencies
     - sudo apt-get -qq update
-    - sudo pip install --upgrade -qq pip
-    - sudo apt-get -qq install cdparanoia cdrdao flac gir1.2-glib-2.0 libcdio-dev libiso9660-dev libsndfile1-dev python-cddb python-gi python-musicbrainzngs python-mutagen python-setuptools sox swig libcdio-utils
-    - sudo pip install pycdio==0.21 requests
+    - pip install --upgrade -qq pip
+    - sudo apt-get -qq install cdparanoia cdrdao flac gir1.2-glib-2.0 libcdio-dev libgirepository1.0-dev libiso9660-dev libsndfile1-dev sox swig libcdio-utils
+    # newer version of pydcio requires newer version of libcdio than travis has
+    - pip install pycdio==0.21
+    # install rest of dependencies
+    - pip install -r requirements.txt
 
     # Testing dependencies
-    - sudo apt-get -qq install python-twisted-core
-    - sudo pip install flake8
-
-    # Build bundled C utils
-    - cd src
-    - sudo make install
-    - cd ..
+    - pip install twisted flake8
 
     # Installing
-    - sudo python setup.py install
+    - python setup.py install
 
 script:
     - if [ ! "$FLAKE8" = true ]; then python -m unittest discover; fi

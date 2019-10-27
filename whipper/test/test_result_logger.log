@@ -1,0 +1,80 @@
+Log created by: whipper 0.7.4.dev87+gb71ec9f.d20191026 (internal logger)
+Log creation date: 2019-10-26T14:25:02Z
+
+Ripping phase information:
+  Drive: HL-DT-STBD-RE  WH14NS40 (revision 1.03)
+  Extraction engine: cdparanoia cdparanoia III 10.2 libcdio 2.0.0 x86_64-pc-linux-gnu
+  Defeat audio cache: true
+  Read offset correction: 6
+  Overread into lead-out: false
+  Gap detection: cdrdao 1.2.4
+  CD-R detected: false
+
+CD metadata:
+  Release:
+    Artist: Example - Symbol - Artist
+    Title: 'Album With: - Dashes'
+  CDDB Disc ID: c30bde0d
+  MusicBrainz Disc ID: eyjySLXGdKigAjY3_C0nbBmNUHc-
+  MusicBrainz lookup URL: https://musicbrainz.org/cdtoc/attach?toc=1+13+228039+150+16414+33638+51378+69369+88891+104871+121645+138672+160748+178096+194680+212628&tracks=13&id=eyjySLXGdKigAjY3_C0nbBmNUHc-
+
+TOC:
+  1:
+    Start: 00:00:00
+    Length: 03:36:64
+    Start sector: 0
+    End sector: 16263
+
+  2:
+    Start: 03:36:64
+    Length: 03:49:49
+    Start sector: 16264
+    End sector: 33487
+
+Tracks:
+  1:
+    Filename: ./soundtrack/Various Artists - Shark Tale - Motion Picture Soundtrack/01. Sean Paul & Ziggy Marley - Three Little Birds.flac
+    Peak level: 0.90036
+    Pre-emphasis:
+    Extraction speed: 7.0 X
+    Extraction quality: 100.00 %
+    Test CRC: 0025D726
+    Copy CRC: 0025D726
+    AccurateRip v1:
+      Result: Found, exact match
+      Confidence: 14
+      Local CRC: 95E6A189
+      Remote CRC: 95E6A189
+    AccurateRip v2:
+      Result: Found, exact match
+      Confidence: 11
+      Local CRC: 113FA733
+      Remote CRC: 113FA733
+    Status: Copy OK
+
+  2:
+    Filename: ./soundtrack/Various Artists - Shark Tale - Motion Picture Soundtrack/02. Christina Aguilera feat. Missy Elliott - Car Wash (Shark Tale mix).flac
+    Peak level: 0.972351
+    Pre-emphasis:
+    Extraction speed: 7.7 X
+    Extraction quality: 100.00 %
+    Test CRC: F77C14CB
+    Copy CRC: F77C14CB
+    AccurateRip v1:
+      Result: Found, exact match
+      Confidence: 14
+      Local CRC: 0B3316DB
+      Remote CRC: 0B3316DB
+    AccurateRip v2:
+      Result: Found, exact match
+      Confidence: 10
+      Local CRC: A0AE0E57
+      Remote CRC: A0AE0E57
+    Status: Copy OK
+
+Conclusive status report:
+  AccurateRip summary: All tracks accurately ripped
+  Health Status: No errors occurred
+  EOF: End of status report
+
+SHA-256 hash: 2B176D8C722989B25459160E335E5CC0C1A6813C9DA69F869B625FBF737C475E

@@ -85,16 +85,16 @@ CD in the AccurateRip database."""
 
         # first get the Table Of Contents of the CD
         t = cdrdao.ReadTOCTask(device)
-        table = t.table
+        runner.run(t)
+        table = t.toc.table
 
         logger.debug("CDDB disc id: %r", table.getCDDBDiscId())
-        responses = None
         try:
             responses = accurip.get_db_entry(table.accuraterip_path())
         except accurip.EntryNotFound:
             logger.warning("AccurateRip entry not found: drive offset "
                            "can't be determined, try again with another disc")
-            return
+            return None
 
         if responses:
             logger.debug('%d AccurateRip responses found.', len(responses))
@@ -133,7 +133,7 @@ CD in the AccurateRip database."""
                 logger.warning('cannot rip with offset %d...', offset)
                 continue
 
-            logger.debug('AR checksums calculated: %s %s', archecksums)
+            logger.debug('AR checksums calculated: %s', archecksums)
 
             c, i = match(archecksums, 1, responses)
             if c:
@@ -170,6 +170,8 @@ CD in the AccurateRip database."""
         logger.error('no matching offset found. '
                      'Consider trying again with a different disc')
 
+        return None
+
     def _arcs(self, runner, table, track, offset):
         # rips the track with the given offset, return the arcs checksums
         logger.debug('ripping track %r with offset %d...', track, offset)
@@ -188,17 +190,13 @@ CD in the AccurateRip database."""
             track, offset)
         runner.run(t)
 
-        v1 = arc.accuraterip_checksum(
-                path, track, len(table.tracks), wave=True, v2=False
-            )
-        v2 = arc.accuraterip_checksum(
-                path, track, len(table.tracks), wave=True, v2=True
-            )
+        v1, v2 = arc.accuraterip_checksum(path, track, len(table.tracks))
 
         os.unlink(path)
-        return ("%08x" % v1, "%08x" % v2)
+        return "%08x" % v1, "%08x" % v2
 
-    def _foundOffset(self, device, offset):
+    @staticmethod
+    def _foundOffset(device, offset):
         print('\nRead offset of device is: %d.' % offset)
 
         info = drive.getDeviceInfo(device)

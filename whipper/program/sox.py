@@ -18,7 +18,7 @@ def peak_level(track_path):
         logger.warning("SoX peak detection failed: file not found")
         return None
     sox = Popen([SOX, track_path, "-n", "stats", "-b", "16"], stderr=PIPE)
-    out, err = sox.communicate()
+    _, err = sox.communicate()
     if sox.returncode:
         logger.warning("SoX peak detection failed: %s", sox.returncode)
         return None

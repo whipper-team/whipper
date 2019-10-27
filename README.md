@@ -8,11 +8,13 @@
 [![GitHub Issues](https://img.shields.io/github/issues/whipper-team/whipper.svg)](https://github.com/whipper-team/whipper/issues)
 [![GitHub contributors](https://img.shields.io/github/contributors/whipper-team/whipper.svg)](https://github.com/whipper-team/whipper/graphs/contributors)
 
-Whipper is a Python 2.7 CD-DA ripper based on the [morituri project](https://github.com/thomasvs/morituri) (_CDDA ripper for *nix systems aiming for accuracy over speed_). It enhances morituri which development seems to have halted merging old ignored pull requests, improving it with bugfixes and new features.
+Whipper is a Python 2.7 CD-DA ripper based on the [morituri project](https://github.com/thomasvs/morituri) (_CDDA ripper for *nix systems aiming for accuracy over speed_). It started just as a fork of morituri - which development seems to have halted - merging old ignored pull requests, improving it with bugfixes and new features. Nowadays whipper's codebase diverges significantly from morituri's one.
 
 Whipper is currently developed and tested _only_ on Linux distributions but _may_ work fine on other *nix OSes too.
 
 In order to track whipper's latest changes it's advised to check its commit history (README and [CHANGELOG](#changelog) files may not be comprehensive).
+
+We've nearly completed porting the codebase to Python 3 (Python 2 won't be supported anymore in future releases). If you would like to follow the progress of the port e/o help us with it, please check [pull request #411](https://github.com/whipper-team/whipper/pull/411).
 
 ## Table of content
 
@@ -34,6 +36,8 @@ In order to track whipper's latest changes it's advised to check its commit hist
 - [Logger plugins](#logger-plugins)
 - [License](#license)
 - [Contributing](#contributing)
+  - [Developer Certificate of Origin (DCO)](#developer-certificate-of-origin-dco)
+    - [DCO Sign-Off Methods](#dco-sign-off-methods)
   - [Bug reports & feature requests](#bug-reports--feature-requests)
 - [Credits](#credits)
 - [Links](#links)
@@ -51,7 +55,8 @@ https://web.archive.org/web/20160528213242/https://thomas.apestaart.org/thomas/t
 - Performs Test & Copy rips
 - Verifies rip accuracy using the [AccurateRip database](http://www.accuraterip.com/)
 - Uses [MusicBrainz](https://musicbrainz.org/doc/About) for metadata lookup
-- Supports reading the [pre-emphasis](http://wiki.hydrogenaud.io/index.php?title=Pre-emphasis) flag embedded into some CDs (and correctly tags the resulting rip). _Currently whipper only reports the pre-emphasis flag value stored in the TOC._
+- Supports reading the [pre-emphasis](http://wiki.hydrogenaud.io/index.php?title=Pre-emphasis) flag embedded into some CDs (and correctly tags the resulting rip)
+  - _Currently whipper only reports the pre-emphasis flag value stored in the TOC_
 - Detects and rips _non digitally silent_ [Hidden Track One Audio](http://wiki.hydrogenaud.io/index.php?title=HTOA) (HTOA)
 - Provides batch ripping capabilities
 - Provides templates for file and directory naming
@@ -72,11 +77,11 @@ Whipper still isn't available as an official package in every Linux distribution
 
 You can easily install whipper without needing to care about the required dependencies by making use of the automatically built images hosted on Docker Hub:
 
-`docker pull joelametta/whipper`
+`docker pull whipperteam/whipper`
 
 Alternatively, in case you prefer building Docker images locally, just issue the following command (it relies on the [Dockerfile](https://github.com/whipper-team/whipper/blob/master/Dockerfile) included in whipper's repository):
 
-`docker build -t whipper/whipper`
+`docker build -t whipperteam/whipper`
 
 It's recommended to create an alias for a convenient usage:
 
@@ -84,7 +89,7 @@ It's recommended to create an alias for a convenient usage:
 alias whipper="docker run -ti --rm --device=/dev/cdrom \
     -v ~/.config/whipper:/home/worker/.config/whipper \
     -v ${PWD}/output:/output \
-    whipper/whipper"
+    whipperteam/whipper"
 ```
 
 You should put this e.g. into your `.bash_aliases`. Also keep in mind to substitute the path definitions to something that fits to your needs (e.g. replace `… -v ${PWD}/output:/output …` with `… -v ${HOME}/ripped:/output \ …`).
@@ -106,6 +111,8 @@ This is a noncomprehensive summary which shows whipper's packaging status (unoff
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/whipper.svg)](https://repology.org/metapackage/whipper)
 
+Someone also packaged whipper as snap: [unofficial snap on snapcraft](https://snapcraft.io/whipper).
+
 In case you decide to install whipper using an unofficial repository just keep in mind it is your responsibility to verify that the provided content is safe to use.
 
 ## Building
@@ -117,8 +124,8 @@ If you are building from a source tarball or checkout, you can choose to use whi
 Whipper relies on the following packages in order to run correctly and provide all the supported features:
 
 - [cd-paranoia](https://www.gnu.org/software/libcdio/), for the actual ripping
-  - To avoid bugs it's advised to use `cd-paranoia` version **10.2+0.94+2-2**
-  - The package named `libcdio-utils`, available on Debian and Ubuntu, is affected by a bug: it doesn't include the `cd-paranoia` binary (needed by whipper). For more details see: [#888053 (Debian)](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=888053), [#1750264 (Ubuntu)](https://bugs.launchpad.net/ubuntu/+source/libcdio/+bug/1750264).
+  - To avoid bugs it's advised to use `cd-paranoia` versions ≥ **10.2+0.94+2-2**
+  - The package named `libcdio-utils`, available on Debian and Ubuntu, is affected by a bug (except for Debian testing/sid): it doesn't include the `cd-paranoia` binary (needed by whipper). For more details see: [#888053 (Debian)](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=888053), [#889803 (Debian)](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=889803) and [#1750264 (Ubuntu)](https://bugs.launchpad.net/ubuntu/+source/libcdio/+bug/1750264).
 - [cdrdao](http://cdrdao.sourceforge.net/), for session, TOC, pre-gap, and ISRC extraction
 - [GObject Introspection](https://wiki.gnome.org/Projects/GObjectIntrospection), to provide GLib-2.0 methods used by `task.py`
 - [PyGObject](https://pypi.org/project/PyGObject/), required by `task.py`
@@ -127,7 +134,8 @@ Whipper relies on the following packages in order to run correctly and provide a
 - [python-setuptools](https://pypi.python.org/pypi/setuptools), for installation, plugins support
 - [python-requests](https://pypi.python.org/pypi/requests), for retrieving AccurateRip database entries
 - [pycdio](https://pypi.python.org/pypi/pycdio/), for drive identification (required for drive offset and caching behavior to be stored in the configuration file).
-  - To avoid bugs  it's advised to use `pycdio` **0.20** or **0.21** with `libcdio` ≥ **0.90** ≤ **0.94* or `pycdio` **2.0.0** with `libcdio` **2.0.0**. All other combinations won't probably work.
+  - To avoid bugs it's advised to use the most recent `pycdio` version with the corresponding `libcdio` release or, if stuck to old pycdio versions, **0.20**/**0.21** with `libcdio` ≥ **0.90** ≤ **0.94**. All other combinations won't probably work.
+- [ruamel.yaml](https://pypi.org/project/ruamel.yaml/), for generating well formed YAML report logfiles
 - [libsndfile](http://www.mega-nerd.com/libsndfile/), for reading wav files
 - [flac](https://xiph.org/flac/), for reading flac files
 - [sox](http://sox.sourceforge.net/), for track peak detection
@@ -140,6 +148,8 @@ Some dependencies aren't available in the PyPI. They can be probably installed u
 - [libsndfile](http://www.mega-nerd.com/libsndfile/)
 - [flac](https://xiph.org/flac/)
 - [sox](http://sox.sourceforge.net/)
+- [git](https://git-scm.com/) or [mercurial](https://www.mercurial-scm.org/)
+  - Required either when running whipper without installing it or when building it from its source code (code cloned from a git/mercurial repository).
 
 PyPI installable dependencies are listed in the [requirements.txt](https://github.com/whipper-team/whipper/blob/master/requirements.txt) file and can be installed issuing the following command:
 
@@ -303,8 +313,8 @@ Licensed under the [GNU GPLv3 license](http://www.gnu.org/licenses/gpl-3.0).
 
 ```Text
 Copyright (C) 2009 Thomas Vander Stichele
-Copyright (C) 2016-2018 The Whipper Team: JoeLametta, Frederik Olesen,
-			Samantha Baldwin, Merlijn Wajer, et al.
+Copyright (C) 2016-2019 The Whipper Team: JoeLametta, Samantha Baldwin,
+                        Merlijn Wajer, Frederik “Freso” S. Olesen, et al.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -328,6 +338,65 @@ repository](https://github.com/whipper-team/whipper). Where possible,
 please include tests for new or changed functionality. You can run tests
 with `python -m unittest discover` from your source checkout.
 
+### Developer Certificate of Origin (DCO)
+
+To make a good faith effort to ensure licensing criteria are met, this project requires the Developer Certificate of Origin (DCO) process to be followed.
+
+The Developer Certificate of Origin (DCO) is a document that certifies you own and/or have the right to contribute the work and license it appropriately. The DCO is used instead of a _much more annoying_
+[CLA (Contributor License Agreement)](https://en.wikipedia.org/wiki/Contributor_License_Agreement). With the DCO, you retain copyright of your own work :). The DCO originated in the Linux community, and is used by other projects like Git and Docker.
+
+The DCO agreement is shown below and it's also available online: [HERE](https://developercertificate.org/).
+
+```
+Developer Certificate of Origin
+Version 1.1
+
+Copyright (C) 2004, 2006 The Linux Foundation and its contributors.
+1 Letterman Drive
+Suite D4700
+San Francisco, CA, 94129
+
+Everyone is permitted to copy and distribute verbatim copies of this
+license document, but changing it is not allowed.
+
+
+Developer's Certificate of Origin 1.1
+
+By making a contribution to this project, I certify that:
+
+(a) The contribution was created in whole or in part by me and I
+    have the right to submit it under the open source license
+    indicated in the file; or
+
+(b) The contribution is based upon previous work that, to the best
+    of my knowledge, is covered under an appropriate open source
+    license and I have the right under that license to submit that
+    work with modifications, whether created in whole or in part
+    by me, under the same open source license (unless I am
+    permitted to submit under a different license), as indicated
+    in the file; or
+
+(c) The contribution was provided directly to me by some other
+    person who certified (a), (b) or (c) and I have not modified
+    it.
+
+(d) I understand and agree that this project and the contribution
+    are public and that a record of the contribution (including all
+    personal information I submit with it, including my sign-off) is
+    maintained indefinitely and may be redistributed consistent with
+    this project or the open source license(s) involved.
+```
+
+#### DCO Sign-Off Methods
+
+The DCO requires a sign-off message in the following format appear on each commit in the pull request:
+
+```
+Signed-off-by: Full Name <email>
+```
+
+The DCO text can either be manually added to your commit body, or you can add either `-s` or `--signoff` to your usual Git commit commands. If you forget to add the sign-off you can also amend a previous commit with the sign-off by running `git commit --amend -s`.
+
 ### Bug reports & feature requests
 
 Please use the [issue tracker](https://github.com/whipper-team/whipper/issues) to report any bugs or to file feature requests.
@@ -349,8 +418,9 @@ Thanks to:
 
 - [Thomas Vander Stichele](https://github.com/thomasvs)
 - [Joe Lametta](https://github.com/JoeLametta)
-- [Merlijn Wajer](https://github.com/MerlijnWajer)
 - [Samantha Baldwin](https://github.com/RecursiveForest)
+- [Frederik “Freso” S. Olesen](https://github.com/Freso)
+- [Merlijn Wajer](https://github.com/MerlijnWajer)
 
 And to all the [contributors](https://github.com/whipper-team/whipper/graphs/contributors).
 
@@ -365,5 +435,6 @@ You can find us and talk about the project on:
 - [Redacted thread (official)](https://redacted.ch/forums.php?action=viewthread&threadid=150)
 
 Other relevant links:
+- [Whipper - Hydrogenaudio Knowledgebase](https://wiki.hydrogenaud.io/index.php?title=Whipper)
 - [Repology: versions for whipper](https://repology.org/metapackage/whipper/versions)
 - [Unattended ripping using whipper (by Thomas McWork)](https://github.com/thomas-mc-work/most-possible-unattended-rip)

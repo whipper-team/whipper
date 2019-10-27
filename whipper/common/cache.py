@@ -39,7 +39,7 @@ class Persister:
     Call persist to store the object to disk; it will get stored if it
     changed from the on-disk object.
 
-    @ivar object: the persistent object
+    :ivar object: the persistent object
     """
 
     def __init__(self, path=None, default=None):
@@ -93,10 +93,10 @@ class Persister:
         self.object = default
 
         if not self._path:
-            return None
+            return
 
         if not os.path.exists(self._path):
-            return None
+            return
 
         handle = open(self._path)
         import pickle
@@ -104,12 +104,11 @@ class Persister:
         try:
             self.object = pickle.load(handle)
             logger.debug('loaded persisted object from %r', self._path)
+        # FIXME: catching too general exception (Exception)
         except Exception as e:
-            # TODO: restrict kind of caught exceptions?
             # can fail for various reasons; in that case, pretend we didn't
             # load it
             logger.debug(e)
-            pass
 
     def delete(self):
         self.object = None
@@ -128,7 +127,7 @@ class PersistedCache:
         try:
             os.makedirs(self.path)
         except OSError as e:
-            if e.errno != 17:  # FIXME
+            if e.errno != os.errno.EEXIST:  # FIXME: errno 17 is 'File Exists'
                 raise
 
     def _getPath(self, key):
@@ -163,7 +162,7 @@ class ResultCache:
         Retrieve the persistable RipResult either from our cache (from a
         previous, possibly aborted rip), or return a new one.
 
-        @rtype: L{Persistable} for L{result.RipResult}
+        :rtype: :any:`Persistable` for :any:`result.RipResult`
         """
         presult = self._pcache.get(cddbdiscid)
 

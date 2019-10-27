@@ -59,9 +59,7 @@ retrieves and display accuraterip data from the given URL
                 assert len(r.checksums) == r.num_tracks
                 assert len(r.confidences) == r.num_tracks
 
-                entry = {}
-                entry["confidence"] = r.confidences[track]
-                entry["response"] = i + 1
+                entry = {"confidence": r.confidences[track], "response": i + 1}
                 checksum = r.checksums[track]
                 if checksum in checksums:
                     checksums[checksum].append(entry)

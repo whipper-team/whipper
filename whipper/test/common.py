@@ -46,6 +46,7 @@ class TestCase(unittest.TestCase):
     # and we'd like to check for the actual exception under TaskException,
     # so override the way twisted.trial.unittest does, without failure
 
+    # XXX: Pylint, method could be a function (no-self-use)
     def failUnlessRaises(self, exception, f, *args, **kwargs):
         try:
             result = f(*args, **kwargs)
@@ -53,7 +54,7 @@ class TestCase(unittest.TestCase):
             return inst
         except exception as e:
             raise Exception('%s raised instead of %s:\n %s' %
-                            (sys.exec_info()[0], exception.__name__, str(e))
+                            (sys.exc_info()[0], exception.__name__, str(e))
                             )
         else:
             raise Exception('%s not raised (%r returned)' %
@@ -62,7 +63,8 @@ class TestCase(unittest.TestCase):
 
     assertRaises = failUnlessRaises
 
-    def readCue(self, name):
+    @staticmethod
+    def readCue(name):
         """
         Read a .cue file, and replace the version comment with the current
         version so we can use it in comparisons.
@@ -71,7 +73,7 @@ class TestCase(unittest.TestCase):
         ret = open(cuefile).read().decode('utf-8')
         ret = re.sub(
             'REM COMMENT "whipper.*',
-            'REM COMMENT "whipper %s"' % (whipper.__version__),
+            'REM COMMENT "whipper %s"' % whipper.__version__,
             ret, re.MULTILINE)
 
         return ret

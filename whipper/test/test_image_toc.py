@@ -320,6 +320,20 @@ class TOTBLTestCase(common.TestCase):
         self.assertEqual(self.toc.table.getCDDBDiscId(), '810b7b0b')
 
 
+class GentlemenTestCase(common.TestCase):
+
+    def setUp(self):
+        self.path = os.path.join(os.path.dirname(__file__),
+                                 u'gentlemen.fast.toc')
+        self.toc = toc.TocFile(self.path)
+        self.toc.parse()
+        self.assertEquals(len(self.toc.table.tracks), 11)
+
+    def testCDDBId(self):
+        self.toc.table.absolutize()
+        self.assertEquals(self.toc.table.getCDDBDiscId(), '810b7b0b')
+
+
 # The Strokes - Someday has a 1 frame SILENCE marked as such in toc
 
 
@@ -353,7 +367,8 @@ class StrokesTestCase(common.TestCase):
                 'strokes-someday.eac.cue')).read()).decode('utf-8')
         common.diffStrings(ref, cue)
 
-    def _filterCue(self, output):
+    @staticmethod
+    def _filterCue(output):
         # helper to be able to compare our generated .cue with the
         # EAC-extracted one
         discard = ['TITLE', 'PERFORMER', 'FLAGS', 'REM']

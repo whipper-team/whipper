@@ -13,7 +13,7 @@ class AudioLengthTask(ctask.PopenTask):
     """
     I calculate the length of a track in audio samples.
 
-    @ivar  length: length of the decoded audio file, in audio samples.
+    :cvar  length: length of the decoded audio file, in audio samples.
     """
     logCategory = 'AudioLengthTask'
     description = 'Getting length of audio track'
@@ -21,7 +21,7 @@ class AudioLengthTask(ctask.PopenTask):
 
     def __init__(self, path):
         """
-        @type  path: unicode
+        :type  path: unicode
         """
         assert isinstance(path, unicode), "%r is not unicode" % path
 
@@ -35,11 +35,11 @@ class AudioLengthTask(ctask.PopenTask):
     def commandMissing(self):
         raise common.MissingDependencyException('soxi')
 
-    def readbytesout(self, bytes):
-        self._output.append(bytes)
+    def readbytesout(self, bytes_stdout):
+        self._output.append(bytes_stdout)
 
-    def readbyteserr(self, bytes):
-        self._error.append(bytes)
+    def readbyteserr(self, bytes_stderr):
+        self._error.append(bytes_stderr)
 
     def failed(self):
         self.setException(Exception("soxi failed: %s" % "".join(self._error)))

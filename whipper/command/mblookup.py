@@ -29,16 +29,18 @@ Example disc id: KnpGsLhvH.lPrNc1PBL21lb9Bg4-"""
             print('- Release %d:' % (i + 1, ))
             print('    Artist: %s' % md.artist.encode('utf-8'))
             print('    Title:  %s' % md.title.encode('utf-8'))
-            print('    Type:   %s' % md.releaseType.encode('utf-8'))  # noqa: E501
+            print('    Type:   %s' % unicode(md.releaseType).encode('utf-8'))  # noqa: E501
             print('    URL:    %s' % md.url)
             print('    Tracks: %d' % len(md.tracks))
             if md.catalogNumber:
                 print('    Cat no: %s' % md.catalogNumber)
             if md.barcode:
-                print('   Barcode: %s' % md.barcode)
+                print('    Barcode: %s' % md.barcode)
 
                 for j, track in enumerate(md.tracks):
                     print('      Track %2d: %s - %s' % (
                         j + 1, track.artist.encode('utf-8'),
                         track.title.encode('utf-8')
                     ))
+
+        return None

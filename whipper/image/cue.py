@@ -62,14 +62,14 @@ class CueFile(object):
     """
     I represent a .cue file as an object.
 
-    @type table: L{table.Table}
-    @ivar table: the index table.
+    :vartype table: table.Table
+    :ivar table:    the index table.
     """
     logCategory = 'CueFile'
 
     def __init__(self, path):
         """
-        @type  path: unicode
+        :type  path: unicode
         """
         assert isinstance(path, unicode), "%r is not unicode" % path
 
@@ -154,7 +154,7 @@ class CueFile(object):
         """
         Add a message about a given line in the cue file.
 
-        @param number: line number, counting from 0.
+        :param number: line number, counting from 0.
         """
         self._messages.append((number + 1, message))
 
@@ -182,7 +182,7 @@ class CueFile(object):
         """
         Translate the .cue's FILE to an existing path.
 
-        @type  path: unicode
+        :type  path: unicode
         """
         return common.getRealPath(self._path, path)
 
@@ -192,14 +192,14 @@ class File:
     I represent a FILE line in a cue file.
     """
 
-    def __init__(self, path, format):
+    def __init__(self, path, file_format):
         """
-        @type  path: unicode
+        :type  path: unicode
         """
         assert isinstance(path, unicode), "%r is not unicode" % path
 
         self.path = path
-        self.format = format
+        self.format = file_format
 
     def __repr__(self):
         return '<File %r of format %s>' % (self.path, self.format)

@@ -45,6 +45,7 @@ def main():
         logger.critical("SystemError: %s", e)
         if (isinstance(e, common.EjectError) and
                 cmd.options.eject in ('failure', 'always')):
+            # XXX: Pylint, instance of 'SystemError' has no 'device' member
             eject_device(e.device)
         return 255
     except RuntimeError as e:
@@ -52,7 +53,7 @@ def main():
         return 1
     except KeyboardInterrupt:
         return 2
-    except ImportError as e:
+    except ImportError:
         raise
     except task.TaskException as e:
         if isinstance(e.exception, ImportError):
@@ -74,11 +75,11 @@ def main():
 
 
 class Whipper(BaseCommand):
-    description = """whipper is a CD ripping utility focusing on accuracy over speed.
-
-whipper gives you a tree of subcommands to work with.
-You can get help on subcommands by using the -h option to the subcommand.
-"""
+    description = (
+        "whipper is a CD ripping utility focusing on accuracy over speed.\n\n"
+        "whipper gives you a tree of subcommands to work with.\n"
+        "You can get help on subcommands by using the -h option "
+        "to the subcommand.\n")
     no_add_help = True
     subcommands = {
         'accurip': accurip.AccuRip,
@@ -101,10 +102,10 @@ You can get help on subcommands by using the -h option to the subcommand.
                                  help="show this help message and exit")
         self.parser.add_argument('-e', '--eject',
                                  action="store", dest="eject",
-                                 default="always",
+                                 default="success",
                                  choices=('never', 'failure',
                                           'success', 'always'),
-                                 help="when to eject disc (default: always)")
+                                 help="when to eject disc (default: success)")
 
     def handle_arguments(self):
         if self.options.help:
