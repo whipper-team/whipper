@@ -32,21 +32,6 @@ For compiling you need:
 
 	libsndfile1-dev
 
-## Compiling
-
-### Using GNU Make
-```shell
-make clean
-make
-```
-
-### Using Eclipse
-The configuration files of an Eclipse project are included.
-You can use "EGit" (Eclipse git) to import the whole repository.
-It should as well ask you to import the project configuration then.
-
-The Eclipse configuration is currently unmaintained, using GNU Make is preferred.
-
 ## Author
 Leo Bogert (http://leo.bogert.de)
 
