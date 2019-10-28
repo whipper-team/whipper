@@ -1,11 +1,10 @@
 FROM debian:buster
 
 RUN apt-get update \
-  && apt-get install -y cdrdao git python-gobject-2 python-musicbrainzngs python-mutagen \
-  python-setuptools python-requests libsndfile1-dev flac sox \
-  libiso9660-dev python-pip swig make pkgconf \
-  eject locales \
-  autoconf libtool curl \
+  && apt-get install -y autoconf cdrdao curl eject flac git libiso9660-dev \
+  libsndfile1-dev libtool locales make pkgconf python-gobject-2 \
+  python-musicbrainzngs python-mutagen python-pip python-requests \
+  python-ruamel.yaml python-setuptools sox swig \
   && pip install pycdio==2.1.0
 
 # libcdio-paranoia / libcdio-utils are wrongfully packaged in Debian, thus built manually
