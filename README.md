@@ -27,8 +27,7 @@ We've nearly completed porting the codebase to Python 3 (Python 2 won't be suppo
 - [Building](#building)
   1. [Required dependencies](#required-dependencies)
   2. [Fetching the source code](#fetching-the-source-code)
-  3. [Building the bundled dependencies](#building-the-bundled-dependencies)
-  4. [Finalizing the build](#finalizing-the-build)
+  3. [Finalizing the build](#finalizing-the-build)
 - [Usage](#usage)
 - [Getting started](#getting-started)
 - [Configuration file documentation](#configuration-file-documentation)
@@ -162,19 +161,6 @@ Change to a directory where you want to put whipper source code (for example, `$
 ```bash
 git clone https://github.com/whipper-team/whipper.git
 cd whipper
-```
-
-### Building the bundled dependencies
-
-Whipper uses and packages a slightly different version of the `accuraterip-checksum` tool:
-
-You can edit the install path in `config.mk`
-
-```bash
-cd src
-make
-sudo make install
-cd ..
 ```
 
 ### Finalizing the build
