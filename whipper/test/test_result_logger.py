@@ -141,7 +141,7 @@ class LoggerTestCase(unittest.TestCase):
             actualLines[0],
             re.compile((
                 r'Log created by: whipper '
-                r'[\d]+\.[\d]+.[\d]+(\.dev[\w\.\+]+)? \(internal logger\)'
+                r'[\d]+\.[\d]+\.[\d]+(\.dev[\w\.\+]+)? \(internal logger\)'
             ))
         )
         self.assertRegexpMatches(
