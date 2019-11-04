@@ -140,7 +140,7 @@ class TocFile(object):
         """
         :type  path: str
         """
-        assert isinstance(path, str), "%r is not string" % path
+        assert isinstance(path, str), "%r is not str" % path
         self._path = path
         self._messages = []
         self.table = table.Table()
