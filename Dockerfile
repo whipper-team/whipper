@@ -1,11 +1,11 @@
 FROM debian:buster
 
 RUN apt-get update \
-  && apt-get install -y autoconf cdrdao curl eject flac git libiso9660-dev \
-  libsndfile1-dev libtool locales make pkgconf python-gobject-2 \
-  python-musicbrainzngs python-mutagen python-pip python-requests \
-  python-ruamel.yaml python-setuptools sox swig \
-  && pip install pycdio==2.1.0
+  && apt-get install -y autoconf cdrdao curl eject flac gir1.2-glib-2.0 git libiso9660-dev \
+  libsndfile1-dev libtool locales make pkgconf python3-gi \
+  python3-musicbrainzngs python3-mutagen python3-pip python3-requests \
+  python3-ruamel.yaml python3-setuptools sox swig \
+  && pip3 install pycdio==2.1.0
 
 # libcdio-paranoia / libcdio-utils are wrongfully packaged in Debian, thus built manually
 # see https://github.com/whipper-team/whipper/pull/237#issuecomment-367985625
@@ -44,7 +44,7 @@ RUN echo "LC_ALL=en_US.UTF-8" >> /etc/environment \
 # install whipper
 RUN mkdir /whipper
 COPY . /whipper/
-RUN cd /whipper && python2 setup.py install \
+RUN cd /whipper && python3 setup.py install \
   && rm -rf /whipper \
   && whipper -v
 
