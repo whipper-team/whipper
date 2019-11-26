@@ -21,7 +21,6 @@
 
 import requests
 import struct
-from errno import EEXIST
 from os import makedirs
 from os.path import dirname, exists, join
 
@@ -40,7 +39,7 @@ class EntryNotFound(Exception):
     pass
 
 
-class _AccurateRipResponse(object):
+class _AccurateRipResponse:
     """
     An AccurateRip response contains a collection of metadata identifying a
     particular digital audio compact disc.
@@ -60,7 +59,7 @@ class _AccurateRipResponse(object):
         position, so track 1 will have array index 0, track 2 will have array
         index 1, and so forth. HTOA and other hidden tracks are not included.
         """
-        self.num_tracks = struct.unpack("B", data[0])[0]
+        self.num_tracks = data[0]
         self.discId1 = "%08x" % struct.unpack("<L", data[1:5])[0]
         self.discId2 = "%08x" % struct.unpack("<L", data[5:9])[0]
         self.cddbDiscId = "%08x" % struct.unpack("<L", data[9:13])[0]
@@ -69,7 +68,7 @@ class _AccurateRipResponse(object):
         self.checksums = []
         pos = 13
         for _ in range(self.num_tracks):
-            confidence = struct.unpack("B", data[pos])[0]
+            confidence = data[pos]
             checksum = "%08x" % struct.unpack("<L", data[pos + 1:pos + 5])[0]
             self.confidences.append(confidence)
             self.checksums.append(checksum)
@@ -88,7 +87,7 @@ class _AccurateRipResponse(object):
 def _split_responses(raw_entry):
     responses = []
     while raw_entry:
-        track_count = struct.unpack("B", raw_entry[0])[0]
+        track_count = raw_entry[0]
         nbytes = 1 + 12 + track_count * (1 + 8)
         responses.append(_AccurateRipResponse(raw_entry[:nbytes]))
         raw_entry = raw_entry[nbytes:]
@@ -143,14 +142,13 @@ def _download_entry(path):
 
 def _save_entry(raw_entry, path):
     logger.debug('saving AccurateRip entry to %s', path)
-    # XXX: os.makedirs(exist_ok=True) in py3
     try:
-        makedirs(dirname(path))
+        makedirs(dirname(path), exist_ok=True)
     except OSError as e:
-        if e.errno != EEXIST:
-            logger.error('could not save entry to %s: %s', path, e)
-            return
-    open(path, 'wb').write(raw_entry)
+        logger.error('could not save entry to %s: %s', path, e)
+        return
+    with open(path, 'wb') as f:
+        f.write(raw_entry)
 
 
 def get_db_entry(path):
@@ -163,7 +161,8 @@ def get_db_entry(path):
     cached_path = join(_CACHE_DIR, path)
     if exists(cached_path):
         logger.debug('found accuraterip entry at %s', cached_path)
-        raw_entry = open(cached_path, 'rb').read()
+        with open(cached_path, 'rb') as f:
+            raw_entry = f.read()
     else:
         raw_entry = _download_entry(path)
         if raw_entry:
@@ -196,7 +195,8 @@ def _match_responses(tracks, responses):
         for i, track in enumerate(tracks):
             for v in ('v1', 'v2'):
                 if track.AR[v]['CRC'] == r.checksums[i]:
-                    if r.confidences[i] > track.AR[v]['DBConfidence']:
+                    if (track.AR[v]['DBConfidence'] is None or
+                            r.confidences[i] > track.AR[v]['DBConfidence']):
                         track.AR[v]['DBCRC'] = r.checksums[i]
                         track.AR[v]['DBConfidence'] = r.confidences[i]
                         logger.debug(
@@ -245,7 +245,8 @@ def print_report(result):
                     track.AR['v2']['DBCRC']
                 ) if _f])
             max_conf = max(
-                [track.AR[v]['DBConfidence'] for v in ('v1', 'v2')]
+                [track.AR[v]['DBConfidence'] for v in ('v1', 'v2')
+                 if track.AR[v]['DBConfidence'] is not None], default=None
             )
             if max_conf:
                 if max_conf < track.AR['DBMaxConfidence']:

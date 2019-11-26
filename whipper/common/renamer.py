@@ -24,7 +24,7 @@ import tempfile
 """Rename files on file system and inside metafiles in a resumable way."""
 
 
-class Operator(object):
+class Operator:
 
     def __init__(self, statePath, key):
         self._todo = []
@@ -91,7 +91,7 @@ class Operator(object):
         Execute the operations
         """
 
-    def next(self):
+    def __next__(self):
         operation = self._todo[len(self._done)]
         if self._resuming:
             operation.redo()
@@ -116,7 +116,7 @@ class FileRenamer(Operator):
         """
 
 
-class Operation(object):
+class Operation:
 
     def verify(self):
         """
@@ -199,7 +199,8 @@ class RenameInFile(Operation):
             (fd, name) = tempfile.mkstemp(suffix='.whipper')
 
             for s in handle:
-                os.write(fd, s.replace(self._source, self._destination))
+                os.write(fd,
+                         s.replace(self._source, self._destination).encode())
 
             os.close(fd)
             os.rename(name, self._path)

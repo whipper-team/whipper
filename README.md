@@ -8,13 +8,11 @@
 [![GitHub Issues](https://img.shields.io/github/issues/whipper-team/whipper.svg)](https://github.com/whipper-team/whipper/issues)
 [![GitHub contributors](https://img.shields.io/github/contributors/whipper-team/whipper.svg)](https://github.com/whipper-team/whipper/graphs/contributors)
 
-Whipper is a Python 2.7 CD-DA ripper based on the [morituri project](https://github.com/thomasvs/morituri) (_CDDA ripper for *nix systems aiming for accuracy over speed_). It started just as a fork of morituri - which development seems to have halted - merging old ignored pull requests, improving it with bugfixes and new features. Nowadays whipper's codebase diverges significantly from morituri's one.
+Whipper is a Python 3 (3.5+) CD-DA ripper based on the [morituri project](https://github.com/thomasvs/morituri) (_CDDA ripper for *nix systems aiming for accuracy over speed_). It started just as a fork of morituri - which development seems to have halted - merging old ignored pull requests, improving it with bugfixes and new features. Nowadays whipper's codebase diverges significantly from morituri's one.
 
 Whipper is currently developed and tested _only_ on Linux distributions but _may_ work fine on other *nix OSes too.
 
 In order to track whipper's latest changes it's advised to check its commit history (README and [CHANGELOG](#changelog) files may not be comprehensive).
-
-We've nearly completed porting the codebase to Python 3 (Python 2 won't be supported anymore in future releases). If you would like to follow the progress of the port e/o help us with it, please check [pull request #411](https://github.com/whipper-team/whipper/pull/411).
 
 ## Table of content
 
@@ -27,8 +25,7 @@ We've nearly completed porting the codebase to Python 3 (Python 2 won't be suppo
 - [Building](#building)
   1. [Required dependencies](#required-dependencies)
   2. [Fetching the source code](#fetching-the-source-code)
-  3. [Building the bundled dependencies](#building-the-bundled-dependencies)
-  4. [Finalizing the build](#finalizing-the-build)
+  3. [Finalizing the build](#finalizing-the-build)
 - [Usage](#usage)
 - [Getting started](#getting-started)
 - [Configuration file documentation](#configuration-file-documentation)
@@ -123,33 +120,34 @@ If you are building from a source tarball or checkout, you can choose to use whi
 
 Whipper relies on the following packages in order to run correctly and provide all the supported features:
 
-- [cd-paranoia](https://www.gnu.org/software/libcdio/), for the actual ripping
+- [cd-paranoia](https://github.com/rocky/libcdio-paranoia), for the actual ripping
   - To avoid bugs it's advised to use `cd-paranoia` versions ≥ **10.2+0.94+2-2**
   - The package named `libcdio-utils`, available on Debian and Ubuntu, is affected by a bug (except for Debian testing/sid): it doesn't include the `cd-paranoia` binary (needed by whipper). For more details see: [#888053 (Debian)](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=888053), [#889803 (Debian)](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=889803) and [#1750264 (Ubuntu)](https://bugs.launchpad.net/ubuntu/+source/libcdio/+bug/1750264).
 - [cdrdao](http://cdrdao.sourceforge.net/), for session, TOC, pre-gap, and ISRC extraction
 - [GObject Introspection](https://wiki.gnome.org/Projects/GObjectIntrospection), to provide GLib-2.0 methods used by `task.py`
 - [PyGObject](https://pypi.org/project/PyGObject/), required by `task.py`
-- [python-musicbrainzngs](https://github.com/alastair/python-musicbrainzngs), for metadata lookup
-- [python-mutagen](https://pypi.python.org/pypi/mutagen), for tagging support
-- [python-setuptools](https://pypi.python.org/pypi/setuptools), for installation, plugins support
-- [python-requests](https://pypi.python.org/pypi/requests), for retrieving AccurateRip database entries
+- [musicbrainzngs](https://pypi.org/project/musicbrainzngs/), for metadata lookup
+- [mutagen](https://pypi.python.org/pypi/mutagen), for tagging support
+- [setuptools](https://pypi.python.org/pypi/setuptools), for installation, plugins support
+- [requests](https://pypi.python.org/pypi/requests), for retrieving AccurateRip database entries
 - [pycdio](https://pypi.python.org/pypi/pycdio/), for drive identification (required for drive offset and caching behavior to be stored in the configuration file).
   - To avoid bugs it's advised to use the most recent `pycdio` version with the corresponding `libcdio` release or, if stuck to old pycdio versions, **0.20**/**0.21** with `libcdio` ≥ **0.90** ≤ **0.94**. All other combinations won't probably work.
 - [ruamel.yaml](https://pypi.org/project/ruamel.yaml/), for generating well formed YAML report logfiles
 - [libsndfile](http://www.mega-nerd.com/libsndfile/), for reading wav files
 - [flac](https://xiph.org/flac/), for reading flac files
 - [sox](http://sox.sourceforge.net/), for track peak detection
+- [git](https://git-scm.com/) or [mercurial](https://www.mercurial-scm.org/)
+  - Required either when running whipper without installing it or when building it from its source code (code cloned from a git/mercurial repository).
 
 Some dependencies aren't available in the PyPI. They can be probably installed using your distribution's package manager:
 
-- [cd-paranoia](https://www.gnu.org/software/libcdio/)
+- [cd-paranoia](https://github.com/rocky/libcdio-paranoia)
 - [cdrdao](http://cdrdao.sourceforge.net/)
 - [GObject Introspection](https://wiki.gnome.org/Projects/GObjectIntrospection)
 - [libsndfile](http://www.mega-nerd.com/libsndfile/)
 - [flac](https://xiph.org/flac/)
 - [sox](http://sox.sourceforge.net/)
 - [git](https://git-scm.com/) or [mercurial](https://www.mercurial-scm.org/)
-  - Required either when running whipper without installing it or when building it from its source code (code cloned from a git/mercurial repository).
 
 PyPI installable dependencies are listed in the [requirements.txt](https://github.com/whipper-team/whipper/blob/master/requirements.txt) file and can be installed issuing the following command:
 
@@ -164,22 +162,9 @@ git clone https://github.com/whipper-team/whipper.git
 cd whipper
 ```
 
-### Building the bundled dependencies
-
-Whipper uses and packages a slightly different version of the `accuraterip-checksum` tool:
-
-You can edit the install path in `config.mk`
-
-```bash
-cd src
-make
-sudo make install
-cd ..
-```
-
 ### Finalizing the build
 
-Install whipper: `python2 setup.py install`
+Install whipper: `python3 setup.py install`
 
 Note that, depending on the chosen installation path, this command may require elevated rights.
 
@@ -232,7 +217,7 @@ The configuration file is stored in `$XDG_CONFIG_HOME/whipper/whipper.conf`, or 
 
 See [XDG Base Directory
 Specification](http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html)
-and [ConfigParser](https://docs.python.org/2/library/configparser.html).
+and [ConfigParser](https://docs.python.org/3/library/configparser.html).
 
 The configuration file consists of newline-delineated `[sections]`
 containing `key = value` pairs. The sections `[main]` and
@@ -271,7 +256,7 @@ To make it easier for developers, you can run whipper straight from the
 source checkout:
 
 ```bash
-python2 -m whipper -h
+python3 -m whipper -h
 ```
 
 ## Logger plugins
@@ -298,8 +283,10 @@ Whipper searches for logger plugins in the following paths:
 On a default Debian/Ubuntu installation, the following paths are searched by whipper:
 
 - `$HOME/.local/share/whipper/plugins`
-- `/usr/local/lib/python2.7/dist-packages/whipper/plugins`
-- `/usr/lib/python2.7/dist-packages/whipper/plugins`
+- `/usr/local/lib/python3.X/dist-packages/whipper/plugins`
+- `/usr/lib/python3.X/dist-packages/whipper/plugins`
+
+Where `X` stands for the minor version of the Python 3 release available on the system.
 
 ### Official logger plugins
 
@@ -336,7 +323,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 Make sure you have the latest copy from our [git
 repository](https://github.com/whipper-team/whipper). Where possible,
 please include tests for new or changed functionality. You can run tests
-with `python -m unittest discover` from your source checkout.
+with `python3 -m unittest discover` from your source checkout.
 
 ### Developer Certificate of Origin (DCO)
 
@@ -410,7 +397,7 @@ gzip whipper.log
 
 And attach the gzipped log file to your bug report.
 
-Without `WHIPPER_LOGFILE` set, logging messages will go to stderr. `WHIPPER_DEBUG` accepts a string of the [default python logging levels](https://docs.python.org/2/library/logging.html#logging-levels).
+Without `WHIPPER_LOGFILE` set, logging messages will go to stderr. `WHIPPER_DEBUG` accepts a string of the [default python logging levels](https://docs.python.org/3/library/logging.html#logging-levels).
 
 ## Credits
 

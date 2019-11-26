@@ -6,13 +6,12 @@
 
 import sys
 
-import BeautifulSoup
+from bs4 import BeautifulSoup
 
-handle = open(sys.argv[1])
+with open(sys.argv[1]) as f:
+    doc = f.read()
 
-doc = handle.read()
-
-soup = BeautifulSoup.BeautifulSoup(doc)
+soup = BeautifulSoup(doc)
 
 offsets = {}  # offset -> total count
 
@@ -50,18 +49,17 @@ for count, offset in counts:
 
 # now format it for code inclusion
 lines = []
-line = 'OFFSETS = "'
+line = 'OFFSETS = ("'
 
 for offset in offsets:
     line += offset + ", "
     if len(line) > 60:
-        line += "\" + \\"
         lines.append(line)
-        line = '          "'
+        line = '           "'
 
 # get last line too, trimming the comma and adding the quote
 if len(line) > 11:
-    line = line[:-2] + '"'
+    line = line[:-2] + '")'
     lines.append(line)
 
 print("\n".join(lines))

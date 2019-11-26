@@ -131,20 +131,20 @@ class LoggerTestCase(unittest.TestCase):
         logger = WhipperLogger()
         actual = logger.log(ripResult)
         actualLines = actual.splitlines()
-        expectedLines = open(
-            os.path.join(self.path, 'test_result_logger.log'), 'r'
-        ).read().splitlines()
+        with open(os.path.join(self.path,
+                               'test_result_logger.log'), 'r') as f:
+            expectedLines = f.read().splitlines()
         # do not test on version line, date line, or SHA-256 hash line
         self.assertListEqual(actualLines[2:-1], expectedLines[2:-1])
 
-        self.assertRegexpMatches(
+        self.assertRegex(
             actualLines[0],
             re.compile((
                 r'Log created by: whipper '
                 r'[\d]+\.[\d]+\.[\d]+\.dev[\w\.\+]+ \(internal logger\)'
             ))
         )
-        self.assertRegexpMatches(
+        self.assertRegex(
             actualLines[1],
             re.compile((
                 r'Log creation date: '
@@ -163,7 +163,8 @@ class LoggerTestCase(unittest.TestCase):
                 Dumper=ruamel.yaml.RoundTripDumper
             )
         )
+        log_body = "\n".join(actualLines[:-1]).encode()
         self.assertEqual(
             parsedLog['SHA-256 hash'],
-            hashlib.sha256("\n".join(actualLines[:-1])).hexdigest().upper()
+            hashlib.sha256(log_body).hexdigest().upper()
         )

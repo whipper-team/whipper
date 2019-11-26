@@ -70,7 +70,8 @@ class TestCase(unittest.TestCase):
         version so we can use it in comparisons.
         """
         cuefile = os.path.join(os.path.dirname(__file__), name)
-        ret = open(cuefile).read().decode('utf-8')
+        with open(cuefile) as f:
+            ret = f.read()
         ret = re.sub(
             'REM COMMENT "whipper.*',
             'REM COMMENT "whipper %s"' % whipper.__version__,
@@ -83,7 +84,7 @@ class UnicodeTestMixin:
     # A helper mixin to skip tests if we're not in a UTF-8 locale
 
     try:
-        os.stat(u'whipper.test.B\xeate Noire.empty')
+        os.stat('whipper.test.B\xeate Noire.empty')
     except UnicodeEncodeError:
         skip = 'No UTF-8 locale'
     except OSError:

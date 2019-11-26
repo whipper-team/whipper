@@ -18,13 +18,12 @@
 # You should have received a copy of the GNU General Public License
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
-import ConfigParser
 import codecs
+import configparser
 import os.path
 import shutil
 import tempfile
-import urllib
-from urlparse import urlparse
+from urllib.parse import urlparse, quote
 
 from whipper.common import directory
 
@@ -37,7 +36,7 @@ class Config:
     def __init__(self, path=None):
         self._path = path or directory.config_path()
 
-        self._parser = ConfigParser.SafeConfigParser()
+        self._parser = configparser.ConfigParser()
 
         self.open()
 
@@ -45,13 +44,13 @@ class Config:
         # Open the file with the correct encoding
         if os.path.exists(self._path):
             with codecs.open(self._path, 'r', encoding='utf-8') as f:
-                self._parser.readfp(f)
+                self._parser.read_file(f)
 
         logger.debug('loaded %d sections from config file',
                      len(self._parser.sections()))
 
     def write(self):
-        fd, path = tempfile.mkstemp(suffix=u'.whipperrc')
+        fd, path = tempfile.mkstemp(suffix='.whipperrc')
         handle = os.fdopen(fd, 'w')
         self._parser.write(handle)
         handle.close()
@@ -64,7 +63,7 @@ class Config:
         method = getattr(self._parser, methodName)
         try:
             return method(section, option)
-        except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
+        except (configparser.NoSectionError, configparser.NoOptionError):
             return None
 
     def get(self, section, option):
@@ -102,7 +101,7 @@ class Config:
 
         try:
             return int(self._parser.get(section, 'read_offset'))
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             raise KeyError("Could not find read_offset for %s/%s/%s" % (
                 vendor, model, release))
 
@@ -121,7 +120,7 @@ class Config:
 
         try:
             return self._parser.get(section, 'defeats_cache') == 'True'
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             raise KeyError("Could not find defeats_cache for %s/%s/%s" % (
                 vendor, model, release))
 
@@ -153,7 +152,7 @@ class Config:
         try:
             section = self._findDriveSection(vendor, model, release)
         except KeyError:
-            section = 'drive:' + urllib.quote('%s:%s:%s' % (
+            section = 'drive:' + quote('%s:%s:%s' % (
                 vendor, model, release))
             self._parser.add_section(section)
             for key in ['vendor', 'model', 'release']:

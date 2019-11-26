@@ -21,7 +21,7 @@
 import re
 
 
-class PathFilter(object):
+class PathFilter:
     """
     I filter path components for safe storage on file systems.
     """
@@ -50,18 +50,16 @@ class PathFilter(object):
 
         # change all fancy single/double quotes to normal quotes
         if self._quotes:
-            path = re.sub(ur'[\xc2\xb4\u2018\u2019\u201b]', "'", path,
-                          re.UNICODE)
-            path = re.sub(ur'[\u201c\u201d\u201f]', '"', path, re.UNICODE)
+            path = re.sub(r'[\xc2\xb4\u2018\u2019\u201b]', "'", path)
+            path = re.sub(r'[\u201c\u201d\u201f]', '"', path)
 
         if self._special:
             path = separators(path)
-            path = re.sub(r'[*?&!\'\"$()`{}\[\]<>]',
-                          '_', path, re.UNICODE)
+            path = re.sub(r'[*?&!\'\"$()`{}\[\]<>]', '_', path)
 
         if self._fat:
             path = separators(path)
             # : and | already gone, but leave them here for reference
-            path = re.sub(r'[:*?"<>|]', '_', path, re.UNICODE)
+            path = re.sub(r'[:*?"<>|]', '_', path)
 
         return path

@@ -47,7 +47,7 @@ class Program:
     :vartype metadata: mbngs.DiscMetadata
     :cvar result:      the rip's result
     :vartype result:   result.RipResult
-    :vartype outdir:   unicode
+    :vartype outdir:   str
     :vartype config:   whipper.common.config.Config
     """
 
@@ -197,8 +197,8 @@ class Program:
           - %x: audio extension, lowercase
           - %X: audio extension, uppercase
         """
-        assert isinstance(outdir, unicode), "%r is not unicode" % outdir
-        assert isinstance(template, unicode), "%r is not unicode" % template
+        assert isinstance(outdir, str), "%r is not str" % outdir
+        assert isinstance(template, str), "%r is not str" % template
         v = {}
         v['A'] = 'Unknown Artist'
         v['d'] = mbdiscid  # fallback for title
@@ -228,7 +228,7 @@ class Program:
             if metadata.releaseType:
                 v['R'] = metadata.releaseType
                 v['r'] = metadata.releaseType.lower()
-            if track_number > 0:
+            if track_number is not None and track_number > 0:
                 v['a'] = self._filter.filter(
                     metadata.tracks[track_number - 1].artist)
                 v['s'] = self._filter.filter(
@@ -307,8 +307,8 @@ class Program:
             print('\nMatching releases:')
 
             for metadata in metadatas:
-                print('\nArtist  : %s' % metadata.artist.encode('utf-8'))
-                print('Title   : %s' % metadata.title.encode('utf-8'))
+                print('\nArtist  : %s' % metadata.artist)
+                print('Title   : %s' % metadata.title)
                 print('Duration: %s' % common.formatTime(
                                            metadata.duration / 1000.0))
                 print('URL     : %s' % metadata.url)
@@ -318,8 +318,7 @@ class Program:
                     print("Barcode : %s" % metadata.barcode)
                 # TODO: Add test for non ASCII catalog numbers: see issue #215
                 if metadata.catalogNumber:
-                    print("Cat no  : %s" %
-                          metadata.catalogNumber.encode('utf-8'))
+                    print("Cat no  : %s" % metadata.catalogNumber)
 
                 delta = abs(metadata.duration - ittoc.duration())
                 if delta not in deltas:
@@ -334,7 +333,7 @@ class Program:
 
                 if prompt:
                     guess = (deltas[lowest])[0].mbid
-                    release = raw_input(
+                    release = input(
                         "\nPlease select a release [%s]: " % guess)
 
                     if not release:
@@ -346,8 +345,8 @@ class Program:
                              metadatas)
                 if len(metadatas) == 1:
                     logger.info('picked requested release id %s', release)
-                    print('Artist: %s' % metadatas[0].artist.encode('utf-8'))
-                    print('Title : %s' % metadatas[0].title.encode('utf-8'))
+                    print('Artist: %s' % metadatas[0].artist)
+                    print('Title : %s' % metadatas[0].title)
                 elif not metadatas:
                     logger.warning("requested release id '%s', but none of "
                                    "the found releases match", release)
@@ -374,8 +373,8 @@ class Program:
                     logger.warning('picked closest match in duration. '
                                    'Others may be wrong in MusicBrainz, '
                                    'please correct')
-                    print('Artist : %s' % artist.encode('utf-8'))
-                    print('Title :  %s' % metadatas[0].title.encode('utf-8'))
+                    print('Artist : %s' % artist)
+                    print('Title :  %s' % metadatas[0].title)
 
             # Select one of the returned releases. We just pick the first one.
             ret = metadatas[0]
@@ -395,10 +394,10 @@ class Program:
 
         :rtype: dict
         """
-        trackArtist = u'Unknown Artist'
-        releaseArtist = u'Unknown Artist'
-        disc = u'Unknown Disc'
-        title = u'Unknown Track'
+        trackArtist = 'Unknown Artist'
+        releaseArtist = 'Unknown Artist'
+        disc = 'Unknown Disc'
+        title = 'Unknown Track'
 
         if self.metadata:
             trackArtist = self.metadata.artist
@@ -435,7 +434,7 @@ class Program:
         tags['TITLE'] = title
         tags['ALBUM'] = disc
 
-        tags['TRACKNUMBER'] = u'%s' % number
+        tags['TRACKNUMBER'] = '%s' % number
 
         if self.metadata:
             if self.metadata.release is not None:
@@ -506,8 +505,7 @@ class Program:
             stop = self.result.table.getTrackEnd(trackResult.number)
 
         dirname = os.path.dirname(trackResult.filename)
-        if not os.path.exists(dirname):
-            os.makedirs(dirname)
+        os.makedirs(dirname, exist_ok=True)
 
         if not what:
             what = 'track %d' % (trackResult.number, )
@@ -573,7 +571,7 @@ class Program:
     def write_m3u(self, discname):
         m3uPath = common.truncate_filename(discname + '.m3u')
         with open(m3uPath, 'w') as f:
-            f.write(u'#EXTM3U\n'.encode('utf-8'))
+            f.write('#EXTM3U\n')
             for track in self.result.tracks:
                 if not track.filename:
                     # false positive htoa
@@ -586,10 +584,10 @@ class Program:
                               common.FRAMES_PER_SECOND)
 
                 target_path = common.getRelativePath(track.filename, m3uPath)
-                u = u'#EXTINF:%d,%s\n' % (length, target_path)
-                f.write(u.encode('utf-8'))
+                u = '#EXTINF:%d,%s\n' % (length, target_path)
+                f.write(u)
                 u = '%s\n' % target_path
-                f.write(u.encode('utf-8'))
+                f.write(u)
 
     def writeCue(self, discName):
         assert self.result.table.canCue()
@@ -597,7 +595,7 @@ class Program:
         logger.debug('write .cue file to %s', cuePath)
         handle = open(cuePath, 'w')
         # FIXME: do we always want utf-8 ?
-        handle.write(self.result.table.cue(cuePath).encode('utf-8'))
+        handle.write(self.result.table.cue(cuePath))
         handle.close()
 
         self.cuePath = cuePath
@@ -608,7 +606,7 @@ class Program:
         logPath = common.truncate_filename(discName + '.log')
         handle = open(logPath, 'w')
         log = txt_logger.log(self.result)
-        handle.write(log.encode('utf-8'))
+        handle.write(log)
         handle.close()
 
         self.logPath = logPath

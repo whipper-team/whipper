@@ -220,7 +220,7 @@ class ReadTrackTask(task.Task):
         Read the given track.
 
         :param path:   where to store the ripped track
-        :type  path:   unicode
+        :type  path:   str
         :param table:  table of contents of CD
         :type  table:  table.Table
         :param start:  first frame to rip
@@ -236,7 +236,7 @@ class ReadTrackTask(task.Task):
         :param what:   a string representing what's being read; e.g. Track
         :type  what:   str
         """
-        assert isinstance(path, unicode), "%r is not unicode" % path
+        assert isinstance(path, str), "%r is not str" % path
 
         self.path = path
         self._table = table
@@ -314,7 +314,7 @@ class ReadTrackTask(task.Task):
             self.schedule(0.01, self._read, runner)
             return
 
-        self._buffer += ret
+        self._buffer += ret.decode()
 
         # parse buffer into lines if possible, and parse them
         if "\n" in self._buffer:
@@ -452,8 +452,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
             logger.debug('read and verify with taglist %r', taglist)
         # FIXME: choose a dir on the same disk/dir as the final path
         fd, tmppath = tempfile.mkstemp(suffix='.whipper.wav')
-        tmppath = unicode(tmppath)
-        os.fchmod(fd, 0644)
+        os.fchmod(fd, 0o644)
         os.close(fd)
         self._tmpwavpath = tmppath
 
@@ -472,13 +471,13 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
 
         # encode to the final path + '.part'
         try:
-            tmpoutpath = path + u'.part'
+            tmpoutpath = path + '.part'
             open(tmpoutpath, 'wb').close()
         except IOError as e:
             if errno.ENAMETOOLONG != e.errno:
                 raise
             path = common.truncate_filename(common.shrinkPath(path))
-            tmpoutpath = common.truncate_filename(path + u'.part')
+            tmpoutpath = common.truncate_filename(path + '.part')
             open(tmpoutpath, 'wb').close()
         self._tmppath = tmpoutpath
         self.path = path
@@ -597,7 +596,7 @@ class AnalyzeTask(ctask.PopenTask):
     def done(self):
         if self.cwd:
             shutil.rmtree(self.cwd)
-        output = "".join(self._output)
+        output = "".join(o.decode() for o in self._output)
         m = _OK_RE.search(output)
         self.defeatsCache = bool(m)
 

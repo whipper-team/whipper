@@ -17,16 +17,13 @@
 # USA
 
 
-import sys
-
-
 def digit_sum(i):
     """returns the sum of all digits for the given integer"""
 
     return sum(map(int, str(i)))
 
 
-class DiscID(object):
+class DiscID:
     def __init__(self, offsets, total_length, track_count, playable_length):
         """offsets is a list of track offsets, in CD frames
         total_length is the total length of the disc, in seconds
@@ -53,15 +50,8 @@ class DiscID(object):
                                     "track_count",
                                     "playable_length"]]))
 
-    if sys.version_info[0] >= 3:
-        def __str__(self):
-            return self.__unicode__()
-    else:
-        def __str__(self):
-            return self.__unicode__().encode('ascii')
-
-    def __unicode__(self):
-        return u"{:08X}".format(int(self))
+    def __str__(self):
+        return "{:08X}".format(int(self))
 
     def __int__(self):
         digit_sum_ = sum([digit_sum(o // 75) for o in self.offsets])
@@ -90,11 +80,11 @@ def perform_lookup(disc_id, freedb_server, freedb_port):
 
     query = freedb_command(freedb_server,
                            freedb_port,
-                           u"query",
-                           *([disc_id.__unicode__(),
-                              u"{:d}".format(disc_id.track_count)] +
-                             [u"{:d}".format(o) for o in disc_id.offsets] +
-                             [u"{:d}".format(disc_id.playable_length)]))
+                           "query",
+                           *([disc_id.__str__(),
+                              "{:d}".format(disc_id.track_count)] +
+                             ["{:d}".format(o) for o in disc_id.offsets] +
+                             ["{:d}".format(disc_id.playable_length)]))
 
     line = next(query)
     response = RESPONSE.match(line)
@@ -116,7 +106,7 @@ def perform_lookup(disc_id, freedb_server, freedb_port):
         elif (code == 211) or (code == 210):
             # multiple exact or inexact matches
             line = next(query)
-            while not line.startswith(u"."):
+            while not line.startswith("."):
                 match = QUERY_RESULT.match(line)
                 if match is not None:
                     matches.append((match.group(1),
@@ -140,7 +130,7 @@ def perform_lookup(disc_id, freedb_server, freedb_port):
 
             query = freedb_command(freedb_server,
                                    freedb_port,
-                                   u"read",
+                                   "read",
                                    category,
                                    disc_id)
 
@@ -149,8 +139,8 @@ def perform_lookup(disc_id, freedb_server, freedb_port):
                 # FIXME: check response code here
                 freedb = {}
                 line = next(query)
-                while not line.startswith(u"."):
-                    if not line.startswith(u"#"):
+                while not line.startswith("."):
+                    if not line.startswith("#"):
                         entry = FREEDB_LINE.match(line)
                         if entry is not None:
                             if entry.group(1) in freedb:
@@ -165,52 +155,38 @@ def perform_lookup(disc_id, freedb_server, freedb_port):
 
 def freedb_command(freedb_server, freedb_port, cmd, *args):
     """given a freedb_server string, freedb_port int,
-    command unicode string and argument unicode strings,
-    yields a list of Unicode strings"""
+    command string and argument strings, yields a list of strings"""
 
-    try:
-        from urllib.request import urlopen
-        from urllib.error import URLError
-    except ImportError:
-        from urllib2 import urlopen, URLError
-    try:
-        from urllib.parse import urlencode
-    except ImportError:
-        from urllib import urlencode
+    from urllib.error import URLError
+    from urllib.request import urlopen
+    from urllib.parse import urlencode
     from socket import getfqdn
     from whipper import __version__ as VERSION
-    from sys import version_info
-
-    PY3 = version_info[0] >= 3
 
     # some debug type checking
-    assert(isinstance(cmd, str if PY3 else unicode))
+    assert(isinstance(cmd, str))
     for arg in args:
-        assert(isinstance(arg, str if PY3 else unicode))
+        assert(isinstance(arg, str))
 
     POST = []
 
     # generate query to post with arguments in specific order
     if len(args) > 0:
-        POST.append((u"cmd", u"cddb {} {}".format(cmd, " ".join(args))))
+        POST.append(("cmd", "cddb {} {}".format(cmd, " ".join(args))))
     else:
-        POST.append((u"cmd", u"cddb {}".format(cmd)))
+        POST.append(("cmd", "cddb {}".format(cmd)))
 
     POST.append(
-        (u"hello",
-         u"user {} {} {}".format(
-             getfqdn() if PY3 else getfqdn().decode("UTF-8", "replace"),
-             u"whipper",
-             VERSION if PY3 else VERSION.decode("ascii"))))
+        ("hello",
+         "user {} {} {}".format(getfqdn(), "whipper", VERSION)))
 
-    POST.append((u"proto", u"6"))
+    POST.append(("proto", "6"))
 
     try:
         # get Request object from post
         request = urlopen(
             "http://{}:{:d}/~cddb/cddb.cgi".format(freedb_server, freedb_port),
-            urlencode(POST).encode("UTF-8") if (version_info[0] >= 3) else
-            urlencode(POST))
+            urlencode(POST).encode())
     except URLError as e:
         raise ValueError(str(e))
     try:

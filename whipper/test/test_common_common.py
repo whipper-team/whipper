@@ -12,7 +12,7 @@ from whipper.test import common as tcommon
 class ShrinkTestCase(tcommon.TestCase):
 
     def testSufjan(self):
-        path = (u'whipper/Sufjan Stevens - Illinois/02. Sufjan Stevens - '
+        path = ('whipper/Sufjan Stevens - Illinois/02. Sufjan Stevens - '
                 'The Black Hawk War, or, How to Demolish an Entire '
                 'Civilization and Still Feel Good About Yourself in the '
                 'Morning, or, We Apologize for the Inconvenience but '
@@ -52,7 +52,7 @@ class GetRelativePathTestCase(tcommon.TestCase):
 class GetRealPathTestCase(tcommon.TestCase):
 
     def testRealWithBackslash(self):
-        fd, path = tempfile.mkstemp(suffix=u'back\\slash.flac')
+        fd, path = tempfile.mkstemp(suffix='back\\slash.flac')
         refPath = os.path.join(os.path.dirname(path), 'fake.cue')
 
         self.assertEqual(common.getRealPath(refPath, path), path)
