@@ -167,7 +167,7 @@ class ImageVerifyTask(task.MultiSeparateTask):
                                  "in debug log (set RIP_DEBUG=4)")
             index = track.indexes[1]
             assert taskk.length % common.SAMPLES_PER_FRAME == 0
-            end = taskk.length / common.SAMPLES_PER_FRAME
+            end = taskk.length // common.SAMPLES_PER_FRAME
             self.lengths[trackIndex] = end - index.relative
 
         task.MultiSeparateTask.stop(self)
