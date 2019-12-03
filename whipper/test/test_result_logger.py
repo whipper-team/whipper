@@ -137,11 +137,14 @@ class LoggerTestCase(unittest.TestCase):
         # do not test on version line, date line, or SHA-256 hash line
         self.assertListEqual(actualLines[2:-1], expectedLines[2:-1])
 
+        # RegEX updated to support all the 4 cases of the versioning scheme:
+        # https://github.com/pypa/setuptools_scm/#default-versioning-scheme
         self.assertRegex(
             actualLines[0],
             re.compile((
                 r'Log created by: whipper '
-                r'[\d]+\.[\d]+\.[\d]+\.dev[\w\.\+]+ \(internal logger\)'
+                r'[\d]+\.[\d]+\.[\d]+(\+d\d{8}|\.dev[\w\.\+]+)? '
+                r'\(internal logger\)'
             ))
         )
         self.assertRegex(
