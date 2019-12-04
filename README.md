@@ -72,7 +72,7 @@ Whipper still isn't available as an official package in every Linux distribution
 
 ### Docker
 
-You can easily install whipper without needing to care about the required dependencies by making use of the automatically built images hosted on Docker Hub:
+You can easily install whipper without needing to care about the required dependencies by making use of the automatically built images hosted on [Docker Hub](https://hub.docker.com/r/whipperteam/whipper):
 
 `docker pull whipperteam/whipper`
 
@@ -93,7 +93,7 @@ You should put this e.g. into your `.bash_aliases`. Also keep in mind to substit
 
 Make sure you create the configuration directory:
 
-`mkdir -p ~/.config/whipper ${PWD}/output`
+`mkdir -p ~/.config/whipper "${PWD}"/output`
 
 Finally you can test the correct installation:
 
@@ -108,7 +108,7 @@ This is a noncomprehensive summary which shows whipper's packaging status (unoff
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/whipper.svg)](https://repology.org/metapackage/whipper)
 
-Someone also packaged whipper as snap: [unofficial snap on snapcraft](https://snapcraft.io/whipper).
+There's also an [unoffical snap package on snapcraft](https://snapcraft.io/whipper).
 
 In case you decide to install whipper using an unofficial repository just keep in mind it is your responsibility to verify that the provided content is safe to use.
 

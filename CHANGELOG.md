@@ -2,10 +2,37 @@
 
 ## [Unreleased](https://github.com/whipper-team/whipper/tree/HEAD)
 
-[Full Changelog](https://github.com/whipper-team/whipper/compare/v0.8.0...HEAD)
+[Full Changelog](https://github.com/whipper-team/whipper/compare/v0.9.0...HEAD)
+
+## [v0.9.0](https://github.com/whipper-team/whipper/tree/v0.9.0) (2019-11-04)
+
+[Full Changelog](https://github.com/whipper-team/whipper/compare/v0.8.0...v0.9.0)
+
+
+**Fixed bugs:**
+
+- Fix regression introduced due to Python 3 port [\#424](https://github.com/whipper-team/whipper/issues/424)
+- Properly tagging releases on dockerhub [\#423](https://github.com/whipper-team/whipper/issues/423)
+- Test failure when building a release [\#420](https://github.com/whipper-team/whipper/issues/420)
+- Dockerfile is missing ruamel.yaml [\#419](https://github.com/whipper-team/whipper/issues/419)
+- Port to Python 3 [\#78](https://github.com/whipper-team/whipper/issues/78)
+
+**Closed issues:**
+
+- Why is CD-Text  if found not used for naming Disk and Tracks? [\#397](https://github.com/whipper-team/whipper/issues/397)
+
+**Merged pull requests:**
+
+- Python 3 port [\#411](https://github.com/whipper-team/whipper/pull/411) ([ddevault](https://github.com/ddevault))
 
 ## [v0.8.0](https://github.com/whipper-team/whipper/tree/v0.8.0) (2019-10-27)
+
 [Full Changelog](https://github.com/whipper-team/whipper/compare/v0.7.3...v0.8.0)
+
+**Implemented enhancements:**
+
+- Include MusicBrainz Release ID in the log file [\#381](https://github.com/whipper-team/whipper/issues/381)
+- Specify supported version\(s\) of Python in setup.py [\#378](https://github.com/whipper-team/whipper/pull/378) ([Freso](https://github.com/Freso))
 
 **Fixed bugs:**
 
@@ -22,10 +49,7 @@
 - Separate out Release in log into two value map [\#416](https://github.com/whipper-team/whipper/issues/416)
 - Network issue [\#412](https://github.com/whipper-team/whipper/issues/412)
 - RequestsDependencyWarning: urllib3 \(1.25.2\) or chardet \(3.0.4\) doesn't match a supported version [\#400](https://github.com/whipper-team/whipper/issues/400)
-- Run script after rip [\#394](https://github.com/whipper-team/whipper/issues/394)
 - Add git/mercurial dependency to the README [\#386](https://github.com/whipper-team/whipper/issues/386)
-- Include MusicBrainz Release ID in the log file [\#381](https://github.com/whipper-team/whipper/issues/381)
-- Rip while entering MusicBrainz data [\#360](https://github.com/whipper-team/whipper/issues/360)
 - Doesn't eject - "eject: unable to eject" \(but manual eject works\) [\#355](https://github.com/whipper-team/whipper/issues/355)
 - Note in the whipper output/log if development version was used [\#337](https://github.com/whipper-team/whipper/issues/337)
 - fedora 29, whipper 0.72, Error While Executing Any Command [\#332](https://github.com/whipper-team/whipper/issues/332)
@@ -48,7 +72,6 @@
 - Use eject value of the class again [\#391](https://github.com/whipper-team/whipper/pull/391) ([gorgobacka](https://github.com/gorgobacka))
 - Convert documentation from epydoc to reStructuredText [\#387](https://github.com/whipper-team/whipper/pull/387) ([JoeLametta](https://github.com/JoeLametta))
 - Include MusicBrainz Release URL in log output [\#382](https://github.com/whipper-team/whipper/pull/382) ([Freso](https://github.com/Freso))
-- Specify supported version\(s\) of Python in setup.py [\#378](https://github.com/whipper-team/whipper/pull/378) ([Freso](https://github.com/Freso))
 - Fix critical regressions introduced in 3e79032 and 16b0d8d [\#371](https://github.com/whipper-team/whipper/pull/371) ([JoeLametta](https://github.com/JoeLametta))
 - Use git to get whipper's version [\#370](https://github.com/whipper-team/whipper/pull/370) ([Freso](https://github.com/Freso))
 - Handle artist MBIDs as multivalue tags [\#367](https://github.com/whipper-team/whipper/pull/367) ([Freso](https://github.com/Freso))
@@ -64,16 +87,14 @@
 - accuraterip-checksum: convert to python C extension [\#274](https://github.com/whipper-team/whipper/pull/274) ([mtdcr](https://github.com/mtdcr))
 
 ## [v0.7.3](https://github.com/whipper-team/whipper/tree/v0.7.3) (2018-12-14)
+
 [Full Changelog](https://github.com/whipper-team/whipper/compare/v0.7.2...v0.7.3)
 
 **Fixed bugs:**
 
 - Error when parsing log file due to left pad track number [\#340](https://github.com/whipper-team/whipper/issues/340)
 - Failing AccurateRipResponse tests [\#333](https://github.com/whipper-team/whipper/issues/333)
-- CRITICAL:whipper.command.cd:output directory is a finished rip output directory [\#287](https://github.com/whipper-team/whipper/issues/287)
-- Possible HTOA error [\#281](https://github.com/whipper-team/whipper/issues/281)
 - Disc template KeyError [\#279](https://github.com/whipper-team/whipper/issues/279)
-- Enhanced CD causes computer to freeze. [\#256](https://github.com/whipper-team/whipper/issues/256)
 - Unicode issues [\#215](https://github.com/whipper-team/whipper/issues/215)
 - whipper offset find exception [\#208](https://github.com/whipper-team/whipper/issues/208)
 - ZeroDivisionError: float division by zero [\#202](https://github.com/whipper-team/whipper/issues/202)
@@ -104,6 +125,7 @@
 - Preserve ToC file generated by cdrdao [\#321](https://github.com/whipper-team/whipper/pull/321) ([JoeLametta](https://github.com/JoeLametta))
 
 ## [v0.7.2](https://github.com/whipper-team/whipper/tree/v0.7.2) (2018-10-31)
+
 [Full Changelog](https://github.com/whipper-team/whipper/compare/v0.7.1...v0.7.2)
 
 **Fixed bugs:**
@@ -122,6 +144,7 @@
 - Add AppStream metainfo.xml file [\#318](https://github.com/whipper-team/whipper/pull/318) ([Freso](https://github.com/Freso))
 
 ## [v0.7.1](https://github.com/whipper-team/whipper/tree/v0.7.1) (2018-10-23)
+
 [Full Changelog](https://github.com/whipper-team/whipper/compare/v0.7.0...v0.7.1)
 
 **Fixed bugs:**
@@ -139,12 +162,8 @@
 - Transfer repository ownership to GitHub organization [\#306](https://github.com/whipper-team/whipper/issues/306)
 - Variable offset detected [\#295](https://github.com/whipper-team/whipper/issues/295)
 - Github repo [\#293](https://github.com/whipper-team/whipper/issues/293)
-- yaml logger [\#292](https://github.com/whipper-team/whipper/issues/292)
-- Add replaygain processing [\#285](https://github.com/whipper-team/whipper/issues/285)
 - pre emphasis documentation [\#275](https://github.com/whipper-team/whipper/issues/275)
 - Add cdparanoia version to log file [\#267](https://github.com/whipper-team/whipper/issues/267)
-- whipper sometimes creates invalid cue sheets [\#265](https://github.com/whipper-team/whipper/issues/265)
-- Make .cue and .m3u writing optional [\#259](https://github.com/whipper-team/whipper/issues/259)
 - Add a requirements.txt file [\#221](https://github.com/whipper-team/whipper/issues/221)
 
 **Merged pull requests:**
@@ -164,26 +183,25 @@
 - Add Dockerfile [\#237](https://github.com/whipper-team/whipper/pull/237) ([thomas-mc-work](https://github.com/thomas-mc-work))
 
 ## [v0.7.0](https://github.com/whipper-team/whipper/tree/v0.7.0) (2018-04-09)
+
 [Full Changelog](https://github.com/whipper-team/whipper/compare/v0.6.0...v0.7.0)
+
+**Implemented enhancements:**
+
+- Simple message while reading TOC [\#257](https://github.com/whipper-team/whipper/issues/257)
 
 **Fixed bugs:**
 
 - cd rip   is not able to rip the last track [\#203](https://github.com/whipper-team/whipper/issues/203)
-- CD-ROM powers off during rip command. [\#189](https://github.com/whipper-team/whipper/issues/189)
 - Various ripping issues [\#179](https://github.com/whipper-team/whipper/issues/179)
-- "whipper image verify" abends on FLAC having ID3 tags \("TypeError: %x format: a number is required, not NoneType"\) [\#176](https://github.com/whipper-team/whipper/issues/176)
 - whipper not picking up all settings in whipper.conf [\#99](https://github.com/whipper-team/whipper/issues/99)
 
 **Closed issues:**
 
-- Simple message while reading TOC [\#257](https://github.com/whipper-team/whipper/issues/257)
-- Statement to your "only flac" decision [\#247](https://github.com/whipper-team/whipper/issues/247)
 - How to choose device \(if there are more\)? [\#241](https://github.com/whipper-team/whipper/issues/241)
-- Import Error No Module Named gobject Fedora 26 and 27 [\#228](https://github.com/whipper-team/whipper/issues/228)
 - Make a 0.6.0 release [\#219](https://github.com/whipper-team/whipper/issues/219)
 - flac settings [\#184](https://github.com/whipper-team/whipper/issues/184)
 - Remove connection to parent fork. [\#79](https://github.com/whipper-team/whipper/issues/79)
-- GUI frontend for whipper [\#40](https://github.com/whipper-team/whipper/issues/40)
 
 **Merged pull requests:**
 
@@ -199,13 +217,19 @@
 - Removed reference to unused "profile = flac" config option \(issue \#99\) [\#231](https://github.com/whipper-team/whipper/pull/231) ([calumchisholm](https://github.com/calumchisholm))
 
 ## [v0.6.0](https://github.com/whipper-team/whipper/tree/v0.6.0) (2018-02-02)
+
 [Full Changelog](https://github.com/whipper-team/whipper/compare/v0.5.1...v0.6.0)
+
+**Implemented enhancements:**
+
+- Declare supported Python version [\#152](https://github.com/whipper-team/whipper/issues/152)
 
 **Fixed bugs:**
 
 - Error: NotFoundException message displayed while ripping an unknown disc [\#198](https://github.com/whipper-team/whipper/issues/198)
 - whipper doesn't name files .flac, which leads to it not being able to find ripped files [\#194](https://github.com/whipper-team/whipper/issues/194)
 - Issues with finding offset [\#182](https://github.com/whipper-team/whipper/issues/182)
+- cdparanoia toc does not agree with cdrdao-toc, cd-paranoia also reports different \(but better\) lengths [\#175](https://github.com/whipper-team/whipper/issues/175)
 - failing unittests in systemd-nspawn container [\#157](https://github.com/whipper-team/whipper/issues/157)
 - Update doc/release or remove it [\#149](https://github.com/whipper-team/whipper/issues/149)
 - Test HTOA peak value against 0 \(integer equality\) [\#143](https://github.com/whipper-team/whipper/issues/143)
@@ -217,18 +241,12 @@
 
 **Closed issues:**
 
-- TRACK and FILE order in cue file [\#212](https://github.com/whipper-team/whipper/issues/212)
 - ImportError - CDDB on Solus. [\#209](https://github.com/whipper-team/whipper/issues/209)
 - rename milestone 101010 to backlog [\#190](https://github.com/whipper-team/whipper/issues/190)
-- AttributeError: RipResult instance has no attribute 'profileName' [\#181](https://github.com/whipper-team/whipper/issues/181)
 - .log, .cue, and .m3u file names [\#180](https://github.com/whipper-team/whipper/issues/180)
-- Accurip verification step failure [\#178](https://github.com/whipper-team/whipper/issues/178)
-- Whipper offset find failing [\#177](https://github.com/whipper-team/whipper/issues/177)
 - using your own MusicBrainz server [\#172](https://github.com/whipper-team/whipper/issues/172)
 - Use 'Artist as credited' in filename instead of 'Artist in MusicBrainz' \(e.g. to solve \[unknown\]\) [\#155](https://github.com/whipper-team/whipper/issues/155)
-- Declare supported Python version [\#152](https://github.com/whipper-team/whipper/issues/152)
 - Identify media type in log file \(ie CD vs CD-R\) [\#137](https://github.com/whipper-team/whipper/issues/137)
-- Accurate rip failures still exit 0 [\#126](https://github.com/whipper-team/whipper/issues/126)
 - Rename the Python module [\#100](https://github.com/whipper-team/whipper/issues/100)
 - libcdio-paranoia instead of cdparanoia [\#87](https://github.com/whipper-team/whipper/issues/87)
 - Release, Tags, NEWS? [\#63](https://github.com/whipper-team/whipper/issues/63)
@@ -258,8 +276,10 @@
 - Add flake8 testing to CI [\#151](https://github.com/whipper-team/whipper/pull/151) ([Freso](https://github.com/Freso))
 - Clean up files in misc/ [\#150](https://github.com/whipper-team/whipper/pull/150) ([Freso](https://github.com/Freso))
 - Update .gitignore [\#148](https://github.com/whipper-team/whipper/pull/148) ([Freso](https://github.com/Freso))
+- Fix references to morituri. [\#109](https://github.com/whipper-team/whipper/pull/109) ([Freso](https://github.com/Freso))
 
 ## [v0.5.1](https://github.com/whipper-team/whipper/tree/v0.5.1) (2017-04-24)
+
 [Full Changelog](https://github.com/whipper-team/whipper/compare/v0.5.0...v0.5.1)
 
 **Fixed bugs:**
@@ -267,6 +287,7 @@
 - 0.5.0 Release init.py version number not updated [\#147](https://github.com/whipper-team/whipper/issues/147)
 
 ## [v0.5.0](https://github.com/whipper-team/whipper/tree/v0.5.0) (2017-04-24)
+
 [Full Changelog](https://github.com/whipper-team/whipper/compare/v0.4.2...v0.5.0)
 
 **Fixed bugs:**
@@ -283,13 +304,9 @@
 
 - `whipper find offset` still requiring gst [\#141](https://github.com/whipper-team/whipper/issues/141)
 - Burn FLACs 1:1 CD ? [\#125](https://github.com/whipper-team/whipper/issues/125)
-- whipper offset find -o OFFSET not working [\#123](https://github.com/whipper-team/whipper/issues/123)
 - Check that whipper deals properly with CD pre-emphasis [\#120](https://github.com/whipper-team/whipper/issues/120)
-- FreeDB metadata not honored [\#119](https://github.com/whipper-team/whipper/issues/119)
 - Difficulty getting flac encoding working. [\#118](https://github.com/whipper-team/whipper/issues/118)
-- enabling external loggers triggers python errors [\#111](https://github.com/whipper-team/whipper/issues/111)
 - additional tag creation [\#108](https://github.com/whipper-team/whipper/issues/108)
-- False positive on HTOA [\#82](https://github.com/whipper-team/whipper/issues/82)
 - Remove gstreamer dependency [\#29](https://github.com/whipper-team/whipper/issues/29)
 
 **Merged pull requests:**
@@ -304,6 +321,7 @@
 - Replace rip command suggestions with 'whipper' [\#114](https://github.com/whipper-team/whipper/pull/114) ([JoeLametta](https://github.com/JoeLametta))
 
 ## [v0.4.2](https://github.com/whipper-team/whipper/tree/v0.4.2) (2017-01-08)
+
 [Full Changelog](https://github.com/whipper-team/whipper/compare/v0.4.1...v0.4.2)
 
 **Fixed bugs:**
@@ -321,6 +339,7 @@
 - Update links to Arch Linux AUR packages in README. [\#103](https://github.com/whipper-team/whipper/pull/103) ([Freso](https://github.com/Freso))
 
 ## [v0.4.1](https://github.com/whipper-team/whipper/tree/v0.4.1) (2017-01-06)
+
 [Full Changelog](https://github.com/whipper-team/whipper/compare/v0.4.0...v0.4.1)
 
 **Closed issues:**
@@ -330,7 +349,6 @@
 
 **Merged pull requests:**
 
-- Fix references to morituri. [\#109](https://github.com/whipper-team/whipper/pull/109) ([Freso](https://github.com/Freso))
 - Small cleanups of setup.py [\#102](https://github.com/whipper-team/whipper/pull/102) ([Freso](https://github.com/Freso))
 - Persist False value for defeats\_cache correctly [\#98](https://github.com/whipper-team/whipper/pull/98) ([ribbons](https://github.com/ribbons))
 - Update suggested commands given by `drive list` [\#97](https://github.com/whipper-team/whipper/pull/97) ([ribbons](https://github.com/ribbons))
@@ -347,6 +365,7 @@
 - Use soxi instead of gstreamer to determine a track's length [\#67](https://github.com/whipper-team/whipper/pull/67) ([chrysn](https://github.com/chrysn))
 
 ## [v0.4.0](https://github.com/whipper-team/whipper/tree/v0.4.0) (2016-11-08)
+
 [Full Changelog](https://github.com/whipper-team/whipper/compare/v0.3.0...v0.4.0)
 
 **Fixed bugs:**
@@ -354,18 +373,12 @@
 - wrong status code when giving up [\#57](https://github.com/whipper-team/whipper/issues/57)
 - CD-TEXT issue [\#49](https://github.com/whipper-team/whipper/issues/49)
 
-**Closed issues:**
-
-- ImportError: No module named log [\#64](https://github.com/whipper-team/whipper/issues/64)
-- whatlogger no longer recognized [\#56](https://github.com/whipper-team/whipper/issues/56)
-
 **Merged pull requests:**
 
 - Invoke whipper by its name + Readme rewrite [\#70](https://github.com/whipper-team/whipper/pull/70) ([JoeLametta](https://github.com/JoeLametta))
 - do not recalculate musicbrainz disc id for every getMusicBrainzDiscId… [\#69](https://github.com/whipper-team/whipper/pull/69) ([RecursiveForest](https://github.com/RecursiveForest))
 - Directory [\#62](https://github.com/whipper-team/whipper/pull/62) ([RecursiveForest](https://github.com/RecursiveForest))
 - undelete overzealously removed plugin initialisation [\#61](https://github.com/whipper-team/whipper/pull/61) ([RecursiveForest](https://github.com/RecursiveForest))
-- Readme rewrite [\#60](https://github.com/whipper-team/whipper/pull/60) ([RecursiveForest](https://github.com/RecursiveForest))
 - README.md: drop executable flag [\#55](https://github.com/whipper-team/whipper/pull/55) ([chrysn](https://github.com/chrysn))
 - nuke-autohell [\#54](https://github.com/whipper-team/whipper/pull/54) ([RecursiveForest](https://github.com/RecursiveForest))
 - standardise program/sox.py formatting, add test case, docstring [\#53](https://github.com/whipper-team/whipper/pull/53) ([RecursiveForest](https://github.com/RecursiveForest))
@@ -373,6 +386,7 @@
 - use setuptools, remove autohell, use raw make for src/ [\#51](https://github.com/whipper-team/whipper/pull/51) ([RecursiveForest](https://github.com/RecursiveForest))
 
 ## [v0.3.0](https://github.com/whipper-team/whipper/tree/v0.3.0) (2016-10-17)
+
 [Full Changelog](https://github.com/whipper-team/whipper/compare/v0.2.4...v0.3.0)
 
 **Fixed bugs:**
@@ -380,18 +394,18 @@
 - UnicodeEncodeError [\#43](https://github.com/whipper-team/whipper/issues/43)
 - Use a single standard for config/cache/state files [\#24](https://github.com/whipper-team/whipper/issues/24)
 
-**Closed issues:**
-
-- offset find fails [\#46](https://github.com/whipper-team/whipper/issues/46)
-- Error launching rip cd rip command [\#41](https://github.com/whipper-team/whipper/issues/41)
-
 **Merged pull requests:**
 
 - Sox [\#48](https://github.com/whipper-team/whipper/pull/48) ([RecursiveForest](https://github.com/RecursiveForest))
 - Fast accuraterip checksum [\#37](https://github.com/whipper-team/whipper/pull/37) ([MerlijnWajer](https://github.com/MerlijnWajer))
 
 ## [v0.2.4](https://github.com/whipper-team/whipper/tree/v0.2.4) (2016-10-09)
+
 [Full Changelog](https://github.com/whipper-team/whipper/compare/v0.2.3...v0.2.4)
+
+**Implemented enhancements:**
+
+- Don't allow ripping without an explicit offset, and make pycdio a required dependency [\#23](https://github.com/whipper-team/whipper/issues/23)
 
 **Fixed bugs:**
 
@@ -407,8 +421,6 @@
 - Error selecting Drive for ripping [\#34](https://github.com/whipper-team/whipper/issues/34)
 - Offset not saved: could not get device info \(requires pycdio\) [\#33](https://github.com/whipper-team/whipper/issues/33)
 - On Arch Linux, CDDB does not know how to install morituri. [\#28](https://github.com/whipper-team/whipper/issues/28)
-- Error reading TOC [\#26](https://github.com/whipper-team/whipper/issues/26)
-- Don't allow ripping without an explicit offset, and make pycdio a required dependency [\#23](https://github.com/whipper-team/whipper/issues/23)
 - Minimal makedepends for building [\#17](https://github.com/whipper-team/whipper/issues/17)
 - Delete stale branches [\#7](https://github.com/whipper-team/whipper/issues/7)
 - get rid of the gstreamer-0.10 dependency [\#2](https://github.com/whipper-team/whipper/issues/2)
@@ -428,15 +440,21 @@
 - Fork [\#6](https://github.com/whipper-team/whipper/pull/6) ([abendebury](https://github.com/abendebury))
 
 ## [v0.2.3](https://github.com/whipper-team/whipper/tree/v0.2.3) (2014-07-16)
+
 [Full Changelog](https://github.com/whipper-team/whipper/compare/v0.2.2...v0.2.3)
 
 ## [v0.2.2](https://github.com/whipper-team/whipper/tree/v0.2.2) (2013-07-30)
+
 [Full Changelog](https://github.com/whipper-team/whipper/compare/v0.2.1...v0.2.2)
 
 ## [v0.2.1](https://github.com/whipper-team/whipper/tree/v0.2.1) (2013-07-15)
+
 [Full Changelog](https://github.com/whipper-team/whipper/compare/v0.2.0...v0.2.1)
 
 ## [v0.2.0](https://github.com/whipper-team/whipper/tree/v0.2.0) (2013-01-20)
 
+[Full Changelog](https://github.com/whipper-team/whipper/compare/20421488be8a82606f7ae82a16c9d8bc015b9e01...v0.2.0)
 
-\* *This Change Log was automatically generated by [github_changelog_generator](https://github.com/skywinder/Github-Changelog-Generator)*
+
+
+\* *This Changelog was automatically generated by [github_changelog_generator](https://github.com/github-changelog-generator/github-changelog-generator)*
