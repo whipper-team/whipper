@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 with open(sys.argv[1]) as f:
     doc = f.read()
 
-soup = BeautifulSoup(doc)
+soup = BeautifulSoup(doc, features='html.parser')
 
 offsets = {}  # offset -> total count
 
@@ -52,8 +52,9 @@ lines = []
 line = 'OFFSETS = ("'
 
 for offset in offsets:
-    line += offset + ", "
+    line += offset + ', '
     if len(line) > 60:
+        line += '"'
         lines.append(line)
         line = '           "'
 
@@ -62,4 +63,4 @@ if len(line) > 11:
     line = line[:-2] + '")'
     lines.append(line)
 
-print("\n".join(lines))
+print('\n'.join(lines))
