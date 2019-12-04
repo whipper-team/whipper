@@ -21,7 +21,7 @@
 """
 Handles communication with the MusicBrainz server using NGS.
 """
-import urllib2
+from urllib.error import HTTPError
 
 import whipper
 
@@ -45,7 +45,7 @@ class NotFoundException(MusicBrainzException):
         return "Disc not found in MusicBrainz"
 
 
-class TrackMetadata(object):
+class TrackMetadata:
     artist = None
     title = None
     duration = None  # in ms
@@ -56,12 +56,12 @@ class TrackMetadata(object):
     mbidWorks = []
 
 
-class DiscMetadata(object):
+class DiscMetadata:
     """
     :param artist:       artist(s) name
     :param sortName:     release artist sort name
     :param release:      earliest release date, in YYYY-MM-DD
-    :type  release:      unicode
+    :type  release:      str
     :param title:        title of the disc (with disambiguation)
     :param releaseTitle: title of the release (without disambiguation)
     :type  tracks:       list of :any:`TrackMetadata`
@@ -152,7 +152,7 @@ def _getWorks(recording):
     """Get "performance of" works out of a recording."""
     works = []
     valid_work_rel_types = [
-        u'a3005666-a872-32c3-ad06-98af558e99b0',  # "Performance"
+        'a3005666-a872-32c3-ad06-98af558e99b0',  # "Performance"
     ]
     if 'work-relation-list' in recording:
         for work in recording['work-relation-list']:
@@ -298,7 +298,7 @@ def musicbrainz(discid, country=None, record=False):
         result = musicbrainzngs.get_releases_by_discid(
             discid, includes=["artists", "recordings", "release-groups"])
     except musicbrainzngs.ResponseError as e:
-        if isinstance(e.cause, urllib2.HTTPError):
+        if isinstance(e.cause, HTTPError):
             if e.cause.code == 404:
                 raise NotFoundException(e)
             else:

@@ -119,7 +119,7 @@ class RipResult:
         return None
 
 
-class Logger(object):
+class Logger:
     """
     I log the result of a rip.
     """
@@ -140,7 +140,7 @@ class Logger(object):
 # A setuptools-like entry point
 
 
-class EntryPoint(object):
+class EntryPoint:
     name = 'whipper'
 
     @staticmethod

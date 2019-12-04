@@ -13,7 +13,7 @@ class RenameInFileTestcase(unittest.TestCase):
 
     def setUp(self):
         (fd, self._path) = tempfile.mkstemp(suffix='.whipper.renamer.infile')
-        os.write(fd, 'This is a test\nThis is another\n')
+        os.write(fd, 'This is a test\nThis is another\n'.encode())
         os.close(fd)
 
     def testVerify(self):
@@ -25,7 +25,8 @@ class RenameInFileTestcase(unittest.TestCase):
     def testDo(self):
         o = renamer.RenameInFile(self._path, 'is is a', 'at was some')
         o.do()
-        output = open(self._path).read()
+        with open(self._path) as f:
+            output = f.read()
         self.assertEqual(output, 'That was some test\nThat was somenother\n')
         os.unlink(self._path)
 
@@ -34,7 +35,8 @@ class RenameInFileTestcase(unittest.TestCase):
         data = o.serialize()
         o2 = renamer.RenameInFile.deserialize(data)
         o2.do()
-        output = open(self._path).read()
+        with open(self._path) as f:
+            output = f.read()
         self.assertEqual(output, 'That was some test\nThat was somenother\n')
         os.unlink(self._path)
 
@@ -43,7 +45,7 @@ class RenameFileTestcase(unittest.TestCase):
 
     def setUp(self):
         (fd, self._source) = tempfile.mkstemp(suffix='.whipper.renamer.file')
-        os.write(fd, 'This is a test\nThis is another\n')
+        os.write(fd, 'This is a test\nThis is another\n'.encode())
         os.close(fd)
         (fd, self._destination) = tempfile.mkstemp(
             suffix='.whipper.renamer.file')
@@ -66,7 +68,8 @@ class RenameFileTestcase(unittest.TestCase):
 
     def testDo(self):
         self._operation.do()
-        output = open(self._destination).read()
+        with open(self._destination) as f:
+            output = f.read()
         self.assertEqual(output, 'This is a test\nThis is another\n')
         os.unlink(self._destination)
 
@@ -74,7 +77,8 @@ class RenameFileTestcase(unittest.TestCase):
         data = self._operation.serialize()
         o = renamer.RenameFile.deserialize(data)
         o.do()
-        output = open(self._destination).read()
+        with open(self._destination) as f:
+            output = f.read()
         self.assertEqual(output, 'This is a test\nThis is another\n')
         os.unlink(self._destination)
 
@@ -87,7 +91,7 @@ class OperatorTestCase(unittest.TestCase):
 
         (fd, self._source) = tempfile.mkstemp(
             suffix='.whipper.renamer.operator')
-        os.write(fd, 'This is a test\nThis is another\n')
+        os.write(fd, 'This is a test\nThis is another\n'.encode())
         os.close(fd)
         (fd, self._destination) = tempfile.mkstemp(
             suffix='.whipper.renamer.operator')

@@ -34,7 +34,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class Image(object):
+class Image:
     """
     :ivar table:    The Table of Contents for this image.
     :vartype table: table.Table
@@ -43,10 +43,10 @@ class Image(object):
 
     def __init__(self, path):
         """
-        :type  path: unicode
+        :type  path: str
         :param path: .cue path
         """
-        assert isinstance(path, unicode), "%r is not unicode" % path
+        assert isinstance(path, str), "%r is not str" % path
 
         self._path = path
         self.cue = cue.CueFile(path)
@@ -62,7 +62,7 @@ class Image(object):
 
         :param path: .cue path
         """
-        assert isinstance(path, unicode), "%r is not unicode" % path
+        assert isinstance(path, str), "%r is not str" % path
 
         return self.cue.getRealPath(path)
 
@@ -130,7 +130,7 @@ class ImageVerifyTask(task.MultiSeparateTask):
             htoa = cue.table.tracks[0].indexes[0]
             track = cue.table.tracks[0]
             path = image.getRealPath(htoa.path)
-            assert isinstance(path, unicode), "%r is not unicode" % path
+            assert isinstance(path, str), "%r is not str" % path
             logger.debug('schedule scan of audio length of %r', path)
             taskk = AudioLengthTask(path)
             self.addTask(taskk)
@@ -145,7 +145,7 @@ class ImageVerifyTask(task.MultiSeparateTask):
 
             if length == -1:
                 path = image.getRealPath(index.path)
-                assert isinstance(path, unicode), "%r is not unicode" % path
+                assert isinstance(path, str), "%r is not str" % path
                 logger.debug('schedule scan of audio length of %r', path)
                 taskk = AudioLengthTask(path)
                 self.addTask(taskk)
@@ -167,7 +167,7 @@ class ImageVerifyTask(task.MultiSeparateTask):
                                  "in debug log (set RIP_DEBUG=4)")
             index = track.indexes[1]
             assert taskk.length % common.SAMPLES_PER_FRAME == 0
-            end = taskk.length / common.SAMPLES_PER_FRAME
+            end = taskk.length // common.SAMPLES_PER_FRAME
             self.lengths[trackIndex] = end - index.relative
 
         task.MultiSeparateTask.stop(self)
@@ -192,7 +192,7 @@ class ImageEncodeTask(task.MultiSeparateTask):
         def add(index):
 
             path = image.getRealPath(index.path)
-            assert isinstance(path, unicode), "%r is not unicode" % path
+            assert isinstance(path, str), "%r is not str" % path
             logger.debug('schedule encode of %r', path)
             root, _ = os.path.splitext(os.path.basename(path))
             outpath = os.path.join(outdir, root + '.' + 'flac')

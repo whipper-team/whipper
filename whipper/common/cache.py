@@ -98,17 +98,16 @@ class Persister:
         if not os.path.exists(self._path):
             return
 
-        handle = open(self._path)
-        import pickle
-
-        try:
-            self.object = pickle.load(handle)
-            logger.debug('loaded persisted object from %r', self._path)
-        # FIXME: catching too general exception (Exception)
-        except Exception as e:
-            # can fail for various reasons; in that case, pretend we didn't
-            # load it
-            logger.debug(e)
+        with open(self._path, 'rb') as handle:
+            import pickle
+            try:
+                self.object = pickle.load(handle)
+                logger.debug('loaded persisted object from %r', self._path)
+            # FIXME: catching too general exception (Exception)
+            except Exception as e:
+                # can fail for various reasons; in that case, pretend we didn't
+                # load it
+                logger.debug(e)
 
     def delete(self):
         self.object = None
@@ -124,11 +123,7 @@ class PersistedCache:
 
     def __init__(self, path):
         self.path = path
-        try:
-            os.makedirs(self.path)
-        except OSError as e:
-            if e.errno != os.errno.EEXIST:  # FIXME: errno 17 is 'File Exists'
-                raise
+        os.makedirs(self.path, exist_ok=True)
 
     def _getPath(self, key):
         return os.path.join(self.path, '%s.pickle' % key)

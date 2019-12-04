@@ -25,7 +25,6 @@ See http://digitalx.org/cuesheetsyntax.php
 """
 
 import re
-import codecs
 
 from whipper.common import common
 from whipper.image import table
@@ -58,7 +57,7 @@ _INDEX_RE = re.compile(r"""
 """, re.VERBOSE)
 
 
-class CueFile(object):
+class CueFile:
     """
     I represent a .cue file as an object.
 
@@ -69,9 +68,9 @@ class CueFile(object):
 
     def __init__(self, path):
         """
-        :type  path: unicode
+        :type  path: str
         """
-        assert isinstance(path, unicode), "%r is not unicode" % path
+        assert isinstance(path, str), "%r is not str" % path
 
         self._path = path
         self._rems = {}
@@ -86,9 +85,9 @@ class CueFile(object):
         counter = 0
 
         logger.info('parsing .cue file %r', self._path)
-        handle = codecs.open(self._path, 'r', 'utf-8')
-
-        for number, line in enumerate(handle.readlines()):
+        with open(self._path) as f:
+            content = f.readlines()
+        for number, line in enumerate(content):
             line = line.rstrip()
 
             m = _REM_RE.search(line)
@@ -137,9 +136,9 @@ class CueFile(object):
                 minutes = int(m.expand('\\2'))
                 seconds = int(m.expand('\\3'))
                 frames = int(m.expand('\\4'))
-                frameOffset = frames \
-                    + seconds * common.FRAMES_PER_SECOND \
-                    + minutes * common.FRAMES_PER_SECOND * 60
+                frameOffset = int(frames
+                                  + seconds * common.FRAMES_PER_SECOND
+                                  + minutes * common.FRAMES_PER_SECOND * 60)
 
                 logger.debug('found index %d of track %r in %r:%d',
                              indexNumber, currentTrack, currentFile.path,
@@ -182,7 +181,7 @@ class CueFile(object):
         """
         Translate the .cue's FILE to an existing path.
 
-        :type  path: unicode
+        :type  path: str
         """
         return common.getRealPath(self._path, path)
 
@@ -194,9 +193,9 @@ class File:
 
     def __init__(self, path, file_format):
         """
-        :type  path: unicode
+        :type  path: str
         """
-        assert isinstance(path, unicode), "%r is not unicode" % path
+        assert isinstance(path, str), "%r is not str" % path
 
         self.path = path
         self.format = file_format

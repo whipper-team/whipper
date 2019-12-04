@@ -23,8 +23,7 @@ Wrap Table of Contents.
 """
 
 import copy
-import urllib
-import urlparse
+from urllib.parse import urlunparse, urlencode
 
 import whipper
 
@@ -66,7 +65,7 @@ class Track:
     :vartype isrc:         str
     :cvar cdtext:          dictionary of CD Text information;
                            :any:`see CDTEXT_KEYS`
-    :vartype cdtext:       str -> unicode
+    :vartype cdtext:       str
     :cvar pre_emphasis:    whether track is pre-emphasised
     :vartype pre_emphasis: bool
     """
@@ -91,10 +90,10 @@ class Track:
     def index(self, number, absolute=None, path=None, relative=None,
               counter=None):
         """
-        :type path:  unicode or None
+        :type path:  str or None
         """
         if path is not None:
-            assert isinstance(path, unicode), "%r is not unicode" % path
+            assert isinstance(path, str), "%r is not str" % path
 
         i = Index(number, absolute, path, relative, counter)
         self.indexes[number] = i
@@ -133,7 +132,7 @@ class Index:
     """
     :cvar counter: counter for the index source; distinguishes between
                    the matching FILE lines in .cue files for example
-    :vartype path:    unicode or None
+    :vartype path:    str or None
     """
     number = None
     absolute = None
@@ -145,7 +144,7 @@ class Index:
                  counter=None):
 
         if path is not None:
-            assert isinstance(path, unicode), "%r is not unicode" % path
+            assert isinstance(path, str), "%r is not str" % path
 
         self.number = number
         self.absolute = absolute
@@ -158,7 +157,7 @@ class Index:
             self.number, self.absolute, self.path, self.relative, self.counter)
 
 
-class Table(object):
+class Table:
     """
     I represent a table of indexes on a CD.
 
@@ -221,7 +220,10 @@ class Table(object):
             # if on a session border, subtract the session leadin
             thisTrack = self.tracks[number - 1]
             nextTrack = self.tracks[number]
-            if nextTrack.session > thisTrack.session:
+            # The session attribute of a track is None by default (session 1)
+            # with value > 1 if the track is in another session. Py3 doesn't
+            # allow NoneType comparisons so we compare against 1 in that case
+            if int(nextTrack.session or 1) > int(thisTrack.session or 1):
                 gap = self._getSessionGap(nextTrack.session)
                 end -= gap
 
@@ -286,7 +288,7 @@ class Table(object):
             offset = self.getTrackStart(track.number) + delta
             offsets.append(offset)
             debug.append(str(offset))
-            seconds = offset / common.FRAMES_PER_SECOND
+            seconds = offset // common.FRAMES_PER_SECOND
             n += self._cddbSum(seconds)
 
         # the 'real' leadout, not offset by 150 frames
@@ -297,8 +299,8 @@ class Table(object):
         # FIXME: we can't replace these calculations with the getFrameLength
         # call because the start and leadout in the algorithm get rounded
         # before making the difference
-        startSeconds = self.getTrackStart(1) / common.FRAMES_PER_SECOND
-        leadoutSeconds = leadout / common.FRAMES_PER_SECOND
+        startSeconds = self.getTrackStart(1) // common.FRAMES_PER_SECOND
+        leadoutSeconds = leadout // common.FRAMES_PER_SECOND
         t = leadoutSeconds - startSeconds
         # durationFrames = self.getFrameLength(data=True)
         # duration = durationFrames / common.FRAMES_PER_SECOND
@@ -348,12 +350,12 @@ class Table(object):
         sha = sha1()
 
         # number of first track
-        sha.update("%02X" % values[0])
+        sha.update(("%02X" % values[0]).encode())
 
         # number of last track
-        sha.update("%02X" % values[1])
+        sha.update(("%02X" % values[1]).encode())
 
-        sha.update("%08X" % values[2])
+        sha.update(("%08X" % values[2]).encode())
 
         # offsets of tracks
         for i in range(1, 100):
@@ -361,7 +363,7 @@ class Table(object):
                 offset = values[2 + i]
             except IndexError:
                 offset = 0
-            sha.update("%08X" % offset)
+            sha.update(("%08X" % offset).encode())
 
         digest = sha.digest()
         assert len(digest) == 20, \
@@ -372,10 +374,10 @@ class Table(object):
         # (Rob) used ., _, and -
 
         # base64 altchars specify replacements for + and /
-        result = base64.b64encode(digest, '._')
+        result = base64.b64encode(digest, b'._').decode()
 
         # now replace =
-        result = "-".join(result.split("="))
+        result = result.replace("=", "-")
         assert len(result) == 28, \
             "Result should be 28 characters, not %d" % len(result)
 
@@ -389,13 +391,13 @@ class Table(object):
         discid = self.getMusicBrainzDiscId()
         values = self._getMusicBrainzValues()
 
-        query = urllib.urlencode({
-            'id': discid,
-            'toc': ' '.join([str(v) for v in values]),
-            'tracks': self.getAudioTracks(),
-        })
+        query = urlencode([
+            ('toc', ' '.join([str(v) for v in values])),
+            ('tracks', self.getAudioTracks()),
+            ('id', discid),
+        ])
 
-        return urlparse.urlunparse((
+        return urlunparse((
             'https', host, '/cdtoc/attach', '', query, ''))
 
     def getFrameLength(self, data=False):
@@ -477,7 +479,7 @@ class Table(object):
 
         Dump our internal representation to a .cue file content.
 
-        :rtype: unicode
+        :rtype: str
         """
         logger.debug('generating .cue for cuePath %r', cuePath)
 

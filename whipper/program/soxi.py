@@ -21,11 +21,11 @@ class AudioLengthTask(ctask.PopenTask):
 
     def __init__(self, path):
         """
-        :type  path: unicode
+        :type  path: str
         """
-        assert isinstance(path, unicode), "%r is not unicode" % path
+        assert isinstance(path, str), "%r is not str" % path
 
-        self.logName = os.path.basename(path).encode('utf-8')
+        self.logName = os.path.basename(path)
 
         self.command = [SOXI, '-s', path]
 
@@ -47,4 +47,4 @@ class AudioLengthTask(ctask.PopenTask):
     def done(self):
         if self._error:
             logger.warning("soxi reported on stderr: %s", "".join(self._error))
-        self.length = int("".join(self._output))
+        self.length = int("".join(o.decode() for o in self._output))

@@ -45,7 +45,6 @@ Verifies the image from the given .cue files against the AccurateRip database.
         runner = task.SyncRunner()
 
         for arg in self.options.cuefile:
-            arg = arg.decode('utf-8')
             cueImage = image.Image(arg)
             cueImage.setup(runner)
 
