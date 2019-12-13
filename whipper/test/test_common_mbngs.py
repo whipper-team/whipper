@@ -26,6 +26,24 @@ class MetadataTestCase(unittest.TestCase):
 
         self.assertFalse(metadata.release)
 
+    def testTrackTitle(self):
+        """
+        Check that the track title metadata is taken from MusicBrainz's track
+        title (which may differ from the recording title, as in this case)
+        see https://github.com/whipper-team/whipper/issues/192
+        """
+        # Using: The KLF - Space & Chill Out
+        # https://musicbrainz.org/release/c56ff16e-1d81-47de-926f-ba22891bd2bd
+        filename = 'whipper.release.c56ff16e-1d81-47de-926f-ba22891bd2bd.json'
+        path = os.path.join(os.path.dirname(__file__), filename)
+        with open(path, "rb") as handle:
+            response = json.loads(handle.read().decode('utf-8'))
+        discid = "b.yqPuCBdsV5hrzDvYrw52iK_jE-"
+
+        metadata = mbngs._getMetadata(response['release'], discid)
+        track1 = metadata.tracks[0]
+        self.assertEqual(track1.title, 'Brownsville Turnaround')
+
     def test2MeterSessies10(self):
         # various artists, multiple artists per track
         filename = 'whipper.release.a76714e0-32b1-4ed4-b28e-f86d99642193.json'
