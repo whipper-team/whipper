@@ -247,7 +247,7 @@ def _getMetadata(release, discid, country=None):
                     track.sortName = trackCredit.getSortName()
                     track.mbidArtist = trackCredit.getIds()
 
-                    track.title = t['recording']['title']
+                    track.title = t.get('title', t['recording']['title'])
                     track.mbid = t['id']
                     track.mbidRecording = t['recording']['id']
                     track.mbidWorks = _getWorks(t['recording'])
