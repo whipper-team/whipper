@@ -603,7 +603,7 @@ class AnalyzeTask(ctask.PopenTask):
     def failed(self):
         # cdparanoia exits with return code 1 if it can't determine
         # whether it can defeat the audio cache
-        output = "".join(self._output)
+        output = "".join(o.decode() for o in self._output)
         m = _WARNING_RE.search(output)
         if m or _ABORTING_RE.search(output):
             self.defeatsCache = False
