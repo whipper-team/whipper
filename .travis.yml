@@ -4,6 +4,9 @@ sudo: required
 language: python
 python:
   - "3.5"
+  - "3.6"
+  - "3.7"
+  - "3.8"
 virtualenv:
   system_site_packages: false
 
@@ -11,7 +14,11 @@ cache: pip
 
 env:
     - FLAKE8=false
-    - FLAKE8=true
+
+jobs:
+  include:
+  - python: 3.5
+    env: FLAKE8=true
 
 install:
     # Dependencies
