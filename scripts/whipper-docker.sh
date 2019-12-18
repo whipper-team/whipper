@@ -2,7 +2,9 @@
 CD_DEVICE="/dev/cdrom"
 OUTPUT_DIR="${HOME}/Music"
 
+PERSONAL_CONF_DIR="${HOME}/.config/whipper"
 WRAPPER_CONFIG_FILE="${HOME}/.config/whipper_wrapper"
+
 if [ -e "${WRAPPER_CONFIG_FILE}" ] ; then
   . "${WRAPPER_CONFIG_FILE}"
 fi
@@ -17,7 +19,7 @@ if [ ! -d "${OUTPUT_DIR}" } ; then
   exit 2
 fi
 
-PERSONAL_CONF_DIR="${HOME}/.config/whipper"
+
 if [ ! -d "${PERSONAL_CONF_DIR}" ] ; then
   echo "Creating ${PERSONAL_CONF_DIR} directory"
   if ! mkdir -p "${PERSONAL_CONF_DIR}" ; then
