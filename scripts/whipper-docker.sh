@@ -19,7 +19,7 @@ if [ ! -e "${CD_DEVICE}" ] ; then
   exit 2
 fi
 
-if [ ! -d "${OUTPUT_DIR}" } ; then
+if [ ! -d "${OUTPUT_DIR}" ]  ; then
   echo "Cannot access ${OUTPUT_DIR}" 1>&2
   exit 2
 fi
