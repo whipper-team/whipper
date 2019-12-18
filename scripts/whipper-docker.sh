@@ -3,10 +3,15 @@ CD_DEVICE="/dev/cdrom"
 OUTPUT_DIR="${HOME}/Music"
 
 PERSONAL_CONF_DIR="${HOME}/.config/whipper"
-WRAPPER_CONFIG_FILE="${HOME}/.config/whipper_wrapper"
+WHIPPER_DOCKER_SYSTEM_CONFIG_FILE="/etc/whipper-docker.conf"
+WHIPPER_DOCKER_PERSONAL_CONFIG_FILE="${HOME}/.config/whipper-docker.conf"
 
-if [ -e "${WRAPPER_CONFIG_FILE}" ] ; then
-  . "${WRAPPER_CONFIG_FILE}"
+if [ -e "${WHIPPER_DOCKER_SYSTEM_CONFIG_FILE}" ] ; then
+  . "${WHIPPER_DOCKER_SYSTEM_CONFIG_FILE}"
+fi
+
+if [ -e "${WHIPPER_DOCKER_PERSONAL_CONFIG_FILE}" ] ; then
+  . "${WHIPPER_DOCKER_PERSONAL_CONFIG_FILE}"
 fi
 
 if [ ! -e "${CD_DEVICE}" ] ; then
