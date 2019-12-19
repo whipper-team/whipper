@@ -24,9 +24,13 @@ Handles communication with the MusicBrainz server using NGS.
 from urllib.error import HTTPError
 
 import whipper
+import json
+import musicbrainzngs
 
 import logging
 logger = logging.getLogger(__name__)
+musicbrainzngs.set_useragent("whipper", whipper.__version__,
+                             "https://github.com/whipper-team/whipper")
 
 
 VA_ID = "89ad4ac3-39f7-470e-963a-56509c546377"  # Various Artists
@@ -161,7 +165,7 @@ def _getWorks(recording):
     return works
 
 
-def _getMetadata(release, discid, country=None):
+def _getMetadata(release, discid=None, country=None):
     """
     :type  release: dict
     :param release: a release dict as returned in the value for key release
@@ -220,7 +224,7 @@ def _getMetadata(release, discid, country=None):
     # only show discs from medium-list->disc-list with matching discid
     for medium in release['medium-list']:
         for disc in medium['disc-list']:
-            if disc['id'] == discid:
+            if discid is None or disc['id'] == discid:
                 title = release['title']
                 discMD.releaseTitle = title
                 if 'disambiguation' in release:
@@ -271,6 +275,40 @@ def _getMetadata(release, discid, country=None):
     return discMD
 
 
+def getReleaseMetadata(release_id, discid=None, country=None, record=False):
+    """
+    Return a DiscMetadata object based on MusicBrainz Release ID and Disc ID.
+
+    If the disc id is not specified, it will match with any disc that is on
+    the release disc-list. Otherwise only returns metadata of one disc in
+    release disc-list.
+
+    :param release_id: MusicBrainz Release ID
+    :type release_id: str
+    :param discid: MusicBrainz Disc ID
+    :type discid: str or None
+    :param country: the country the release was issued in
+    :type country: str or None
+    :param record: whether to record to disc as a JSON serialization
+    :type record: bool
+    :returns: a DiscMetadata object based on MusicBrainz Release ID & Disc ID
+    :rtype: `DiscMetadata`
+    """
+    # to get titles of recordings, we need to query the release with
+    # artist-credits
+
+    res = musicbrainzngs.get_release_by_id(
+            release_id, includes=["artists", "artist-credits",
+                                  "recordings", "discids",
+                                  "labels", "recording-level-rels",
+                                  "work-rels", "release-groups"])
+    _record(record, 'release', release_id, res)
+    releaseDetail = res['release']
+    formatted = json.dumps(releaseDetail, sort_keys=False, indent=4)
+    logger.debug('release %s', formatted)
+    return _getMetadata(releaseDetail, discid, country)
+
+
 # see http://bugs.musicbrainz.org/browser/python-musicbrainz2/trunk/examples/
 #     ripper.py
 
@@ -287,11 +325,8 @@ def musicbrainz(discid, country=None, record=False):
     :rtype: list of :any:`DiscMetadata`
     """
     logger.debug('looking up results for discid %r', discid)
-    import musicbrainzngs
 
     logging.getLogger("musicbrainzngs").setLevel(logging.WARNING)
-    musicbrainzngs.set_useragent("whipper", whipper.__version__,
-                                 "https://github.com/whipper-team/whipper")
     ret = []
 
     try:
@@ -314,26 +349,12 @@ def musicbrainz(discid, country=None, record=False):
 
         # Display the returned results to the user.
 
-        import json
         for release in result['disc']['release-list']:
             formatted = json.dumps(release, sort_keys=False, indent=4)
             logger.debug('result %s: artist %r, title %r', formatted,
                          release['artist-credit-phrase'], release['title'])
 
-            # to get titles of recordings, we need to query the release with
-            # artist-credits
-
-            res = musicbrainzngs.get_release_by_id(
-                release['id'], includes=["artists", "artist-credits",
-                                         "recordings", "discids", "labels",
-                                         "recording-level-rels", "work-rels",
-                                         "release-groups"])
-            _record(record, 'release', release['id'], res)
-            releaseDetail = res['release']
-            formatted = json.dumps(releaseDetail, sort_keys=False, indent=4)
-            logger.debug('release %s', formatted)
-
-            md = _getMetadata(releaseDetail, discid, country)
+            md = getReleaseMetadata(release['id'], discid, country, record)
             if md:
                 logger.debug('duration %r', md.duration)
                 ret.append(md)
