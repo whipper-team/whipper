@@ -340,50 +340,15 @@ class Table:
             logger.debug('getMusicBrainzDiscId: returning cached %r',
                          self.mbdiscid)
             return self.mbdiscid
+
+        from discid import put
+
         values = self._getMusicBrainzValues()
 
-        # MusicBrainz disc id does not take into account data tracks
-        import base64
-        import hashlib
-        sha1 = hashlib.sha1
-
-        sha = sha1()
-
-        # number of first track
-        sha.update(("%02X" % values[0]).encode())
-
-        # number of last track
-        sha.update(("%02X" % values[1]).encode())
-
-        sha.update(("%08X" % values[2]).encode())
-
-        # offsets of tracks
-        for i in range(1, 100):
-            try:
-                offset = values[2 + i]
-            except IndexError:
-                offset = 0
-            sha.update(("%08X" % offset).encode())
-
-        digest = sha.digest()
-        assert len(digest) == 20, \
-            "digest should be 20 chars, not %d" % len(digest)
-
-        # The RFC822 spec uses +, /, and = characters, all of which are special
-        # HTTP/URL characters. To avoid the problems with dealing with that, I
-        # (Rob) used ., _, and -
-
-        # base64 altchars specify replacements for + and /
-        result = base64.b64encode(digest, b'._').decode()
-
-        # now replace =
-        result = result.replace("=", "-")
-        assert len(result) == 28, \
-            "Result should be 28 characters, not %d" % len(result)
-
-        logger.debug('getMusicBrainzDiscId: returning %r', result)
-        self.mbdiscid = result
-        return result
+        disc = put(values[0], values[1], values[2], values[3:])
+        logger.debug('getMusicBrainzDiscId: returning %r', disc.id)
+        self.mbdiscid = disc.id
+        return disc.id
 
     def getMusicBrainzSubmitURL(self):
         host = config.Config().get_musicbrainz_server()
@@ -443,30 +408,39 @@ class Table:
         # number of first track
         result.append(1)
 
-        # number of last audio track
-        result.append(self.getAudioTracks())
+        # number of last audio track (default: number of audio tracks)
+        lastTrack = self.getAudioTracks()
+        result.append(lastTrack)
 
-        leadout = self.leadout
-        # if the disc is multi-session, last track is the data track,
-        # and we should subtract 11250 + 150 from the last track's offset
-        # for the leadout
-        if self.hasDataTracks():
-            assert not self.tracks[-1].audio
-            leadout = self.tracks[-1].getIndex(1).absolute - 11250 - 150
-
-        # treat leadout offset as track 0 offset
-        result.append(150 + leadout)
+        dataTrackLast = False
+        additional = 0
+        offsets = []
 
         # offsets of tracks
-        for i in range(1, 100):
-            try:
-                track = self.tracks[i - 1]
-                if not track.audio:
-                    continue
-                offset = track.getIndex(1).absolute + 150
-                result.append(offset)
-            except IndexError:
-                pass
+        for i in range(0, len(self.tracks)):
+            track = self.tracks[i]
+            if not track.audio:
+                # if the data track is not at the end
+                if i < len(self.tracks) - 1:
+                    additional += 1
+                else:
+                    # if the data track is last
+                    dataTrackLast = True
+                    sectors = self.tracks[-1].getIndex(1).absolute - 11400
+                    # treat leadout offset as track 0 offset
+                    sectors += 150
+                continue
+            offset = track.getIndex(1).absolute + 150
+            offsets.append(offset)
+
+        if not dataTrackLast:
+            # the end of the last audio track, +1 since getTrackEnd returned
+            # value is always down by 1 unit. Which means that's actually
+            # offsets[-1] + getTrackLength(lastTrack).
+            sectors = self.getTrackEnd(lastTrack + additional) + 1 + 150
+
+        result.append(sectors)
+        result.extend(offsets)
 
         logger.debug('MusicBrainz values: %r', result)
         return result
