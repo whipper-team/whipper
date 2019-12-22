@@ -271,6 +271,13 @@ class CapitalMergeTestCase(common.TestCase):
         self.assertEqual(self.table.getFrameLength(), 173530)
         self.assertEqual(self.table.duration(), 2313733)
 
+    def testMusicBrainzDataTrackFirst(self):
+        self.table = copy.deepcopy(self.toc2.table)
+        self.table.merge(self.toc1.table)
+        print(self.table.tracks)
+        self.assertEqual(self.table.getMusicBrainzDiscId(),
+                         "QTYYFFAgNK4Np2EHjfPTBavqtw8-")
+
 
 class UnicodeTestCase(common.TestCase, common.UnicodeTestMixin):
 
