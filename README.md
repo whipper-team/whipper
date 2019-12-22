@@ -131,6 +131,7 @@ Whipper relies on the following packages in order to run correctly and provide a
 - [setuptools](https://pypi.python.org/pypi/setuptools), for installation, plugins support
 - [requests](https://pypi.python.org/pypi/requests), for retrieving AccurateRip database entries
 - [pycdio](https://pypi.python.org/pypi/pycdio/), for drive identification (required for drive offset and caching behavior to be stored in the configuration file).
+- [discid](https://pypi.org/project/discid/), for calculating Musicbrainz disc id.
   - To avoid bugs it's advised to use the most recent `pycdio` version with the corresponding `libcdio` release or, if stuck to old pycdio versions, **0.20**/**0.21** with `libcdio` ≥ **0.90** ≤ **0.94**. All other combinations won't probably work.
 - [ruamel.yaml](https://pypi.org/project/ruamel.yaml/), for generating well formed YAML report logfiles
 - [libsndfile](http://www.mega-nerd.com/libsndfile/), for reading wav files
@@ -148,6 +149,7 @@ Some dependencies aren't available in the PyPI. They can be probably installed u
 - [flac](https://xiph.org/flac/)
 - [sox](http://sox.sourceforge.net/)
 - [git](https://git-scm.com/) or [mercurial](https://www.mercurial-scm.org/)
+- [libdiscid](https://musicbrainz.org/doc/libdiscid)
 
 PyPI installable dependencies are listed in the [requirements.txt](https://github.com/whipper-team/whipper/blob/master/requirements.txt) file and can be installed issuing the following command:
 

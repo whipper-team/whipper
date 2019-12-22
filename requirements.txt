@@ -5,3 +5,4 @@ PyGObject
 requests
 ruamel.yaml
 setuptools_scm
+discid
