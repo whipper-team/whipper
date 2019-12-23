@@ -155,6 +155,13 @@ PyPI installable dependencies are listed in the [requirements.txt](https://githu
 
 `pip install -r requirements.txt`
 
+### Optional dependencies
+- [pillow](https://pypi.org/project/Pillow/), for completely supporting the cover art feature (`embed` and `complete` option values won't work otherwise).
+
+This dependency isn't listed in the `requirements.txt`, to install it just issue the following command:
+
+`pip install Pillow`
+
 ### Fetching the source code
 
 Change to a directory where you want to put whipper source code (for example, `$HOME/dev/ext` or `$HOME/prefix/src`)

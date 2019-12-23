@@ -16,6 +16,9 @@ setup(
                   libraries=['sndfile'],
                   sources=['src/accuraterip-checksum.c'])
     ],
+    extras_require={
+        'cover_art': ["pillow"]
+    },
     entry_points={
         'console_scripts': [
             'whipper = whipper.command.main:main'
