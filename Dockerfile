@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     flac \
     gir1.2-glib-2.0 \
     git \
+    libdiscid0 \
     libiso9660-dev \
     libsndfile1-dev \
     libtool \
@@ -27,7 +28,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     sox \
     swig \
     && apt-get clean && rm -rf /var/lib/apt/lists/* \
-    && pip3 --no-cache-dir install pycdio==2.1.0
+    && pip3 --no-cache-dir install pycdio==2.1.0 discid
 
 # libcdio-paranoia / libcdio-utils are wrongfully packaged in Debian, thus built manually
 # see https://github.com/whipper-team/whipper/pull/237#issuecomment-367985625
