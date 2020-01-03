@@ -497,6 +497,10 @@ Log files will log the path to tracks relative to this directory.
                 continue
             _ripIfNotRipped(i + 1)
 
+        # NOTE: Seems like some kind of with … or try: … finally: … clause
+        # would be more appropriate, since otherwise this would potentially
+        # leave stray files lying around in case of crashes etc.
+        # <Freso 2020-01-03, GitHub comment>
         if (self.options.fetch_cover_art == "embed" and
                 self.coverArtPath is not None):
             logger.debug('deleting cover art file at: %r', self.coverArtPath)
