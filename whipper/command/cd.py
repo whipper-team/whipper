@@ -343,7 +343,6 @@ Log files will log the path to tracks relative to this directory.
             os.makedirs(dirname)
 
         # FIXME: turn this into a method
-
         def _ripIfNotRipped(number):
             logger.debug('ripIfNotRipped for track %d', number)
             # we can have a previous result
