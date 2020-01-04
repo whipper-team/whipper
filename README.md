@@ -247,7 +247,9 @@ read_offset = 6			; drive read offset in positive/negative frames (no leading +)
 [whipper.cd.rip]
 unknown = True
 output_directory = ~/My Music
-track_template = new/%%A/%%y - %%d/%%t - %%n	; note: the format char '%' must be represented '%%'
+# Note: the format char '%' must be represented '%%'.
+# Do not add inline comments with an unescaped '%' character (else an 'InterpolationSyntaxError' will occur).
+track_template = new/%%A/%%y - %%d/%%t - %%n
 disc_template =  new/%%A/%%y - %%d/%%A - %%d
 # ...
 ```
