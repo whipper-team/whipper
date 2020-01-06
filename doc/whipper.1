@@ -1,0 +1,295 @@
+.TH "whipper" "1" "Januray 2020"
+.SH whipper
+Usage: whipper [command]
+
+whipper is a CD ripping utility focusing on accuracy over speed.
+
+Whipper gives you a tree of subcommands to work with.
+You can get help on subcommands by using the -h option to the subcommand.
+
+Commands:
+  accurip  handle AccurateRip information
+  cd       handle CDs
+  drive    handle drives
+  image    handle images
+  offset   handle drive offsets
+  mblookup lookup MusicBrainz entry
+
+Implemented by: whipper.command.main.Whipper
+
+Options:
+  -h, --help     show this help message and exit
+  -e  --eject    when to eject disc (default: success)
+  -R, --record   record API requests for playback
+  -v, --version  show version information
+
+
+.SH whipper accurip
+Usage: whipper accurip [command]
+
+Handle AccurateRip information.
+
+Handle AccurateRip information. Retrieves AccurateRip disc entries and
+displays diagnostic information.
+
+Commands:
+  show  show accuraterip data
+
+Implemented by: whipper.command.accurip.AccuRip
+
+Options:
+  -h, --help  show this help message and exit
+
+
+.SH whipper accurip show
+Usage: whipper accurip show
+
+Show accuraterip data
+
+Retrieves and display accuraterip data from the given URL
+
+Implemented by: whipper.command.accurip.Show
+
+Options:
+  -h, --help  show this help message and exit
+  --url       accuraterip URL to load data from
+
+
+.SH whipper cd
+handle CDs
+
+Usage: whipper cd [command]
+
+Display and rip CD-DA and metadata.
+
+Commands:
+  info  retrieve information about the currently inserted CD
+  rip   rip CD
+
+Implemented by: whipper.command.cd.CD
+
+Options:
+  -h, --help            show this help message and exit
+  -d DEVICE, --device=DEVICE
+                        CD-DA device
+
+
+.SH whipper cd info
+Usage: whipper cd info
+
+retrieve information about the currently inserted CD
+
+Implemented by: whipper.command.cd.Info
+
+Options:
+  -h, --help            show this help message and exit
+  -T TOC_PICKLE, --toc-pickle=TOC_PICKLE
+                        pickle to use for reading and writing the TOC
+  -R RELEASE_ID, --release-id=RELEASE_ID
+                        MusicBrainz release id to match to (if there
+                        are multiple)
+
+
+.SH whipper cd rip
+rip CD
+
+Usage: whipper cd rip
+
+Rips a CD.
+
+ Tracks are named according to the track template, filling in the
+variables and adding the file extension.  Variables exclusive to the
+track template are:
+ - %t: track number
+ - %a: track artist
+ - %n: track title
+ - %s: track sort name
+
+Disc files (.cue, .log, .m3u) are named according to the disc
+template, filling in the variables and adding the file extension.
+Variables for both disc and track template are:
+ - %A: album artist
+ - %S: album sort name
+ - %d: disc title
+ - %y: release year
+ - %r: release type, lowercase
+ - %R: Release type, normal case
+ - %x: audio extension, lowercase
+ - %X: audio extension, uppercase
+
+
+Paths to track files referenced in .cue and .m3u files will be made
+relative to the directory of the disc files.
+
+All files will be created relative to the given output directory. Log
+files will log the path to tracks relative to this directory.
+
+Implemented by: whipper.command.cd.Rip
+
+Options:
+  -h, --help            show this help message and exit
+  -T TOC_PICKLE, --toc-pickle=TOC_PICKLE
+                        pickle to use for reading and writing the TOC
+  -R RELEASE_ID, --release-id=RELEASE_ID
+                        MusicBrainz release id to match to (if there
+                        are multiple)
+  -L LOGGER, --logger=LOGGER
+                        logger to use (default 'whipper', choose from
+                        'whipper')
+  -o OFFSET, --offset=OFFSET
+                        sample read offset (defaults to configured
+                        value, or 0)
+  -O OUTPUT_DIRECTORY, --output-directory=OUTPUT_DIRECTORY
+                        output directory; will be included in file
+                        paths in result files (defaults to absolute
+                        path to current directory; set to empty if you
+                        want paths to be relative instead)
+  -W WORKING_DIRECTORY, --working-directory=WORKING_DIRECTORY
+                        working directory; whipper will change to
+                        this directory and files will be created
+                        relative to it when not absolute
+  --track-template=TRACK_TEMPLATE
+                        template for track file naming (default %r/%A
+                        - %d/%t. %a - %n)
+  --disc-template=DISC_TEMPLATE
+                        template for disc file naming (default %r/%A -
+                        %d/%A - %d)
+  --profile=PROFILE     profile for encoding (default 'flac', choices
+                        'wav', 'wavpack', 'alac', 'flac')
+  -U, --unknown         whether to continue ripping if the CD is
+                        unknown (False)
+
+
+.SH whipper drive
+handle drives
+
+Usage: whipper drive [command]
+
+handle drives
+
+Commands:
+  analyze  analyze caching behaviour of drive
+  list     list drives
+
+Implemented by: whipper.command.drive.Drive
+
+Options:
+  -h, --help  show this help message and exit
+
+
+.SH whipper drive analyze
+Usage: whipper drive analyze
+
+analyze caching behaviour of drive
+
+Implemented by: whipper.command.drive.Analyze
+
+Options:
+  -h, --help            show this help message and exit
+  -d DEVICE, --device=DEVICE
+                        CD-DA device
+
+
+.SH whipper drive list
+Usage: whipper drive list
+
+list drives
+
+Implemented by: whipper.command.drive.List
+
+Options:
+  -h, --help  show this help message and exit
+
+
+.SH whipper image
+handle images
+
+Usage: whipper image [command]
+
+Handle disc images.  Disc images are described by a .cue file. Disc
+images can be encoded to another format (for example, to make a
+compressed encoding), retagged and verified.
+
+Commands:
+  verify  verify image
+
+Implemented by: whipper.command.image.Image
+
+Options:
+  -h, --help  show this help message and exit
+
+
+.SH whipper image verify
+verify image
+
+Usage: whipper image verify [CUEFILE]...
+
+Verifies the image from the given .cue files against the AccurateRip
+database.
+
+Implemented by: whipper.command.image.Verify
+
+Options:
+  -h, --help  show this help message and exit
+
+
+.SH whipper offset
+handle drive offsets
+
+Usage: whipper offset [command]
+
+handle drive offsets
+
+Commands:
+  find  find drive read offset
+
+Implemented by: whipper.command.offset.Offset
+
+Options:
+  -h, --help  show this help message and exit
+
+
+.SH whipper offset find
+find drive read offset
+
+Usage: whipper offset find
+
+Find drive's read offset by ripping tracks from a CD in the
+AccurateRip database.
+
+Implemented by: whipper.command.offset.Find
+
+Options:
+  -h, --help            show this help message and exit
+  -o OFFSETS, --offsets=OFFSETS
+                        list of offsets, comma-separated, colon-
+                        separated for ranges (defaults to +6, +48,
+                        +102, +667, +12, +30, +618, +594, +738, -472,
+                        +98, +116, +96, +733, +120, +691, +685, +97,
+                        +600, +690, +1292, +99, +676, +686, +1182,
+                        -24, +704, +572, +688, +91, +696, +103, -491,
+                        +689, +145, +708, +697, +564, +86, +679, +355,
+                        -496, -1164, +1160, +694, 0, -436, +79, +94,
+                        +684, +681, +106, +692, +943, +1194, +92,
+                        +117, +680, +682, +1268, +678, -582, +1473,
+                        +1279, -54, +1508, +740, +1272, +534, +976,
+                        +687, +675, +1303, +674, +1263, +108, +974,
+                        +122, +111, -489, +772, +732, -495, -494,
+                        +975, +935, +87, +668, +1776, +1364, +1336,
+                        +1127)
+  -d DEVICE, --device=DEVICE
+                        CD-DA device
+
+
+.SH whipper mblookup
+lookup MusicBrainz entry
+
+Usage: whipper mblookup [command]
+
+Look up a MusicBrainz disc id and output information.
+
+Implemented by: whipper.command.mblookup.MBLookup
+
+Options:
+  -h, --help  show this help message and exit
+  --mbid      MB disc id or release id to look up
