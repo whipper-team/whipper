@@ -2,18 +2,18 @@
 .SH whipper
 Usage: whipper [command]
 
-whipper is a CD ripping utility focusing on accuracy over speed.
+Whipper is a CD ripping utility focusing on accuracy over speed.
 
 Whipper gives you a tree of subcommands to work with.
 You can get help on subcommands by using the -h option to the subcommand.
 
 Commands:
-  accurip  handle AccurateRip information
-  cd       handle CDs
-  drive    handle drives
-  image    handle images
-  offset   handle drive offsets
-  mblookup lookup MusicBrainz entry
+  accurip   handle AccurateRip information
+  cd        handle CDs
+  drive     handle drives
+  image     handle images
+  offset    handle drive offsets
+  mblookup  lookup MusicBrainz entry
 
 Implemented by: whipper.command.main.Whipper
 
@@ -29,11 +29,10 @@ Usage: whipper accurip [command]
 
 Handle AccurateRip information.
 
-Handle AccurateRip information. Retrieves AccurateRip disc entries and
-displays diagnostic information.
+Retrieves AccurateRip disc entries and displays diagnostic information.
 
 Commands:
-  show  show accuraterip data
+  show  show AccurateRip data
 
 Implemented by: whipper.command.accurip.AccuRip
 
@@ -42,23 +41,22 @@ Options:
 
 
 .SH whipper accurip show
-Usage: whipper accurip show
+Usage: whipper accurip show [URL]
 
-Show accuraterip data
+Show AccurateRip data
 
-Retrieves and display accuraterip data from the given URL
+Retrieves and display AccurateRip data from the given URL
 
 Implemented by: whipper.command.accurip.Show
 
 Options:
   -h, --help  show this help message and exit
-  --url       accuraterip URL to load data from
 
 
 .SH whipper cd
-handle CDs
-
 Usage: whipper cd [command]
+
+Handle CDs
 
 Display and rip CD-DA and metadata.
 
@@ -69,15 +67,15 @@ Commands:
 Implemented by: whipper.command.cd.CD
 
 Options:
-  -h, --help            show this help message and exit
+  -h, --help                  show this help message and exit
   -d DEVICE, --device=DEVICE
-                        CD-DA device
+                              CD-DA device
 
 
 .SH whipper cd info
 Usage: whipper cd info
 
-retrieve information about the currently inserted CD
+Retrieve information about the currently inserted CD
 
 Implemented by: whipper.command.cd.Info
 
@@ -91,32 +89,28 @@ Options:
 
 
 .SH whipper cd rip
-rip CD
-
 Usage: whipper cd rip
 
 Rips a CD.
 
- Tracks are named according to the track template, filling in the
-variables and adding the file extension.  Variables exclusive to the
-track template are:
+Tracks are named according to the track template, filling in the variables
+and adding the file extension. Variables exclusive to the track template are:
  - %t: track number
  - %a: track artist
  - %n: track title
  - %s: track sort name
 
-Disc files (.cue, .log, .m3u) are named according to the disc
-template, filling in the variables and adding the file extension.
-Variables for both disc and track template are:
- - %A: album artist
- - %S: album sort name
+Disc files (.cue, .log, .m3u) are named according to the disc template,
+filling in the variables and adding the file extension. Variables for both
+disc and track template are:
+ - %A: release artist
+ - %S: release sort name
  - %d: disc title
  - %y: release year
  - %r: release type, lowercase
- - %R: Release type, normal case
+ - %R: release type, normal case
  - %x: audio extension, lowercase
  - %X: audio extension, uppercase
-
 
 Paths to track files referenced in .cue and .m3u files will be made
 relative to the directory of the disc files.
@@ -134,11 +128,12 @@ Options:
                         MusicBrainz release id to match to (if there
                         are multiple)
   -L LOGGER, --logger=LOGGER
-                        logger to use (default 'whipper', choose from
-                        'whipper')
+                        logger to use (default 'whipper')
   -o OFFSET, --offset=OFFSET
                         sample read offset (defaults to configured
                         value, or 0)
+  -p, --prompt          prompt if there are multiple matching releases
+  -c, --country         filter releases by country
   -O OUTPUT_DIRECTORY, --output-directory=OUTPUT_DIRECTORY
                         output directory; will be included in file
                         paths in result files (defaults to absolute
@@ -156,16 +151,16 @@ Options:
                         %d/%A - %d)
   --profile=PROFILE     profile for encoding (default 'flac', choices
                         'wav', 'wavpack', 'alac', 'flac')
-  -U, --unknown         whether to continue ripping if the CD is
-                        unknown (False)
+  -U, --unknown         whether to continue ripping if the CD is unknown
+  -x, --force-overread  force overreading into the lead-out portion of
+                        the disc. Requires software/drive support to work
+  --cdr                 whether to continue ripping if the disc is a CD-R
 
 
 .SH whipper drive
-handle drives
-
 Usage: whipper drive [command]
 
-handle drives
+Drive utilities.
 
 Commands:
   analyze  analyze caching behaviour of drive
@@ -180,7 +175,7 @@ Options:
 .SH whipper drive analyze
 Usage: whipper drive analyze
 
-analyze caching behaviour of drive
+Determine whether cdparanoia can defeat the audio cache of the drive.
 
 Implemented by: whipper.command.drive.Analyze
 
@@ -193,7 +188,7 @@ Options:
 .SH whipper drive list
 Usage: whipper drive list
 
-list drives
+List available CD-DA drives.
 
 Implemented by: whipper.command.drive.List
 
@@ -202,13 +197,10 @@ Options:
 
 
 .SH whipper image
-handle images
-
 Usage: whipper image [command]
 
-Handle disc images.  Disc images are described by a .cue file. Disc
-images can be encoded to another format (for example, to make a
-compressed encoding), retagged and verified.
+Handle disc images. Disc images are described by a .cue file.
+Disc images can be verified.
 
 Commands:
   verify  verify image
@@ -220,8 +212,6 @@ Options:
 
 
 .SH whipper image verify
-verify image
-
 Usage: whipper image verify [CUEFILE]...
 
 Verifies the image from the given .cue files against the AccurateRip
@@ -234,11 +224,10 @@ Options:
 
 
 .SH whipper offset
-handle drive offsets
-
 Usage: whipper offset [command]
 
-handle drive offsets
+Handle drive offsets.
+Drive offset detection utility.
 
 Commands:
   find  find drive read offset
@@ -250,46 +239,45 @@ Options:
 
 
 .SH whipper offset find
-find drive read offset
-
 Usage: whipper offset find
 
-Find drive's read offset by ripping tracks from a CD in the
-AccurateRip database.
+Find drive's read offset by ripping tracks from a
+CD in the AccurateRip database.
 
 Implemented by: whipper.command.offset.Find
 
 Options:
   -h, --help            show this help message and exit
-  -o OFFSETS, --offsets=OFFSETS
-                        list of offsets, comma-separated, colon-
-                        separated for ranges (defaults to +6, +48,
-                        +102, +667, +12, +30, +618, +594, +738, -472,
-                        +98, +116, +96, +733, +120, +691, +685, +97,
-                        +600, +690, +1292, +99, +676, +686, +1182,
-                        -24, +704, +572, +688, +91, +696, +103, -491,
-                        +689, +145, +708, +697, +564, +86, +679, +355,
-                        -496, -1164, +1160, +694, 0, -436, +79, +94,
-                        +684, +681, +106, +692, +943, +1194, +92,
-                        +117, +680, +682, +1268, +678, -582, +1473,
-                        +1279, -54, +1508, +740, +1272, +534, +976,
-                        +687, +675, +1303, +674, +1263, +108, +974,
-                        +122, +111, -489, +772, +732, -495, -494,
-                        +975, +935, +87, +668, +1776, +1364, +1336,
-                        +1127)
   -d DEVICE, --device=DEVICE
                         CD-DA device
+  -o OFFSETS, --offsets=OFFSETS
+                        list of offsets, comma-separated, colon-separated
+                        for ranges (defaults to: +6, +667, +48, +102, +12,
+                        +30, +103, +618, +96, +594, +738, +98, -472, +116,
+                        +733, +696, +120, +691, +685, +99, +97, +600, +676,
+                        +690, +1292, +702, +686, -24, +704, +697, +572,
+                        +1182, +688, +91, -491, +145, +689, +564, +708,
+                        +86, +355, +79, -496, +679, -1164, 0, +1160, -436,
+                        +694, +684, +94, +1194, +106, +681, +117, +692,
+                        +943, +92, +680, +678, +682, +1268, +1279, +1473,
+                        -582, -54, +674, +687, +1272, +1263, +1508, +675,
+                        +534, +740, +122, -489, +974, +976, +1303, +108,
+                        +1130, +111, +739, +732, -589, -495, -494, +975,
+                        +961, +935, +87, +668, +234, +1776, +138, +1364,
+                        +1336, +1262, +1127)
 
 
 .SH whipper mblookup
-lookup MusicBrainz entry
+Usage: whipper mblookup [MUSICBRAINZ_ID]
 
-Usage: whipper mblookup [command]
+Look up a MusicBrainz disc ID/release ID and output information.
 
-Look up a MusicBrainz disc id and output information.
+You can get the MusicBrainz disc id with whipper cd info.
+
+Example disc ID: KnpGsLhvH.lPrNc1PBL21lb9Bg4-
+Example release ID: c56ff16e-1d81-47de-926f-ba22891bd2bd
 
 Implemented by: whipper.command.mblookup.MBLookup
 
 Options:
   -h, --help  show this help message and exit
-  --mbid      MB disc id or release id to look up
