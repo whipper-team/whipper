@@ -108,9 +108,10 @@ This is a noncomprehensive summary which shows whipper's packaging status (unoff
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/whipper.svg)](https://repology.org/metapackage/whipper)
 
-There's also an [unoffical snap package on snapcraft](https://snapcraft.io/whipper).
+- There's a [whipper package available for Exherbo](https://git.exherbo.org/summer/packages/media-sound/whipper/index.html).
+- There's also an [unoffical snap package in Snapcraft](https://snapcraft.io/whipper) (although it seems outdated).
 
-In case you decide to install whipper using an unofficial repository just keep in mind it is your responsibility to verify that the provided content is safe to use.
+**NOTE:** if installing whipper from an unofficial repository please keep in mind it is your responsibility to verify that the provided content is safe to use.
 
 ## Building
 
@@ -304,7 +305,7 @@ Licensed under the [GNU GPLv3 license](http://www.gnu.org/licenses/gpl-3.0).
 
 ```Text
 Copyright (C) 2009 Thomas Vander Stichele
-Copyright (C) 2016-2019 The Whipper Team: JoeLametta, Samantha Baldwin,
+Copyright (C) 2016-2020 The Whipper Team: JoeLametta, Samantha Baldwin,
                         Merlijn Wajer, Frederik “Freso” S. Olesen, et al.
 
 This program is free software; you can redistribute it and/or modify
