@@ -410,13 +410,12 @@ Log files will log the path to tracks relative to this directory.
 
             if not os.path.exists(path):
                 logger.debug('path %r does not exist, ripping...', path)
-                tries = 0
                 # we reset durations for test and copy here
                 trackResult.testduration = 0.0
                 trackResult.copyduration = 0.0
                 extra = ""
-                while tries < MAX_TRIES:
-                    tries += 1
+                tries = 1
+                while tries <= MAX_TRIES:
                     if tries > 1:
                         extra = " (try %d)" % tries
                     logger.info('ripping track %d of %d%s: %s',
@@ -440,8 +439,10 @@ Log files will log the path to tracks relative to this directory.
                     # FIXME: catching too general exception (Exception)
                     except Exception as e:
                         logger.debug('got exception %r on try %d', e, tries)
+                        tries += 1
 
-                if tries == MAX_TRIES:
+                if tries > MAX_TRIES:
+                    tries -= 1
                     logger.critical('giving up on track %d after %d times',
                                     number, tries)
                     raise RuntimeError(
