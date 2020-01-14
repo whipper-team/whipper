@@ -21,6 +21,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     python3-gi \
     python3-musicbrainzngs \
     python3-mutagen \
+    python3-pil \
     python3-pip \
     python3-requests \
     python3-ruamel.yaml \

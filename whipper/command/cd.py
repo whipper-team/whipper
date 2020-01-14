@@ -20,6 +20,7 @@
 
 import argparse
 import cdio
+import importlib.util
 import os
 import glob
 import logging
@@ -290,6 +291,14 @@ Log files will log the path to tracks relative to this directory.
                                  help="whether to continue ripping if "
                                  "the disc is a CD-R",
                                  default=False)
+        self.parser.add_argument('-C', '--cover-art',
+                                 action="store", dest="fetch_cover_art",
+                                 help="Fetch cover art and save it as "
+                                 "standalone file, embed into FLAC files "
+                                 "or perform both actions: file, embed, "
+                                 "complete option values respectively",
+                                 choices=['file', 'embed', 'complete'],
+                                 default=None)
 
     def handle_arguments(self):
         self.options.output_directory = os.path.expanduser(
@@ -341,6 +350,19 @@ Log files will log the path to tracks relative to this directory.
         else:
             logger.info("creating output directory %s", dirname)
             os.makedirs(dirname)
+
+        self.coverArtPath = None
+        if (self.options.fetch_cover_art in {"embed", "complete"} and
+                importlib.util.find_spec("PIL") is None):
+            logger.warning("the cover art option '%s' won't be honored "
+                           "because the 'pillow' module isn't available",
+                           self.options.fetch_cover_art)
+        elif self.options.fetch_cover_art in {"file", "embed", "complete"}:
+            self.coverArtPath = self.program.getCoverArt(
+                                    dirname,
+                                    self.program.metadata.mbid)
+        if self.options.fetch_cover_art == "file":
+            self.coverArtPath = None  # NOTE: avoid image embedding (hacky)
 
         # FIXME: turn this into a method
         def _ripIfNotRipped(number):
@@ -412,7 +434,8 @@ Log files will log the path to tracks relative to this directory.
                                               what='track %d of %d%s' % (
                                                   number,
                                                   len(self.itable.tracks),
-                                                  extra))
+                                                  extra),
+                                              coverArtPath=self.coverArtPath)
                         break
                     # FIXME: catching too general exception (Exception)
                     except Exception as e:
@@ -473,6 +496,15 @@ Log files will log the path to tracks relative to this directory.
                 track.indexes[1].relative = 0
                 continue
             _ripIfNotRipped(i + 1)
+
+        # NOTE: Seems like some kind of with … or try: … finally: … clause
+        # would be more appropriate, since otherwise this would potentially
+        # leave stray files lying around in case of crashes etc.
+        # <Freso 2020-01-03, GitHub comment>
+        if (self.options.fetch_cover_art == "embed" and
+                self.coverArtPath is not None):
+            logger.debug('deleting cover art file at: %r', self.coverArtPath)
+            os.remove(self.coverArtPath)
 
         logger.debug('writing cue file for %r', discName)
         self.program.writeCue(discName)

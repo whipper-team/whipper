@@ -24,7 +24,7 @@ install:
     # Dependencies
     - sudo apt-get -qq update
     - pip install --upgrade -qq pip
-    - sudo apt-get -qq install cdparanoia cdrdao flac gir1.2-glib-2.0 libcdio-dev libgirepository1.0-dev libiso9660-dev libsndfile1-dev sox swig libcdio-utils libdiscid0
+    - sudo apt-get -qq install cdparanoia cdrdao flac gir1.2-glib-2.0 libcdio-dev libgirepository1.0-dev libiso9660-dev libsndfile1-dev sox swig libcdio-utils libdiscid0 python3-pil
     # newer version of pydcio requires newer version of libcdio than travis has
     - pip install pycdio==0.21
     # install rest of dependencies

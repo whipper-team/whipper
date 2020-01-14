@@ -427,7 +427,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
     _tmppath = None
 
     def __init__(self, path, table, start, stop, overread, offset=0,
-                 device=None, taglist=None, what="track"):
+                 device=None, taglist=None, what="track", coverArtPath=None):
         """
         :param path:    where to store the ripped track
         :type  path:    str
@@ -493,8 +493,9 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         self.tasks.append(checksum.CRC32Task(tmppath))
         self.tasks.append(encode.SoxPeakTask(tmppath))
 
-        # TODO: Move tagging outside of cdparanoia
+        # TODO: Move tagging and embed picture outside of cdparanoia
         self.tasks.append(encode.TaggingTask(tmpoutpath, taglist))
+        self.tasks.append(encode.EmbedPictureTask(tmpoutpath, coverArtPath))
 
         self.checksum = None
 
