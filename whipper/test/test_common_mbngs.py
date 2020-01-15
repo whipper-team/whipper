@@ -44,6 +44,26 @@ class MetadataTestCase(unittest.TestCase):
         track1 = metadata.tracks[0]
         self.assertEqual(track1.title, 'Brownsville Turnaround')
 
+    def testComposersAndPerformers(self):
+        """
+        Test whether composers and performers are extracted properly.
+
+        See: https://github.com/whipper-team/whipper/issues/191
+        """
+        # Using: Mama Said - Lenny Kravitz
+        # https://musicbrainz.org/release/410f99f8-a876-3416-bd8e-42233a00a477
+        filename = 'whipper.release.410f99f8-a876-3416-bd8e-42233a00a477.json'
+        path = os.path.join(os.path.dirname(__file__), filename)
+        with open(path, "rb") as handle:
+            response = json.loads(handle.read().decode('utf-8'))
+
+        metadata = mbngs._getMetadata(response['release'],
+                                      discid='bIOeHwHT0aZJiENIYjAmoNxCPuA-')
+        track1 = metadata.tracks[0]
+        self.assertEqual(track1.composers,
+                         ['Hal Fredericks', 'Michael Kamen'])
+        self.assertEqual(track1.performers, ['Lenny Kravitz', 'Slash'])
+
     def test2MeterSessies10(self):
         # various artists, multiple artists per track
         filename = 'whipper.release.a76714e0-32b1-4ed4-b28e-f86d99642193.json'
