@@ -69,25 +69,25 @@ class ConfigTestCase(tcommon.TestCase):
 
     def test_get_musicbrainz_server(self):
         self.assertEqual(self._config.get_musicbrainz_server(),
-                         'musicbrainz.org',
+                         {'scheme': 'https', 'netloc': 'musicbrainz.org'},
                          msg='Default value is correct')
 
         self._config._parser.add_section('musicbrainz')
 
         self._config._parser.set('musicbrainz', 'server',
-                                 '192.168.2.141:5000')
+                                 'http://192.168.2.141:5000')
         self._config.write()
         self.assertEqual(self._config.get_musicbrainz_server(),
-                         '192.168.2.141:5000',
+                         {'scheme': 'http', 'netloc': '192.168.2.141:5000'},
                          msg='Correctly returns user-set value')
 
-        self._config._parser.set('musicbrainz', 'server',
-                                 '192.168.2.141:5000/hello/world')
+        # Test for unsupported scheme
+        self._config._parser.set('musicbrainz', 'server', 'ftp://example.com')
         self._config.write()
         self.assertRaises(KeyError, self._config.get_musicbrainz_server)
 
-        self._config._parser.set('musicbrainz', 'server',
-                                 'http://192.168.2.141:5000')
+        # Test for absent scheme
+        self._config._parser.set('musicbrainz', 'server', 'example.com')
         self._config.write()
         self.assertRaises(KeyError, self._config.get_musicbrainz_server)
 

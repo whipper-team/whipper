@@ -240,15 +240,17 @@ options:
 
 ```INI
 [main]
-path_filter_fat = True		; replace FAT file system unsafe characters in filenames with _
-path_filter_special = False	; replace special characters in filenames with _
+path_filter_fat = True			; replace FAT file system unsafe characters in filenames with _
+path_filter_special = False		; replace special characters in filenames with _
 
 [musicbrainz]
-server = musicbrainz.org:80	; use MusicBrainz server at host[:port]
+server = https://musicbrainz.org	; use MusicBrainz server at host[:port]
+# use http as scheme if connecting to a plain http server. Example below:
+# server = http://example.com:8080
 
 [drive:HL-20]
-defeats_cache = True		; whether the drive is capable of defeating the audio cache
-read_offset = 6			; drive read offset in positive/negative frames (no leading +)
+defeats_cache = True			; whether the drive is capable of defeating the audio cache
+read_offset = 6				; drive read offset in positive/negative frames (no leading +)
 # do not edit the values 'vendor', 'model', and 'release'; they are used by whipper to match the drive
 
 # command line defaults for `whipper cd rip`
