@@ -76,9 +76,11 @@ You can easily install whipper without needing to care about the required depend
 
 `docker pull whipperteam/whipper`
 
+Please note that, right now, Docker Hub only builds whipper images for the `amd64` architecture: if you intend to use them on a different one, you'll need to build the images locally (as explained below).
+
 Alternatively, in case you prefer building Docker images locally, just issue the following command (it relies on the [Dockerfile](https://github.com/whipper-team/whipper/blob/master/Dockerfile) included in whipper's repository):
 
-`docker build -t whipperteam/whipper`
+`docker build -t whipperteam/whipper .`
 
 It's recommended to create an alias for a convenient usage:
 
