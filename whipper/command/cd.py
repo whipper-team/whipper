@@ -28,7 +28,9 @@ from whipper.command.basecommand import BaseCommand
 from whipper.common import (
     accurip, config, drive, program, task
 )
-from whipper.common.common import validate_template
+from whipper.common.common import (
+    shrinkPath, truncate_filename, validate_template
+)
 from whipper.program import cdrdao, cdparanoia, utils
 from whipper.result import result
 
@@ -140,10 +142,11 @@ class _CD(BaseCommand):
         if hasattr(self.options, 'output_directory'):
             out_bpath = self.options.output_directory
             # Needed to preserve cdrdao's tocfile
-            out_fpath = self.program.getPath(out_bpath,
-                                             self.options.disc_template,
-                                             self.mbdiscid,
-                                             self.program.metadata)
+            out_fpath = shrinkPath(self.program.getPath(
+                                       out_bpath,
+                                       self.options.disc_template,
+                                       self.mbdiscid,
+                                       self.program.metadata))
         else:
             out_fpath = None
         # now, read the complete index table, which is slower
@@ -336,10 +339,11 @@ Log files will log the path to tracks relative to this directory.
         self.program.result.overread = self.options.overread
         self.program.result.logger = self.options.logger
 
-        discName = self.program.getPath(self.program.outdir,
-                                        self.options.disc_template,
-                                        self.mbdiscid,
-                                        self.program.metadata)
+        discName = shrinkPath(self.program.getPath(
+                                  self.program.outdir,
+                                  self.options.disc_template,
+                                  self.mbdiscid,
+                                  self.program.metadata))
         dirname = os.path.dirname(discName)
         if os.path.exists(dirname):
             logs = glob.glob(os.path.join(dirname, '*.log'))
@@ -376,11 +380,14 @@ Log files will log the path to tracks relative to this directory.
                 logger.debug('ripIfNotRipped have trackresult, path %r',
                              trackResult.filename)
 
-            path = self.program.getPath(self.program.outdir,
-                                        self.options.track_template,
-                                        self.mbdiscid,
-                                        self.program.metadata,
-                                        track_number=number) + '.flac'
+            path = truncate_filename(shrinkPath(
+                                         self.program.getPath(
+                                             self.program.outdir,
+                                             self.options.track_template,
+                                             self.mbdiscid,
+                                             self.program.metadata,
+                                             track_number=number) + '.flac'
+            ))
             logger.debug('ripIfNotRipped: path %r', path)
             trackResult.number = number
 
