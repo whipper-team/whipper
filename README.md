@@ -86,8 +86,8 @@ It's recommended to create an alias for a convenient usage:
 
 ```bash
 alias whipper="docker run -ti --rm --device=/dev/cdrom \
-    -v ~/.config/whipper:/home/worker/.config/whipper \
-    -v ${PWD}/output:/output \
+    --mount type=bind,source=~/.config/whipper,target=/home/worker/.config/whipper \
+    --mount type=bind,source=${PWD}/output,target=/output \
     whipperteam/whipper"
 ```
 
