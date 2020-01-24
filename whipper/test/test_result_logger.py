@@ -139,14 +139,19 @@ class LoggerTestCase(unittest.TestCase):
 
         # RegEX updated to support all the 4 cases of the versioning scheme:
         # https://github.com/pypa/setuptools_scm/#default-versioning-scheme
-        self.assertRegex(
-            actualLines[0],
-            re.compile((
-                r'Log created by: whipper '
-                r'[\d]+\.[\d]+\.[\d]+(\+d\d{8}|\.dev[\w\.\+]+)? '
-                r'\(internal logger\)'
-            ))
-        )
+        versionSchemes = [
+            actualLines[0],  # 'Log created by: whipper 0.7.4.dev87+gb71ec9f.d20191026 (internal logger)'  # noqa: E501
+            'Log created by: whipper 0.7.4.dev87+gb71ec9f (internal logger)',
+            'Log created by: whipper 0.7.4+d20191026 (internal logger)',
+            'Log created by: whipper 0.7.4 (internal logger)'
+        ]
+        created_by_re = re.compile((
+                            r'Log created by: whipper '
+                            r'[\d]+\.[\d]+\.[\d]+(\+d\d{8}|\.dev[\w\.\+]+)? '
+                            r'\(internal logger\)'
+                        ))
+        for versionScheme in versionSchemes:
+            self.assertRegex(versionScheme, created_by_re)
         self.assertRegex(
             actualLines[1],
             re.compile((
