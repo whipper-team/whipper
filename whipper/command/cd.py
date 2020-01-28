@@ -293,7 +293,7 @@ Log files will log the path to tracks relative to this directory.
                                  default=False)
         self.parser.add_argument('-C', '--cover-art',
                                  action="store", dest="fetch_cover_art",
-                                 help="Fetch cover art and save it as "
+                                 help="fetch cover art and save it as "
                                  "standalone file, embed into FLAC files "
                                  "or perform both actions: file, embed, "
                                  "complete option values respectively",
