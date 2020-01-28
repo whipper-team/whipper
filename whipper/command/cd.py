@@ -358,9 +358,14 @@ Log files will log the path to tracks relative to this directory.
                            "because the 'pillow' module isn't available",
                            self.options.fetch_cover_art)
         elif self.options.fetch_cover_art in {"file", "embed", "complete"}:
-            self.coverArtPath = self.program.getCoverArt(
-                                    dirname,
-                                    self.program.metadata.mbid)
+            if getattr(self.program.metadata, "mbid", None) is not None:
+                self.coverArtPath = self.program.getCoverArt(
+                                        dirname,
+                                        self.program.metadata.mbid)
+            else:
+                logger.warning("the cover art option '%s' won't be honored "
+                               "because disc metadata isn't available",
+                               self.options.fetch_cover_art)
         if self.options.fetch_cover_art == "file":
             self.coverArtPath = None  # NOTE: avoid image embedding (hacky)
 
