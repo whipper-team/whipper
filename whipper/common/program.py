@@ -25,6 +25,7 @@ Common functionality and class for all programs using whipper.
 import musicbrainzngs
 import re
 import os
+import shutil
 import time
 
 from tempfile import NamedTemporaryFile
@@ -495,7 +496,7 @@ class Program:
             with NamedTemporaryFile(suffix='.cover.jpg', delete=False) as f:
                 f.write(data)
             os.chmod(f.name, 0o644)
-            os.replace(f.name, cover_art_path)
+            shutil.move(f.name, cover_art_path)
             logger.debug('cover art fetched at: %r', cover_art_path)
             return cover_art_path
         return
