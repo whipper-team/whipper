@@ -535,7 +535,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
                 if not self.exception:
                     try:
                         logger.debug('moving to final path %r', self.path)
-                        os.rename(self._tmppath, self.path)
+                        shutil.move(self._tmppath, self.path)
                     # FIXME: catching too general exception (Exception)
                     except Exception as e:
                         logger.debug('exception while moving to final '

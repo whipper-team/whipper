@@ -3,6 +3,7 @@
 
 
 import os
+import shutil
 import unittest
 
 from tempfile import NamedTemporaryFile
@@ -80,7 +81,7 @@ class CoverArtTestCase(unittest.TestCase):
         with NamedTemporaryFile(suffix='.cover.jpg', delete=False) as f:
             f.write(data)
         os.chmod(f.name, 0o644)
-        os.replace(f.name, cover_art_path)
+        shutil.move(f.name, cover_art_path)
         return cover_art_path
 
     def testCoverArtPath(self):

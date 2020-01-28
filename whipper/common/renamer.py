@@ -19,6 +19,7 @@
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import shutil
 import tempfile
 
 """Rename files on file system and inside metafiles in a resumable way."""
@@ -168,7 +169,7 @@ class RenameFile(Operation):
         assert not os.path.exists(self._destination)
 
     def do(self):
-        os.rename(self._source, self._destination)
+        shutil.move(self._source, self._destination)
 
     def serialize(self):
         return '"%s" "%s"' % (self._source, self._destination)
@@ -203,7 +204,7 @@ class RenameInFile(Operation):
                          s.replace(self._source, self._destination).encode())
 
             os.close(fd)
-            os.rename(name, self._path)
+            shutil.move(name, self._path)
 
     def serialize(self):
         return '"%s" "%s" "%s"' % (self._path, self._source, self._destination)
