@@ -153,16 +153,63 @@ class _Credit(list):
 
 
 def _getWorks(recording):
-    """Get "performance of" works out of a recording."""
+    """
+    Get 'performance of' works out of a recording.
+
+   :param recording: recording entity in MusicBrainz
+   :type recording: dict
+   :returns: list of works being a performance of a recording
+   :rtype: list
+    """
     works = []
-    valid_work_rel_types = [
-        'a3005666-a872-32c3-ad06-98af558e99b0',  # "Performance"
-    ]
+    valid_type_id = 'a3005666-a872-32c3-ad06-98af558e99b0'  # "Performance"
     if 'work-relation-list' in recording:
         for work in recording['work-relation-list']:
-            if work['type-id'] in valid_work_rel_types:
-                works.append(work['work']['id'])
+            if work['type-id'] == valid_type_id:
+                works.append(work['work'])
     return works
+
+
+def _getComposers(works):
+    """
+    Get composer(s) from works' artist-relation-list.
+
+    :param works: list of works being a performance of a recording
+    :type works: list
+    :returns: sorted list of composers (without duplicates)
+    :rtype: list
+    """
+    composers = set()
+    valid_type_id = 'd59d99ea-23d4-4a80-b066-edca32ee158f'  # "Composer"
+    for work in works:
+        if 'artist-relation-list' in work:
+            for artist_relation in work['artist-relation-list']:
+                if artist_relation['type-id'] == valid_type_id:
+                    composerName = artist_relation['artist']['name']
+                    composers.add(composerName)
+    return sorted(composers)  # convert to list: mutagen doesn't support set
+
+
+def _getPerformers(recording):
+    """
+    Get performer(s) from recordings' artist-relation-list.
+
+    :param recording: recording entity in MusicBrainz
+    :type recording: dict
+    :returns: sorted list of performers' names (without duplicates)
+    :rtype: list
+    """
+    performers = set()
+    valid_type_id = {
+        '59054b12-01ac-43ee-a618-285fd397e461',  # "Instruments"
+        '0fdbe3c6-7700-4a31-ae54-b53f06ae1cfa',  # "Vocals"
+        '628a9658-f54c-4142-b0c0-95f031b544da'   # "Performers"
+    }
+    if 'artist-relation-list' in recording:
+        for artist_relation in recording['artist-relation-list']:
+            if artist_relation['type-id'] in valid_type_id:
+                performers.add(artist_relation['artist']['name'])
+    return sorted(performers)  # convert to list: mutagen doesn't support set
 
 
 def _getMetadata(release, discid=None, country=None):
@@ -241,6 +288,8 @@ def _getMetadata(release, discid=None, country=None):
                     trackCredit = _Credit(
                         t.get('artist-credit', t['recording']['artist-credit']
                               ))
+                    recordingCredit = _Credit(t['recording']['artist-credit'])
+                    works = _getWorks(t['recording'])
                     if len(trackCredit) > 1:
                         logger.debug('artist-credit more than 1: %r',
                                      trackCredit)
@@ -250,11 +299,14 @@ def _getMetadata(release, discid=None, country=None):
                     track.artist = trackCredit.getName()
                     track.sortName = trackCredit.getSortName()
                     track.mbidArtist = trackCredit.getIds()
+                    track.recordingArtist = recordingCredit.getName()
 
                     track.title = t.get('title', t['recording']['title'])
                     track.mbid = t['id']
                     track.mbidRecording = t['recording']['id']
-                    track.mbidWorks = _getWorks(t['recording'])
+                    track.mbidWorks = sorted({work['id'] for work in works})
+                    track.composers = _getComposers(works)
+                    track.performers = _getPerformers(t['recording'])
 
                     # FIXME: unit of duration ?
                     track.duration = int(t['recording'].get('length', 0))
@@ -301,7 +353,8 @@ def getReleaseMetadata(release_id, discid=None, country=None, record=False):
             release_id, includes=["artists", "artist-credits",
                                   "recordings", "discids",
                                   "labels", "recording-level-rels",
-                                  "work-rels", "release-groups"])
+                                  "work-rels", "release-groups",
+                                  "work-level-rels", "artist-rels"])
     _record(record, 'release', release_id, res)
     releaseDetail = res['release']
     formatted = json.dumps(releaseDetail, sort_keys=False, indent=4)

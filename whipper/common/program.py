@@ -418,6 +418,8 @@ class Program:
                     mbidTrack = track.mbid
                     mbidTrackArtist = track.mbidArtist
                     mbidWorks = track.mbidWorks
+                    composers = track.composers
+                    performers = track.performers
                 except IndexError as e:
                     logger.error('no track %d found, %r', number, e)
                     raise
@@ -451,6 +453,10 @@ class Program:
                 tags['MUSICBRAINZ_ALBUMARTISTID'] = mbidReleaseArtist
                 if len(mbidWorks) > 0:
                     tags['MUSICBRAINZ_WORKID'] = mbidWorks
+                if len(composers) > 0:
+                    tags['COMPOSER'] = composers
+                if len(performers) > 0:
+                    tags['PERFORMER'] = performers
 
         # TODO/FIXME: ISRC tag
 
