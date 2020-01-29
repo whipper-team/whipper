@@ -156,14 +156,14 @@ Some dependencies aren't available in the PyPI. They can be probably installed u
 
 PyPI installable dependencies are listed in the [requirements.txt](https://github.com/whipper-team/whipper/blob/master/requirements.txt) file and can be installed issuing the following command:
 
-`pip install -r requirements.txt`
+`pip3 install -r requirements.txt`
 
 ### Optional dependencies
 - [pillow](https://pypi.org/project/Pillow/), for completely supporting the cover art feature (`embed` and `complete` option values won't work otherwise).
 
 This dependency isn't listed in the `requirements.txt`, to install it just issue the following command:
 
-`pip install Pillow`
+`pip3 install Pillow`
 
 ### Fetching the source code
 
