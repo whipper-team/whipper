@@ -36,7 +36,7 @@ logger = logging.getLogger(__name__)
 
 
 SILENT = 0
-MAX_TRIES = 5
+DEFAULT_MAX_RETRIES = 5
 
 DEFAULT_TRACK_TEMPLATE = '%r/%A - %d/%t. %a - %n'
 DEFAULT_DISC_TEMPLATE = '%r/%A - %d/%A - %d'
@@ -299,6 +299,13 @@ Log files will log the path to tracks relative to this directory.
                                  "complete option values respectively",
                                  choices=['file', 'embed', 'complete'],
                                  default=None)
+        self.parser.add_argument('r', '--max-retries',
+                                 action="store", dest="max_retries",
+                                 help="number of rip attempts before giving "
+                                 "up if can't rip a track. This defaults to "
+                                 "{}; 0 means "
+                                 "infinity.".format(DEFAULT_MAX_RETRIES),
+                                 default=DEFAULT_MAX_RETRIES)
 
     def handle_arguments(self):
         self.options.output_directory = os.path.expanduser(
@@ -328,6 +335,15 @@ Log files will log the path to tracks relative to this directory.
                 msg = "No logger named %s found!" % self.options.logger
                 logger.critical(msg)
                 raise ValueError(msg)
+
+        try:
+            self.options.max_retries = int(self.options.max_retries)
+        except ValueError:
+            raise ValueError("max retries' value must be of integer type")
+        if self.options.max_retries == 0:
+            self.options.max_retries = float("inf")
+        elif self.options.max_retries < 0:
+            raise ValueError("number of max retries must be positive")
 
     def doCommand(self):
         self.program.setWorkingDirectory(self.options.working_directory)
@@ -415,7 +431,7 @@ Log files will log the path to tracks relative to this directory.
                 trackResult.copyduration = 0.0
                 extra = ""
                 tries = 1
-                while tries <= MAX_TRIES:
+                while tries <= self.options.max_retries:
                     if tries > 1:
                         extra = " (try %d)" % tries
                     logger.info('ripping track %d of %d%s: %s',
@@ -441,13 +457,13 @@ Log files will log the path to tracks relative to this directory.
                         logger.debug('got exception %r on try %d', e, tries)
                         tries += 1
 
-                if tries > MAX_TRIES:
+                if tries > self.options.max_retries:
                     tries -= 1
                     logger.critical('giving up on track %d after %d times',
                                     number, tries)
-                    raise RuntimeError(
-                        "track can't be ripped. "
-                        "Rip attempts number is equal to 'MAX_TRIES'")
+                    raise RuntimeError("track can't be ripped. "
+                                       "Rip attempts number is equal to %d",
+                                       self.options.max_retries)
                 if trackResult.testcrc == trackResult.copycrc:
                     logger.info('CRCs match for track %d', number)
                 else:
