@@ -86,14 +86,14 @@ It's recommended to create an alias for a convenient usage:
 
 ```bash
 alias whipper="docker run -ti --rm --device=/dev/cdrom \
-    -v ~/.config/whipper:/home/worker/.config/whipper \
-    -v ${PWD}/output:/output \
+    --mount type=bind,source=~/.config/whipper,target=/home/worker/.config/whipper \
+    --mount type=bind,source=${PWD}/output,target=/output \
     whipperteam/whipper"
 ```
 
 You should put this e.g. into your `.bash_aliases`. Also keep in mind to substitute the path definitions to something that fits to your needs (e.g. replace `… -v ${PWD}/output:/output …` with `… -v ${HOME}/ripped:/output \ …`).
 
-Make sure you create the configuration directory:
+Essentially, what this does is to map the /home/worker/.config/whipper and ${PWD}/output (or whatever other directory you specified) on your host system to locations inside the Docker container where the files can be written and read. These directories need to exist on your system before you can run the container:
 
 `mkdir -p ~/.config/whipper "${PWD}"/output`
 
