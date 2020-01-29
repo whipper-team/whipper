@@ -69,6 +69,8 @@ class DiscMetadata:
     :param title:        title of the disc (with disambiguation)
     :param releaseTitle: title of the release (without disambiguation)
     :type  tracks:       list of :any:`TrackMetadata`
+    :param countries:    MusicBrainz release countries
+    :type  countries:    list or None
     """
     artist = None
     sortName = None
@@ -87,6 +89,7 @@ class DiscMetadata:
 
     catalogNumber = None
     barcode = None
+    countries = None
 
     def __init__(self):
         self.tracks = []
@@ -262,6 +265,13 @@ def _getMetadata(release, discid=None, country=None):
     discMD.url = 'https://musicbrainz.org/release/' + release['id']
 
     discMD.barcode = release.get('barcode', None)
+    mb_rel = release.get('release-event-list', None)
+    # NOTE: check included as I don't know if this one is always available
+    if mb_rel is not None:
+        countries = [rel.get('area', {}).get('name', None) for rel in mb_rel]
+        discMD.countries = list(filter(None, countries))
+    else:
+        discMD.countries = list(filter(None, [release.get('country', None)]))
     lil = release.get('label-info-list', [{}])
     if lil:
         discMD.catalogNumber = lil[0].get('catalog-number')

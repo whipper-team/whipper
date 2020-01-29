@@ -318,6 +318,8 @@ class Program:
                 print('Type    : %s' % metadata.releaseType)
                 if metadata.barcode:
                     print("Barcode : %s" % metadata.barcode)
+                if metadata.countries:
+                    print("Country : %s" % ', '.join(metadata.countries))
                 # TODO: Add test for non ASCII catalog numbers: see issue #215
                 if metadata.catalogNumber:
                     print("Cat no  : %s" % metadata.catalogNumber)
