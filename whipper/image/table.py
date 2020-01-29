@@ -351,7 +351,7 @@ class Table:
         return disc.id
 
     def getMusicBrainzSubmitURL(self):
-        host = config.Config().get_musicbrainz_server()
+        serv = config.Config().get_musicbrainz_server()
 
         discid = self.getMusicBrainzDiscId()
         values = self._getMusicBrainzValues()
@@ -363,7 +363,7 @@ class Table:
         ])
 
         return urlunparse((
-            'https', host, '/cdtoc/attach', '', query, ''))
+            serv['scheme'], serv['netloc'], '/cdtoc/attach', '', query, ''))
 
     def getFrameLength(self, data=False):
         """

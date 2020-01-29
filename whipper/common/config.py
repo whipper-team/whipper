@@ -75,11 +75,12 @@ class Config:
     # musicbrainz section
 
     def get_musicbrainz_server(self):
-        server = self.get('musicbrainz', 'server') or 'musicbrainz.org'
-        server_url = urlparse('//' + server)
-        if server_url.scheme != '' or server_url.path != '':
-            raise KeyError('Invalid MusicBrainz server: %s' % server)
-        return server
+        conf = self.get('musicbrainz', 'server') or 'https://musicbrainz.org'
+        if not conf.startswith(('http://', 'https://')):
+            raise KeyError('Invalid MusicBrainz server: unsupported '
+                           'or missing scheme')
+        scheme, netloc, _, _, _, _ = urlparse(conf)
+        return {'scheme': scheme, 'netloc': netloc}
 
     # drive sections
 

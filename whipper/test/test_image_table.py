@@ -1,7 +1,11 @@
 # -*- Mode: Python; test-case-name: whipper.test.test_image_table -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
+from os import environ
+from shutil import rmtree
+from tempfile import mkdtemp
 from whipper.image import table
+from whipper.common import config
 
 from whipper.test import common as tcommon
 
@@ -58,8 +62,31 @@ class LadyhawkeTestCase(tcommon.TestCase):
         # 177832&tracks=12&id=KnpGsLhvH.lPrNc1PBL21lb9Bg4-
         # however, not (yet) in MusicBrainz database
 
+        # setup to test if MusicBrainz submit URL is hardcoded to use https
+        env_original = environ.get('XDG_CONFIG_HOME')
+        tmp_conf = mkdtemp(suffix='.config')
+        # HACK: hijack env var to avoid overwriting user's whipper config file
+        # This works because directory.config_path() builds the location where
+        # whipper's conf will reside based on the value of env XDG_CONFIG_HOME
+        environ['XDG_CONFIG_HOME'] = tmp_conf
+        self.config = config.Config()
+        self.config._parser.add_section('musicbrainz')
+        self.config._parser.set('musicbrainz', 'server',
+                                'http://musicbrainz.org')
+        self.config.write()
+        self.assertEqual(self.table.getMusicBrainzSubmitURL(),
+                         "http://musicbrainz.org/cdtoc/attach?toc=1+12+1958"
+                         "56+150+15687+31841+51016+66616+81352+99559+116070+13"
+                         "3243+149997+161710+177832&tracks=12&id=KnpGsLhvH.lPr"
+                         "Nc1PBL21lb9Bg4-")
+        # HACK: continuation - restore original env value (if defined)
+        if env_original is not None:
+            environ['XDG_CONFIG_HOME'] = env_original
+        else:
+            environ.pop('XDG_CONFIG_HOME', None)
         self.assertEqual(self.table.getMusicBrainzDiscId(),
                          "KnpGsLhvH.lPrNc1PBL21lb9Bg4-")
+        rmtree(tmp_conf)
 
     def testAccurateRip(self):
         self.assertEqual(self.table.accuraterip_ids(), (

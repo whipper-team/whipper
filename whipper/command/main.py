@@ -20,7 +20,13 @@ logger = logging.getLogger(__name__)
 
 def main():
     server = config.Config().get_musicbrainz_server()
-    musicbrainzngs.set_hostname(server)
+    https_enabled = server['scheme'] == 'https'
+    try:
+        musicbrainzngs.set_hostname(server['netloc'], https_enabled)
+    # Parameter 'use_https' is missing in versions of musicbrainzngs < 0.7
+    except TypeError as e:
+        logger.warning(e)
+        musicbrainzngs.set_hostname(server['netloc'])
 
     # Find whipper's plugins paths (local paths have higher priority)
     plugins_p = [directory.data_path('plugins')]  # local path (in $HOME)
