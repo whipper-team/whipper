@@ -21,6 +21,7 @@
 
 import requests
 import struct
+import whipper
 from os import makedirs
 from os.path import dirname, exists, join
 
@@ -127,9 +128,10 @@ def calculate_checksums(track_paths):
 
 def _download_entry(path):
     url = ACCURATERIP_URL + path
+    UA = "whipper/%s ( https://github.com/whipper-team/whipper )" % whipper.__version__  # noqa: E501
     logger.debug('downloading AccurateRip entry from %s', url)
     try:
-        resp = requests.get(url)
+        resp = requests.get(url, headers={'User-Agent': UA})
     except requests.exceptions.ConnectionError as e:
         logger.error('error retrieving AccurateRip entry: %r', e)
         return None
