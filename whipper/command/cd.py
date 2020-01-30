@@ -299,7 +299,7 @@ Log files will log the path to tracks relative to this directory.
                                  "complete option values respectively",
                                  choices=['file', 'embed', 'complete'],
                                  default=None)
-        self.parser.add_argument('r', '--max-retries',
+        self.parser.add_argument('-r', '--max-retries',
                                  action="store", dest="max_retries",
                                  help="number of rip attempts before giving "
                                  "up if can't rip a track. This defaults to "
