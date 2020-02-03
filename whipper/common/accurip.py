@@ -19,11 +19,12 @@
 # You should have received a copy of the GNU General Public License
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
-import requests
 import struct
 import whipper
 from os import makedirs
 from os.path import dirname, exists, join
+from urllib.error import URLError, HTTPError
+from urllib.request import urlopen, Request
 
 from whipper.common import directory
 from whipper.program.arc import accuraterip_checksum
@@ -131,15 +132,10 @@ def _download_entry(path):
     UA = "whipper/%s ( https://github.com/whipper-team/whipper )" % whipper.__version__  # noqa: E501
     logger.debug('downloading AccurateRip entry from %s', url)
     try:
-        resp = requests.get(url, headers={'User-Agent': UA})
-    except requests.exceptions.ConnectionError as e:
-        logger.error('error retrieving AccurateRip entry: %r', e)
-        return None
-    if not resp.ok:
-        logger.error('error retrieving AccurateRip entry: %s %s %r',
-                     resp.status_code, resp.reason, resp)
-        return None
-    return resp.content
+        with urlopen(Request(url, headers={'User-Agent': UA})) as resp:
+            return resp.read()
+    except (URLError, HTTPError) as e:
+        logger.error('error retrieving AccurateRip entry: %s', e)
 
 
 def _save_entry(raw_entry, path):
