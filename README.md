@@ -228,13 +228,13 @@ The configuration file is stored in `$XDG_CONFIG_HOME/whipper/whipper.conf`, or 
 
 See [XDG Base Directory
 Specification](http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html)
-and [ConfigParser](https://docs.python.org/3/library/configparser.html).
+and [ConfigParser](https://docs.python.org/3/library/configparser.html) with `inline_comment_prefixes=(';')`.
 
 The configuration file consists of newline-delineated `[sections]`
 containing `key = value` pairs. The sections `[main]` and
 `[musicbrainz]` are special config sections for options not accessible
 from the command line interface.  Sections beginning with `drive` are
-written by whipper; certain values should not be edited.
+written by whipper; certain values should not be edited. Inline comments can be added using `;`.
 
 Example configuration demonstrating all `[main]` and `[musicbrainz]`
 options:

@@ -36,7 +36,8 @@ class Config:
     def __init__(self, path=None):
         self._path = path or directory.config_path()
 
-        self._parser = configparser.ConfigParser()
+        self._parser = configparser.ConfigParser(
+            inline_comment_prefixes=(';'))
 
         self.open()
 
