@@ -25,7 +25,14 @@ def main():
         musicbrainzngs.set_hostname(server['netloc'], https_enabled)
     # Parameter 'use_https' is missing in versions of musicbrainzngs < 0.7
     except TypeError as e:
-        logger.warning(e)
+        logger.warning("Parameter 'use_https' is missing in versions of "
+                       "musicbrainzngs < 0.7. This means whipper will only "
+                       "be able to communicate with the configured "
+                       "MusicBrainz server ('%s') over plain HTTP. If a "
+                       "custom server which speaks HTTPS only has been "
+                       "declared, a suitable version of the "
+                       "musicbrainzngs module will be needed "
+                       "to make it work in whipper.", server['netloc'])
         musicbrainzngs.set_hostname(server['netloc'])
 
     # Find whipper's plugins paths (local paths have higher priority)
