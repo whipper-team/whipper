@@ -292,7 +292,7 @@ Log files will log the path to tracks relative to this directory.
                                  "the disc is a CD-R",
                                  default=False)
         self.parser.add_argument('-C', '--cover-art',
-                                 action="store", dest="fetch_cover_art",
+                                 action="store", dest="cover_art",
                                  help="fetch cover art and save it as "
                                  "standalone file, embed into FLAC files "
                                  "or perform both actions: file, embed, "
@@ -368,12 +368,12 @@ Log files will log the path to tracks relative to this directory.
             os.makedirs(dirname)
 
         self.coverArtPath = None
-        if (self.options.fetch_cover_art in {"embed", "complete"} and
+        if (self.options.cover_art in {"embed", "complete"} and
                 importlib.util.find_spec("PIL") is None):
             logger.warning("the cover art option '%s' won't be honored "
                            "because the 'pillow' module isn't available",
-                           self.options.fetch_cover_art)
-        elif self.options.fetch_cover_art in {"file", "embed", "complete"}:
+                           self.options.cover_art)
+        elif self.options.cover_art in {"file", "embed", "complete"}:
             if getattr(self.program.metadata, "mbid", None) is not None:
                 self.coverArtPath = self.program.getCoverArt(
                                         dirname,
@@ -381,8 +381,8 @@ Log files will log the path to tracks relative to this directory.
             else:
                 logger.warning("the cover art option '%s' won't be honored "
                                "because disc metadata isn't available",
-                               self.options.fetch_cover_art)
-        if self.options.fetch_cover_art == "file":
+                               self.options.cover_art)
+        if self.options.cover_art == "file":
             self.coverArtPath = None  # NOTE: avoid image embedding (hacky)
 
         # FIXME: turn this into a method
@@ -523,7 +523,7 @@ Log files will log the path to tracks relative to this directory.
         # would be more appropriate, since otherwise this would potentially
         # leave stray files lying around in case of crashes etc.
         # <Freso 2020-01-03, GitHub comment>
-        if (self.options.fetch_cover_art == "embed" and
+        if (self.options.cover_art == "embed" and
                 self.coverArtPath is not None):
             logger.debug('deleting cover art file at: %r', self.coverArtPath)
             os.remove(self.coverArtPath)
