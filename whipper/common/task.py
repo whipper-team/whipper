@@ -25,9 +25,7 @@ class LoggableMultiSeparateTask(task.MultiSeparateTask):
 
 
 class PopenTask(task.Task):
-    """
-    I am a task that runs a command using Popen.
-    """
+    """Task that runs a command using Popen."""
 
     logCategory = 'PopenTask'
     bufsize = 1024
@@ -117,31 +115,21 @@ class PopenTask(task.Task):
         # self.stop()
 
     def readbytesout(self, bytes_stdout):
-        """
-        Called when bytes have been read from stdout.
-        """
+        """Call when bytes have been read from stdout."""
         pass
 
     def readbyteserr(self, bytes_stderr):
-        """
-        Called when bytes have been read from stderr.
-        """
+        """Call when bytes have been read from stderr."""
         pass
 
     def done(self):
-        """
-        Called when the command completed successfully.
-        """
+        """Call when the command completed successfully."""
         pass
 
     def failed(self):
-        """
-        Called when the command failed.
-        """
+        """Call when the command failed."""
         pass
 
     def commandMissing(self):
-        """
-        Called when the command is missing.
-        """
+        """Call when the command is missing."""
         pass

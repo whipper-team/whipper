@@ -6,9 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 def eject_device(device):
-    """
-    Eject the given device.
-    """
+    """Eject the given device."""
     logger.debug("ejecting device %s", device)
     try:
         # `eject device` prints nothing to stdout
@@ -19,9 +17,7 @@ def eject_device(device):
 
 
 def load_device(device):
-    """
-    Load the given device.
-    """
+    """Load the given device."""
     logger.debug("loading (eject -t) device %s", device)
     try:
         # `eject -t device` prints nothing to stdout
@@ -34,8 +30,9 @@ def load_device(device):
 
 def unmount_device(device):
     """
-    Unmount the given device if it is mounted, as happens with automounted
-    data tracks.
+    Unmount the given device if it is mounted.
+
+    This usually happens with automounted data tracks.
 
     If the given device is a symlink, the target will be checked.
     """

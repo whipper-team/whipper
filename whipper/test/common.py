@@ -66,8 +66,9 @@ class TestCase(unittest.TestCase):
     @staticmethod
     def readCue(name):
         """
-        Read a .cue file, and replace the version comment with the current
-        version so we can use it in comparisons.
+        Read a .cue file replacing the version comment with the current value.
+
+        So that it can be used in comparisons.
         """
         cuefile = os.path.join(os.path.dirname(__file__), name)
         with open(cuefile) as f:

@@ -45,6 +45,7 @@ class Persister:
     def __init__(self, path=None, default=None):
         """
         If path is not given, the object will not be persisted.
+
         This allows code to transparently deal with both persisted and
         non-persisted objects, since the persist method will just end up
         doing nothing.
@@ -56,8 +57,7 @@ class Persister:
 
     def persist(self, obj=None):
         """
-        Persist the given object, if we have a persistence path and the
-        object changed.
+        Persist the given obj if we have a persist. path and the obj changed.
 
         If object is not given, re-persist our object, always.
         If object is given, only persist if it was changed.
@@ -115,9 +115,7 @@ class Persister:
 
 
 class PersistedCache:
-    """
-    I wrap a directory of persisted objects.
-    """
+    """Wrap a directory of persisted objects."""
 
     path = None
 
@@ -129,9 +127,7 @@ class PersistedCache:
         return os.path.join(self.path, '%s.pickle' % key)
 
     def get(self, key):
-        """
-        Returns the persister for the given key.
-        """
+        """Return the persister for the given key."""
         persister = Persister(self._getPath(key))
         if persister.object:
             if hasattr(persister.object, 'instanceVersion'):
@@ -154,8 +150,9 @@ class ResultCache:
 
     def getRipResult(self, cddbdiscid, create=True):
         """
-        Retrieve the persistable RipResult either from our cache (from a
-        previous, possibly aborted rip), or return a new one.
+        Get the persistable RipResult either from our cache or ret. a new one.
+
+        The cached RipResult may come from an aborted rip.
 
         :rtype: :any:`Persistable` for :any:`result.RipResult`
         """
@@ -183,9 +180,8 @@ class ResultCache:
 
 
 class TableCache:
-
     """
-    I read and write entries to and from the cache of tables.
+    Read and write entries to and from the cache of tables.
 
     If no path is specified, the cache will write to the current cache
     directory and read from all possible cache directories (to allow for

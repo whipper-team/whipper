@@ -19,7 +19,7 @@
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-Reading .cue files
+Read .cue files.
 
 See http://digitalx.org/cuesheetsyntax.php
 """
@@ -58,17 +58,15 @@ _INDEX_RE = re.compile(r"""
 
 
 class CueFile:
-    """
-    I represent a .cue file as an object.
-
-    :vartype table: table.Table
-    :ivar table:    the index table.
-    """
+    """Represent a .cue file as an object."""
     logCategory = 'CueFile'
 
     def __init__(self, path):
         """
-        :type  path: str
+        Init CueFile.
+
+        :param path: path to track
+        :type path: str
         """
         assert isinstance(path, str), "%r is not str" % path
 
@@ -153,7 +151,10 @@ class CueFile:
         """
         Add a message about a given line in the cue file.
 
-        :param number: line number, counting from 0.
+        :param message: a text line in the cue sheet
+        :type message: str
+        :param number: line number, counting from 0
+        :type number: int
         """
         self._messages.append((number + 1, message))
 
@@ -181,19 +182,21 @@ class CueFile:
         """
         Translate the .cue's FILE to an existing path.
 
-        :type  path: str
+        :param path: path to track
+        :type path: str
         """
         return common.getRealPath(self._path, path)
 
 
 class File:
-    """
-    I represent a FILE line in a cue file.
-    """
+    """Represent a FILE line in a cue file."""
 
     def __init__(self, path, file_format):
         """
-        :type  path: str
+        Init File.
+
+        :param path: path to track
+        :type path: str
         """
         assert isinstance(path, str), "%r is not str" % path
 

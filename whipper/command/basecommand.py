@@ -29,25 +29,28 @@ class BaseCommand:
     """
     Register and handle whipper command arguments with ArgumentParser.
 
-    Register arguments by overriding `add_arguments()` and modifying
-    `self.parser`. Option defaults are read from the dot-separated
-    `prog_name` section of the config file (e.g., 'whipper cd rip'
-    options are read from '[whipper.cd.rip]'). Runs
-    `argparse.parse_args()` then calls `handle_arguments()`.
+    Register arguments by overriding ``add_arguments()`` and modifying
+    ``self.parser``. Option defaults are read from the dot-separated
+    ``prog_name`` section of the config file (e.g., ``whipper cd rip``
+    options are read from ``[whipper.cd.rip]``). Runs
+    ``argparse.parse_args()`` then calls ``handle_arguments()``.
 
-    Provides self.epilog() formatting command for argparse.
+    Provides ``self.epilog()`` formatting command for argparse.
 
-    device_option = True adds -d / --device option to current command
-    no_add_help = True removes -h / --help option from current command
+    Overriding ``formatter_class`` sets the argparse formatter class.
 
-    Overriding formatter_class sets the argparse formatter class.
-
-    If the 'subcommands' dictionary is set, __init__ searches the
-    arguments for subcommands.keys() and instantiates the class
+    If the ``subcommands`` dictionary is set, ``__init__`` searches the
+    arguments for ``subcommands.keys()`` and instantiates the class
     implementing the subcommand as self.cmd, passing all non-understood
     arguments, the current options namespace, and the full command path
     name.
+
+    :cvar device_option: if set to True adds ``-d`` / ``--device``
+                         option to current command
+    :cvar no_add_help: if set to True removes ``-h`` ``--help``
+                       option from current command
     """
+
     device_option = False
     no_add_help = False  # for rip.main.Whipper
     formatter_class = argparse.RawDescriptionHelpFormatter

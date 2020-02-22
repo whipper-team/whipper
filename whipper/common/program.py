@@ -18,9 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
-"""
-Common functionality and class for all programs using whipper.
-"""
+"""Common functionality and class for all programs using whipper."""
 
 import musicbrainzngs
 import re
@@ -47,10 +45,10 @@ class Program:
     I maintain program state and functionality.
 
     :vartype metadata: mbngs.DiscMetadata
-    :cvar result:      the rip's result
-    :vartype result:   result.RipResult
-    :vartype outdir:   str
-    :vartype config:   whipper.common.config.Config
+    :cvar result: the rip's result
+    :vartype result: result.RipResult
+    :vartype outdir: str
+    :vartype config: whipper.common.config.Config
     """
 
     cuePath = None
@@ -61,7 +59,9 @@ class Program:
 
     def __init__(self, config, record=False):
         """
-        :param record: whether to record results of API calls for playback.
+        Init Program.
+
+        :param record: whether to record results of API calls for playback
         """
         self._record = record
         self._cache = cache.ResultCache()
@@ -89,7 +89,9 @@ class Program:
             os.chdir(workingDirectory)
 
     def getFastToc(self, runner, device):
-        """Retrieve the normal TOC table from the drive.
+        """
+        Retrieve the normal TOC table from the drive.
+
         Also warn about buggy cdrdao versions.
         """
         from pkg_resources import parse_version as V
@@ -150,8 +152,9 @@ class Program:
 
     def getRipResult(self, cddbdiscid):
         """
-        Retrieve the persistable RipResult either from our cache (from a
-        previous, possibly aborted rip), or return a new one.
+        Get the persistable RipResult either from our cache or ret. a new one.
+
+        The cached RipResult may come from an aborted rip.
 
         :rtype: result.RipResult
         """
@@ -176,28 +179,31 @@ class Program:
 
     def getPath(self, outdir, template, mbdiscid, metadata, track_number=None):
         """
-        Return disc or track path relative to outdir according to
-        template. Track paths do not include extension.
+        Return disc or track path relative to outdir according to template.
+
+        Track paths do not include extension.
 
         Tracks are named according to the track template, filling in
         the variables and adding the file extension. Variables
         exclusive to the track template are:
-          - %t: track number
-          - %a: track artist
-          - %n: track title
-          - %s: track sort name
+
+        * ``%t``: track number
+        * ``%a``: track artist
+        * ``%n``: track title
+        * ``%s``: track sort name
 
         Disc files (.cue, .log, .m3u) are named according to the disc
         template, filling in the variables and adding the file
         extension. Variables for both disc and track template are:
-          - %A: release artist
-          - %S: release artist sort name
-          - %d: disc title
-          - %y: release year
-          - %r: release type, lowercase
-          - %R: release type, normal case
-          - %x: audio extension, lowercase
-          - %X: audio extension, uppercase
+
+        * ``%A``: release artist
+        * ``%S``: release artist sort name
+        * ``%d``: disc title
+        * ``%y``: release year
+        * ``%r``: release type, lowercase
+        * ``%R``: release type, normal case
+        * ``%x``: audio extension, lowercase
+        * ``%X``: audio extension, uppercase
         """
         assert isinstance(outdir, str), "%r is not str" % outdir
         assert isinstance(template, str), "%r is not str" % template
@@ -247,8 +253,9 @@ class Program:
     @staticmethod
     def getCDDB(cddbdiscid):
         """
-        :param cddbdiscid: list of id, tracks, offsets, seconds
+        Fetch basic metadata from freedb's CDDB.
 
+        :param cddbdiscid: list of id, tracks, offsets, seconds
         :rtype: str
         """
         # FIXME: convert to nonblocking?
@@ -272,7 +279,20 @@ class Program:
     def getMusicBrainz(self, ittoc, mbdiscid, release=None, country=None,
                        prompt=False):
         """
-        :type  ittoc: whipper.image.table.Table
+        Fetch MusicBrainz's metadata for the given MusicBrainz disc id.
+
+        :param ittoc: disc TOC
+        :type ittoc: whipper.image.table.Table
+        :param mbdiscid: MusicBrainz DiscID
+        :type mbdiscid: str
+        :param release: MusicBrainz release id to match to
+                        (if there are multiple)
+        :type release: str or None
+        :param country: country name used to filter releases by provenance
+        :type country: str or None
+        :param prompt: whether to prompt if there are multiple
+                       matching releases
+        :type prompt: bool
         """
         # look up disc on MusicBrainz
         print('Disc duration: %s, %d audio tracks' % (
@@ -393,9 +413,10 @@ class Program:
         """
         Based on the metadata, get a dict of tags for the given track.
 
-        :param number:   track number (0 for HTOA)
-        :type  number:   int
-
+        :param number: track number (0 for HTOA)
+        :type number: int
+        :param mbdiscid: MusicBrainz DiscID
+        :type mbdiscid: str
         :rtype: dict
         """
         trackArtist = 'Unknown Artist'
@@ -469,6 +490,7 @@ class Program:
         Check if we have hidden track one audio.
 
         :returns: tuple of (start, stop), or None
+        :rtype: tuple(int, int) or None
         """
         track = self.result.table.tracks[0]
         try:
@@ -531,11 +553,26 @@ class Program:
     def ripTrack(self, runner, trackResult, offset, device, taglist,
                  overread, what=None, coverArtPath=None):
         """
+        Rip and store a track of the disc.
+
         Ripping the track may change the track's filename as stored in
         trackResult.
 
-        :param trackResult: the object to store information in.
-        :type  trackResult: result.TrackResult
+        :param runner: synchronous track rip task
+        :type runner: task.SyncRunner
+        :param trackResult: the object to store information in
+        :type trackResult: result.TrackResult
+        :param offset: ripping offset, in CD frames
+        :type offset: int
+        :param device: path to the hardware disc drive
+        :type device: str
+        :param taglist: dictionary of tags for the given track
+        :type taglist: dict
+        :param overread: whether to force overreading into the
+                         lead-out portion of the disc
+        :type overread: bool
+        :param what: a string representing what's being read; e.g. Track
+        :type what: str or None
         """
         if trackResult.number == 0:
             start, stop = self.getHTOA()
@@ -581,7 +618,8 @@ class Program:
 
     def verifyImage(self, runner, table):
         """
-        verify table against accuraterip and cue_path track lengths
+        Verify table against AccurateRip and cue_path track lengths.
+
         Verify our image against the given AccurateRip responses.
 
         Needs an initialized self.result.

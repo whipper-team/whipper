@@ -96,9 +96,7 @@ class Config:
         self.write()
 
     def getReadOffset(self, vendor, model, release):
-        """
-        Get a read offset for the given drive.
-        """
+        """Get a read offset for the given drive."""
         section = self._findDriveSection(vendor, model, release)
 
         try:
