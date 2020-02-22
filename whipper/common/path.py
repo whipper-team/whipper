@@ -24,46 +24,34 @@ import re
 class PathFilter:
     """Filter path components for safe storage on file systems."""
 
-    def __init__(self, slashes=True, quotes=True, fat=True, special=False):
+    def __init__(self, dot=True, posix=True, vfat=False, whitespace=False,
+                 printable=False):
         """
         Init PathFilter.
 
-        :param slashes: whether to convert slashes to dashes
-        :type slashes: bool
-        :param quotes: whether to normalize quotes
-        :type quotes: bool
-        :param fat: whether to strip characters illegal on FAT filesystems
-        :type fat: bool
-        :param special: whether to strip special characters
-        :type special: bool
+        :param dot:        whether to strip leading dot
+        :param posix:      whether to strip illegal chars in *nix OSes
+        :param vfat:       whether to strip illegal chars in VFAT filesystems
+        :param whitespace: whether to strip all whitespace chars
+        :param printable:  whether to strip all non printable ASCII chars
         """
-        self._slashes = slashes
-        self._quotes = quotes
-        self._fat = fat
-        self._special = special
+        self._dot = dot
+        self._posix = posix
+        self._vfat = vfat
+        self._whitespace = whitespace
+        self._printable = printable
 
     def filter(self, path):
-        if self._slashes:
-            path = re.sub(r'[/\\]', '-', path, re.UNICODE)
-
-        def separators(path):
-            # replace separators with a space-hyphen or hyphen
-            path = re.sub(r'[:]', ' -', path, re.UNICODE)
-            path = re.sub(r'[|]', '-', path, re.UNICODE)
-            return path
-
-        # change all fancy single/double quotes to normal quotes
-        if self._quotes:
-            path = re.sub(r'[\xc2\xb4\u2018\u2019\u201b]', "'", path)
-            path = re.sub(r'[\u201c\u201d\u201f]', '"', path)
-
-        if self._special:
-            path = separators(path)
-            path = re.sub(r'[*?&!\'\"$()`{}\[\]<>]', '_', path)
-
-        if self._fat:
-            path = separators(path)
-            # : and | already gone, but leave them here for reference
-            path = re.sub(r'[:*?"<>|]', '_', path)
-
+        R_CH = '_'
+        if self._dot:
+            if path[0] == '.':
+                path = R_CH + path[1:]
+        if self._posix:
+            path = re.sub(r'[\/\x00]', R_CH, path)
+        if self._vfat:
+            path = re.sub(r'[\x00-\x1F\x7F\"\*\/\:\<\>\?\\\|]', R_CH, path)
+        if self._whitespace:
+            path = re.sub(r'\s', R_CH, path)
+        if self._printable:
+            path = re.sub(r'[^\x20-\x7E]', R_CH, path)
         return path
