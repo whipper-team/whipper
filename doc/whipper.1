@@ -1,10 +1,11 @@
-.TH "whipper" "1" "Januray 2020"
+.TH "whipper" "1" "February 2020"
 .SH whipper
 Usage: whipper [command]
 
 Whipper is a CD ripping utility focusing on accuracy over speed.
 
 Whipper gives you a tree of subcommands to work with.
+
 You can get help on subcommands by using the -h option to the subcommand.
 
 Commands:
@@ -153,6 +154,11 @@ Options:
   -x, --force-overread  force overreading into the lead-out portion of
                         the disc. Requires software/drive support to work
   --cdr                 whether to continue ripping if the disc is a CD-R
+  -C, --cover-art       fetch cover art and save it as standalone file,
+                        embed into FLAC files or perform both actions:
+                        file, embed, complete option values respectively
+  -r, --max-retries     number of rip attempts before giving up if can't
+                        rip a track. This defaults to 5; 0 means infinity.
 
 
 .SH whipper drive
@@ -198,6 +204,7 @@ Options:
 Usage: whipper image [command]
 
 Handle disc images. Disc images are described by a .cue file.
+
 Disc images can be verified.
 
 Commands:
@@ -225,6 +232,7 @@ Options:
 Usage: whipper offset [command]
 
 Handle drive offsets.
+
 Drive offset detection utility.
 
 Commands:
