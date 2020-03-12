@@ -92,6 +92,9 @@ class DiscMetadata:
     barcode = None
     countries = None
 
+    mediumPosition = None
+    mediumCount = None
+
     def __init__(self):
         self.tracks = []
 
@@ -289,6 +292,11 @@ def _getMetadata(release, discid=None, country=None):
                 if count > 1:
                     title += ' (Disc %d of %d)' % (
                         int(medium['position']), count)
+                discMD.mediumCount = str(count)
+                if 'position' in medium:
+                    discMD.mediumPosition = medium['position']
+                else:
+                    discMD.mediumPosition = '1'
                 if 'title' in medium:
                     title += ": %s" % medium['title']
                 discMD.title = title
