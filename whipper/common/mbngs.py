@@ -94,6 +94,7 @@ class DiscMetadata:
 
     mediumPosition = None
     mediumCount = None
+    mediumTitle = None
 
     def __init__(self):
         self.tracks = []
@@ -298,6 +299,7 @@ def _getMetadata(release, discid=None, country=None):
                 else:
                     discMD.mediumPosition = '1'
                 if 'title' in medium:
+                    discMD.mediumTitle = medium['title']
                     title += ": %s" % medium['title']
                 discMD.title = title
                 for t in medium['track-list']:

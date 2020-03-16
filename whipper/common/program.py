@@ -201,6 +201,10 @@ class Program:
 
         * ``%A``: release artist
         * ``%S``: release artist sort name
+        * ``%D``: release title
+        * ``%T``: medium title
+        * ``%N``: medium positon
+        * ``%M``: medium count
         * ``%d``: disc title
         * ``%y``: release year
         * ``%r``: release type, lowercase
@@ -217,6 +221,8 @@ class Program:
         v['R'] = 'Unknown'
         v['B'] = ''  # barcode
         v['C'] = ''  # catalog number
+        v['N'] = '1'
+        v['M'] = '1'
         v['x'] = 'flac'
         v['X'] = v['x'].upper()
         v['y'] = '0000'
@@ -234,8 +240,13 @@ class Program:
             v['A'] = self._filter.filter(metadata.artist)
             v['S'] = self._filter.filter(metadata.sortName)
             v['d'] = self._filter.filter(metadata.title)
+            v['D'] = self._filter.filter(metadata.releaseTitle)
+            if metadata.mediumTitle:
+                v['T'] = self._filter.filter(metadata.mediumTitle)
             v['B'] = metadata.barcode
             v['C'] = metadata.catalogNumber
+            v['M'] = metadata.mediumCount
+            v['N'] = metadata.mediumPosition
             if metadata.releaseType:
                 v['R'] = metadata.releaseType
                 v['r'] = metadata.releaseType.lower()
@@ -249,6 +260,13 @@ class Program:
             elif track_number == 0:
                 # htoa defaults to disc's artist
                 v['a'] = self._filter.filter(metadata.artist)
+
+        if 'S' not in v:
+            v['S'] = v['A']
+        if 'D' not in v:
+            v['D'] = v['d']
+        if 'T' not in v:
+            v['T'] = '%0*d' % (len(v['M']), int(v['N']))
 
         template = re.sub(r'%(\w)', r'%(\1)s', template)
         return os.path.join(outdir, template % v)
