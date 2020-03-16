@@ -130,6 +130,9 @@ class _CD(BaseCommand):
                 logger.critical("unable to retrieve disc metadata, "
                                 "--unknown argument not passed")
                 return -1
+        elif self.program.metadata.mediumCount != '1':
+            self.options.track_template = self.options.track_template_mdisc
+            self.options.disc_template = self.options.disc_template_mdisc
 
         self.program.result.isCdr = cdrdao.DetectCdr(self.device)
         if (self.program.result.isCdr and
@@ -282,10 +285,18 @@ Log files will log the path to tracks relative to this directory.
                                  action="store", dest="track_template",
                                  default=DEFAULT_TRACK_TEMPLATE,
                                  help="template for track file naming")
+        self.parser.add_argument('--track-template-mdisc',
+                                 action="store", dest="track_template_mdisc",
+                                 help="template for track file naming "
+                                 "for a multidisc collection")
         self.parser.add_argument('--disc-template',
                                  action="store", dest="disc_template",
                                  default=DEFAULT_DISC_TEMPLATE,
                                  help="template for disc file naming")
+        self.parser.add_argument('--disc-template-mdisc',
+                                 action="store", dest="disc_template_mdisc",
+                                 help="template for disc file naming "
+                                 "for a multidisc collection")
         self.parser.add_argument('-U', '--unknown',
                                  action="store_true", dest="unknown",
                                  help="whether to continue ripping if "
@@ -322,8 +333,16 @@ Log files will log the path to tracks relative to this directory.
 
         self.options.track_template = self.options.track_template
         validate_template(self.options.track_template, 'track')
+        if self.options.track_template_mdisc:
+            validate_template(self.options.track_template_mdisc, 'track')
+        else:
+            self.options.track_template_mdisc = self.options.track_template
         self.options.disc_template = self.options.disc_template
         validate_template(self.options.disc_template, 'disc')
+        if self.options.disc_template_mdisc:
+            validate_template(self.options.disc_template_mdisc, 'disc')
+        else:
+            self.options.disc_template_mdisc = self.options.disc_template
 
         if self.options.offset is None:
             raise ValueError("Drive offset is unconfigured.\n"
