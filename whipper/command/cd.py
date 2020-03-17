@@ -295,6 +295,11 @@ Log files will log the path to tracks relative to this directory.
                                  help="whether to continue ripping if "
                                  "the disc is a CD-R",
                                  default=False)
+        self.parser.add_argument('--on-log-found',
+                                 action="store", dest="log_found",
+                                 help="what to do if a log file already exists",
+                                 choices=['stop', 'ask', 'continue'],
+                                 default='stop')
         self.parser.add_argument('-C', '--cover-art',
                                  action="store", dest="cover_art",
                                  help="fetch cover art and save it as "
@@ -366,7 +371,15 @@ Log files will log the path to tracks relative to this directory.
             if logs:
                 msg = ("output directory %s is a finished rip" % dirname)
                 logger.debug(msg)
-                raise RuntimeError(msg)
+                if self.options.log_found == 'stop':
+                    raise RuntimeError(msg)
+                else:
+                    print("Found log files in %s, this may be a finished rip"
+                          % dirname)
+                    print(logs)
+                    if self.options.log_found == 'ask':
+                        if input('Continue anyway? [y/n] ').lower() != 'y':
+                            raise RuntimeError(msg)
         else:
             logger.info("creating output directory %s", dirname)
             os.makedirs(dirname)
