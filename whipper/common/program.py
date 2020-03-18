@@ -488,6 +488,13 @@ class Program:
             if self.metadata.release is not None:
                 tags['DATE'] = self.metadata.release
 
+            if self.metadata.mediumCount:
+                tags['DISCNUMBER'] = self.metadata.mediumPosition
+                tags['DISCTOTAL'] = self.metadata.mediumCount
+
+            if self.metadata.tracks:
+                tags['TRACKTOTAL'] = str(len(self.metadata.tracks))
+
             if number > 0:
                 tags['MUSICBRAINZ_RELEASETRACKID'] = mbidTrack
                 tags['MUSICBRAINZ_TRACKID'] = mbidRecording
