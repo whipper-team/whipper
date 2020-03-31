@@ -256,14 +256,22 @@ class Program:
     @staticmethod
     def getCDDB(cddbdiscid):
         """
-        Fetch basic metadata from freedb's CDDB.
+        Fetch basic metadata from dBpoweramp's mirror of freedb's CDDB.
+
+        Freedb's official CDDB isn't used anymore because it's going to be
+        shut down on 31/03/2020.
+
+        See: https://web.archive.org/web/20200331093822/http://www.freedb.org/
+        See: https://hydrogenaud.io/index.php?topic=118682
 
         :param cddbdiscid: list of id, tracks, offsets, seconds
         :rtype: str
         """
         # FIXME: convert to nonblocking?
         try:
-            md = freedb.perform_lookup(cddbdiscid, 'freedb.freedb.org', 80)
+            md = freedb.perform_lookup(
+                     cddbdiscid, 'freedb.dbpoweramp.com', 80
+            )
             logger.debug('CDDB query result: %r', md)
             return [item['DTITLE'] for item in md if 'DTITLE' in item] or None
 

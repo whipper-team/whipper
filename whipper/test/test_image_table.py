@@ -28,8 +28,8 @@ class LadyhawkeTestCase(tcommon.TestCase):
     # Ladyhawke - Ladyhawke - 0602517818866
     # contains 12 audio tracks and one data track
     # CDDB has been verified against freedb:
-    #   http://www.freedb.org/freedb/misc/c60af50d
-    #   http://www.freedb.org/freedb/jazz/c60af50d
+    #   https://web.archive.org/web/20200331130804/http://www.freedb.org/freedb/misc/c60af50d
+    #   https://web.archive.org/web/20200331130829/http://www.freedb.org/freedb/jazz/c60af50d
     # AccurateRip URL has been verified against EAC's, using wireshark
 
     def setUp(self):
