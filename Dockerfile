@@ -41,7 +41,7 @@ RUN curl -o - 'https://ftp.gnu.org/gnu/libcdio/libcdio-2.1.0.tar.bz2' | tar jxf 
     && rm -rf libcdio-2.1.0
 
 # Install cd-paranoia from tarball
-RUN curl -o - 'https://ftp.gnu.org/gnu/libcdio/libcdio-paranoia-10.2+2.0.0.tar.bz2' | tar jxf - \
+RUN curl -o - 'https://ftp.gnu.org/gnu/libcdio/libcdio-paranoia-10.2+2.0.1.tar.bz2' | tar jxf - \
     && cd libcdio-paranoia-10.2+2.0.0 \
     && autoreconf -fi \
     && ./configure --disable-dependency-tracking --disable-example-progs --disable-static \
