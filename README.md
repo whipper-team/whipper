@@ -24,13 +24,15 @@ In order to track whipper's latest changes it's advised to check its commit hist
   * [Package](#package)
 - [Building](#building)
   1. [Required dependencies](#required-dependencies)
-  2. [Fetching the source code](#fetching-the-source-code)
-  3. [Finalizing the build](#finalizing-the-build)
+  2. [Optional dependencies](#optional-dependencies)
+  3. [Fetching the source code](#fetching-the-source-code)
+  4. [Finalizing the build](#finalizing-the-build)
 - [Usage](#usage)
 - [Getting started](#getting-started)
 - [Configuration file documentation](#configuration-file-documentation)
 - [Running uninstalled](#running-uninstalled)
 - [Logger plugins](#logger-plugins)
+  * [Official logger plugins](#official-logger-plugins)
 - [License](#license)
 - [Contributing](#contributing)
   - [Developer Certificate of Origin (DCO)](#developer-certificate-of-origin-dco)
@@ -125,7 +127,7 @@ Whipper relies on the following packages in order to run correctly and provide a
 
 - [cd-paranoia](https://github.com/rocky/libcdio-paranoia), for the actual ripping
   - To avoid bugs it's advised to use `cd-paranoia` versions ≥ **10.2+0.94+2-2**
-  - The package named `libcdio-utils`, available on Debian and Ubuntu, is affected by a bug (except for Debian testing/sid): it doesn't include the `cd-paranoia` binary (needed by whipper). For more details see: [#888053 (Debian)](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=888053), [#889803 (Debian)](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=889803) and [#1750264 (Ubuntu)](https://bugs.launchpad.net/ubuntu/+source/libcdio/+bug/1750264).
+  - The package named `libcdio-utils`, available on Debian and Ubuntu, is affected by a bug (except for Debian testing/sid where a separate `cd-paranoia` package has been added): it doesn't include the `cd-paranoia` binary (needed by whipper). For more details see: [#888053 (Debian)](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=888053), [#889803 (Debian)](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=889803) and [#1750264 (Ubuntu)](https://bugs.launchpad.net/ubuntu/+source/libcdio/+bug/1750264).
 - [cdrdao](http://cdrdao.sourceforge.net/), for session, TOC, pre-gap, and ISRC extraction
 - [GObject Introspection](https://wiki.gnome.org/Projects/GObjectIntrospection), to provide GLib-2.0 methods used by `task.py`
 - [PyGObject](https://pypi.org/project/PyGObject/), required by `task.py`
