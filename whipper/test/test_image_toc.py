@@ -216,7 +216,7 @@ class LadyhawkeTestCase(common.TestCase):
         self.assertEqual(self.toc.table.getMusicBrainzDiscId(),
                          "KnpGsLhvH.lPrNc1PBL21lb9Bg4-")
         self.assertEqual(self.toc.table.getMusicBrainzSubmitURL(),
-            "https://musicbrainz.org/cdtoc/attach?toc=1+12+195856+150+15687+31841+51016+66616+81352+99559+116070+133243+149997+161710+177832&tracks=12&id=KnpGsLhvH.lPrNc1PBL21lb9Bg4-")  # noqa: E501
+                         "https://musicbrainz.org/cdtoc/attach?toc=1+12+195856+150+15687+31841+51016+66616+81352+99559+116070+133243+149997+161710+177832&tracks=12&id=KnpGsLhvH.lPrNc1PBL21lb9Bg4-")  # noqa: E501
 
     # FIXME: I don't trust this toc, but I can't find the CD anymore
 

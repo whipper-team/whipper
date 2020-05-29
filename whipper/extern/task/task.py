@@ -233,8 +233,8 @@ class Task(LogStub):
 
     def _notifyListeners(self, methodName, *args, **kwargs):
         if self._listeners:
-            for l in self._listeners:
-                method = getattr(l, methodName)
+            for listener in self._listeners:
+                method = getattr(listener, methodName)
                 try:
                     method(self, *args, **kwargs)
                 # FIXME: catching too general exception (Exception)
