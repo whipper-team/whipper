@@ -47,7 +47,7 @@ RUN curl -o - 'https://ftp.gnu.org/gnu/libcdio/libcdio-paranoia-10.2+2.0.1.tar.b
     && ./configure --disable-dependency-tracking --disable-example-progs --disable-static \
     && make install \
     && cd .. \
-    && rm -rf libcdio-paranoia-10.2+2.0.0
+    && rm -rf libcdio-paranoia-10.2+2.0.1
 
 RUN ldconfig
 
