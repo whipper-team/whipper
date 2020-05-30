@@ -3,7 +3,6 @@
 
 import argparse
 import os
-import sys
 
 from whipper.common import config, drive
 
@@ -109,11 +108,11 @@ class BaseCommand:
         if hasattr(self, 'subcommands'):
             if not self.options.remainder:
                 self.parser.print_help()
-                sys.exit(0)
+                raise SystemExit()
             if not self.options.remainder[0] in self.subcommands:
                 logger.critical("incorrect subcommand: %s",
                                 self.options.remainder[0])
-                sys.exit(1)
+                raise SystemExit(1)
             self.cmd = self.subcommands[self.options.remainder[0]](
                 self.options.remainder[1:],
                 prog_name + " " + self.options.remainder[0],

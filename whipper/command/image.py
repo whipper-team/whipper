@@ -18,8 +18,6 @@
 # You should have received a copy of the GNU General Public License
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys
-
 from whipper.command.basecommand import BaseCommand
 from whipper.common import accurip, config, program
 from whipper.extern.task import task
@@ -63,7 +61,7 @@ Verifies the image from the given .cue files against the AccurateRip database.
                 print('AccurateRip entry not found')
             accurip.print_report(prog.result)
             if not verified:
-                sys.exit(1)
+                raise SystemExit(1)
 
 
 class Image(BaseCommand):
