@@ -161,10 +161,11 @@ PyPI installable dependencies are listed in the [requirements.txt](https://githu
 
 ### Optional dependencies
 - [Pillow](https://pypi.org/project/Pillow/), for completely supporting the cover art feature (`embed` and `complete` option values won't work otherwise).
+- [docutils](https://pypi.org/project/docutils/), to build the man pages.
 
-This dependency isn't listed in the `requirements.txt`, to install it just issue the following command:
+These dependencies are not listed in the `requirements.txt`. To install them, just issue the following command:
 
-`pip3 install Pillow`
+`pip3 install Pillow docutils`
 
 ### Fetching the source code
 
@@ -196,6 +197,8 @@ is correct, while
 `whipper cd rip -d (device)`
 
 is not, because the `-d` argument applies to the `cd` command.
+
+A more complete set of usage instructions can be found in the `whipper` [man pages](https://github.com/whipper-team/whipper/blob/develop/man/README.md).
 
 ## Getting started
 
