@@ -1,7 +1,7 @@
 # Whipper
 
-[![license](https://img.shields.io/github/license/whipper-team/whipper.svg)](https://github.com/whipper-team/whipper/blob/master/LICENSE)
-[![Build Status](https://travis-ci.com/whipper-team/whipper.svg?branch=master)](https://travis-ci.com/whipper-team/whipper)
+[![license](https://img.shields.io/github/license/whipper-team/whipper.svg)](https://github.com/whipper-team/whipper/blob/develop/LICENSE)
+[![Build Status](https://travis-ci.com/whipper-team/whipper.svg?branch=develop)](https://travis-ci.com/whipper-team/whipper)
 [![GitHub (pre-)release](https://img.shields.io/github/release/whipper-team/whipper/all.svg)](https://github.com/whipper-team/whipper/releases/latest)
 [![IRC](https://img.shields.io/badge/irc-%23whipper%40freenode-brightgreen.svg)](https://webchat.freenode.net/?channels=%23whipper)
 [![GitHub Stars](https://img.shields.io/github/stars/whipper-team/whipper.svg)](https://github.com/whipper-team/whipper/stargazers)
@@ -64,7 +64,7 @@ https://web.archive.org/web/20160528213242/https://thomas.apestaart.org/thomas/t
 
 ## Changelog
 
-See [CHANGELOG.md](https://github.com/whipper-team/whipper/blob/master/CHANGELOG.md).
+See [CHANGELOG.md](https://github.com/whipper-team/whipper/blob/develop/CHANGELOG.md).
 
 For detailed information, please check the commit history.
 
@@ -80,7 +80,7 @@ You can easily install whipper without needing to care about the required depend
 
 Please note that, right now, Docker Hub only builds whipper images for the `amd64` architecture: if you intend to use them on a different one, you'll need to build the images locally (as explained below).
 
-Alternatively, in case you prefer building Docker images locally, just issue the following command (it relies on the [Dockerfile](https://github.com/whipper-team/whipper/blob/master/Dockerfile) included in whipper's repository):
+Alternatively, in case you prefer building Docker images locally, just issue the following command (it relies on the [Dockerfile](https://github.com/whipper-team/whipper/blob/develop/Dockerfile) included in whipper's repository):
 
 `docker build -t whipperteam/whipper .`
 
@@ -155,12 +155,12 @@ Some dependencies aren't available in the PyPI. They can be probably installed u
 - [git](https://git-scm.com/) or [mercurial](https://www.mercurial-scm.org/)
 - [libdiscid](https://musicbrainz.org/doc/libdiscid)
 
-PyPI installable dependencies are listed in the [requirements.txt](https://github.com/whipper-team/whipper/blob/master/requirements.txt) file and can be installed issuing the following command:
+PyPI installable dependencies are listed in the [requirements.txt](https://github.com/whipper-team/whipper/blob/develop/requirements.txt) file and can be installed issuing the following command:
 
 `pip3 install -r requirements.txt`
 
 ### Optional dependencies
-- [pillow](https://pypi.org/project/Pillow/), for completely supporting the cover art feature (`embed` and `complete` option values won't work otherwise).
+- [Pillow](https://pypi.org/project/Pillow/), for completely supporting the cover art feature (`embed` and `complete` option values won't work otherwise).
 
 This dependency isn't listed in the `requirements.txt`, to install it just issue the following command:
 
