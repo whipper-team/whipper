@@ -1,4 +1,5 @@
 FROM debian:buster
+ARG optical_gid
 
 RUN apt-get update && apt-get install --no-install-recommends -y \
     autoconf \
@@ -51,8 +52,10 @@ RUN curl -o - 'https://ftp.gnu.org/gnu/libcdio/libcdio-paranoia-10.2+2.0.1.tar.b
 
 RUN ldconfig
 
-# add user
+# add user (+ group workaround for ArchLinux)
 RUN useradd -m worker -G cdrom \
+    && if [ -n "${optical_gid}" ]; then groupadd -f -g "${optical_gid}" optical \
+    && usermod -a -G optical worker; fi
     && mkdir -p /output /home/worker/.config/whipper \
     && chown worker: /output /home/worker/.config/whipper
 VOLUME ["/home/worker/.config/whipper", "/output"]

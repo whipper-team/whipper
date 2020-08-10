@@ -82,7 +82,7 @@ Please note that, right now, Docker Hub only builds whipper images for the `amd6
 
 Alternatively, in case you prefer building Docker images locally, just issue the following command (it relies on the [Dockerfile](https://github.com/whipper-team/whipper/blob/develop/Dockerfile) included in whipper's repository):
 
-`docker build -t whipperteam/whipper .`
+`optical_gid=$(getent group optical | cut -d: -f3) docker build --build-arg optical_gid -t whipperteam/whipper .`
 
 It's recommended to create an alias for a convenient usage:
 
