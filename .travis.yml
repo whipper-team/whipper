@@ -1,5 +1,5 @@
+os: linux
 dist: xenial
-sudo: required
 
 language: python
 python:
@@ -7,6 +7,7 @@ python:
   - "3.6"
   - "3.7"
   - "3.8"
+  - "3.9-dev"
 virtualenv:
   system_site_packages: false
 
@@ -16,8 +17,10 @@ env:
     - FLAKE8=false
 
 jobs:
+  allow_failures:
+   - python: "3.9-dev"
   include:
-  - python: 3.5
+  - python: 3.8
     env: FLAKE8=true
 
 install:
@@ -25,14 +28,10 @@ install:
     - sudo apt-get -qq update
     - pip install --upgrade -qq pip
     - sudo apt-get -qq install cdparanoia cdrdao flac gir1.2-glib-2.0 libcdio-dev libgirepository1.0-dev libiso9660-dev libsndfile1-dev sox swig libcdio-utils libdiscid0 python3-pil
-    # newer version of pydcio requires newer version of libcdio than travis has
+    # newer versions of pydcio requires a newer version of libcdio than Travis has
     - pip install pycdio==0.21
-    # install rest of dependencies
-    - pip install -r requirements.txt
-
-    # Testing dependencies
-    - pip install twisted flake8
-
+    # flake8 and twisted are testing dependencies
+    - pip install flake8 twisted -r requirements.txt
     # Installing
     - python setup.py install
 
