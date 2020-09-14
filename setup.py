@@ -8,7 +8,7 @@ setup(
     maintainer=['The Whipper Team'],
     url='https://github.com/whipper-team/whipper',
     license='GPL3',
-    python_requires='>=3.5',
+    python_requires='>=3.6',
     packages=find_packages(),
     setup_requires=['setuptools_scm'],
     ext_modules=[

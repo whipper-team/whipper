@@ -3,7 +3,6 @@ dist: xenial
 
 language: python
 python:
-  - "3.5"
   - "3.6"
   - "3.7"
   - "3.8"
@@ -18,6 +17,7 @@ env:
 
 jobs:
   allow_failures:
+   - python: "3.5"
    - python: "3.9-dev"
   include:
   - python: 3.8
