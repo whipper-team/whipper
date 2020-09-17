@@ -19,6 +19,7 @@
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+from fcntl import ioctl
 
 import logging
 logger = logging.getLogger(__name__)
@@ -69,3 +70,29 @@ def getDeviceInfo(path):
     _, vendor, model, release = device.get_hwinfo()
 
     return vendor, model, release
+
+
+def get_cdrom_drive_status(drive_path):
+    """
+    Get the status of the disc drive.
+
+    Drive status possibilities returned by CDROM_DRIVE_STATUS ioctl:
+    - CDS_NO_INFO         = 0  (if not implemented)
+    - CDS_NO_DISC         = 1
+    - CDS_TRAY_OPEN       = 2
+    - CDS_DRIVE_NOT_READY = 3
+    - CDS_DISC_OK         = 4
+
+    Documentation here:
+    - https://www.kernel.org/doc/Documentation/ioctl/cdrom.txt
+    - https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/uapi/linux/cdrom.h  # noqa: E501
+
+    :param drive_path: path to the disc drive
+    :type device: str
+    :returns: return code of the 'CDROM_DRIVE_STATUS' ioctl
+    :rtype: int
+    """
+    fd = os.open(drive_path, os.O_RDONLY | os.O_NONBLOCK)
+    rc = ioctl(fd, 0x5326)  # AKA 'CDROM_DRIVE_STATUS'
+    os.close(fd)
+    return rc
