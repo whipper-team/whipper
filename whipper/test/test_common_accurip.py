@@ -3,13 +3,9 @@
 
 import sys
 from io import StringIO
-from os import chmod, makedirs
-from os.path import dirname, exists, join
-from shutil import copy, rmtree
-from tempfile import mkdtemp
+from os.path import dirname, join
 from unittest import TestCase
 
-from whipper.common import accurip
 from whipper.common.accurip import (
     calculate_checksums, get_db_entry, print_report, verify_result,
     _split_responses, EntryNotFound
@@ -25,40 +21,9 @@ class TestAccurateRipResponse(TestCase):
             cls.entry = _split_responses(f.read())
         cls.other_path = '4/8/2/dBAR-011-0010e284-009228a3-9809ff0b.bin'
 
-    def setUp(self):
-        self.cache_dir = mkdtemp(suffix='whipper_accurip_cache_test')
-        accurip._CACHE_DIR = self.cache_dir
-
-        def cleanup(cachedir):
-            chmod(cachedir, 0o755)
-            rmtree(cachedir)
-        self.addCleanup(cleanup, self.cache_dir)
-
-    def test_uses_cache_dir(self):
-        # copy normal entry into other entry's place
-        makedirs(dirname(join(self.cache_dir, self.other_path)))
-        copy(
-            join(dirname(__file__), self.path[6:]),
-            join(self.cache_dir, self.other_path)
-        )
-        # ask cache for other entry and assert cached entry equals normal entry
-        self.assertEqual(self.entry, get_db_entry(self.other_path))
-
     def test_raises_entrynotfound_for_no_entry(self):
         with self.assertRaises(EntryNotFound):
             get_db_entry('definitely_a_404')
-
-    def test_can_return_entry_without_saving(self):
-        chmod(self.cache_dir, 0)
-        self.assertEqual(get_db_entry(self.path), self.entry)
-        chmod(self.cache_dir, 0o755)
-        self.assertFalse(exists(join(self.cache_dir, self.path)))
-
-    def test_retrieves_and_saves_accuraterip_entry(self):
-        # for path, entry in zip(self.paths[0], self.entries):
-        self.assertFalse(exists(join(self.cache_dir, self.path)))
-        self.assertEqual(get_db_entry(self.path), self.entry)
-        self.assertTrue(exists(join(self.cache_dir, self.path)))
 
     def test_AccurateRipResponse_parses_correctly(self):
         responses = get_db_entry(self.path)
