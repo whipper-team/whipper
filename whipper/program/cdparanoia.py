@@ -283,6 +283,24 @@ class ReadTrackTask(task.Task):
             stopTrack, common.framesToHMSF(stopOffset)),
             self.path])
         logger.debug('running %s', (" ".join(argv), ))
+        if self._offset > 587:
+            logger.warning(
+                "because of a cd-paranoia upstream bug whipper may fail to "
+                "work correctly when using offset values > 587 (current "
+                "value: %d) and print warnings like this: 'file size 0 did "
+                "not match expected size'. For more details please check the "
+                "following issues: "
+                "https://github.com/whipper-team/whipper/issues/234 and "
+                "https://github.com/rocky/libcdio-paranoia/issues/14",
+                self._offset
+            )
+        if stopTrack == 99:
+            logger.warning(
+                "because of a cd-paranoia upstream bug whipper may fail to "
+                "rip the last track of a CD when it has got 99 of them. "
+                "For more details please check the following issue: "
+                "https://github.com/whipper-team/whipper/issues/302"
+            )
         try:
             self._popen = asyncsub.Popen(argv,
                                          bufsize=bufsize,
