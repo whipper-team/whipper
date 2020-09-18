@@ -22,6 +22,8 @@ _BEGIN_CDRDAO_RE = re.compile(r"-" * 60)
 _LAST_TRACK_RE = re.compile(r"^[ ]?(?P<track>[0-9]*)")
 _LEADOUT_RE = re.compile(
     r"^Leadout AUDIO\s*[0-9]\s*[0-9]*:[0-9]*:[0-9]*\([0-9]*\)")
+_SUBCODE_EMPHASIS_LINE = ("Pre-emphasis flag of track differs from TOC - "
+                          "toc file contains TOC setting.")
 
 
 class ProgressParser:
@@ -54,6 +56,10 @@ class ProgressParser:
             print("Track %d finished, "
                   "found %d Q sub-channels with CRC errors" %
                   (self.currentTrack, int(crc_s.group('channels'))))
+
+        # TODO: add subcode pre-emphasis info for each track to logger too
+        if _SUBCODE_EMPHASIS_LINE in line:
+            logger.warning(_SUBCODE_EMPHASIS_LINE)
 
         self.oldline = line
 
