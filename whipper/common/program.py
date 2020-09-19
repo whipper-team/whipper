@@ -455,8 +455,6 @@ class Program:
                 if len(performers) > 0:
                     tags['PERFORMER'] = performers
 
-        # TODO/FIXME: ISRC tag
-
         return tags
 
     def getHTOA(self):
