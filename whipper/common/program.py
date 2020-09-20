@@ -29,6 +29,7 @@ import time
 from tempfile import NamedTemporaryFile
 from whipper.common import accurip, checksum, common, mbngs, path
 from whipper.program import cdrdao, cdparanoia
+from whipper.result import result
 from whipper.image import image
 from whipper.extern import freedb
 from whipper.extern.task import task
@@ -133,6 +134,16 @@ class Program:
         logger.debug('getTable: returning table with mb id %s',
                      itable.getMusicBrainzDiscId())
         return itable
+
+    def getRipResult(self):
+        """
+        Return a new RipResult.
+
+        :rtype: result.RipResult
+        """
+        assert self.result is None
+        self.result = result.RipResult()
+        return self.result
 
     @staticmethod
     def addDisambiguation(template_part, metadata):

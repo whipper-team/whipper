@@ -99,6 +99,7 @@ class _CD(BaseCommand):
         self.ittoc = self.program.getFastToc(self.runner, self.device)
 
         # already show us some info based on this
+        self.program.getRipResult()
         print("CDDB disc id: %s" % self.ittoc.getCDDBDiscId())
         self.mbdiscid = self.ittoc.getMusicBrainzDiscId()
         print("MusicBrainz disc id %s" % self.mbdiscid)
