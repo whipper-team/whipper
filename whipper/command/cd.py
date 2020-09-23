@@ -449,11 +449,14 @@ Log files will log the path to tracks relative to this directory.
                     try:
                         logger.debug('ripIfNotRipped: track %d, try %d',
                                      number, tries)
+                        tag_list = self.program.getTagList(number,
+                                                           self.mbdiscid)
+                        if self.itable.tracks[number].isrc is not None:
+                            tag_list['ISRC'] = self.itable.tracks[number].isrc
                         self.program.ripTrack(self.runner, trackResult,
                                               offset=int(self.options.offset),
                                               device=self.device,
-                                              taglist=self.program.getTagList(
-                                                  number, self.mbdiscid),
+                                              taglist=tag_list,
                                               overread=self.options.overread,
                                               what='track %d of %d%s' % (
                                                   number,
