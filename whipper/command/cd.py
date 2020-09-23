@@ -92,7 +92,8 @@ class _CD(BaseCommand):
         self.device = self.options.device
         logger.info('checking device %s', self.device)
 
-        utils.load_device(self.device)
+        if self.options.drive_auto_close is True:
+            utils.load_device(self.device)
         utils.unmount_device(self.device)
 
         # first, read the normal TOC, which is fast

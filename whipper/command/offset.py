@@ -80,7 +80,8 @@ CD in the AccurateRip database."""
         # if necessary, load and unmount
         logger.info('checking device %s', device)
 
-        utils.load_device(device)
+        if self.options.drive_auto_close is True:
+            utils.load_device(device)
         utils.unmount_device(device)
 
         # first get the Table Of Contents of the CD
