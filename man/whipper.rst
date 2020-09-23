@@ -47,6 +47,10 @@ Options
 | **-e** | **--eject**  *never failure success always*
 |     When to eject disc (default: success)
 
+| **-c** | **--drive-auto-close**
+|     Whether to auto close the drive's tray before reading a CD
+|     (default: True)
+
 | **-R** | **--record**
 |     Record API requests for playback
 

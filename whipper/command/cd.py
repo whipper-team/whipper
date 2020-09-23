@@ -92,7 +92,8 @@ class _CD(BaseCommand):
         self.device = self.options.device
         logger.info('checking device %s', self.device)
 
-        utils.load_device(self.device)
+        if self.options.drive_auto_close is True:
+            utils.load_device(self.device)
         utils.unmount_device(self.device)
         # Exit and inform the user if there's no CD in the disk drive
         if drive.get_cdrom_drive_status(self.device):  # rc == 1 means no disc

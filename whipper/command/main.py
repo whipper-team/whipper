@@ -118,7 +118,11 @@ class Whipper(BaseCommand):
                                  default="success",
                                  choices=('never', 'failure',
                                           'success', 'always'),
-                                 help="when to eject disc (default: success)")
+                                 help="when to eject disc (default: success)"),
+        self.parser.add_argument('-c', '--drive-auto-close', action="store",
+                                 dest="drive_auto_close", default=True,
+                                 help="whether to auto close the drive's "
+                                 "tray before reading a CD (default: True)")
 
     def handle_arguments(self):
         if self.options.help:
