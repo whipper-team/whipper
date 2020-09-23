@@ -80,7 +80,9 @@ You can easily install whipper without needing to care about the required depend
 
 Please note that, right now, Docker Hub only builds whipper images for the `amd64` architecture: if you intend to use them on a different one, you'll need to build the images locally (as explained below).
 
-Alternatively, in case you prefer building Docker images locally, just issue the following command (it relies on the [Dockerfile](https://github.com/whipper-team/whipper/blob/develop/Dockerfile) included in whipper's repository):
+Building the Docker image locally is required in order to make it work on Arch Linux (and its derivatives) because of a group permission issue (for more details see [issue #499](https://github.com/whipper-team/whipper/issues/499)).
+
+To build the Docker image locally just issue the following command (it relies on the [Dockerfile](https://github.com/whipper-team/whipper/blob/develop/Dockerfile) included in whipper's repository):
 
 `optical_gid=$(getent group optical | cut -d: -f3) docker build --build-arg optical_gid -t whipperteam/whipper .`
 
@@ -99,7 +101,9 @@ Essentially, what this does is to map the /home/worker/.config/whipper and ${PWD
 
 `mkdir -p "${HOME}/.config/whipper" "${PWD}/output"`
 
-Finally you can test the correct installation:
+Please note that the example alias written above only provides access to a single disc drive: if you've got many you will need to customise it in order to use all of them in whipper's Docker container.
+
+Finally you can test the correct installation as such:
 
 ```
 whipper -v
