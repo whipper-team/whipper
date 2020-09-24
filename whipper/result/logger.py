@@ -141,7 +141,7 @@ class WhipperLogger(result.Logger):
             message = "There were errors"
         else:
             message = "No errors occurred"
-        data["Health Status"] = message
+        data["Health status"] = message
         data["EOF"] = "End of status report"
         riplog["Conclusive status report"] = data
 
