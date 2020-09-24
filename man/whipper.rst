@@ -47,7 +47,7 @@ Options
 | **-e** | **--eject**  *never failure success always*
 |     When to eject disc (default: success)
 
-| **-c** | **--drive-auto-close**
+| **-c** | **--drive-auto-close** *True False*
 |     Whether to auto close the drive's tray before reading a CD
 |     (default: True)
 
