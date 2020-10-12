@@ -96,7 +96,7 @@ class _CD(BaseCommand):
             utils.load_device(self.device)
         utils.unmount_device(self.device)
         # Exit and inform the user if there's no CD in the disk drive
-        if drive.get_cdrom_drive_status(self.device):  # rc == 1 means no disc
+        if drive.get_cdrom_drive_status(self.device) == 1:  # rc 1 -> no disc
             raise OSError("no CD detected, please insert one and retry")
 
         # first, read the normal TOC, which is fast
