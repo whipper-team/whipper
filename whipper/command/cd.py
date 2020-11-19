@@ -446,13 +446,16 @@ Log files will log the path to tracks relative to this directory.
                     logger.info('ripping track %d of %d%s: %s',
                                 number, len(self.itable.tracks), extra,
                                 os.path.basename(path))
+
+                    logger.debug('ripIfNotRipped: track %d, try %d', number,
+                                 tries)
+                    tag_list = self.program.getTagList(number, self.mbdiscid)
+                    # An HTOA can't have an ISRC value
+                    if (number > 0 and
+                            self.itable.tracks[number - 1].isrc is not None):
+                        tag_list['ISRC'] = self.itable.tracks[number - 1].isrc
+
                     try:
-                        logger.debug('ripIfNotRipped: track %d, try %d',
-                                     number, tries)
-                        tag_list = self.program.getTagList(number,
-                                                           self.mbdiscid)
-                        if self.itable.tracks[number].isrc is not None:
-                            tag_list['ISRC'] = self.itable.tracks[number].isrc
                         self.program.ripTrack(self.runner, trackResult,
                                               offset=int(self.options.offset),
                                               device=self.device,
