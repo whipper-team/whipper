@@ -230,7 +230,7 @@ class Program:
     @staticmethod
     def getCDDB(cddbdiscid):
         """
-        Fetch basic metadata from dBpoweramp's mirror of freedb's CDDB.
+        Fetch basic metadata from gnudb.org's mirror of freedb's CDDB.
 
         Freedb's official CDDB isn't used anymore because it's going to be
         shut down on 31/03/2020.
@@ -244,7 +244,7 @@ class Program:
         # FIXME: convert to nonblocking?
         try:
             md = freedb.perform_lookup(
-                     cddbdiscid, 'freedb.dbpoweramp.com', 80
+                     cddbdiscid, 'gnudb.gnudb.org', 80
             )
             logger.debug('CDDB query result: %r', md)
             return [item['DTITLE'] for item in md if 'DTITLE' in item] or None
