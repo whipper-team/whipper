@@ -84,7 +84,7 @@ Building the Docker image locally is required in order to make it work on Arch L
 
 To build the Docker image locally just issue the following command (it relies on the [Dockerfile](https://github.com/whipper-team/whipper/blob/develop/Dockerfile) included in whipper's repository):
 
-`optical_gid=$(getent group optical | cut -d: -f3) docker build --build-arg optical_gid -t whipperteam/whipper .`
+`optical_gid=$(getent group optical | cut -d: -f3) uid=$(id -u) docker build --build-arg optical_gid --build-arg uid -t whipperteam/whipper .`
 
 It's recommended to create an alias for a convenient usage:
 
