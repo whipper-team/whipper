@@ -116,8 +116,6 @@ This is a noncomprehensive summary which shows whipper's packaging status (unoff
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/whipper.svg)](https://repology.org/metapackage/whipper)
 
-- There's a [whipper package available for Exherbo](https://git.exherbo.org/summer/packages/media-sound/whipper/index.html).
-
 **NOTE:** if installing whipper from an unofficial repository please keep in mind it is your responsibility to verify that the provided content is safe to use.
 
 ## Building
