@@ -440,8 +440,11 @@ class Program:
         if number > 0:
             tags['MUSICBRAINZ_DISCID'] = mbdiscid
 
-        if self.metadata and not self.metadata.various:
-            tags['ALBUMARTIST'] = releaseArtist
+        if self.metadata:
+            if self.metadata.various:
+                tags['ALBUMARTIST'] = "Various Artists"
+            else:
+                tags['ALBUMARTIST'] = releaseArtist
         tags['ARTIST'] = trackArtist
         tags['TITLE'] = title
         tags['ALBUM'] = disc
