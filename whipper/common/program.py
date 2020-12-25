@@ -440,7 +440,7 @@ class Program:
         if number > 0:
             tags['MUSICBRAINZ_DISCID'] = mbdiscid
 
-        if self.metadata and not self.metadata.various:
+        if self.metadata:
             tags['ALBUMARTIST'] = releaseArtist
         tags['ARTIST'] = trackArtist
         tags['TITLE'] = title
