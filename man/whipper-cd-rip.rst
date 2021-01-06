@@ -13,8 +13,8 @@ Rips a CD
 Synopsis
 ========
 
-| whipper cd info [**options**]
-| whipper cd info **-h**
+| whipper cd rip [**options**]
+| whipper cd rip **-h**
 
 Options
 =======
