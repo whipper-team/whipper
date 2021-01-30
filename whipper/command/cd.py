@@ -310,6 +310,11 @@ Log files will log the path to tracks relative to this directory.
                                  "{}; 0 means "
                                  "infinity.".format(DEFAULT_MAX_RETRIES),
                                  default=DEFAULT_MAX_RETRIES)
+        self.parser.add_argument('-k', '--keep-going',
+                                 action='store_true',
+                                 help="continue ripping further tracks "
+                                 "instead of giving up if a track "
+                                 "can't be ripped")
 
     def handle_arguments(self):
         self.options.output_directory = os.path.expanduser(
@@ -476,9 +481,14 @@ Log files will log the path to tracks relative to this directory.
                     tries -= 1
                     logger.critical('giving up on track %d after %d times',
                                     number, tries)
-                    raise RuntimeError("track can't be ripped. "
-                                       "Rip attempts number is equal to %d",
-                                       self.options.max_retries)
+                    if self.options.keep_going:
+                        logger.warning("track %d failed to rip. "
+                                       "Continuing to next track", number)
+                    else:
+                        raise RuntimeError("track can't be ripped. "
+                                           "Rip attempts number is equal "
+                                           "to %d",
+                                           self.options.max_retries)
                 if trackResult.testcrc == trackResult.copycrc:
                     logger.info('CRCs match for track %d', number)
                 else:
