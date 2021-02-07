@@ -38,6 +38,7 @@ class TrackResult:
     copycrc = None
     AR = None
     classVersion = 3
+    skipped = False
 
     def __init__(self):
         """

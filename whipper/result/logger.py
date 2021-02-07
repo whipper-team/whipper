@@ -15,6 +15,7 @@ class WhipperLogger(result.Logger):
     _accuratelyRipped = 0
     _inARDatabase = 0
     _errors = False
+    _skippedTracks = False
 
     def log(self, ripResult, epoch=time.time()):
         """Return logfile as string."""
@@ -139,6 +140,8 @@ class WhipperLogger(result.Logger):
 
         if self._errors:
             message = "There were errors"
+        elif self._skippedTracks:
+            message = "Some tracks were not ripped (skipped)"
         else:
             message = "No errors occurred"
         data["Health status"] = message
@@ -242,8 +245,12 @@ class WhipperLogger(result.Logger):
                 data["Result"] = "Track not present in AccurateRip database"
             track["AccurateRip %s" % v] = data
 
+        # Check if track has been skipped
+        if trackResult.skipped:
+            track["Status"] = "Track not ripped (skipped)"
+            self._skippedTracks = True
         # Check if Test & Copy CRCs are equal
-        if trackResult.testcrc == trackResult.copycrc:
+        elif trackResult.testcrc == trackResult.copycrc:
             track["Status"] = "Copy OK"
         else:
             self._errors = True

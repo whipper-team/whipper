@@ -220,6 +220,9 @@ class Info(_CD):
 class Rip(_CD):
     summary = "rip CD"
     # see whipper.common.program.Program.getPath for expansion
+    skipped_tracks = []
+    # this holds tracks that fail to rip -
+    # currently only used when the --keep-going option is used
     description = """
 Rips a CD.
 
@@ -483,21 +486,32 @@ Log files will log the path to tracks relative to this directory.
                                     number, tries)
                     if self.options.keep_going:
                         logger.warning("track %d failed to rip. "
-                                       "Continuing to next track", number)
+                                       "Continuing to next track" % number)
+                        logger.debug("adding %s to skipped_tracks"
+                                     % trackResult.filename)
+                        self.skipped_tracks.append(trackResult.filename)
+                        logger.debug(f"skipped_tracks = {self.skipped_tracks}")
+                        trackResult.skipped = True
+                        logger.debug('trackResult.skipped = True')
                     else:
                         raise RuntimeError("track can't be ripped. "
                                            "Rip attempts number is equal "
                                            "to %d",
                                            self.options.max_retries)
-                if trackResult.testcrc == trackResult.copycrc:
-                    logger.info('CRCs match for track %d', number)
+                if trackResult.filename in self.skipped_tracks:
+                    print("Skipping CRC comparison for track %d "
+                          "due to rip failure"
+                          % number)
                 else:
-                    raise RuntimeError(
-                        "CRCs did not match for track %d" % number
-                    )
+                    if trackResult.testcrc == trackResult.copycrc:
+                        logger.info('CRCs match for track %d', number)
+                    else:
+                        raise RuntimeError(
+                            "CRCs did not match for track %d" % number
+                        )
 
-                print('Peak level: %.6f' % (trackResult.peak / 32768.0))
-                print('Rip quality: {:.2%}'.format(trackResult.quality))
+                    print('Peak level: %.6f' % (trackResult.peak / 32768.0))
+                    print('Rip quality: {:.2%}'.format(trackResult.quality))
 
             # overlay this rip onto the Table
             if number == 0:
@@ -516,8 +530,14 @@ Log files will log the path to tracks relative to this directory.
                     self.itable.setFile(1, 0, trackResult.filename,
                                         self.itable.getTrackStart(1), number)
             else:
-                self.itable.setFile(number, 1, trackResult.filename,
-                                    self.itable.getTrackLength(number), number)
+                if trackResult.filename in self.skipped_tracks:
+                    logger.debug("track %d (%s) "
+                                 "has been skipped; not adding to self.itable"
+                                 % number, trackResult.filename)
+                else:
+                    self.itable.setFile(number, 1, trackResult.filename,
+                                        self.itable.getTrackLength(number),
+                                        number)
 
         # check for hidden track one audio
         htoa = self.program.getHTOA()
