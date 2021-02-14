@@ -6,15 +6,16 @@ import re
 
 class MBLookup(BaseCommand):
     summary = "lookup MusicBrainz entry"
-    description = """Look up a MusicBrainz disc id and output information.
+    description = """Look up either a MusicBrainz Disc ID or Release ID and output information.
 
-You can get the MusicBrainz disc id with whipper cd info.
+You can get the MusicBrainz Disc ID with whipper cd info.
 
-Example disc id: KnpGsLhvH.lPrNc1PBL21lb9Bg4-"""
+Example Disc ID: KnpGsLhvH.lPrNc1PBL21lb9Bg4-"""
 
     def add_arguments(self):
         self.parser.add_argument(
-            'mbid', action='store', help="MB disc id or release id to look up"
+            'mbid', action='store',
+            help="MusicBrainz Disc ID or Release ID to look up"
         )
 
     def _printMetadata(self, md):
@@ -44,7 +45,7 @@ Example disc id: KnpGsLhvH.lPrNc1PBL21lb9Bg4-"""
         try:
             mbid = str(self.options.mbid.strip())
         except IndexError:
-            print('Please specify a MusicBrainz disc id or release id.')
+            print('Please specify a MusicBrainz Disc ID or Release ID.')
             return 3
 
         releaseIdMatch = re.match(

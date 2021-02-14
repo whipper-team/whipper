@@ -7,7 +7,7 @@ Rips a CD
 ---------
 
 :Author: Louis-Philippe Véronneau
-:Date: 2020
+:Date: 2021
 :Manual section: 1
 
 Synopsis
@@ -60,6 +60,14 @@ Options
 
 | **--cdr**
 |     whether to continue ripping if the disc is a CD-R
+
+| **-C** | **--cover-art** *file embed complete*
+|     Fetch cover art and save it as standalone file, embed into FLAC files or
+|     perform both actions: file, embed, complete option values respectively
+
+| **-r** | **--max-retries** *<RETRIES>*
+|     Number of rip attempts before giving up if can't rip a track. This
+|     defaults to 5; 0 means infinity.
 
 Template schemes
 ================

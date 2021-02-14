@@ -2,24 +2,24 @@
 whipper-mblookup
 ================
 
-----------------------------------------------------
-Look up a MusicBrainz disc id and output information
-----------------------------------------------------
+-------------------------------------------------------------------------
+Look up either a MusicBrainz Disc ID or Release ID and output information
+-------------------------------------------------------------------------
 
 :Author: Louis-Philippe Véronneau
-:Date: 2020
+:Date: 2021
 :Manual section: 1
 
 Synopsis
 ========
 
-| whipper mblookup *<MB_DISC_ID>*
+| whipper mblookup *<MB_ID>*
 | whipper mblookup **-h**
 
 Arguments
 =========
 
-| *<MB_DISC_ID>*  MusicBrainz disc id to look up
+| *<MB_ID>*  MusicBrainz Disc ID or Release ID to look up
 
 Options
 =======
@@ -30,7 +30,7 @@ Options
 Examples
 ========
 
-You can lookup a MusicBrainz disc id and output its information this way::
+You can lookup a MusicBrainz Disc ID and output its information this way::
 
     whipper mblookup KnpGsLhvH.lPrNc1PBL21lb9Bg4-
 
