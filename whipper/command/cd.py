@@ -485,13 +485,12 @@ Log files will log the path to tracks relative to this directory.
                     logger.critical('giving up on track %d after %d times',
                                     number, tries)
                     if self.options.keep_going:
-                        logger.warning("track %d failed to rip. "
-                                       "Continuing to next track" % number)
-                        logger.debug("adding %s to skipped_tracks"
-                                     % trackResult.filename)
+                        logger.warning("track %d failed to rip.", number)
+                        logger.debug("adding %s to skipped_tracks",
+                                     trackResult.filename)
                         self.skipped_tracks.append(trackResult.filename)
-                        logger.debug("skipped_tracks = %s"
-                                     % self.skipped_tracks)
+                        logger.debug("skipped_tracks = %s",
+                                     self.skipped_tracks)
                         trackResult.skipped = True
                         logger.debug('trackResult.skipped = True')
                     else:
@@ -501,8 +500,7 @@ Log files will log the path to tracks relative to this directory.
                                            self.options.max_retries)
                 if trackResult.filename in self.skipped_tracks:
                     print("Skipping CRC comparison for track %d "
-                          "due to rip failure"
-                          % number)
+                          "due to rip failure" % number)
                 else:
                     if trackResult.testcrc == trackResult.copycrc:
                         logger.info('CRCs match for track %d', number)
@@ -532,9 +530,9 @@ Log files will log the path to tracks relative to this directory.
                                         self.itable.getTrackStart(1), number)
             else:
                 if trackResult.filename in self.skipped_tracks:
-                    logger.debug("track %d (%s)"
-                                 "has been skipped; not adding to self.itable"
-                                 % (number, trackResult.filename))
+                    logger.debug("track %d (%s) has been skipped; "
+                                 "not adding to self.itable",
+                                 number, trackResult.filename)
                 else:
                     self.itable.setFile(number, 1, trackResult.filename,
                                         self.itable.getTrackLength(number),
@@ -583,10 +581,9 @@ Log files will log the path to tracks relative to this directory.
         self.program.writeLog(discName, self.logger)
 
         if len(self.skipped_tracks) > 0:
-            logger.warning('%d tracks have been skipped from this rip attempt'
-                           % len(self.skipped_tracks))
+            logger.warning('%d tracks have been skipped from this rip attempt',
+                           len(self.skipped_tracks))
             return 5
-        return None
 
 
 class CD(BaseCommand):
