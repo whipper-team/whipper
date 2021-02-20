@@ -120,7 +120,7 @@ class ImageVerifyTask(task.MultiSeparateTask):
     description = "Checking tracks"
     lengths = None
 
-    def __init__(self, image):
+    def __init__(self, image, skipped_tracks=[]):
         task.MultiSeparateTask.__init__(self)
 
         self._image = image
@@ -147,7 +147,17 @@ class ImageVerifyTask(task.MultiSeparateTask):
             length = cue.getTrackLength(track)
 
             if length == -1:
-                path = image.getRealPath(index.path)
+                try:
+                    path = image.getRealPath(index.path)
+                except KeyError:
+                    logger.debug('Path not found; Checking '
+                                 'if %s is a skipped track', index.path)
+                    if index.path in skipped_tracks:
+                        logger.warning('Missing file %s due to skipped track',
+                                       index.path)
+                        continue
+                    else:
+                        raise
                 assert isinstance(path, str), "%r is not str" % path
                 logger.debug('schedule scan of audio length of %r', path)
                 taskk = AudioLengthTask(path)

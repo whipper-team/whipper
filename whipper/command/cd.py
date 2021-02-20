@@ -487,18 +487,17 @@ Log files will log the path to tracks relative to this directory.
                     if self.options.keep_going:
                         logger.warning("track %d failed to rip.", number)
                         logger.debug("adding %s to skipped_tracks",
-                                     trackResult.filename)
-                        self.skipped_tracks.append(trackResult.filename)
+                                     trackResult)
+                        self.skipped_tracks.append(trackResult)
                         logger.debug("skipped_tracks = %s",
                                      self.skipped_tracks)
                         trackResult.skipped = True
-                        logger.debug('trackResult.skipped = True')
                     else:
                         raise RuntimeError("track can't be ripped. "
                                            "Rip attempts number is equal "
                                            "to %d",
                                            self.options.max_retries)
-                if trackResult.filename in self.skipped_tracks:
+                if trackResult in self.skipped_tracks:
                     print("Skipping CRC comparison for track %d "
                           "due to rip failure" % number)
                 else:
@@ -529,14 +528,9 @@ Log files will log the path to tracks relative to this directory.
                     self.itable.setFile(1, 0, trackResult.filename,
                                         self.itable.getTrackStart(1), number)
             else:
-                if trackResult.filename in self.skipped_tracks:
-                    logger.debug("track %d (%s) has been skipped; "
-                                 "not adding to self.itable",
-                                 number, trackResult.filename)
-                else:
-                    self.itable.setFile(number, 1, trackResult.filename,
-                                        self.itable.getTrackLength(number),
-                                        number)
+                self.itable.setFile(number, 1, trackResult.filename,
+                                    self.itable.getTrackLength(number),
+                                    number)
 
         # check for hidden track one audio
         htoa = self.program.getHTOA()
@@ -570,6 +564,9 @@ Log files will log the path to tracks relative to this directory.
 
         logger.debug('writing m3u file for %r', discName)
         self.program.write_m3u(discName)
+
+        if len(self.skipped_tracks) > 0:
+            self.program.skipped_tracks = self.skipped_tracks
 
         try:
             self.program.verifyImage(self.runner, self.itable)

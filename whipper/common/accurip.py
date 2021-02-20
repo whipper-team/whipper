@@ -21,6 +21,7 @@
 
 import struct
 import whipper
+import os
 from urllib.error import URLError, HTTPError
 from urllib.request import urlopen, Request
 
@@ -111,7 +112,11 @@ def calculate_checksums(track_paths):
     logger.debug('checksumming %d tracks', track_count)
     # This is done sequentially because it is very fast.
     for i, path in enumerate(track_paths):
-        v1_sum, v2_sum = accuraterip_checksum(path, i+1, track_count)
+        if os.path.exists(path):
+            v1_sum, v2_sum = accuraterip_checksum(path, i+1, track_count)
+        else:
+            logger.warning('Can\'t checksum %s; path doesn\'t exist', path)
+            v1_sum, v2_sum = None, None
         if v1_sum is None:
             logger.error('could not calculate AccurateRip v1 checksum '
                          'for track %d %r', i + 1, path)
