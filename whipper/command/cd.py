@@ -566,6 +566,9 @@ Log files will log the path to tracks relative to this directory.
         self.program.write_m3u(discName)
 
         if len(self.skipped_tracks) > 0:
+            logger.warning("the generated cue sheet references %d track(s) "
+                           "which failed to rip so the associated file(s) "
+                           "won't be available", len(self.skipped_tracks))
             self.program.skipped_tracks = self.skipped_tracks
 
         try:
