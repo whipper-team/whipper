@@ -57,6 +57,7 @@ class Program:
     metadata = None
     outdir = None
     result = None
+    skipped_tracks = None
 
     def __init__(self, config, record=False):
         """
@@ -612,7 +613,12 @@ class Program:
         """
         cueImage = image.Image(self.cuePath)
         # assigns track lengths
-        verifytask = image.ImageVerifyTask(cueImage)
+        if self.skipped_tracks is not None:
+            verifytask = image.ImageVerifyTask(cueImage,
+                                               [os.path.basename(t.filename)
+                                                for t in self.skipped_tracks])
+        else:
+            verifytask = image.ImageVerifyTask(cueImage)
         runner.run(verifytask)
         if verifytask.exception:
             logger.error(verifytask.exceptionMessage)
@@ -627,6 +633,7 @@ class Program:
         ])
         if not (checksums and any(checksums['v1']) and any(checksums['v2'])):
             return False
+
         return accurip.verify_result(self.result, responses, checksums)
 
     def write_m3u(self, discname):
@@ -636,6 +643,8 @@ class Program:
             for track in self.result.tracks:
                 if not track.filename:
                     # false positive htoa
+                    continue
+                if track.skipped:
                     continue
                 if track.number == 0:
                     length = (self.result.table.getTrackStart(1) /

@@ -69,6 +69,10 @@ Options
 |     Number of rip attempts before giving up if can't rip a track. This
 |     defaults to 5; 0 means infinity.
 
+| **-k** | **--keep-going**
+|     continue ripping further tracks instead of giving up if a track can't be
+|     ripped
+
 Template schemes
 ================
 
