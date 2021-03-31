@@ -89,6 +89,11 @@ CD in the AccurateRip database."""
         runner.run(t)
         table = t.toc.table
 
+        if len(table.tracks) < 3:
+            logger.error("whipper offset find needs a CD with at least 3 "
+                         "tracks on it to do its job")
+            return None
+
         logger.debug("CDDB disc id: %r", table.getCDDBDiscId())
         try:
             responses = accurip.get_db_entry(table.accuraterip_path())
