@@ -54,6 +54,10 @@ filling in the variables and adding the file extension. Variables for both
 disc and track template are:
  - %A: release artist
  - %S: release sort name
+ - %D: release title
+ - %T: medium title
+ - %N: medium position
+ - %M: medium count
  - %d: disc title
  - %y: release year
  - %r: release type, lowercase
@@ -130,6 +134,9 @@ class _CD(BaseCommand):
                 logger.critical("unable to retrieve disc metadata, "
                                 "--unknown argument not passed")
                 return -1
+        elif self.program.metadata.mediumCount != '1':
+            self.options.track_template = self.options.track_template_mdisc
+            self.options.disc_template = self.options.disc_template_mdisc
 
         self.program.result.isCdr = cdrdao.DetectCdr(self.device)
         if (self.program.result.isCdr and
@@ -285,10 +292,18 @@ Log files will log the path to tracks relative to this directory.
                                  action="store", dest="track_template",
                                  default=DEFAULT_TRACK_TEMPLATE,
                                  help="template for track file naming")
+        self.parser.add_argument('--track-template-mdisc',
+                                 action="store", dest="track_template_mdisc",
+                                 help="template for track file naming "
+                                 "for a multidisc collection")
         self.parser.add_argument('--disc-template',
                                  action="store", dest="disc_template",
                                  default=DEFAULT_DISC_TEMPLATE,
                                  help="template for disc file naming")
+        self.parser.add_argument('--disc-template-mdisc',
+                                 action="store", dest="disc_template_mdisc",
+                                 help="template for disc file naming "
+                                 "for a multidisc collection")
         self.parser.add_argument('-U', '--unknown',
                                  action="store_true", dest="unknown",
                                  help="whether to continue ripping if "
@@ -298,6 +313,11 @@ Log files will log the path to tracks relative to this directory.
                                  help="whether to continue ripping if "
                                  "the disc is a CD-R",
                                  default=False)
+        self.parser.add_argument('--on-log-found',
+                                 action="store", dest="log_found",
+                                 help="what to do if a log file already exists",
+                                 choices=['stop', 'ask', 'continue'],
+                                 default='stop')
         self.parser.add_argument('-C', '--cover-art',
                                  action="store", dest="cover_art",
                                  help="fetch cover art and save it as "
@@ -325,8 +345,16 @@ Log files will log the path to tracks relative to this directory.
 
         self.options.track_template = self.options.track_template
         validate_template(self.options.track_template, 'track')
+        if self.options.track_template_mdisc:
+            validate_template(self.options.track_template_mdisc, 'track')
+        else:
+            self.options.track_template_mdisc = self.options.track_template
         self.options.disc_template = self.options.disc_template
         validate_template(self.options.disc_template, 'disc')
+        if self.options.disc_template_mdisc:
+            validate_template(self.options.disc_template_mdisc, 'disc')
+        else:
+            self.options.disc_template_mdisc = self.options.disc_template
 
         if self.options.offset is None:
             raise SystemExit(
@@ -374,7 +402,15 @@ Log files will log the path to tracks relative to this directory.
             if logs:
                 msg = ("output directory %s is a finished rip" % dirname)
                 logger.debug(msg)
-                raise RuntimeError(msg)
+                if self.options.log_found == 'stop':
+                    raise RuntimeError(msg)
+                else:
+                    print("Found log files in %s, this may be a finished rip"
+                          % dirname)
+                    print(logs)
+                    if self.options.log_found == 'ask':
+                        if input('Continue anyway? [y/n] ').lower() != 'y':
+                            raise RuntimeError(msg)
         else:
             logger.info("creating output directory %s", dirname)
             os.makedirs(dirname)

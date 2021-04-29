@@ -277,9 +277,9 @@ def getRelativePath(targetPath, collectionPath):
 def validate_template(template, kind):
     """Raise exception if disc/track template includes invalid variables."""
     if kind == 'disc':
-        matches = re.findall(r'%[^ARSXdrxy]', template)
+        matches = re.findall(r'%[^ADMNRSTXdrxy]', template)
     elif kind == 'track':
-        matches = re.findall(r'%[^ARSXadnrstxy]', template)
+        matches = re.findall(r'%[^ADMNRSTXadnrstxy]', template)
     if '%' in template and matches:
         raise ValueError(kind + ' template string contains invalid '
                          'variable(s): {}'.format(', '.join(matches)))
