@@ -12,6 +12,7 @@ python:
   - "3.7"
   - "3.8"
   - "3.9"
+  - "3.10-dev"
 virtualenv:
   system_site_packages: false
 
@@ -23,6 +24,7 @@ env:
 jobs:
   allow_failures:
    - python: "3.5"
+   - python: "3.10-dev"
   include:
   - python: 3.8
     env: FLAKE8=true
