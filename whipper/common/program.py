@@ -224,7 +224,7 @@ class Program:
 
         template = re.sub(r'%(\w)', r'%(\1)s', template)
         v_fltr = {k: self._filter.filter(v2) if isinstance(v2, str) else v2
-                  for k, v2 in data.items(v)}
+                  for k, v2 in v.items()}
         return os.path.join(outdir, template % v_fltr)
 
     @staticmethod
