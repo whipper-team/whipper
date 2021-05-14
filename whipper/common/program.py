@@ -206,27 +206,25 @@ class Program:
         if metadata:
             release = metadata.release or '0000'
             v['y'] = release[:4]
-            v['A'] = self._filter.filter(metadata.artist)
-            v['S'] = self._filter.filter(metadata.sortName)
-            v['d'] = self._filter.filter(metadata.title)
+            v['A'] = metadata.artist
+            v['S'] = metadata.sortName
+            v['d'] = metadata.title
             v['B'] = metadata.barcode
             v['C'] = metadata.catalogNumber
             if metadata.releaseType:
                 v['R'] = metadata.releaseType
                 v['r'] = metadata.releaseType.lower()
             if track_number is not None and track_number > 0:
-                v['a'] = self._filter.filter(
-                    metadata.tracks[track_number - 1].artist)
-                v['s'] = self._filter.filter(
-                    metadata.tracks[track_number - 1].sortName)
-                v['n'] = self._filter.filter(
-                    metadata.tracks[track_number - 1].title)
+                v['a'] = metadata.tracks[track_number - 1].artist
+                v['s'] = metadata.tracks[track_number - 1].sortName
+                v['n'] = metadata.tracks[track_number - 1].title
             elif track_number == 0:
                 # htoa defaults to disc's artist
-                v['a'] = self._filter.filter(metadata.artist)
+                v['a'] = metadata.artist
 
         template = re.sub(r'%(\w)', r'%(\1)s', template)
-        return os.path.join(outdir, template % v)
+        filtered_v = {k: self._filter.filter(v2) for k, v2 in v.items()}
+        return os.path.join(outdir, template % filtered_v)
 
     @staticmethod
     def getCDDB(cddbdiscid):
