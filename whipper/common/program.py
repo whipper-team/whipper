@@ -222,7 +222,7 @@ class Program:
                 # htoa defaults to disc's artist
                 v['a'] = metadata.artist
 
-        template = re.sub(r'%(\w)', r'%(\1)s', template)
+        template = re.sub(r'%(\w)', r'%(\1)s', template.strip('/'))
         v_fltr = {k: self._filter.filter(v2) if isinstance(v2, str) else v2
                   for k, v2 in v.items()}
         return os.path.join(outdir, template % v_fltr)
