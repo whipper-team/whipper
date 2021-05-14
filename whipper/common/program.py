@@ -223,8 +223,9 @@ class Program:
                 v['a'] = metadata.artist
 
         template = re.sub(r'%(\w)', r'%(\1)s', template)
-        filtered_v = {k: self._filter.filter(v2) for k, v2 in v.items()}
-        return os.path.join(outdir, template % filtered_v)
+        v_fltr = {k: self._filter.filter(v2) if isinstance(v2, str) else v2
+                  for k, v2 in data.items(v)}
+        return os.path.join(outdir, template % v_fltr)
 
     @staticmethod
     def getCDDB(cddbdiscid):
