@@ -44,7 +44,7 @@ class PathFilter:
     def filter(self, path):
         R_CH = '_'
         if self._dot:
-            if path[0] == '.':
+            if path[:1] == '.':  # Slicing tolerant to empty strings
                 path = R_CH + path[1:]
         if self._posix:
             path = re.sub(r'[\/\x00]', R_CH, path)
