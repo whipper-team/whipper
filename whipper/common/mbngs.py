@@ -77,6 +77,10 @@ class DiscMetadata:
     :vartype tracks: list of :any:`TrackMetadata`
     :cvar countries: MusicBrainz release countries
     :vartype countries: list or None
+    :cvar discNumber: number of current disc
+    :vartype discNumber: int or None
+    :cvar discTotal: total number of discs in the chosen release
+    :vartype discTotal: int or None
     :cvar catalogNumber: release catalog number
     :vartype catalogNumber: str or None
     :cvar barcode: release barcode
@@ -102,6 +106,8 @@ class DiscMetadata:
     catalogNumber = None
     barcode = None
     countries = None
+    discNumber = None
+    discTotal = None
     mediumTitle = None
 
     def __init__(self):
@@ -298,10 +304,11 @@ def _getMetadata(release, discid=None, country=None):
                 if 'disambiguation' in release:
                     discMD.releaseDisambCmt = release['disambiguation']
                     releaseTitle += " (%s)" % release['disambiguation']
-                count = len(release['medium-list'])
-                if count > 1:
+                discMD.discNumber = int(medium['position'])
+                discMD.discTotal = len(release['medium-list'])
+                if discMD.discTotal > 1:
                     releaseTitle += ' (Disc %d of %d)' % (
-                        int(medium['position']), count)
+                        discMD.discNumber, discMD.discTotal)
                 if 'title' in medium:
                     discMD.mediumTitle = medium['title']
                     releaseTitle += ": %s" % medium['title']

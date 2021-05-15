@@ -100,6 +100,8 @@ Template schemes
 | - %d: release title (with disambiguation)
 | - %D: disc title (without disambiguation)
 | - %I: MusicBrainz Disc ID
+| - %M: total number of discs in the chosen release
+| - %N: number of current disc
 | - %T: medium title
 | - %y: release year
 | - %r: release type, lowercase
