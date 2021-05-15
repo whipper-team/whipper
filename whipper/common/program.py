@@ -178,7 +178,8 @@ class Program:
         * ``%S``: release artist sort name
         * ``%B``: release barcode
         * ``%C``: release catalog number
-        * ``%d``: disc title
+        * ``%d``: release title (with disambiguation)
+        * ``%D``: disc title (without disambiguation)
         * ``%y``: release year
         * ``%r``: release type, lowercase
         * ``%R``: release type, normal case
@@ -189,7 +190,7 @@ class Program:
         assert isinstance(template, str), "%r is not str" % template
         v = {}
         v['A'] = 'Unknown Artist'
-        v['d'] = mbdiscid  # fallback for title
+        v['d'] = v['D'] = mbdiscid  # fallback for title
         v['r'] = 'unknown'
         v['R'] = 'Unknown'
         v['B'] = ''  # barcode
@@ -210,7 +211,8 @@ class Program:
             v['y'] = release[:4]
             v['A'] = metadata.artist
             v['S'] = metadata.sortName
-            v['d'] = metadata.title
+            v['d'] = metadata.releaseTitle
+            v['D'] = metadata.title
             v['B'] = metadata.barcode
             v['C'] = metadata.catalogNumber
             if metadata.releaseType:
@@ -318,7 +320,7 @@ class Program:
 
             for metadata in metadatas:
                 print('\nArtist  : %s' % metadata.artist)
-                print('Title   : %s' % metadata.title)
+                print('Title   : %s' % metadata.releaseTitle)
                 print('Duration: %s' % common.formatTime(
                                            metadata.duration / 1000.0))
                 print('URL     : %s' % metadata.url)
@@ -358,7 +360,7 @@ class Program:
                 if len(metadatas) == 1:
                     logger.info('picked requested release id %s', release)
                     print('Artist: %s' % metadatas[0].artist)
-                    print('Title : %s' % metadatas[0].title)
+                    print('Title : %s' % metadatas[0].releaseTitle)
                 elif not metadatas:
                     logger.warning("requested release id '%s', but none of "
                                    "the found releases match", release)
@@ -370,16 +372,16 @@ class Program:
             # If we have multiple, make sure they match
             if len(metadatas) > 1:
                 artist = metadatas[0].artist
-                releaseTitle = metadatas[0].releaseTitle
+                discTitle = metadatas[0].title
                 for i, metadata in enumerate(metadatas):
                     if not artist == metadata.artist:
                         logger.warning("artist 0: %r and artist %d: %r are "
                                        "not the same", artist, i,
                                        metadata.artist)
-                    if not releaseTitle == metadata.releaseTitle:
+                    if not discTitle == metadata.title:
                         logger.warning("title 0: %r and title %d: %r are "
-                                       "not the same", releaseTitle, i,
-                                       metadata.releaseTitle)
+                                       "not the same", discTitle, i,
+                                       metadata.title)
 
                 if not release and len(list(deltas)) > 1:
                     logger.warning('picked closest match in duration. '
@@ -409,13 +411,13 @@ class Program:
         """
         trackArtist = 'Unknown Artist'
         releaseArtist = 'Unknown Artist'
-        disc = 'Unknown Disc'
+        album = 'Unknown Album'
         title = 'Unknown Track'
 
         if self.metadata:
             trackArtist = self.metadata.artist
             releaseArtist = self.metadata.artist
-            disc = self.metadata.title
+            album = self.metadata.title  # No disambiguation is proper here
             mbidRelease = self.metadata.mbid
             mbidReleaseGroup = self.metadata.mbidReleaseGroup
             mbidReleaseArtist = self.metadata.mbidArtist
@@ -447,7 +449,7 @@ class Program:
             tags['ALBUMARTIST'] = releaseArtist
         tags['ARTIST'] = trackArtist
         tags['TITLE'] = title
-        tags['ALBUM'] = disc
+        tags['ALBUM'] = album
 
         tags['TRACKNUMBER'] = '%s' % number
 

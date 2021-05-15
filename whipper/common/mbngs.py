@@ -66,8 +66,10 @@ class DiscMetadata:
     :cvar sortName: release artist sort name
     :cvar release: earliest release date, in YYYY-MM-DD
     :vartype release: str
-    :cvar title: title of the disc (with disambiguation)
-    :cvar releaseTitle: title of the release (without disambiguation)
+    :cvar title: title of the disc (without disambiguation)
+    :vartype title: str or None
+    :cvar releaseTitle: title of the release (with disambiguation)
+    :vartype releasetitle: str or None
     :vartype tracks: list of :any:`TrackMetadata`
     :cvar countries: MusicBrainz release countries
     :vartype countries: list or None
@@ -285,17 +287,17 @@ def _getMetadata(release, discid=None, country=None):
     for medium in release['medium-list']:
         for disc in medium['disc-list']:
             if discid is None or disc['id'] == discid:
-                title = release['title']
-                discMD.releaseTitle = title
+                discMD.title = release['title']
+                discMD.releaseTitle = releaseTitle = discMD.title
                 if 'disambiguation' in release:
-                    title += " (%s)" % release['disambiguation']
+                    releaseTitle += " (%s)" % release['disambiguation']
                 count = len(release['medium-list'])
                 if count > 1:
-                    title += ' (Disc %d of %d)' % (
+                    releaseTitle += ' (Disc %d of %d)' % (
                         int(medium['position']), count)
                 if 'title' in medium:
-                    title += ": %s" % medium['title']
-                discMD.title = title
+                    releaseTitle += ": %s" % medium['title']
+                discMD.releaseTitle = releaseTitle
                 for t in medium['track-list']:
                     track = TrackMetadata()
                     trackCredit = _Credit(

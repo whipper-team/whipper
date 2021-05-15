@@ -96,7 +96,8 @@ Template schemes
 | - %S: release sort name
 | - %B: release barcode
 | - %C: release catalog number
-| - %d: disc title
+| - %d: release title (with disambiguation)
+| - %D: disc title (without disambiguation)
 | - %y: release year
 | - %r: release type, lowercase
 | - %R: release type, normal case

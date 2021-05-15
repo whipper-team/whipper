@@ -56,7 +56,8 @@ disc and track template are:
  - %S: release sort name
  - %B: release barcode
  - %C: release catalog number
- - %d: disc title
+ - %d: release title (with disambiguation)
+ - %D: disc title (without disambiguation)
  - %y: release year
  - %r: release type, lowercase
  - %R: release type, normal case
@@ -187,7 +188,7 @@ class _CD(BaseCommand):
             and self.program.metadata.artist \
             or 'Unknown Artist'
         self.program.result.title = self.program.metadata \
-            and self.program.metadata.title \
+            and self.program.metadata.releaseTitle \
             or 'Unknown Title'
         _, self.program.result.vendor, self.program.result.model, \
             self.program.result.release = \

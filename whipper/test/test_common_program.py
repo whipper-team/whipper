@@ -25,7 +25,7 @@ class PathTestCase(unittest.TestCase):
         prog = program.Program(config.Config())
         md = mbngs.DiscMetadata()
         md.artist = md.sortName = 'Jeff Buckley'
-        md.title = 'Grace'
+        md.releaseTitle = 'Grace'
 
         path = prog.getPath('/tmp', DEFAULT_DISC_TEMPLATE,
                             'mbdiscid', md, 0)
@@ -36,7 +36,7 @@ class PathTestCase(unittest.TestCase):
         prog = program.Program(config.Config())
         md = mbngs.DiscMetadata()
         md.artist = md.sortName = 'Jeff Buckley'
-        md.title = 'Grace'
+        md.releaseTitle = 'Grace'
 
         path = prog.getPath('/tmp', '%A/%d', 'mbdiscid', md, 0)
         self.assertEqual(path,
