@@ -176,6 +176,8 @@ class Program:
 
         * ``%A``: release artist
         * ``%S``: release artist sort name
+        * ``%B``: release barcode
+        * ``%C``: release catalog number
         * ``%d``: disc title
         * ``%y``: release year
         * ``%r``: release type, lowercase

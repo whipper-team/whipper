@@ -54,6 +54,8 @@ filling in the variables and adding the file extension. Variables for both
 disc and track template are:
  - %A: release artist
  - %S: release sort name
+ - %B: release barcode
+ - %C: release catalog number
  - %d: disc title
  - %y: release year
  - %r: release type, lowercase

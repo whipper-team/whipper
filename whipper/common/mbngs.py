@@ -71,6 +71,10 @@ class DiscMetadata:
     :vartype tracks: list of :any:`TrackMetadata`
     :cvar countries: MusicBrainz release countries
     :vartype countries: list or None
+    :cvar catalogNumber: release catalog number
+    :vartype catalogNumber: str or None
+    :cvar barcode: release barcode
+    :vartype barcode: str or None
     """
 
     artist = None
