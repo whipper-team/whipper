@@ -178,6 +178,7 @@ class Program:
         * ``%S``: release artist sort name
         * ``%B``: release barcode
         * ``%C``: release catalog number
+        * ``%c``: release disambiguation comment
         * ``%d``: release title (with disambiguation)
         * ``%D``: disc title (without disambiguation)
         * ``%I``: MusicBrainz Disc ID
@@ -216,6 +217,7 @@ class Program:
             v['D'] = metadata.title
             v['B'] = metadata.barcode
             v['C'] = metadata.catalogNumber
+            v['c'] = metadata.releaseDisambCmt
             if metadata.releaseType:
                 v['R'] = metadata.releaseType
                 v['r'] = metadata.releaseType.lower()

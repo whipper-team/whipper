@@ -70,6 +70,8 @@ class DiscMetadata:
     :vartype title: str or None
     :cvar releaseTitle: title of the release (with disambiguation)
     :vartype releasetitle: str or None
+    :cvar releaseDisambCmt: release disambiguation comment
+    :vartype releaseDisambCmt: str or None
     :vartype tracks: list of :any:`TrackMetadata`
     :cvar countries: MusicBrainz release countries
     :vartype countries: list or None
@@ -87,6 +89,7 @@ class DiscMetadata:
     release = None
 
     releaseTitle = None
+    releaseDisambCmt = None
     releaseType = None
 
     mbid = None
@@ -290,6 +293,7 @@ def _getMetadata(release, discid=None, country=None):
                 discMD.title = release['title']
                 discMD.releaseTitle = releaseTitle = discMD.title
                 if 'disambiguation' in release:
+                    discMD.releaseDisambCmt = release['disambiguation']
                     releaseTitle += " (%s)" % release['disambiguation']
                 count = len(release['medium-list'])
                 if count > 1:

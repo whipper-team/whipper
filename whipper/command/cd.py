@@ -56,6 +56,7 @@ disc and track template are:
  - %S: release sort name
  - %B: release barcode
  - %C: release catalog number
+ - %c: release disambiguation comment
  - %d: release title (with disambiguation)
  - %D: disc title (without disambiguation)
  - %I: MusicBrainz Disc ID
