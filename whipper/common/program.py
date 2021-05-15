@@ -182,6 +182,7 @@ class Program:
         * ``%d``: release title (with disambiguation)
         * ``%D``: disc title (without disambiguation)
         * ``%I``: MusicBrainz Disc ID
+        * ``%T``: medium title
         * ``%y``: release year
         * ``%r``: release type, lowercase
         * ``%R``: release type, normal case
@@ -218,6 +219,7 @@ class Program:
             v['B'] = metadata.barcode
             v['C'] = metadata.catalogNumber
             v['c'] = metadata.releaseDisambCmt
+            v['T'] = metadata.mediumTitle
             if metadata.releaseType:
                 v['R'] = metadata.releaseType
                 v['r'] = metadata.releaseType.lower()

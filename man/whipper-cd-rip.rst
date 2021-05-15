@@ -100,6 +100,7 @@ Template schemes
 | - %d: release title (with disambiguation)
 | - %D: disc title (without disambiguation)
 | - %I: MusicBrainz Disc ID
+| - %T: medium title
 | - %y: release year
 | - %r: release type, lowercase
 | - %R: release type, normal case
