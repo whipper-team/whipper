@@ -465,6 +465,12 @@ class Program:
         if self.metadata:
             if self.metadata.release is not None:
                 tags['DATE'] = self.metadata.release
+            if self.metadata.tracks:
+                tags['TRACKTOTAL'] = str(len(self.metadata.tracks))
+            if self.metadata.discTotal is not None:
+                tags['DISCTOTAL'] = str(self.metadata.discTotal)
+            if self.metadata.discNumber is not None:
+                tags['DISCNUMBER'] = str(self.metadata.discNumber)
 
             if number > 0:
                 tags['MUSICBRAINZ_RELEASETRACKID'] = mbidTrack
