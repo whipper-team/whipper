@@ -180,6 +180,7 @@ class Program:
         * ``%C``: release catalog number
         * ``%d``: release title (with disambiguation)
         * ``%D``: disc title (without disambiguation)
+        * ``%I``: MusicBrainz Disc ID
         * ``%y``: release year
         * ``%r``: release type, lowercase
         * ``%R``: release type, normal case
@@ -190,7 +191,7 @@ class Program:
         assert isinstance(template, str), "%r is not str" % template
         v = {}
         v['A'] = 'Unknown Artist'
-        v['d'] = v['D'] = mbdiscid  # fallback for title
+        v['I'] = v['d'] = v['D'] = mbdiscid  # fallback for title
         v['r'] = 'unknown'
         v['R'] = 'Unknown'
         v['B'] = ''  # barcode

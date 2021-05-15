@@ -58,6 +58,7 @@ disc and track template are:
  - %C: release catalog number
  - %d: release title (with disambiguation)
  - %D: disc title (without disambiguation)
+ - %I: MusicBrainz Disc ID
  - %y: release year
  - %r: release type, lowercase
  - %R: release type, normal case
