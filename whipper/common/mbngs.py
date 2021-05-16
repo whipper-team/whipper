@@ -66,11 +66,25 @@ class DiscMetadata:
     :cvar sortName: release artist sort name
     :cvar release: earliest release date, in YYYY-MM-DD
     :vartype release: str
-    :cvar title: title of the disc (with disambiguation)
-    :cvar releaseTitle: title of the release (without disambiguation)
+    :cvar title: title of the disc (without disambiguation)
+    :vartype title: str or None
+    :cvar releaseTitle: title of the release (with disambiguation)
+    :vartype releasetitle: str or None
+    :cvar releaseDisambCmt: release disambiguation comment
+    :vartype releaseDisambCmt: str or None
+    :cvar mediumTitle: title of the medium
+    :vartype mediumTitle: str or None
     :vartype tracks: list of :any:`TrackMetadata`
     :cvar countries: MusicBrainz release countries
     :vartype countries: list or None
+    :cvar discNumber: number of current disc
+    :vartype discNumber: int or None
+    :cvar discTotal: total number of discs in the chosen release
+    :vartype discTotal: int or None
+    :cvar catalogNumber: release catalog number
+    :vartype catalogNumber: str or None
+    :cvar barcode: release barcode
+    :vartype barcode: str or None
     """
 
     artist = None
@@ -81,6 +95,7 @@ class DiscMetadata:
     release = None
 
     releaseTitle = None
+    releaseDisambCmt = None
     releaseType = None
 
     mbid = None
@@ -91,6 +106,9 @@ class DiscMetadata:
     catalogNumber = None
     barcode = None
     countries = None
+    discNumber = None
+    discTotal = None
+    mediumTitle = None
 
     def __init__(self):
         self.tracks = []
@@ -281,17 +299,20 @@ def _getMetadata(release, discid=None, country=None):
     for medium in release['medium-list']:
         for disc in medium['disc-list']:
             if discid is None or disc['id'] == discid:
-                title = release['title']
-                discMD.releaseTitle = title
+                discMD.title = release['title']
+                discMD.releaseTitle = releaseTitle = discMD.title
                 if 'disambiguation' in release:
-                    title += " (%s)" % release['disambiguation']
-                count = len(release['medium-list'])
-                if count > 1:
-                    title += ' (Disc %d of %d)' % (
-                        int(medium['position']), count)
+                    discMD.releaseDisambCmt = release['disambiguation']
+                    releaseTitle += " (%s)" % release['disambiguation']
+                discMD.discNumber = int(medium['position'])
+                discMD.discTotal = len(release['medium-list'])
+                if discMD.discTotal > 1:
+                    releaseTitle += ' (Disc %d of %d)' % (
+                        discMD.discNumber, discMD.discTotal)
                 if 'title' in medium:
-                    title += ": %s" % medium['title']
-                discMD.title = title
+                    discMD.mediumTitle = medium['title']
+                    releaseTitle += ": %s" % medium['title']
+                discMD.releaseTitle = releaseTitle
                 for t in medium['track-list']:
                     track = TrackMetadata()
                     trackCredit = _Credit(

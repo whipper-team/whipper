@@ -54,7 +54,15 @@ filling in the variables and adding the file extension. Variables for both
 disc and track template are:
  - %A: release artist
  - %S: release sort name
- - %d: disc title
+ - %B: release barcode
+ - %C: release catalog number
+ - %c: release disambiguation comment
+ - %d: release title (with disambiguation)
+ - %D: disc title (without disambiguation)
+ - %I: MusicBrainz Disc ID
+ - %M: total number of discs in the chosen release
+ - %N: number of current disc
+ - %T: medium title
  - %y: release year
  - %r: release type, lowercase
  - %R: release type, normal case
@@ -185,7 +193,7 @@ class _CD(BaseCommand):
             and self.program.metadata.artist \
             or 'Unknown Artist'
         self.program.result.title = self.program.metadata \
-            and self.program.metadata.title \
+            and self.program.metadata.releaseTitle \
             or 'Unknown Title'
         _, self.program.result.vendor, self.program.result.model, \
             self.program.result.release = \

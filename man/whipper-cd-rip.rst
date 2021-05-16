@@ -94,7 +94,15 @@ Template schemes
 
 | - %A: release artist
 | - %S: release sort name
-| - %d: disc title
+| - %B: release barcode
+| - %C: release catalog number
+| - %c: release disambiguation comment
+| - %d: release title (with disambiguation)
+| - %D: disc title (without disambiguation)
+| - %I: MusicBrainz Disc ID
+| - %M: total number of discs in the chosen release
+| - %N: number of current disc
+| - %T: medium title
 | - %y: release year
 | - %r: release type, lowercase
 | - %R: release type, normal case
