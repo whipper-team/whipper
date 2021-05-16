@@ -152,7 +152,7 @@ class ImageVerifyTask(task.MultiSeparateTask):
                 except KeyError:
                     logger.debug('Path not found; Checking '
                                  'if %s is a skipped track', index.path)
-                    if index.path in skipped_tracks:
+                    if os.path.basename(index.path) in skipped_tracks:
                         logger.warning('Missing file %s due to skipped track',
                                        index.path)
                         continue
