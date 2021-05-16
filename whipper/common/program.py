@@ -223,8 +223,9 @@ class Program:
                 v['a'] = metadata.artist
 
         template = re.sub(r'%(\w)', r'%(\1)s', template.strip('/'))
-        v_fltr = {k: self._filter.filter(v2) if isinstance(v2, str) else v2
-                  for k, v2 in v.items()}
+        # Avoid filtering non str type values, replace None with empty string
+        v_fltr = {k: self._filter.filter(v2) if isinstance(v2, str) else ''
+                  if v2 is None else v2 for k, v2 in v.items()}
         return os.path.join(outdir, template % v_fltr)
 
     @staticmethod
