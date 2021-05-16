@@ -280,7 +280,7 @@ Log files will log the path to tracks relative to this directory.
                                  "supports this feature. ")
         self.parser.add_argument('-O', '--output-directory',
                                  action="store", dest="output_directory",
-                                 default=os.path.relpath(os.getcwd()),
+                                 default=os.curdir,
                                  help="output directory; will be included "
                                  "in file paths in log")
         self.parser.add_argument('-W', '--working-directory',

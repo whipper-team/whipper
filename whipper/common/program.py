@@ -239,6 +239,8 @@ class Program:
         # Avoid filtering non str type values, replace None with empty string
         v_fltr = {k: self._filter.filter(v2) if isinstance(v2, str) else ''
                   if v2 is None else v2 for k, v2 in v.items()}
+        if outdir == os.curdir:
+            return template % v_fltr  # Avoid useless './' in file paths
         return os.path.join(outdir, template % v_fltr)
 
     @staticmethod
