@@ -19,12 +19,12 @@
 # You should have received a copy of the GNU General Public License
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
-import requests
 import struct
-from os import makedirs
-from os.path import dirname, exists, join
+import whipper
+import os
+from urllib.error import URLError, HTTPError
+from urllib.request import urlopen, Request
 
-from whipper.common import directory
 from whipper.program.arc import accuraterip_checksum
 
 import logging
@@ -32,7 +32,6 @@ logger = logging.getLogger(__name__)
 
 
 ACCURATERIP_URL = "http://www.accuraterip.com/accuraterip/"
-_CACHE_DIR = join(directory.cache_path(), 'accurip')
 
 
 class EntryNotFound(Exception):
@@ -41,8 +40,7 @@ class EntryNotFound(Exception):
 
 class _AccurateRipResponse:
     """
-    An AccurateRip response contains a collection of metadata identifying a
-    particular digital audio compact disc.
+    An AR resp. contains a collection of metadata identifying a specific disc.
 
     For disc level metadata it contains the track count, two internal disc
     IDs, and the CDDB disc ID.
@@ -53,9 +51,12 @@ class _AccurateRipResponse:
 
     The response is stored as a packed binary structure.
     """
+
     def __init__(self, data):
         """
-        The checksums and confidences arrays are indexed by relative track
+        Init _AccurateRipResponse.
+
+        Checksums and confidences arrays are indexed by relative track
         position, so track 1 will have array index 0, track 2 will have array
         index 1, and so forth. HTOA and other hidden tracks are not included.
         """
@@ -96,12 +97,14 @@ def _split_responses(raw_entry):
 
 def calculate_checksums(track_paths):
     """
-    Return ARv1 and ARv2 checksums as two arrays of character strings in a
-    dictionary: {'v1': ['deadbeef', ...], 'v2': [...]}
-
-    Return None instead of checksum string for unchecksummable tracks.
+    Calculate AccurateRip checksums for the given tracks.
 
     HTOA checksums are not included in the database and are not calculated.
+
+    :returns: ARv1 and ARv2 checksums as two arrays of character strings in a
+              dictionary: ``{'v1': ['deadbeef', ...], 'v2': [...]}``
+              or None instead of checksum string for unchecksummable tracks.
+    :rtype: dict(string, list()) or None
     """
     track_count = len(track_paths)
     v1_checksums = []
@@ -109,7 +112,11 @@ def calculate_checksums(track_paths):
     logger.debug('checksumming %d tracks', track_count)
     # This is done sequentially because it is very fast.
     for i, path in enumerate(track_paths):
-        v1_sum, v2_sum = accuraterip_checksum(path, i+1, track_count)
+        if os.path.exists(path):
+            v1_sum, v2_sum = accuraterip_checksum(path, i+1, track_count)
+        else:
+            logger.warning('Can\'t checksum %s; path doesn\'t exist', path)
+            v1_sum, v2_sum = None, None
         if v1_sum is None:
             logger.error('could not calculate AccurateRip v1 checksum '
                          'for track %d %r', i + 1, path)
@@ -127,46 +134,22 @@ def calculate_checksums(track_paths):
 
 def _download_entry(path):
     url = ACCURATERIP_URL + path
+    UA = "whipper/%s ( https://github.com/whipper-team/whipper )" % whipper.__version__  # noqa: E501
     logger.debug('downloading AccurateRip entry from %s', url)
     try:
-        resp = requests.get(url)
-    except requests.exceptions.ConnectionError as e:
-        logger.error('error retrieving AccurateRip entry: %r', e)
-        return None
-    if not resp.ok:
-        logger.error('error retrieving AccurateRip entry: %s %s %r',
-                     resp.status_code, resp.reason, resp)
-        return None
-    return resp.content
-
-
-def _save_entry(raw_entry, path):
-    logger.debug('saving AccurateRip entry to %s', path)
-    try:
-        makedirs(dirname(path), exist_ok=True)
-    except OSError as e:
-        logger.error('could not save entry to %s: %s', path, e)
-        return
-    with open(path, 'wb') as f:
-        f.write(raw_entry)
+        with urlopen(Request(url, headers={'User-Agent': UA})) as resp:
+            return resp.read()
+    except (URLError, HTTPError) as e:
+        logger.error('error retrieving AccurateRip entry: %s', e)
 
 
 def get_db_entry(path):
     """
-    Retrieve cached AccurateRip disc entry as array of _AccurateRipResponses.
-    Downloads entry from accuraterip.com on cache fault.
+    Download entry from accuraterip.com.
 
-    `path' is in the format of the output of table.accuraterip_path().
+    ``path`` is in the format of the output of ``table.accuraterip_path()``.
     """
-    cached_path = join(_CACHE_DIR, path)
-    if exists(cached_path):
-        logger.debug('found accuraterip entry at %s', cached_path)
-        with open(cached_path, 'rb') as f:
-            raw_entry = f.read()
-    else:
-        raw_entry = _download_entry(path)
-        if raw_entry:
-            _save_entry(raw_entry, cached_path)
+    raw_entry = _download_entry(path)
     if not raw_entry:
         logger.warning('entry not found in AccurateRip database')
         raise EntryNotFound
@@ -185,11 +168,11 @@ def _assign_checksums_and_confidences(tracks, checksums, responses):
 
 def _match_responses(tracks, responses):
     """
-    Match and save track accuraterip response checksums against
-    all non-hidden tracks.
+    Match and save track AR response checksums against all non-hidden tracks.
 
-    Returns True if every track has a match for every entry for either
-    AccurateRip version.
+    :returns: True if every track has a match for every entry for either
+              AccurateRip version, False otherwise.
+    :rtype: bool
     """
     for r in responses:
         for i, track in enumerate(tracks):
@@ -213,7 +196,8 @@ def _match_responses(tracks, responses):
 def verify_result(result, responses, checksums):
     """
     Verify track AccurateRip checksums against database responses.
-    Stores track checksums and database values on result.
+
+    Store track checksums and database values on result.
     """
     if not (result and responses and checksums):
         return False
@@ -228,9 +212,7 @@ def verify_result(result, responses, checksums):
 
 
 def print_report(result):
-    """
-    Print AccurateRip verification results.
-    """
+    """Print AccurateRip verification results."""
     for _, track in enumerate(result.tracks):
         status = 'rip NOT accurate'
         conf = '(not found)'

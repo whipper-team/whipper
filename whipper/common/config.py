@@ -36,7 +36,8 @@ class Config:
     def __init__(self, path=None):
         self._path = path or directory.config_path()
 
-        self._parser = configparser.ConfigParser()
+        self._parser = configparser.ConfigParser(
+            inline_comment_prefixes=(';'))
 
         self.open()
 
@@ -75,54 +76,30 @@ class Config:
     # musicbrainz section
 
     def get_musicbrainz_server(self):
-        server = self.get('musicbrainz', 'server') or 'musicbrainz.org'
-        server_url = urlparse('//' + server)
-        if server_url.scheme != '' or server_url.path != '':
-            raise KeyError('Invalid MusicBrainz server: %s' % server)
-        return server
+        conf = self.get('musicbrainz', 'server') or 'https://musicbrainz.org'
+        if not conf.startswith(('http://', 'https://')):
+            raise KeyError('Invalid MusicBrainz server: unsupported '
+                           'or missing scheme')
+        scheme, netloc, _, _, _, _ = urlparse(conf)
+        return {'scheme': scheme, 'netloc': netloc}
 
     # drive sections
 
     def setReadOffset(self, vendor, model, release, offset):
-        """
-        Set a read offset for the given drive.
-
-        Strips the given strings of leading and trailing whitespace.
-        """
-        section = self._findOrCreateDriveSection(vendor, model, release)
-        self._parser.set(section, 'read_offset', str(offset))
-        self.write()
+        """Set a read offset for the given drive."""
+        self._setDriveOption(vendor, model, release, 'read_offset', offset)
 
     def getReadOffset(self, vendor, model, release):
-        """
-        Get a read offset for the given drive.
-        """
-        section = self._findDriveSection(vendor, model, release)
-
-        try:
-            return int(self._parser.get(section, 'read_offset'))
-        except configparser.NoOptionError:
-            raise KeyError("Could not find read_offset for %s/%s/%s" % (
-                vendor, model, release))
+        """Get a read offset for the given drive."""
+        return int(self._getDriveOption(vendor, model, release, 'read_offset'))
 
     def setDefeatsCache(self, vendor, model, release, defeat):
-        """
-        Set whether the drive defeats the cache.
-
-        Strips the given strings of leading and trailing whitespace.
-        """
-        section = self._findOrCreateDriveSection(vendor, model, release)
-        self._parser.set(section, 'defeats_cache', str(defeat))
-        self.write()
+        """Set whether the drive defeats the cache."""
+        self._setDriveOption(vendor, model, release, 'defeats_cache', defeat)
 
     def getDefeatsCache(self, vendor, model, release):
-        section = self._findDriveSection(vendor, model, release)
-
-        try:
-            return self._parser.get(section, 'defeats_cache') == 'True'
-        except configparser.NoOptionError:
-            raise KeyError("Could not find defeats_cache for %s/%s/%s" % (
-                vendor, model, release))
+        option = self._getDriveOption(vendor, model, release, 'defeats_cache')
+        return option == 'True'
 
     def _findDriveSection(self, vendor, model, release):
         for name in self._parser.sections():
@@ -161,3 +138,22 @@ class Config:
         self.write()
 
         return self._findDriveSection(vendor, model, release)
+
+    def _getDriveOption(self, vendor, model, release, key):
+        """Get an option for the given drive."""
+        section = self._findDriveSection(vendor, model, release)
+        try:
+            return self._parser.get(section, key)
+        except configparser.NoOptionError:
+            raise KeyError("Could not find %s for %s/%s/%s" % (
+                key, vendor, model, release))
+
+    def _setDriveOption(self, vendor, model, release, key, value):
+        """
+        Set an option for the given drive.
+
+        Strips the given strings of leading and trailing whitespace.
+        """
+        section = self._findOrCreateDriveSection(vendor, model, release)
+        self._parser.set(section, key, str(value))
+        self.write()

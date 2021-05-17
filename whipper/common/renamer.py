@@ -19,6 +19,7 @@
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import shutil
 import tempfile
 
 """Rename files on file system and inside metafiles in a resumable way."""
@@ -34,14 +35,13 @@ class Operator:
         self._resuming = False
 
     def addOperation(self, operation):
-        """
-        Add an operation.
-        """
+        """Add an operation."""
         self._todo.append(operation)
 
     def load(self):
         """
         Load state from the given state path using the given key.
+
         Verifies the state.
         """
         todo = os.path.join(self._statePath, self._key + '.todo')
@@ -66,9 +66,7 @@ class Operator:
         self._resuming = True
 
     def save(self):
-        """
-        Saves the state to the given state path using the given key.
-        """
+        """Save the state to the given state path using the given key."""
         # only save todo first time
         todo = os.path.join(self._statePath, self._key + '.todo')
         if not os.path.exists(todo):
@@ -87,9 +85,7 @@ class Operator:
                 handle.write('%s %s\n' % (name, data))
 
     def start(self):
-        """
-        Execute the operations
-        """
+        """Execute the operations."""
 
     def __next__(self):
         operation = self._todo[len(self._done)]
@@ -109,10 +105,10 @@ class FileRenamer(Operator):
         """
         Add a rename operation.
 
-        :param source:      source filename
-        :type  source:      str
+        :param source: source filename
+        :type source: str
         :param destination: destination filename
-        :type  destination: str
+        :type destination: str
         """
 
 
@@ -121,27 +117,27 @@ class Operation:
     def verify(self):
         """
         Check if the operation will succeed in the current conditions.
-        Consider this a pre-flight check.
 
+        Consider this a pre-flight check.
         Does not eliminate the need to handle errors as they happen.
         """
 
     def do(self):
-        """
-        Perform the operation.
-        """
+        """Perform the operation."""
         pass
 
     def redo(self):
         """
-        Perform the operation, without knowing if it already has been
-        (partly) performed.
+        Perform the operation.
+
+        Perform it without knowing if it already has been (partly) performed.
         """
         self.do()
 
     def serialize(self):
         """
         Serialize the operation.
+
         The return value should bu usable with :any:`deserialize`
 
         :rtype: str
@@ -151,7 +147,7 @@ class Operation:
         """
         Deserialize the operation with the given operation data.
 
-        :type  data: str
+        :type data: str
         """
         raise NotImplementedError
     deserialize = classmethod(deserialize)
@@ -168,7 +164,7 @@ class RenameFile(Operation):
         assert not os.path.exists(self._destination)
 
     def do(self):
-        os.rename(self._source, self._destination)
+        shutil.move(self._source, self._destination)
 
     def serialize(self):
         return '"%s" "%s"' % (self._source, self._destination)
@@ -203,7 +199,7 @@ class RenameInFile(Operation):
                          s.replace(self._source, self._destination).encode())
 
             os.close(fd)
-            os.rename(name, self._path)
+            shutil.move(name, self._path)
 
     def serialize(self):
         return '"%s" "%s" "%s"' % (self._path, self._source, self._destination)

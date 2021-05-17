@@ -20,7 +20,20 @@ logger = logging.getLogger(__name__)
 
 def main():
     server = config.Config().get_musicbrainz_server()
-    musicbrainzngs.set_hostname(server)
+    https_enabled = server['scheme'] == 'https'
+    try:
+        musicbrainzngs.set_hostname(server['netloc'], https_enabled)
+    # Parameter 'use_https' is missing in versions of musicbrainzngs < 0.7
+    except TypeError:
+        logger.warning("Parameter 'use_https' is missing in versions of "
+                       "musicbrainzngs < 0.7. This means whipper will only "
+                       "be able to communicate with the configured "
+                       "MusicBrainz server ('%s') over plain HTTP. If a "
+                       "custom server which speaks HTTPS only has been "
+                       "declared, a suitable version of the "
+                       "musicbrainzngs module will be needed "
+                       "to make it work in whipper.", server['netloc'])
+        musicbrainzngs.set_hostname(server['netloc'])
 
     # Find whipper's plugins paths (local paths have higher priority)
     plugins_p = [directory.data_path('plugins')]  # local path (in $HOME)
@@ -105,7 +118,11 @@ class Whipper(BaseCommand):
                                  default="success",
                                  choices=('never', 'failure',
                                           'success', 'always'),
-                                 help="when to eject disc (default: success)")
+                                 help="when to eject disc (default: success)"),
+        self.parser.add_argument('-c', '--drive-auto-close', action="store",
+                                 dest="drive_auto_close", default=True,
+                                 help="whether to auto close the drive's "
+                                 "tray before reading a CD (default: True)")
 
     def handle_arguments(self):
         if self.options.help:

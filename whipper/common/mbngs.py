@@ -18,15 +18,17 @@
 # You should have received a copy of the GNU General Public License
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
-"""
-Handles communication with the MusicBrainz server using NGS.
-"""
+"""Handle communication with the MusicBrainz server using NGS."""
 from urllib.error import HTTPError
 
 import whipper
+import json
+import musicbrainzngs
 
 import logging
 logger = logging.getLogger(__name__)
+musicbrainzngs.set_useragent("whipper", whipper.__version__,
+                             "https://github.com/whipper-team/whipper")
 
 
 VA_ID = "89ad4ac3-39f7-470e-963a-56509c546377"  # Various Artists
@@ -58,14 +60,33 @@ class TrackMetadata:
 
 class DiscMetadata:
     """
-    :param artist:       artist(s) name
-    :param sortName:     release artist sort name
-    :param release:      earliest release date, in YYYY-MM-DD
-    :type  release:      str
-    :param title:        title of the disc (with disambiguation)
-    :param releaseTitle: title of the release (without disambiguation)
-    :type  tracks:       list of :any:`TrackMetadata`
+    Represent the disc metadata.
+
+    :cvar artist: artist(s) name
+    :cvar sortName: release artist sort name
+    :cvar release: earliest release date, in YYYY-MM-DD
+    :vartype release: str
+    :cvar title: title of the disc (without disambiguation)
+    :vartype title: str or None
+    :cvar releaseTitle: title of the release (with disambiguation)
+    :vartype releasetitle: str or None
+    :cvar releaseDisambCmt: release disambiguation comment
+    :vartype releaseDisambCmt: str or None
+    :cvar mediumTitle: title of the medium
+    :vartype mediumTitle: str or None
+    :vartype tracks: list of :any:`TrackMetadata`
+    :cvar countries: MusicBrainz release countries
+    :vartype countries: list or None
+    :cvar discNumber: number of current disc
+    :vartype discNumber: int or None
+    :cvar discTotal: total number of discs in the chosen release
+    :vartype discTotal: int or None
+    :cvar catalogNumber: release catalog number
+    :vartype catalogNumber: str or None
+    :cvar barcode: release barcode
+    :vartype barcode: str or None
     """
+
     artist = None
     sortName = None
     title = None
@@ -74,6 +95,7 @@ class DiscMetadata:
     release = None
 
     releaseTitle = None
+    releaseDisambCmt = None
     releaseType = None
 
     mbid = None
@@ -83,6 +105,10 @@ class DiscMetadata:
 
     catalogNumber = None
     barcode = None
+    countries = None
+    discNumber = None
+    discTotal = None
+    mediumTitle = None
 
     def __init__(self):
         self.tracks = []
@@ -116,10 +142,7 @@ def _record(record, which, name, what):
 
 
 class _Credit(list):
-    """
-    I am a representation of an artist-credit in MusicBrainz for a disc
-    or track.
-    """
+    """Represent an artist-credit in MusicBrainz for a disc or track."""
 
     def joiner(self, attributeGetter, joinString=None):
         res = []
@@ -149,24 +172,72 @@ class _Credit(list):
 
 
 def _getWorks(recording):
-    """Get "performance of" works out of a recording."""
+    """
+    Get 'performance of' works out of a recording.
+
+   :param recording: recording entity in MusicBrainz
+   :type recording: dict
+   :returns: list of works being a performance of a recording
+   :rtype: list
+    """
     works = []
-    valid_work_rel_types = [
-        'a3005666-a872-32c3-ad06-98af558e99b0',  # "Performance"
-    ]
+    valid_type_id = 'a3005666-a872-32c3-ad06-98af558e99b0'  # "Performance"
     if 'work-relation-list' in recording:
         for work in recording['work-relation-list']:
-            if work['type-id'] in valid_work_rel_types:
-                works.append(work['work']['id'])
+            if work['type-id'] == valid_type_id:
+                works.append(work['work'])
     return works
 
 
-def _getMetadata(release, discid, country=None):
+def _getComposers(works):
     """
-    :type  release: dict
+    Get composer(s) from works' artist-relation-list.
+
+    :param works: list of works being a performance of a recording
+    :type works: list
+    :returns: sorted list of composers (without duplicates)
+    :rtype: list
+    """
+    composers = set()
+    valid_type_id = 'd59d99ea-23d4-4a80-b066-edca32ee158f'  # "Composer"
+    for work in works:
+        if 'artist-relation-list' in work:
+            for artist_relation in work['artist-relation-list']:
+                if artist_relation['type-id'] == valid_type_id:
+                    composerName = artist_relation['artist']['name']
+                    composers.add(composerName)
+    return sorted(composers)  # convert to list: mutagen doesn't support set
+
+
+def _getPerformers(recording):
+    """
+    Get performer(s) from recordings' artist-relation-list.
+
+    :param recording: recording entity in MusicBrainz
+    :type recording: dict
+    :returns: sorted list of performers' names (without duplicates)
+    :rtype: list
+    """
+    performers = set()
+    valid_type_id = {
+        '59054b12-01ac-43ee-a618-285fd397e461',  # "Instruments"
+        '0fdbe3c6-7700-4a31-ae54-b53f06ae1cfa',  # "Vocals"
+        '628a9658-f54c-4142-b0c0-95f031b544da'   # "Performers"
+    }
+    if 'artist-relation-list' in recording:
+        for artist_relation in recording['artist-relation-list']:
+            if artist_relation['type-id'] in valid_type_id:
+                performers.add(artist_relation['artist']['name'])
+    return sorted(performers)  # convert to list: mutagen doesn't support set
+
+
+def _getMetadata(release, discid=None, country=None):
+    """
+    Get disc metadata based upon the provided release id.
+
     :param release: a release dict as returned in the value for key release
                     from get_release_by_id
-
+    :type release: dict
     :rtype: DiscMetadata or None
     """
     logger.debug('getMetadata for release id %r', release['id'])
@@ -211,6 +282,13 @@ def _getMetadata(release, discid, country=None):
     discMD.url = 'https://musicbrainz.org/release/' + release['id']
 
     discMD.barcode = release.get('barcode', None)
+    mb_rel = release.get('release-event-list', None)
+    # NOTE: check included as I don't know if this one is always available
+    if mb_rel is not None:
+        countries = [rel.get('area', {}).get('name', None) for rel in mb_rel]
+        discMD.countries = list(filter(None, countries))
+    else:
+        discMD.countries = list(filter(None, [release.get('country', None)]))
     lil = release.get('label-info-list', [{}])
     if lil:
         discMD.catalogNumber = lil[0].get('catalog-number')
@@ -220,23 +298,28 @@ def _getMetadata(release, discid, country=None):
     # only show discs from medium-list->disc-list with matching discid
     for medium in release['medium-list']:
         for disc in medium['disc-list']:
-            if disc['id'] == discid:
-                title = release['title']
-                discMD.releaseTitle = title
+            if discid is None or disc['id'] == discid:
+                discMD.title = release['title']
+                discMD.releaseTitle = releaseTitle = discMD.title
                 if 'disambiguation' in release:
-                    title += " (%s)" % release['disambiguation']
-                count = len(release['medium-list'])
-                if count > 1:
-                    title += ' (Disc %d of %d)' % (
-                        int(medium['position']), count)
+                    discMD.releaseDisambCmt = release['disambiguation']
+                    releaseTitle += " (%s)" % release['disambiguation']
+                discMD.discNumber = int(medium['position'])
+                discMD.discTotal = len(release['medium-list'])
+                if discMD.discTotal > 1:
+                    releaseTitle += ' (Disc %d of %d)' % (
+                        discMD.discNumber, discMD.discTotal)
                 if 'title' in medium:
-                    title += ": %s" % medium['title']
-                discMD.title = title
+                    discMD.mediumTitle = medium['title']
+                    releaseTitle += ": %s" % medium['title']
+                discMD.releaseTitle = releaseTitle
                 for t in medium['track-list']:
                     track = TrackMetadata()
                     trackCredit = _Credit(
                         t.get('artist-credit', t['recording']['artist-credit']
                               ))
+                    recordingCredit = _Credit(t['recording']['artist-credit'])
+                    works = _getWorks(t['recording'])
                     if len(trackCredit) > 1:
                         logger.debug('artist-credit more than 1: %r',
                                      trackCredit)
@@ -246,11 +329,14 @@ def _getMetadata(release, discid, country=None):
                     track.artist = trackCredit.getName()
                     track.sortName = trackCredit.getSortName()
                     track.mbidArtist = trackCredit.getIds()
+                    track.recordingArtist = recordingCredit.getName()
 
-                    track.title = t['recording']['title']
+                    track.title = t.get('title', t['recording']['title'])
                     track.mbid = t['id']
                     track.mbidRecording = t['recording']['id']
-                    track.mbidWorks = _getWorks(t['recording'])
+                    track.mbidWorks = sorted({work['id'] for work in works})
+                    track.composers = _getComposers(works)
+                    track.performers = _getPerformers(t['recording'])
 
                     # FIXME: unit of duration ?
                     track.duration = int(t['recording'].get('length', 0))
@@ -271,27 +357,61 @@ def _getMetadata(release, discid, country=None):
     return discMD
 
 
+def getReleaseMetadata(release_id, discid=None, country=None, record=False):
+    """
+    Return a DiscMetadata object based on MusicBrainz Release ID and Disc ID.
+
+    If the disc id is not specified, it will match with any disc that is on
+    the release disc-list. Otherwise only returns metadata of one disc in
+    release disc-list.
+
+    :param release_id: MusicBrainz Release ID
+    :type release_id: str
+    :param discid: MusicBrainz Disc ID
+    :type discid: str or None
+    :param country: the country the release was issued in
+    :type country: str or None
+    :param record: whether to record to disc as a JSON serialization
+    :type record: bool
+    :returns: a DiscMetadata object based on MusicBrainz Release ID & Disc ID
+    :rtype: `DiscMetadata`
+    """
+    # to get titles of recordings, we need to query the release with
+    # artist-credits
+
+    res = musicbrainzngs.get_release_by_id(
+            release_id, includes=["artists", "artist-credits",
+                                  "recordings", "discids",
+                                  "labels", "recording-level-rels",
+                                  "work-rels", "release-groups",
+                                  "work-level-rels", "artist-rels"])
+    _record(record, 'release', release_id, res)
+    releaseDetail = res['release']
+    formatted = json.dumps(releaseDetail, sort_keys=False, indent=4)
+    logger.debug('release %s', formatted)
+    return _getMetadata(releaseDetail, discid, country)
+
+
 # see http://bugs.musicbrainz.org/browser/python-musicbrainz2/trunk/examples/
 #     ripper.py
 
 
 def musicbrainz(discid, country=None, record=False):
     """
-    Based on a MusicBrainz disc id, get a list of DiscMetadata objects
-    for the given disc id.
+    Get a list of DiscMetadata objects for the given MusicBrainz disc id.
 
-    Example disc id: Mj48G109whzEmAbPBoGvd4KyCS4-
+    Example disc id: ``Mj48G109whzEmAbPBoGvd4KyCS4-``
 
-    :type  discid: str
-
+    :type discid: str
     :rtype: list of :any:`DiscMetadata`
+    :param country: country name used to filter releases by provenance
+    :type country: str
+    :param record: whether to record to disc as a JSON serialization
+    :type record: bool
     """
     logger.debug('looking up results for discid %r', discid)
-    import musicbrainzngs
 
     logging.getLogger("musicbrainzngs").setLevel(logging.WARNING)
-    musicbrainzngs.set_useragent("whipper", whipper.__version__,
-                                 "https://github.com/whipper-team/whipper")
     ret = []
 
     try:
@@ -314,26 +434,12 @@ def musicbrainz(discid, country=None, record=False):
 
         # Display the returned results to the user.
 
-        import json
         for release in result['disc']['release-list']:
             formatted = json.dumps(release, sort_keys=False, indent=4)
             logger.debug('result %s: artist %r, title %r', formatted,
                          release['artist-credit-phrase'], release['title'])
 
-            # to get titles of recordings, we need to query the release with
-            # artist-credits
-
-            res = musicbrainzngs.get_release_by_id(
-                release['id'], includes=["artists", "artist-credits",
-                                         "recordings", "discids", "labels",
-                                         "recording-level-rels", "work-rels",
-                                         "release-groups"])
-            _record(record, 'release', release['id'], res)
-            releaseDetail = res['release']
-            formatted = json.dumps(releaseDetail, sort_keys=False, indent=4)
-            logger.debug('release %s', formatted)
-
-            md = _getMetadata(releaseDetail, discid, country)
+            md = getReleaseMetadata(release['id'], discid, country, record)
             if md:
                 logger.debug('duration %r', md.duration)
                 ret.append(md)

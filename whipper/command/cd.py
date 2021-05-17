@@ -20,6 +20,7 @@
 
 import argparse
 import cdio
+import importlib.util
 import os
 import glob
 import logging
@@ -35,7 +36,7 @@ logger = logging.getLogger(__name__)
 
 
 SILENT = 0
-MAX_TRIES = 5
+DEFAULT_MAX_RETRIES = 5
 
 DEFAULT_TRACK_TEMPLATE = '%r/%A - %d/%t. %a - %n'
 DEFAULT_DISC_TEMPLATE = '%r/%A - %d/%A - %d'
@@ -53,7 +54,15 @@ filling in the variables and adding the file extension. Variables for both
 disc and track template are:
  - %A: release artist
  - %S: release sort name
- - %d: disc title
+ - %B: release barcode
+ - %C: release catalog number
+ - %c: release disambiguation comment
+ - %d: release title (with disambiguation)
+ - %D: disc title (without disambiguation)
+ - %I: MusicBrainz Disc ID
+ - %M: total number of discs in the chosen release
+ - %N: number of current disc
+ - %T: medium title
  - %y: release year
  - %r: release type, lowercase
  - %R: release type, normal case
@@ -91,14 +100,18 @@ class _CD(BaseCommand):
         self.device = self.options.device
         logger.info('checking device %s', self.device)
 
-        utils.load_device(self.device)
+        if self.options.drive_auto_close is True:
+            utils.load_device(self.device)
         utils.unmount_device(self.device)
+        # Exit and inform the user if there's no CD in the disk drive
+        if drive.get_cdrom_drive_status(self.device) == 1:  # rc 1 -> no disc
+            raise OSError("no CD detected, please insert one and retry")
 
         # first, read the normal TOC, which is fast
         self.ittoc = self.program.getFastToc(self.runner, self.device)
 
         # already show us some info based on this
-        self.program.getRipResult(self.ittoc.getCDDBDiscId())
+        self.program.getRipResult()
         print("CDDB disc id: %s" % self.ittoc.getCDDBDiscId())
         self.mbdiscid = self.ittoc.getMusicBrainzDiscId()
         print("MusicBrainz disc id %s" % self.mbdiscid)
@@ -180,20 +193,20 @@ class _CD(BaseCommand):
             and self.program.metadata.artist \
             or 'Unknown Artist'
         self.program.result.title = self.program.metadata \
-            and self.program.metadata.title \
+            and self.program.metadata.releaseTitle \
             or 'Unknown Title'
         _, self.program.result.vendor, self.program.result.model, \
             self.program.result.release = \
             cdio.Device(self.device).get_hwinfo()
         self.program.result.metadata = self.program.metadata
 
-        self.doCommand()
+        ret = self.doCommand()
 
         if (self.options.eject == 'success' and self.eject or
                 self.options.eject == 'always'):
             utils.eject_device(self.device)
 
-        return None
+        return ret
 
     def doCommand(self):
         pass
@@ -215,6 +228,9 @@ class Info(_CD):
 class Rip(_CD):
     summary = "rip CD"
     # see whipper.common.program.Program.getPath for expansion
+    skipped_tracks = []
+    # this holds tracks that fail to rip -
+    # currently only used when the --keep-going option is used
     description = """
 Rips a CD.
 
@@ -264,7 +280,7 @@ Log files will log the path to tracks relative to this directory.
                                  "supports this feature. ")
         self.parser.add_argument('-O', '--output-directory',
                                  action="store", dest="output_directory",
-                                 default=os.path.relpath(os.getcwd()),
+                                 default=os.curdir,
                                  help="output directory; will be included "
                                  "in file paths in log")
         self.parser.add_argument('-W', '--working-directory',
@@ -290,6 +306,26 @@ Log files will log the path to tracks relative to this directory.
                                  help="whether to continue ripping if "
                                  "the disc is a CD-R",
                                  default=False)
+        self.parser.add_argument('-C', '--cover-art',
+                                 action="store", dest="cover_art",
+                                 help="fetch cover art and save it as "
+                                 "standalone file, embed into FLAC files "
+                                 "or perform both actions: file, embed, "
+                                 "complete option values respectively",
+                                 choices=['file', 'embed', 'complete'],
+                                 default=None)
+        self.parser.add_argument('-r', '--max-retries',
+                                 action="store", dest="max_retries",
+                                 help="number of rip attempts before giving "
+                                 "up if can't rip a track. This defaults to "
+                                 "{}; 0 means "
+                                 "infinity.".format(DEFAULT_MAX_RETRIES),
+                                 default=DEFAULT_MAX_RETRIES)
+        self.parser.add_argument('-k', '--keep-going',
+                                 action='store_true',
+                                 help="continue ripping further tracks "
+                                 "instead of giving up if a track "
+                                 "can't be ripped")
 
     def handle_arguments(self):
         self.options.output_directory = os.path.expanduser(
@@ -301,12 +337,12 @@ Log files will log the path to tracks relative to this directory.
         validate_template(self.options.disc_template, 'disc')
 
         if self.options.offset is None:
-            raise ValueError("Drive offset is unconfigured.\n"
-                             "Please install pycdio and run 'whipper offset "
-                             "find' to detect your drive's offset or set it "
-                             "manually in the configuration file. It can "
-                             "also be specified at runtime using the "
-                             "'--offset=value' argument")
+            raise SystemExit(
+                "Error: drive offset unconfigured. Please install pycdio and "
+                "run 'whipper offset find' to detect your drive's offset or "
+                "set it manually in the configuration file. It can also be "
+                "specified at runtime using the '--offset=value' argument"
+            )
 
         if self.options.working_directory is not None:
             self.options.working_directory = os.path.expanduser(
@@ -319,6 +355,15 @@ Log files will log the path to tracks relative to this directory.
                 msg = "No logger named %s found!" % self.options.logger
                 logger.critical(msg)
                 raise ValueError(msg)
+
+        try:
+            self.options.max_retries = int(self.options.max_retries)
+        except ValueError:
+            raise ValueError("max retries' value must be of integer type")
+        if self.options.max_retries == 0:
+            self.options.max_retries = float("inf")
+        elif self.options.max_retries < 0:
+            raise ValueError("number of max retries must be positive")
 
     def doCommand(self):
         self.program.setWorkingDirectory(self.options.working_directory)
@@ -342,8 +387,25 @@ Log files will log the path to tracks relative to this directory.
             logger.info("creating output directory %s", dirname)
             os.makedirs(dirname)
 
-        # FIXME: turn this into a method
+        self.coverArtPath = None
+        if (self.options.cover_art in {"embed", "complete"} and
+                importlib.util.find_spec("PIL") is None):
+            logger.warning("the cover art option '%s' won't be honored "
+                           "because the 'pillow' module isn't available",
+                           self.options.cover_art)
+        elif self.options.cover_art in {"file", "embed", "complete"}:
+            if getattr(self.program.metadata, "mbid", None) is not None:
+                self.coverArtPath = self.program.getCoverArt(
+                                        dirname,
+                                        self.program.metadata.mbid)
+            else:
+                logger.warning("the cover art option '%s' won't be honored "
+                               "because disc metadata isn't available",
+                               self.options.cover_art)
+        if self.options.cover_art == "file":
+            self.coverArtPath = None  # NOTE: avoid image embedding (hacky)
 
+        # FIXME: turn this into a method
         def _ripIfNotRipped(number):
             logger.debug('ripIfNotRipped for track %d', number)
             # we can have a previous result
@@ -389,51 +451,73 @@ Log files will log the path to tracks relative to this directory.
 
             if not os.path.exists(path):
                 logger.debug('path %r does not exist, ripping...', path)
-                tries = 0
                 # we reset durations for test and copy here
                 trackResult.testduration = 0.0
                 trackResult.copyduration = 0.0
                 extra = ""
-                while tries < MAX_TRIES:
-                    tries += 1
+                tries = 1
+                while tries <= self.options.max_retries:
                     if tries > 1:
                         extra = " (try %d)" % tries
                     logger.info('ripping track %d of %d%s: %s',
                                 number, len(self.itable.tracks), extra,
                                 os.path.basename(path))
+
+                    logger.debug('ripIfNotRipped: track %d, try %d', number,
+                                 tries)
+                    tag_list = self.program.getTagList(number, self.mbdiscid)
+                    # An HTOA can't have an ISRC value
+                    if (number > 0 and
+                            self.itable.tracks[number - 1].isrc is not None):
+                        tag_list['ISRC'] = self.itable.tracks[number - 1].isrc
+
                     try:
-                        logger.debug('ripIfNotRipped: track %d, try %d',
-                                     number, tries)
                         self.program.ripTrack(self.runner, trackResult,
                                               offset=int(self.options.offset),
                                               device=self.device,
-                                              taglist=self.program.getTagList(
-                                                  number, self.mbdiscid),
+                                              taglist=tag_list,
                                               overread=self.options.overread,
                                               what='track %d of %d%s' % (
                                                   number,
                                                   len(self.itable.tracks),
-                                                  extra))
+                                                  extra),
+                                              coverArtPath=self.coverArtPath)
                         break
                     # FIXME: catching too general exception (Exception)
                     except Exception as e:
                         logger.debug('got exception %r on try %d', e, tries)
+                        tries += 1
 
-                if tries == MAX_TRIES:
+                if tries > self.options.max_retries:
+                    tries -= 1
                     logger.critical('giving up on track %d after %d times',
                                     number, tries)
-                    raise RuntimeError(
-                        "track can't be ripped. "
-                        "Rip attempts number is equal to 'MAX_TRIES'")
-                if trackResult.testcrc == trackResult.copycrc:
-                    logger.info('CRCs match for track %d', number)
+                    if self.options.keep_going:
+                        logger.warning("track %d failed to rip.", number)
+                        logger.debug("adding %s to skipped_tracks",
+                                     trackResult)
+                        self.skipped_tracks.append(trackResult)
+                        logger.debug("skipped_tracks = %s",
+                                     self.skipped_tracks)
+                        trackResult.skipped = True
+                    else:
+                        raise RuntimeError("track can't be ripped. "
+                                           "Rip attempts number is equal "
+                                           "to %d",
+                                           self.options.max_retries)
+                if trackResult in self.skipped_tracks:
+                    print("Skipping CRC comparison for track %d "
+                          "due to rip failure" % number)
                 else:
-                    raise RuntimeError(
-                        "CRCs did not match for track %d" % number
-                    )
+                    if trackResult.testcrc == trackResult.copycrc:
+                        logger.info('CRCs match for track %d', number)
+                    else:
+                        raise RuntimeError(
+                            "CRCs did not match for track %d" % number
+                        )
 
-                print('Peak level: %.6f' % (trackResult.peak / 32768.0))
-                print('Rip quality: {:.2%}'.format(trackResult.quality))
+                    print('Peak level: %.6f' % (trackResult.peak / 32768.0))
+                    print('Rip quality: {:.2%}'.format(trackResult.quality))
 
             # overlay this rip onto the Table
             if number == 0:
@@ -453,9 +537,8 @@ Log files will log the path to tracks relative to this directory.
                                         self.itable.getTrackStart(1), number)
             else:
                 self.itable.setFile(number, 1, trackResult.filename,
-                                    self.itable.getTrackLength(number), number)
-
-            self.program.saveRipResult()
+                                    self.itable.getTrackLength(number),
+                                    number)
 
         # check for hidden track one audio
         htoa = self.program.getHTOA()
@@ -475,11 +558,26 @@ Log files will log the path to tracks relative to this directory.
                 continue
             _ripIfNotRipped(i + 1)
 
+        # NOTE: Seems like some kind of with … or try: … finally: … clause
+        # would be more appropriate, since otherwise this would potentially
+        # leave stray files lying around in case of crashes etc.
+        # <Freso 2020-01-03, GitHub comment>
+        if (self.options.cover_art == "embed" and
+                self.coverArtPath is not None):
+            logger.debug('deleting cover art file at: %r', self.coverArtPath)
+            os.remove(self.coverArtPath)
+
         logger.debug('writing cue file for %r', discName)
         self.program.writeCue(discName)
 
         logger.debug('writing m3u file for %r', discName)
         self.program.write_m3u(discName)
+
+        if len(self.skipped_tracks) > 0:
+            logger.warning("the generated cue sheet references %d track(s) "
+                           "which failed to rip so the associated file(s) "
+                           "won't be available", len(self.skipped_tracks))
+            self.program.skipped_tracks = self.skipped_tracks
 
         try:
             self.program.verifyImage(self.runner, self.itable)
@@ -488,9 +586,12 @@ Log files will log the path to tracks relative to this directory.
 
         accurip.print_report(self.program.result)
 
-        self.program.saveRipResult()
-
         self.program.writeLog(discName, self.logger)
+
+        if len(self.skipped_tracks) > 0:
+            logger.warning('%d tracks have been skipped from this rip attempt',
+                           len(self.skipped_tracks))
+            return 5
 
 
 class CD(BaseCommand):

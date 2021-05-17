@@ -44,8 +44,6 @@ MEDIUM
 
 - retry cdrdao a few times when it had to load the tray
 
-- getting cache results should depend on same drive/offset
-
 - do some character mangling so trail of dead is not in a hidden dir
 
 HARD

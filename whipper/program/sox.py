@@ -9,10 +9,10 @@ SOX = 'sox'
 
 def peak_level(track_path):
     """
-    Accepts a path to a sox-decodable audio file.
+    Accept a path to a sox-decodable audio file.
 
-    Returns track peak level from sox ('maximum amplitude') as a float.
-    Returns None on error.
+    :returns: track peak level from sox ('maximum amplitude')
+    :rtype: float or None
     """
     if not os.path.exists(track_path):
         logger.warning("SoX peak detection failed: file not found")

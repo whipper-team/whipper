@@ -22,6 +22,8 @@ _BEGIN_CDRDAO_RE = re.compile(r"-" * 60)
 _LAST_TRACK_RE = re.compile(r"^[ ]?(?P<track>[0-9]*)")
 _LEADOUT_RE = re.compile(
     r"^Leadout AUDIO\s*[0-9]\s*[0-9]*:[0-9]*:[0-9]*\([0-9]*\)")
+_SUBCODE_EMPHASIS_LINE = ("Pre-emphasis flag of track differs from TOC - "
+                          "toc file contains TOC setting.")
 
 
 class ProgressParser:
@@ -55,28 +57,30 @@ class ProgressParser:
                   "found %d Q sub-channels with CRC errors" %
                   (self.currentTrack, int(crc_s.group('channels'))))
 
+        # TODO: add subcode pre-emphasis info for each track to logger too
+        if _SUBCODE_EMPHASIS_LINE in line:
+            logger.warning(_SUBCODE_EMPHASIS_LINE)
+
         self.oldline = line
 
 
 class ReadTOCTask(task.Task):
-    """
-    Task that reads the TOC of the disc using cdrdao
-    """
+    """Task that reads the TOC of the disc using cdrdao."""
+
     description = "Reading TOC"
     toc = None
 
     def __init__(self, device, fast_toc=False, toc_path=None):
         """
-        Read the TOC for 'device'.
+        Read the TOC for ``device``.
 
-        :param device:  block device to read TOC from
-        :type  device:  str
-        :param fast_toc:  If to use fast-toc cdrdao mode
-        :type  fast_toc: bool
-        :param toc_path: Where to save TOC if wanted.
-        :type  toc_path: str
+        :param device: block device to read TOC from
+        :type device: str
+        :param fast_toc: whether to use fast-toc cdrdao mode
+        :type fast_toc: bool
+        :param toc_path: where to save TOC if wanted
+        :type toc_path: str
         """
-
         self.device = device
         self.fast_toc = fast_toc
         self.toc_path = toc_path
@@ -151,7 +155,11 @@ class ReadTOCTask(task.Task):
             t_comp = os.path.abspath(self.toc_path).split(os.sep)
             t_dirn = os.sep.join(t_comp[:-1])
             # If the output path doesn't exist, make it recursively
-            os.makedirs(t_dirn, exist_ok=True)
+            try:
+                os.makedirs(t_dirn)
+                logger.info("creating output directory %s", t_dirn)
+            except FileExistsError as e:
+                logger.debug(e)
             t_dst = truncate_filename(
                 os.path.join(t_dirn, t_comp[-1] + '.toc'))
             shutil.copy(self.tocfile, os.path.join(t_dirn, t_dst))
@@ -161,9 +169,7 @@ class ReadTOCTask(task.Task):
 
 
 def DetectCdr(device):
-    """
-    Return whether cdrdao detects a CD-R for 'device'.
-    """
+    """Whether cdrdao detects a CD-R for ``device``."""
     cmd = [CDRDAO, 'disk-info', '-v1', '--device', device]
     logger.debug("executing %r", cmd)
     p = Popen(cmd, stdout=PIPE, stderr=PIPE)
@@ -171,9 +177,7 @@ def DetectCdr(device):
 
 
 def version():
-    """
-    Return cdrdao version as a string.
-    """
+    """Return cdrdao version as a string."""
     cdrdao = Popen(CDRDAO, stderr=PIPE)
     _, err = cdrdao.communicate()
     if cdrdao.returncode != 1:

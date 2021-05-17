@@ -18,21 +18,23 @@
 
 
 def digit_sum(i):
-    """returns the sum of all digits for the given integer"""
-
+    """Return the sum of all digits for the given integer."""
     return sum(map(int, str(i)))
 
 
 class DiscID:
     def __init__(self, offsets, total_length, track_count, playable_length):
-        """offsets is a list of track offsets, in CD frames
-        total_length is the total length of the disc, in seconds
-        track_count is the total number of tracks on the disc
-        playable_length is the playable length of the disc, in seconds
+        """
+        Init DiscID.
 
-        the first three items are for generating the hex disc ID itself
-        while the last is for performing queries"""
+        :param offsets: list of track offsets, in CD frames
+        :param total_length: total length of the disc, in seconds
+        :param track_count: total number of tracks on the disc
+        :param playable_length: playable length of the disc, in seconds
 
+        The first three items are for generating the hex disc ID itself
+        while the last is for performing queries.
+        """
         assert(len(offsets) == track_count)
         for o in offsets:
             assert(o >= 0)
@@ -61,16 +63,15 @@ class DiscID:
 
 
 def perform_lookup(disc_id, freedb_server, freedb_port):
-    """performs a web-based lookup using a DiscID
-    on the given freedb_server string and freedb_int port
-
-    iterates over a list of MetaData objects per successful match, like:
-    [track1, track2, ...], [track1, track2, ...], ...
-
-    may raise HTTPError if an error occurs querying the server
-    or ValueError if the server returns invalid data
     """
+    Perform a web-based lookup using a DiscID on the given server and port.
 
+    Iterate over a list of MetaData objects per successful match, like:
+    ``[track1, track2, ...], [track1, track2, ...], ...``
+
+    :raises HTTPError: if an error occurs querying the server
+    :raises ValueError: if the server returns invalid data
+    """
     import re
     from time import sleep
 
@@ -154,8 +155,18 @@ def perform_lookup(disc_id, freedb_server, freedb_port):
 
 
 def freedb_command(freedb_server, freedb_port, cmd, *args):
-    """given a freedb_server string, freedb_port int,
-    command string and argument strings, yields a list of strings"""
+    """
+    Generate and perform a query against FreeDB using the given command.
+
+    Yields a list of Unicode strings.
+
+    :param freedb_server: URL of FreeDB server to be queried
+    :type freedb_server: str
+    :param freedb_port: port number of FreeDB server to be queried
+    :type freedb_port: int
+    :param cmd: CDDB command
+    :type cmd: str
+    """
 
     from urllib.error import URLError
     from urllib.request import urlopen

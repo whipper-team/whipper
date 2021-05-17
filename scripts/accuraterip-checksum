@@ -7,7 +7,7 @@ import sys
 
 if len(sys.argv) == 2 and sys.argv[1] == '--version':
     print('accuraterip-checksum version 2.0')
-    exit(0)
+    raise SystemExit()
 
 use_v1 = None
 if len(sys.argv) == 4:
@@ -22,7 +22,7 @@ elif len(sys.argv) == 5:
 
 if use_v1 is None:
     print('Syntax: accuraterip-checksum [--version / --accuraterip-v1 / --accuraterip-v2 (default)] filename track_number total_tracks')
-    exit(1)
+    raise SystemExit(1)
 
 filename = sys.argv[offset + 1]
 track_number = int(sys.argv[offset + 2])

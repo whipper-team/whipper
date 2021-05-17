@@ -19,7 +19,8 @@
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from mutagen.flac import FLAC
+from mutagen.flac import FLAC, Picture
+from mutagen.id3 import PictureType
 
 from whipper.extern.task import task
 
@@ -87,5 +88,73 @@ class TaggingTask(task.Task):
             w[k] = v
 
         w.save()
+
+        self.stop()
+
+
+class EmbedPictureTask(task.Task):
+    description = 'Embed picture to FLAC'
+
+    def __init__(self, track_path, cover_art_path):
+        self.track_path = track_path
+        self.cover_art_path = cover_art_path
+
+    def start(self, runner):
+        task.Task.start(self, runner)
+        self.schedule(0.0, self._embed_picture)
+
+    def _make_flac_picture(self, cover_art_filename):
+        """
+        Given a path to a jpg/png file, return a FLAC picture for embedding.
+
+        The embedding will be performed using the mutagen module.
+
+        :param cover_art_filename: path to cover art image file
+        :type cover_art_filename: str
+        :returns: a valid FLAC picture for embedding
+        :rtype: mutagen.flac.Picture or None
+        """
+        if not cover_art_filename:
+            return
+
+        from PIL import Image
+
+        im = Image.open(cover_art_filename)
+        # NOTE: the cover art thumbnails we're getting from the Cover Art
+        # Archive should be always in the JPEG format: this check is currently
+        # useless but will leave it here to better handle unexpected formats.
+        if im.format == 'JPEG':
+            mime = 'image/jpeg'
+        elif im.format == 'PNG':
+            mime = 'image/png'
+        else:
+            # we only support png and jpeg
+            logger.warning("no cover art will be added because the fetched "
+                           "image format is unsupported")
+            return
+
+        pic = Picture()
+        with open(cover_art_filename, 'rb') as f:
+            pic.data = f.read()
+
+        pic.type = PictureType.COVER_FRONT
+        pic.mime = mime
+        pic.width, pic.height = im.size
+        if im.mode not in ('P', 'RGB', 'SRGB'):
+            logger.warning("no cover art will be added because the fetched "
+                           "image mode is unsupported")
+            return
+
+        return pic
+
+    def _embed_picture(self):
+        """
+        Get flac picture generated from mutagen.flac.Picture then embed
+        it to given track if the flac picture exists.
+        """
+        flac_pic = self._make_flac_picture(self.cover_art_path)
+        if flac_pic:
+            w = FLAC(self.track_path)
+            w.add_picture(flac_pic)
 
         self.stop()

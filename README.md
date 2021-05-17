@@ -1,14 +1,14 @@
 # Whipper
 
-[![license](https://img.shields.io/github/license/whipper-team/whipper.svg)](https://github.com/whipper-team/whipper/blob/master/LICENSE)
-[![Build Status](https://travis-ci.com/whipper-team/whipper.svg?branch=master)](https://travis-ci.com/whipper-team/whipper)
+[![license](https://img.shields.io/github/license/whipper-team/whipper.svg)](https://github.com/whipper-team/whipper/blob/develop/LICENSE)
+[![Build Status](https://travis-ci.com/whipper-team/whipper.svg?branch=develop)](https://travis-ci.com/whipper-team/whipper)
 [![GitHub (pre-)release](https://img.shields.io/github/release/whipper-team/whipper/all.svg)](https://github.com/whipper-team/whipper/releases/latest)
 [![IRC](https://img.shields.io/badge/irc-%23whipper%40freenode-brightgreen.svg)](https://webchat.freenode.net/?channels=%23whipper)
 [![GitHub Stars](https://img.shields.io/github/stars/whipper-team/whipper.svg)](https://github.com/whipper-team/whipper/stargazers)
 [![GitHub Issues](https://img.shields.io/github/issues/whipper-team/whipper.svg)](https://github.com/whipper-team/whipper/issues)
 [![GitHub contributors](https://img.shields.io/github/contributors/whipper-team/whipper.svg)](https://github.com/whipper-team/whipper/graphs/contributors)
 
-Whipper is a Python 3 (3.5+) CD-DA ripper based on the [morituri project](https://github.com/thomasvs/morituri) (_CDDA ripper for *nix systems aiming for accuracy over speed_). It started just as a fork of morituri - which development seems to have halted - merging old ignored pull requests, improving it with bugfixes and new features. Nowadays whipper's codebase diverges significantly from morituri's one.
+Whipper is a Python 3 (3.6+) CD-DA ripper based on the [morituri project](https://github.com/thomasvs/morituri) (_CDDA ripper for *nix systems aiming for accuracy over speed_). It started just as a fork of morituri - which development seems to have halted - merging old ignored pull requests, improving it with bugfixes and new features. Nowadays whipper's codebase diverges significantly from morituri's one.
 
 Whipper is currently developed and tested _only_ on Linux distributions but _may_ work fine on other *nix OSes too.
 
@@ -24,13 +24,15 @@ In order to track whipper's latest changes it's advised to check its commit hist
   * [Package](#package)
 - [Building](#building)
   1. [Required dependencies](#required-dependencies)
-  2. [Fetching the source code](#fetching-the-source-code)
-  3. [Finalizing the build](#finalizing-the-build)
+  2. [Optional dependencies](#optional-dependencies)
+  3. [Fetching the source code](#fetching-the-source-code)
+  4. [Finalizing the build](#finalizing-the-build)
 - [Usage](#usage)
 - [Getting started](#getting-started)
 - [Configuration file documentation](#configuration-file-documentation)
 - [Running uninstalled](#running-uninstalled)
 - [Logger plugins](#logger-plugins)
+  * [Official logger plugins](#official-logger-plugins)
 - [License](#license)
 - [Contributing](#contributing)
   - [Developer Certificate of Origin (DCO)](#developer-certificate-of-origin-dco)
@@ -62,7 +64,7 @@ https://web.archive.org/web/20160528213242/https://thomas.apestaart.org/thomas/t
 
 ## Changelog
 
-See [CHANGELOG.md](https://github.com/whipper-team/whipper/blob/master/CHANGELOG.md).
+See [CHANGELOG.md](https://github.com/whipper-team/whipper/blob/develop/CHANGELOG.md).
 
 For detailed information, please check the commit history.
 
@@ -76,26 +78,32 @@ You can easily install whipper without needing to care about the required depend
 
 `docker pull whipperteam/whipper`
 
-Alternatively, in case you prefer building Docker images locally, just issue the following command (it relies on the [Dockerfile](https://github.com/whipper-team/whipper/blob/master/Dockerfile) included in whipper's repository):
+Please note that, right now, Docker Hub only builds whipper images for the `amd64` architecture: if you intend to use them on a different one, you'll need to build the images locally (as explained below).
 
-`docker build -t whipperteam/whipper`
+Building the Docker image locally is required in order to make it work on Arch Linux (and its derivatives) because of a group permission issue (for more details see [issue #499](https://github.com/whipper-team/whipper/issues/499)).
+
+To build the Docker image locally just issue the following command (it relies on the [Dockerfile](https://github.com/whipper-team/whipper/blob/develop/Dockerfile) included in whipper's repository):
+
+`optical_gid=$(getent group optical | cut -d: -f3) uid=$(id -u) docker build --build-arg optical_gid --build-arg uid -t whipperteam/whipper .`
 
 It's recommended to create an alias for a convenient usage:
 
 ```bash
 alias whipper="docker run -ti --rm --device=/dev/cdrom \
-    -v ~/.config/whipper:/home/worker/.config/whipper \
-    -v ${PWD}/output:/output \
+    --mount type=bind,source=${HOME}/.config/whipper,target=/home/worker/.config/whipper \
+    --mount type=bind,source=${PWD}/output,target=/output \
     whipperteam/whipper"
 ```
 
 You should put this e.g. into your `.bash_aliases`. Also keep in mind to substitute the path definitions to something that fits to your needs (e.g. replace `… -v ${PWD}/output:/output …` with `… -v ${HOME}/ripped:/output \ …`).
 
-Make sure you create the configuration directory:
+Essentially, what this does is to map the /home/worker/.config/whipper and ${PWD}/output (or whatever other directory you specified) on your host system to locations inside the Docker container where the files can be written and read. These directories need to exist on your system before you can run the container:
 
-`mkdir -p ~/.config/whipper "${PWD}"/output`
+`mkdir -p "${HOME}/.config/whipper" "${PWD}/output"`
 
-Finally you can test the correct installation:
+Please note that the example alias written above only provides access to a single disc drive: if you've got many you will need to customise it in order to use all of them in whipper's Docker container.
+
+Finally you can test the correct installation as such:
 
 ```
 whipper -v
@@ -108,9 +116,7 @@ This is a noncomprehensive summary which shows whipper's packaging status (unoff
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/whipper.svg)](https://repology.org/metapackage/whipper)
 
-There's also an [unoffical snap package on snapcraft](https://snapcraft.io/whipper).
-
-In case you decide to install whipper using an unofficial repository just keep in mind it is your responsibility to verify that the provided content is safe to use.
+**NOTE:** if installing whipper from an unofficial repository please keep in mind it is your responsibility to verify that the provided content is safe to use.
 
 ## Building
 
@@ -121,17 +127,17 @@ If you are building from a source tarball or checkout, you can choose to use whi
 Whipper relies on the following packages in order to run correctly and provide all the supported features:
 
 - [cd-paranoia](https://github.com/rocky/libcdio-paranoia), for the actual ripping
-  - To avoid bugs it's advised to use `cd-paranoia` versions ≥ **10.2+0.94+2-2**
-  - The package named `libcdio-utils`, available on Debian and Ubuntu, is affected by a bug (except for Debian testing/sid): it doesn't include the `cd-paranoia` binary (needed by whipper). For more details see: [#888053 (Debian)](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=888053), [#889803 (Debian)](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=889803) and [#1750264 (Ubuntu)](https://bugs.launchpad.net/ubuntu/+source/libcdio/+bug/1750264).
+  - To avoid bugs it's advised to use `cd-paranoia` versions ≥ **10.2+0.94+2**
+  - The package named `libcdio-utils`, available on certain Debian and Ubuntu versions, is affected by a bug: it doesn't include the `cd-paranoia` binary (needed by whipper). Only Debian bullseye (testing) / sid (unstable) and Ubuntu focal (20.04) and later versions have a separate `cd-paranoia` package where the binary is provided. For more details on this issue check the relevant bug reports: [#888053 (Debian)](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=888053), [#889803 (Debian)](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=889803) and [#1750264 (Ubuntu)](https://bugs.launchpad.net/ubuntu/+source/libcdio/+bug/1750264).
 - [cdrdao](http://cdrdao.sourceforge.net/), for session, TOC, pre-gap, and ISRC extraction
 - [GObject Introspection](https://wiki.gnome.org/Projects/GObjectIntrospection), to provide GLib-2.0 methods used by `task.py`
 - [PyGObject](https://pypi.org/project/PyGObject/), required by `task.py`
 - [musicbrainzngs](https://pypi.org/project/musicbrainzngs/), for metadata lookup
 - [mutagen](https://pypi.python.org/pypi/mutagen), for tagging support
 - [setuptools](https://pypi.python.org/pypi/setuptools), for installation, plugins support
-- [requests](https://pypi.python.org/pypi/requests), for retrieving AccurateRip database entries
 - [pycdio](https://pypi.python.org/pypi/pycdio/), for drive identification (required for drive offset and caching behavior to be stored in the configuration file).
-  - To avoid bugs it's advised to use the most recent `pycdio` version with the corresponding `libcdio` release or, if stuck to old pycdio versions, **0.20**/**0.21** with `libcdio` ≥ **0.90** ≤ **0.94**. All other combinations won't probably work.
+  - To avoid bugs it's advised to use the most recent `pycdio` version with the corresponding `libcdio` release or, if stuck on old pycdio versions, **0.20**/**0.21** with `libcdio` ≥ **0.90** ≤ **0.94**. All other combinations won't probably work.
+- [discid](https://pypi.org/project/discid/), for calculating Musicbrainz disc id.
 - [ruamel.yaml](https://pypi.org/project/ruamel.yaml/), for generating well formed YAML report logfiles
 - [libsndfile](http://www.mega-nerd.com/libsndfile/), for reading wav files
 - [flac](https://xiph.org/flac/), for reading flac files
@@ -148,10 +154,19 @@ Some dependencies aren't available in the PyPI. They can be probably installed u
 - [flac](https://xiph.org/flac/)
 - [sox](http://sox.sourceforge.net/)
 - [git](https://git-scm.com/) or [mercurial](https://www.mercurial-scm.org/)
+- [libdiscid](https://musicbrainz.org/doc/libdiscid)
 
-PyPI installable dependencies are listed in the [requirements.txt](https://github.com/whipper-team/whipper/blob/master/requirements.txt) file and can be installed issuing the following command:
+PyPI installable dependencies are listed in the [requirements.txt](https://github.com/whipper-team/whipper/blob/develop/requirements.txt) file and can be installed issuing the following command:
 
-`pip install -r requirements.txt`
+`pip3 install -r requirements.txt`
+
+### Optional dependencies
+- [Pillow](https://pypi.org/project/Pillow/), for completely supporting the cover art feature (`embed` and `complete` option values won't work otherwise).
+- [docutils](https://pypi.org/project/docutils/), to build the man pages.
+
+These dependencies are not listed in the `requirements.txt`. To install them, just issue the following command:
+
+`pip3 install Pillow docutils`
 
 ### Fetching the source code
 
@@ -168,6 +183,8 @@ Install whipper: `python3 setup.py install`
 
 Note that, depending on the chosen installation path, this command may require elevated rights.
 
+To build the man pages, follow the instructions in the relevant [README](https://github.com/whipper-team/whipper/blob/develop/man/README.md) which is located in the `man` subfolder.
+
 ## Usage
 
 Whipper currently only has a command-line interface called `whipper` which is self-documenting: `whipper -h` gives you the basic instructions.
@@ -183,6 +200,8 @@ is correct, while
 `whipper cd rip -d (device)`
 
 is not, because the `-d` argument applies to the `cd` command.
+
+A more complete set of usage instructions can be found in the `whipper` [man pages](https://github.com/whipper-team/whipper/blob/develop/man/README.md).
 
 ## Getting started
 
@@ -201,6 +220,8 @@ The simplest way to get started making accurate rips is:
 
    If you omit the `-o` argument, whipper will try a long, popularity-sorted list of drive offsets.
 
+   Please note that whipper's offset find feature is quite primitive so it may not always achieve its task: in this case using the value listed in [AccurateRip's CD Drive Offset database](http://www.accuraterip.com/driveoffsets.htm) should be enough.
+
    If you can not confirm your drive offset value but wish to set a default regardless, set `read_offset = insert-numeric-value-here` in `whipper.conf`.
 
    Offsets confirmed with `whipper offset find` are automatically written to the configuration file.
@@ -217,35 +238,42 @@ The configuration file is stored in `$XDG_CONFIG_HOME/whipper/whipper.conf`, or 
 
 See [XDG Base Directory
 Specification](http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html)
-and [ConfigParser](https://docs.python.org/3/library/configparser.html).
+and [ConfigParser](https://docs.python.org/3/library/configparser.html) with `inline_comment_prefixes=(';')`.
 
 The configuration file consists of newline-delineated `[sections]`
 containing `key = value` pairs. The sections `[main]` and
 `[musicbrainz]` are special config sections for options not accessible
 from the command line interface.  Sections beginning with `drive` are
-written by whipper; certain values should not be edited.
+written by whipper; certain values should not be edited. Inline comments can be added using `;`.
 
 Example configuration demonstrating all `[main]` and `[musicbrainz]`
 options:
 
 ```INI
 [main]
-path_filter_fat = True		; replace FAT file system unsafe characters in filenames with _
-path_filter_special = False	; replace special characters in filenames with _
+path_filter_dot = True			; replace leading dot with _
+path_filter_posix = True		; replace illegal chars in *nix OSes with _
+path_filter_vfat = False		; replace illegal chars in VFAT filesystems with _
+path_filter_whitespace = False		; replace all whitespace chars with _
+path_filter_printable = False		; replace all non printable ASCII chars with _
 
 [musicbrainz]
-server = musicbrainz.org:80	; use MusicBrainz server at host[:port]
+server = https://musicbrainz.org	; use MusicBrainz server at host[:port]
+# use http as scheme if connecting to a plain http server. Example below:
+# server = http://example.com:8080
 
 [drive:HL-20]
-defeats_cache = True		; whether the drive is capable of defeating the audio cache
-read_offset = 6			; drive read offset in positive/negative frames (no leading +)
+defeats_cache = True			; whether the drive is capable of defeating the audio cache
+read_offset = 6				; drive read offset in positive/negative frames (no leading +)
 # do not edit the values 'vendor', 'model', and 'release'; they are used by whipper to match the drive
 
 # command line defaults for `whipper cd rip`
 [whipper.cd.rip]
 unknown = True
 output_directory = ~/My Music
-track_template = new/%%A/%%y - %%d/%%t - %%n	; note: the format char '%' must be represented '%%'
+# Note: the format char '%' must be represented '%%'.
+# Do not add inline comments with an unescaped '%' character (else an 'InterpolationSyntaxError' will occur).
+track_template = new/%%A/%%y - %%d/%%t - %%n
 disc_template =  new/%%A/%%y - %%d/%%A - %%d
 # ...
 ```
@@ -288,6 +316,8 @@ On a default Debian/Ubuntu installation, the following paths are searched by whi
 
 Where `X` stands for the minor version of the Python 3 release available on the system.
 
+Please note that locally installed logger plugins won't be recognized when whipper has been installed through the official Docker image.
+
 ### Official logger plugins
 
 I suggest using whipper's default logger unless you've got particular requirements.
@@ -300,7 +330,7 @@ Licensed under the [GNU GPLv3 license](http://www.gnu.org/licenses/gpl-3.0).
 
 ```Text
 Copyright (C) 2009 Thomas Vander Stichele
-Copyright (C) 2016-2019 The Whipper Team: JoeLametta, Samantha Baldwin,
+Copyright (C) 2016-2021 The Whipper Team: JoeLametta, Samantha Baldwin,
                         Merlijn Wajer, Frederik “Freso” S. Olesen, et al.
 
 This program is free software; you can redistribute it and/or modify

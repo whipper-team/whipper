@@ -15,15 +15,14 @@ class WhipperLogger(result.Logger):
     _accuratelyRipped = 0
     _inARDatabase = 0
     _errors = False
+    _skippedTracks = False
 
     def log(self, ripResult, epoch=time.time()):
-        """Returns big str: logfile joined text lines"""
-
+        """Return logfile as string."""
         return self.logRip(ripResult, epoch)
 
     def logRip(self, ripResult, epoch):
-        """Returns logfile lines list"""
-
+        """Return logfile as list of lines."""
         riplog = OrderedDict()
 
         # Ripper version
@@ -141,9 +140,11 @@ class WhipperLogger(result.Logger):
 
         if self._errors:
             message = "There were errors"
+        elif self._skippedTracks:
+            message = "Some tracks were not ripped (skipped)"
         else:
             message = "No errors occurred"
-        data["Health Status"] = message
+        data["Health status"] = message
         data["EOF"] = "End of status report"
         riplog["Conclusive status report"] = data
 
@@ -189,8 +190,7 @@ class WhipperLogger(result.Logger):
         return riplog
 
     def trackLog(self, trackResult):
-        """Returns Tracks section lines: data picked from trackResult"""
-
+        """Return Tracks section lines: data picked from trackResult."""
         track = OrderedDict()
 
         # Filename (including path) of ripped track
@@ -245,8 +245,12 @@ class WhipperLogger(result.Logger):
                 data["Result"] = "Track not present in AccurateRip database"
             track["AccurateRip %s" % v] = data
 
+        # Check if track has been skipped
+        if trackResult.skipped:
+            track["Status"] = "Track not ripped (skipped)"
+            self._skippedTracks = True
         # Check if Test & Copy CRCs are equal
-        if trackResult.testcrc == trackResult.copycrc:
+        elif trackResult.testcrc == trackResult.copycrc:
             track["Status"] = "Copy OK"
         else:
             self._errors = True

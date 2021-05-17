@@ -1,9 +1,18 @@
-dist: xenial
-sudo: required
+os: linux
+dist: focal
+
+# This is needed by setuptools_scm to generate a correct version string
+git:
+  depth: false
 
 language: python
 python:
   - "3.5"
+  - "3.6"
+  - "3.7"
+  - "3.8"
+  - "3.9"
+  - "3.10-dev"
 virtualenv:
   system_site_packages: false
 
@@ -11,21 +20,23 @@ cache: pip
 
 env:
     - FLAKE8=false
-    - FLAKE8=true
+
+jobs:
+  allow_failures:
+   - python: "3.5"
+   - python: "3.10-dev"
+  include:
+  - python: 3.9
+    env: FLAKE8=true
 
 install:
     # Dependencies
     - sudo apt-get -qq update
-    - pip install --upgrade -qq pip
-    - sudo apt-get -qq install cdparanoia cdrdao flac gir1.2-glib-2.0 libcdio-dev libgirepository1.0-dev libiso9660-dev libsndfile1-dev sox swig libcdio-utils
-    # newer version of pydcio requires newer version of libcdio than travis has
-    - pip install pycdio==0.21
-    # install rest of dependencies
-    - pip install -r requirements.txt
-
-    # Testing dependencies
-    - pip install twisted flake8
-
+    - sudo apt-get -qq install cd-paranoia cdrdao flac git libcdio-dev libdiscid-dev libgirepository1.0-dev libiso9660-dev libsndfile1-dev sox swig
+    # Lock pycdio version to the right one for Ubuntu focal
+    - pip install pycdio==2.1.0
+    # flake8 and twisted are testing dependencies
+    - pip install flake8 twisted -r requirements.txt
     # Installing
     - python setup.py install
 

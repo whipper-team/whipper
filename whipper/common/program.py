@@ -18,17 +18,18 @@
 # You should have received a copy of the GNU General Public License
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
-"""
-Common functionality and class for all programs using whipper.
-"""
+"""Common functionality and class for all programs using whipper."""
 
 import musicbrainzngs
 import re
 import os
+import shutil
 import time
 
-from whipper.common import accurip, cache, checksum, common, mbngs, path
+from tempfile import NamedTemporaryFile
+from whipper.common import accurip, checksum, common, mbngs, path
 from whipper.program import cdrdao, cdparanoia
+from whipper.result import result
 from whipper.image import image
 from whipper.extern import freedb
 from whipper.extern.task import task
@@ -45,10 +46,10 @@ class Program:
     I maintain program state and functionality.
 
     :vartype metadata: mbngs.DiscMetadata
-    :cvar result:      the rip's result
-    :vartype result:   result.RipResult
-    :vartype outdir:   str
-    :vartype config:   whipper.common.config.Config
+    :cvar result: the rip's result
+    :vartype result: result.RipResult
+    :vartype outdir: str
+    :vartype config: whipper.common.config.Config
     """
 
     cuePath = None
@@ -56,20 +57,25 @@ class Program:
     metadata = None
     outdir = None
     result = None
+    skipped_tracks = None
 
     def __init__(self, config, record=False):
         """
-        :param record: whether to record results of API calls for playback.
+        Init Program.
+
+        :param record: whether to record results of API calls for playback
         """
         self._record = record
-        self._cache = cache.ResultCache()
         self._config = config
 
         d = {}
 
         for key, default in list({
-            'fat': True,
-            'special': False
+            'dot': True,
+            'posix': True,
+            'vfat': False,
+            'whitespace': False,
+            'printable': False
         }.items()):
             value = None
             value = self._config.getboolean('main', 'path_filter_' + key)
@@ -87,7 +93,9 @@ class Program:
             os.chdir(workingDirectory)
 
     def getFastToc(self, runner, device):
-        """Retrieve the normal TOC table from the drive.
+        """
+        Retrieve the normal TOC table from the drive.
+
         Also warn about buggy cdrdao versions.
         """
         from pkg_resources import parse_version as V
@@ -106,37 +114,19 @@ class Program:
     def getTable(self, runner, cddbdiscid, mbdiscid, device, offset,
                  toc_path):
         """
-        Retrieve the Table either from the cache or the drive.
+        Retrieve the Table from the drive.
 
         :rtype: table.Table
         """
-        tcache = cache.TableCache()
-        ptable = tcache.get(cddbdiscid, mbdiscid)
         itable = None
         tdict = {}
 
-        # Ignore old cache, since we do not know what offset it used.
-        if isinstance(ptable.object, dict):
-            tdict = ptable.object
-
-            if offset in tdict:
-                itable = tdict[offset]
-
-        if not itable:
-            logger.debug('getTable: cddbdiscid %s, mbdiscid %s not in cache '
-                         'for offset %s, reading table', cddbdiscid, mbdiscid,
-                         offset)
-            t = cdrdao.ReadTOCTask(device, toc_path=toc_path)
-            t.description = "Reading table"
-            runner.run(t)
-            itable = t.toc.table
-            tdict[offset] = itable
-            ptable.persist(tdict)
-            logger.debug('getTable: read table %r', itable)
-        else:
-            logger.debug('getTable: cddbdiscid %s, mbdiscid %s in cache '
-                         'for offset %s', cddbdiscid, mbdiscid, offset)
-            logger.debug('getTable: loaded table %r', itable)
+        t = cdrdao.ReadTOCTask(device, toc_path=toc_path)
+        t.description = "Reading table"
+        runner.run(t)
+        itable = t.toc.table
+        tdict[offset] = itable
+        logger.debug('getTable: read table %r', itable)
 
         assert itable.hasTOC()
 
@@ -146,22 +136,15 @@ class Program:
                      itable.getMusicBrainzDiscId())
         return itable
 
-    def getRipResult(self, cddbdiscid):
+    def getRipResult(self):
         """
-        Retrieve the persistable RipResult either from our cache (from a
-        previous, possibly aborted rip), or return a new one.
+        Return a new RipResult.
 
         :rtype: result.RipResult
         """
         assert self.result is None
-
-        self._presult = self._cache.getRipResult(cddbdiscid)
-        self.result = self._presult.object
-
+        self.result = result.RipResult()
         return self.result
-
-    def saveRipResult(self):
-        self._presult.persist()
 
     @staticmethod
     def addDisambiguation(template_part, metadata):
@@ -174,34 +157,45 @@ class Program:
 
     def getPath(self, outdir, template, mbdiscid, metadata, track_number=None):
         """
-        Return disc or track path relative to outdir according to
-        template. Track paths do not include extension.
+        Return disc or track path relative to outdir according to template.
+
+        Track paths do not include extension.
 
         Tracks are named according to the track template, filling in
         the variables and adding the file extension. Variables
         exclusive to the track template are:
-          - %t: track number
-          - %a: track artist
-          - %n: track title
-          - %s: track sort name
+
+        * ``%t``: track number
+        * ``%a``: track artist
+        * ``%n``: track title
+        * ``%s``: track sort name
 
         Disc files (.cue, .log, .m3u) are named according to the disc
         template, filling in the variables and adding the file
         extension. Variables for both disc and track template are:
-          - %A: release artist
-          - %S: release artist sort name
-          - %d: disc title
-          - %y: release year
-          - %r: release type, lowercase
-          - %R: release type, normal case
-          - %x: audio extension, lowercase
-          - %X: audio extension, uppercase
+
+        * ``%A``: release artist
+        * ``%S``: release artist sort name
+        * ``%B``: release barcode
+        * ``%C``: release catalog number
+        * ``%c``: release disambiguation comment
+        * ``%d``: release title (with disambiguation)
+        * ``%D``: disc title (without disambiguation)
+        * ``%I``: MusicBrainz Disc ID
+        * ``%M``: total number of discs in the chosen release
+        * ``%N``: number of current disc
+        * ``%T``: medium title
+        * ``%y``: release year
+        * ``%r``: release type, lowercase
+        * ``%R``: release type, normal case
+        * ``%x``: audio extension, lowercase
+        * ``%X``: audio extension, uppercase
         """
         assert isinstance(outdir, str), "%r is not str" % outdir
         assert isinstance(template, str), "%r is not str" % template
         v = {}
         v['A'] = 'Unknown Artist'
-        v['d'] = mbdiscid  # fallback for title
+        v['I'] = v['d'] = v['D'] = mbdiscid  # fallback for title
         v['r'] = 'unknown'
         v['R'] = 'Unknown'
         v['B'] = ''  # barcode
@@ -220,38 +214,54 @@ class Program:
         if metadata:
             release = metadata.release or '0000'
             v['y'] = release[:4]
-            v['A'] = self._filter.filter(metadata.artist)
-            v['S'] = self._filter.filter(metadata.sortName)
-            v['d'] = self._filter.filter(metadata.title)
+            v['A'] = metadata.artist
+            v['S'] = metadata.sortName
+            v['d'] = metadata.releaseTitle
+            v['D'] = metadata.title
             v['B'] = metadata.barcode
             v['C'] = metadata.catalogNumber
+            v['c'] = metadata.releaseDisambCmt
+            v['M'] = metadata.discTotal
+            v['N'] = metadata.discNumber
+            v['T'] = metadata.mediumTitle
             if metadata.releaseType:
                 v['R'] = metadata.releaseType
                 v['r'] = metadata.releaseType.lower()
             if track_number is not None and track_number > 0:
-                v['a'] = self._filter.filter(
-                    metadata.tracks[track_number - 1].artist)
-                v['s'] = self._filter.filter(
-                    metadata.tracks[track_number - 1].sortName)
-                v['n'] = self._filter.filter(
-                    metadata.tracks[track_number - 1].title)
+                v['a'] = metadata.tracks[track_number - 1].artist
+                v['s'] = metadata.tracks[track_number - 1].sortName
+                v['n'] = metadata.tracks[track_number - 1].title
             elif track_number == 0:
                 # htoa defaults to disc's artist
-                v['a'] = self._filter.filter(metadata.artist)
+                v['a'] = metadata.artist
 
-        template = re.sub(r'%(\w)', r'%(\1)s', template)
-        return os.path.join(outdir, template % v)
+        template = re.sub(r'%(\w)', r'%(\1)s', template.strip('/'))
+        # Avoid filtering non str type values, replace None with empty string
+        v_fltr = {k: self._filter.filter(v2) if isinstance(v2, str) else ''
+                  if v2 is None else v2 for k, v2 in v.items()}
+        if outdir == os.curdir:
+            return template % v_fltr  # Avoid useless './' in file paths
+        return os.path.join(outdir, template % v_fltr)
 
     @staticmethod
     def getCDDB(cddbdiscid):
         """
-        :param cddbdiscid: list of id, tracks, offsets, seconds
+        Fetch basic metadata from gnudb.org's mirror of freedb's CDDB.
 
+        Freedb's official CDDB isn't used anymore because it's going to be
+        shut down on 31/03/2020.
+
+        See: https://web.archive.org/web/20200331093822/http://www.freedb.org/
+        See: https://hydrogenaud.io/index.php?topic=118682
+
+        :param cddbdiscid: list of id, tracks, offsets, seconds
         :rtype: str
         """
         # FIXME: convert to nonblocking?
         try:
-            md = freedb.perform_lookup(cddbdiscid, 'freedb.freedb.org', 80)
+            md = freedb.perform_lookup(
+                     cddbdiscid, 'gnudb.gnudb.org', 80
+            )
             logger.debug('CDDB query result: %r', md)
             return [item['DTITLE'] for item in md if 'DTITLE' in item] or None
 
@@ -270,7 +280,20 @@ class Program:
     def getMusicBrainz(self, ittoc, mbdiscid, release=None, country=None,
                        prompt=False):
         """
-        :type  ittoc: whipper.image.table.Table
+        Fetch MusicBrainz's metadata for the given MusicBrainz disc id.
+
+        :param ittoc: disc TOC
+        :type ittoc: whipper.image.table.Table
+        :param mbdiscid: MusicBrainz DiscID
+        :type mbdiscid: str
+        :param release: MusicBrainz release id to match to
+                        (if there are multiple)
+        :type release: str or None
+        :param country: country name used to filter releases by provenance
+        :type country: str or None
+        :param prompt: whether to prompt if there are multiple
+                       matching releases
+        :type prompt: bool
         """
         # look up disc on MusicBrainz
         print('Disc duration: %s, %d audio tracks' % (
@@ -308,7 +331,7 @@ class Program:
 
             for metadata in metadatas:
                 print('\nArtist  : %s' % metadata.artist)
-                print('Title   : %s' % metadata.title)
+                print('Title   : %s' % metadata.releaseTitle)
                 print('Duration: %s' % common.formatTime(
                                            metadata.duration / 1000.0))
                 print('URL     : %s' % metadata.url)
@@ -316,6 +339,8 @@ class Program:
                 print('Type    : %s' % metadata.releaseType)
                 if metadata.barcode:
                     print("Barcode : %s" % metadata.barcode)
+                if metadata.countries:
+                    print("Country : %s" % ', '.join(metadata.countries))
                 # TODO: Add test for non ASCII catalog numbers: see issue #215
                 if metadata.catalogNumber:
                     print("Cat no  : %s" % metadata.catalogNumber)
@@ -346,7 +371,7 @@ class Program:
                 if len(metadatas) == 1:
                     logger.info('picked requested release id %s', release)
                     print('Artist: %s' % metadatas[0].artist)
-                    print('Title : %s' % metadatas[0].title)
+                    print('Title : %s' % metadatas[0].releaseTitle)
                 elif not metadatas:
                     logger.warning("requested release id '%s', but none of "
                                    "the found releases match", release)
@@ -358,16 +383,16 @@ class Program:
             # If we have multiple, make sure they match
             if len(metadatas) > 1:
                 artist = metadatas[0].artist
-                releaseTitle = metadatas[0].releaseTitle
+                discTitle = metadatas[0].title
                 for i, metadata in enumerate(metadatas):
                     if not artist == metadata.artist:
                         logger.warning("artist 0: %r and artist %d: %r are "
                                        "not the same", artist, i,
                                        metadata.artist)
-                    if not releaseTitle == metadata.releaseTitle:
+                    if not discTitle == metadata.title:
                         logger.warning("title 0: %r and title %d: %r are "
-                                       "not the same", releaseTitle, i,
-                                       metadata.releaseTitle)
+                                       "not the same", discTitle, i,
+                                       metadata.title)
 
                 if not release and len(list(deltas)) > 1:
                     logger.warning('picked closest match in duration. '
@@ -389,20 +414,21 @@ class Program:
         """
         Based on the metadata, get a dict of tags for the given track.
 
-        :param number:   track number (0 for HTOA)
-        :type  number:   int
-
+        :param number: track number (0 for HTOA)
+        :type number: int
+        :param mbdiscid: MusicBrainz DiscID
+        :type mbdiscid: str
         :rtype: dict
         """
         trackArtist = 'Unknown Artist'
         releaseArtist = 'Unknown Artist'
-        disc = 'Unknown Disc'
+        album = 'Unknown Album'
         title = 'Unknown Track'
 
         if self.metadata:
             trackArtist = self.metadata.artist
             releaseArtist = self.metadata.artist
-            disc = self.metadata.title
+            album = self.metadata.title  # No disambiguation is proper here
             mbidRelease = self.metadata.mbid
             mbidReleaseGroup = self.metadata.mbidReleaseGroup
             mbidReleaseArtist = self.metadata.mbidArtist
@@ -416,6 +442,8 @@ class Program:
                     mbidTrack = track.mbid
                     mbidTrackArtist = track.mbidArtist
                     mbidWorks = track.mbidWorks
+                    composers = track.composers
+                    performers = track.performers
                 except IndexError as e:
                     logger.error('no track %d found, %r', number, e)
                     raise
@@ -428,17 +456,23 @@ class Program:
         if number > 0:
             tags['MUSICBRAINZ_DISCID'] = mbdiscid
 
-        if self.metadata and not self.metadata.various:
+        if self.metadata:
             tags['ALBUMARTIST'] = releaseArtist
         tags['ARTIST'] = trackArtist
         tags['TITLE'] = title
-        tags['ALBUM'] = disc
+        tags['ALBUM'] = album
 
         tags['TRACKNUMBER'] = '%s' % number
 
         if self.metadata:
             if self.metadata.release is not None:
                 tags['DATE'] = self.metadata.release
+            if self.metadata.tracks:
+                tags['TRACKTOTAL'] = str(len(self.metadata.tracks))
+            if self.metadata.discTotal is not None:
+                tags['DISCTOTAL'] = str(self.metadata.discTotal)
+            if self.metadata.discNumber is not None:
+                tags['DISCNUMBER'] = str(self.metadata.discNumber)
 
             if number > 0:
                 tags['MUSICBRAINZ_RELEASETRACKID'] = mbidTrack
@@ -449,8 +483,10 @@ class Program:
                 tags['MUSICBRAINZ_ALBUMARTISTID'] = mbidReleaseArtist
                 if len(mbidWorks) > 0:
                     tags['MUSICBRAINZ_WORKID'] = mbidWorks
-
-        # TODO/FIXME: ISRC tag
+                if len(composers) > 0:
+                    tags['COMPOSER'] = composers
+                if len(performers) > 0:
+                    tags['PERFORMER'] = performers
 
         return tags
 
@@ -459,6 +495,7 @@ class Program:
         Check if we have hidden track one audio.
 
         :returns: tuple of (start, stop), or None
+        :rtype: tuple(int, int) or None
         """
         track = self.result.table.tracks[0]
         try:
@@ -469,6 +506,35 @@ class Program:
         start = index.absolute
         stop = track.getIndex(1).absolute - 1
         return start, stop
+
+    def getCoverArt(self, path, release_id):
+        """
+        Get cover art image from Cover Art Archive.
+
+        :param path: where to store the fetched image
+        :type  path: str
+        :param release_id: a release id (self.program.metadata.mbid)
+        :type  release_id: str
+        :returns: path to the downloaded cover art, else `None`
+        :rtype: str or None
+        """
+        cover_art_path = os.path.join(path, 'cover.jpg')
+
+        logger.debug('fetching cover art for release: %r', release_id)
+        try:
+            data = musicbrainzngs.get_image_front(release_id, 500)
+        except musicbrainzngs.ResponseError as e:
+            logger.error('error fetching cover art: %r', e)
+            return
+
+        if data:
+            with NamedTemporaryFile(suffix='.cover.jpg', delete=False) as f:
+                f.write(data)
+            os.chmod(f.name, 0o644)
+            shutil.move(f.name, cover_art_path)
+            logger.debug('cover art fetched at: %r', cover_art_path)
+            return cover_art_path
+        return
 
     @staticmethod
     def verifyTrack(runner, trackResult):
@@ -490,13 +556,28 @@ class Program:
         return ret
 
     def ripTrack(self, runner, trackResult, offset, device, taglist,
-                 overread, what=None):
+                 overread, what=None, coverArtPath=None):
         """
+        Rip and store a track of the disc.
+
         Ripping the track may change the track's filename as stored in
         trackResult.
 
-        :param trackResult: the object to store information in.
-        :type  trackResult: result.TrackResult
+        :param runner: synchronous track rip task
+        :type runner: task.SyncRunner
+        :param trackResult: the object to store information in
+        :type trackResult: result.TrackResult
+        :param offset: ripping offset, in CD frames
+        :type offset: int
+        :param device: path to the hardware disc drive
+        :type device: str
+        :param taglist: dictionary of tags for the given track
+        :type taglist: dict
+        :param overread: whether to force overreading into the
+                         lead-out portion of the disc
+        :type overread: bool
+        :param what: a string representing what's being read; e.g. Track
+        :type what: str or None
         """
         if trackResult.number == 0:
             start, stop = self.getHTOA()
@@ -516,7 +597,8 @@ class Program:
                                            offset=offset,
                                            device=device,
                                            taglist=taglist,
-                                           what=what)
+                                           what=what,
+                                           coverArtPath=coverArtPath)
 
         runner.run(t)
 
@@ -541,7 +623,8 @@ class Program:
 
     def verifyImage(self, runner, table):
         """
-        verify table against accuraterip and cue_path track lengths
+        Verify table against AccurateRip and cue_path track lengths.
+
         Verify our image against the given AccurateRip responses.
 
         Needs an initialized self.result.
@@ -551,7 +634,12 @@ class Program:
         """
         cueImage = image.Image(self.cuePath)
         # assigns track lengths
-        verifytask = image.ImageVerifyTask(cueImage)
+        if self.skipped_tracks is not None:
+            verifytask = image.ImageVerifyTask(cueImage,
+                                               [os.path.basename(t.filename)
+                                                for t in self.skipped_tracks])
+        else:
+            verifytask = image.ImageVerifyTask(cueImage)
         runner.run(verifytask)
         if verifytask.exception:
             logger.error(verifytask.exceptionMessage)
@@ -566,6 +654,7 @@ class Program:
         ])
         if not (checksums and any(checksums['v1']) and any(checksums['v2'])):
             return False
+
         return accurip.verify_result(self.result, responses, checksums)
 
     def write_m3u(self, discname):
@@ -575,6 +664,8 @@ class Program:
             for track in self.result.tracks:
                 if not track.filename:
                     # false positive htoa
+                    continue
+                if track.skipped:
                     continue
                 if track.number == 0:
                     length = (self.result.table.getTrackStart(1) /

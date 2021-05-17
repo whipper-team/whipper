@@ -37,12 +37,9 @@ logger = logging.getLogger(__name__)
 
 
 class FileSizeError(Exception):
+    """The given path does not have the expected size."""
 
     message = None
-
-    """
-    The given path does not have the expected size.
-    """
 
     def __init__(self, path, message):
         self.args = (path, message)
@@ -51,9 +48,7 @@ class FileSizeError(Exception):
 
 
 class ReturnCodeError(Exception):
-    """
-    The program had a non-zero return code.
-    """
+    """The program had a non-zero return code."""
 
     def __init__(self, returncode):
         self.args = (returncode, )
@@ -88,10 +83,12 @@ class ProgressParser:
 
     def __init__(self, start, stop):
         """
-        :param start:  first frame to rip
-        :type  start:  int
-        :param stop:   last frame to rip (inclusive)
-        :type  stop:   int
+        Init ProgressParser.
+
+        :param start: first frame to rip
+        :type start: int
+        :param stop: last frame to rip (inclusive)
+        :type stop: int
         """
         self.start = start
         self.stop = stop
@@ -102,9 +99,7 @@ class ProgressParser:
         self._reads = {}  # read count for each sector
 
     def parse(self, line):
-        """
-        Parse a line.
-        """
+        """Parse a line."""
         m = _PROGRESS_RE.search(line)
         if m:
             # code = int(m.group('code'))
@@ -185,6 +180,7 @@ class ProgressParser:
     def getTrackQuality(self):
         """
         Each frame gets read twice.
+
         More than two reads for a frame reduce track quality.
         """
         frames = self.stop - self.start + 1  # + 1 since stop is inclusive
@@ -203,9 +199,7 @@ class ProgressParser:
 
 
 class ReadTrackTask(task.Task):
-    """
-    I am a task that reads a track using cdparanoia.
-    """
+    """Task that reads a track using cdparanoia."""
 
     description = "Reading track"
     quality = None  # set at end of reading
@@ -219,22 +213,22 @@ class ReadTrackTask(task.Task):
         """
         Read the given track.
 
-        :param path:   where to store the ripped track
-        :type  path:   str
-        :param table:  table of contents of CD
-        :type  table:  table.Table
-        :param start:  first frame to rip
-        :type  start:  int
-        :param stop:   last frame to rip (inclusive); >= start
-        :type  stop:   int
+        :param path: where to store the ripped track
+        :type path: str
+        :param table: table of contents of CD
+        :type table: table.Table
+        :param start: first frame to rip
+        :type start: int
+        :param stop: last frame to rip (inclusive); >= start
+        :type stop: int
         :param offset: read offset, in samples
-        :type  offset: int
+        :type offset: int
         :param device: the device to rip from
-        :type  device: str
+        :type device: str
         :param action: a string representing the action; e.g. Read/Verify
-        :type  action: str
-        :param what:   a string representing what's being read; e.g. Track
-        :type  what:   str
+        :type action: str
+        :param what: a string representing what's being read; e.g. Track
+        :type what: str
         """
         assert isinstance(path, str), "%r is not str" % path
 
@@ -289,6 +283,24 @@ class ReadTrackTask(task.Task):
             stopTrack, common.framesToHMSF(stopOffset)),
             self.path])
         logger.debug('running %s', (" ".join(argv), ))
+        if self._offset > 587:
+            logger.warning(
+                "because of a cd-paranoia upstream bug whipper may fail to "
+                "work correctly when using offset values > 587 (current "
+                "value: %d) and print warnings like this: 'file size 0 did "
+                "not match expected size'. For more details please check the "
+                "following issues: "
+                "https://github.com/whipper-team/whipper/issues/234 and "
+                "https://github.com/rocky/libcdio-paranoia/issues/14",
+                self._offset
+            )
+        if stopTrack == 99:
+            logger.warning(
+                "because of a cd-paranoia upstream bug whipper may fail to "
+                "rip the last track of a CD when it has got 99 of them. "
+                "For more details please check the following issue: "
+                "https://github.com/whipper-team/whipper/issues/302"
+            )
         try:
             self._popen = asyncsub.Popen(argv,
                                          bufsize=bufsize,
@@ -395,22 +407,23 @@ class ReadTrackTask(task.Task):
 
 class ReadVerifyTrackTask(task.MultiSeparateTask):
     """
-    I am a task that reads and verifies a track using cdparanoia.
-    I also encode the track.
+    Task that reads and verifies a track using cdparanoia.
+
+    It also encodes the track.
 
     The path where the file is stored can be changed if necessary, for
     example if the file name is too long.
 
-    :cvar checksum:     the checksum of the track; set if they match.
-    :cvar testchecksum: the test checksum of the track.
-    :cvar copychecksum: the copy checksum of the track.
-    :cvar testspeed:    the test speed of the track, as a multiple of
-                        track duration.
-    :cvar copyspeed:    the copy speed of the track, as a multiple of
-                        track duration.
-    :cvar testduration: the test duration of the track, in seconds.
-    :cvar copyduration: the copy duration of the track, in seconds.
-    :cvar peak:         the peak level of the track
+    :cvar checksum: the checksum of the track; set if they match
+    :cvar testchecksum: the test checksum of the track
+    :cvar copychecksum: the copy checksum of the track
+    :cvar testspeed: the test speed of the track, as a multiple of
+                     track duration
+    :cvar copyspeed: the copy speed of the track, as a multiple of
+                     track duration
+    :cvar testduration: the test duration of the track, in seconds
+    :cvar copyduration: the copy duration of the track, in seconds
+    :cvar peak: the peak level of the track
     """
 
     checksum = None
@@ -427,22 +440,24 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
     _tmppath = None
 
     def __init__(self, path, table, start, stop, overread, offset=0,
-                 device=None, taglist=None, what="track"):
+                 device=None, taglist=None, what="track", coverArtPath=None):
         """
-        :param path:    where to store the ripped track
-        :type  path:    str
-        :param table:   table of contents of CD
-        :type  table:   table.Table
-        :param start:   first frame to rip
-        :type  start:   int
-        :param stop:    last frame to rip (inclusive)
-        :type  stop:    int
-        :param offset:  read offset, in samples
-        :type  offset:  int
-        :param device:  the device to rip from
-        :type  device:  str
+        Init ReadVerifyTrackTask.
+
+        :param path: where to store the ripped track
+        :type path: str
+        :param table: table of contents of CD
+        :type table: table.Table
+        :param start: first frame to rip
+        :type start: int
+        :param stop: last frame to rip (inclusive)
+        :type stop: int
+        :param offset: read offset, in samples
+        :type offset: int
+        :param device: the device to rip from
+        :type device: str
         :param taglist: a dict of tags
-        :type  taglist: dict
+        :type taglist: dict
         """
         task.MultiSeparateTask.__init__(self)
 
@@ -493,8 +508,9 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         self.tasks.append(checksum.CRC32Task(tmppath))
         self.tasks.append(encode.SoxPeakTask(tmppath))
 
-        # TODO: Move tagging outside of cdparanoia
+        # TODO: Move tagging and embed picture outside of cdparanoia
         self.tasks.append(encode.TaggingTask(tmpoutpath, taglist))
+        self.tasks.append(encode.EmbedPictureTask(tmpoutpath, coverArtPath))
 
         self.checksum = None
 
@@ -534,7 +550,7 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
                 if not self.exception:
                     try:
                         logger.debug('moving to final path %r', self.path)
-                        os.rename(self._tmppath, self.path)
+                        shutil.move(self._tmppath, self.path)
                     # FIXME: catching too general exception (Exception)
                     except Exception as e:
                         logger.debug('exception while moving to final '
@@ -603,7 +619,7 @@ class AnalyzeTask(ctask.PopenTask):
     def failed(self):
         # cdparanoia exits with return code 1 if it can't determine
         # whether it can defeat the audio cache
-        output = "".join(self._output)
+        output = "".join(o.decode() for o in self._output)
         m = _WARNING_RE.search(output)
         if m or _ABORTING_RE.search(output):
             self.defeatsCache = False
