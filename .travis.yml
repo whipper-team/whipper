@@ -26,7 +26,7 @@ jobs:
    - python: "3.5"
    - python: "3.10-dev"
   include:
-  - python: 3.8
+  - python: 3.9
     env: FLAKE8=true
 
 install:

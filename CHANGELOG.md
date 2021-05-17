@@ -2,24 +2,112 @@
 
 ## [Unreleased](https://github.com/whipper-team/whipper/tree/HEAD)
 
-[Full Changelog](https://github.com/whipper-team/whipper/compare/v0.9.0...HEAD)
+[Full Changelog](https://github.com/whipper-team/whipper/compare/v0.10.0...HEAD)
 
-## [v0.9.0](https://github.com/whipper-team/whipper/tree/v0.9.0) (2019-11-04)
+## [v0.10.0](https://github.com/whipper-team/whipper/tree/v0.10.0) (2021-05-17)
 
-[Full Changelog](https://github.com/whipper-team/whipper/compare/v0.8.0...v0.9.0)
+[Full Changelog](https://github.com/whipper-team/whipper/compare/v0.9.0...v0.10.0)
 
+**Implemented enhancements:**
+
+- Add checks and warnings for \(known\) cdparanoia's upstream bugs [\#495](https://github.com/whipper-team/whipper/issues/495) [[Design](https://github.com/whipper-team/whipper/labels/Design)]
+- Allow configuring whether to auto close the drive's tray [\#488](https://github.com/whipper-team/whipper/issues/488)
+- Better error handling for unconfigured drive offset [\#478](https://github.com/whipper-team/whipper/issues/478) [[Design](https://github.com/whipper-team/whipper/labels/Design)]
+- WARNING:whipper.command.main:set\_hostname\(\) takes 1 positional argument but 2 were given [\#464](https://github.com/whipper-team/whipper/issues/464) [[Design](https://github.com/whipper-team/whipper/labels/Design)]
+- Display release country in matching releases [\#451](https://github.com/whipper-team/whipper/issues/451)
+- Ability to group multi-disc releases in a single folder [\#448](https://github.com/whipper-team/whipper/issues/448)
+- Provide option to not use disambiguation in title [\#440](https://github.com/whipper-team/whipper/issues/440)
+- test\_result\_logger.py: truly test all four cases of whipper version scheme [\#427](https://github.com/whipper-team/whipper/issues/427)
+- more template options for filenames [\#401](https://github.com/whipper-team/whipper/issues/401)
+- Always print output directory [\#393](https://github.com/whipper-team/whipper/issues/393) [[Design](https://github.com/whipper-team/whipper/labels/Design)]
+- Provide better error message when there's no CD in the drive [\#385](https://github.com/whipper-team/whipper/issues/385) [[Design](https://github.com/whipper-team/whipper/labels/Design)]
+- Change documentation from epydoc to reStructuredText [\#383](https://github.com/whipper-team/whipper/issues/383)
+- Allow customization of maximum rip retries attempts value [\#349](https://github.com/whipper-team/whipper/issues/349)
+- Save ISRCs from CD TOC [\#320](https://github.com/whipper-team/whipper/issues/320)
+- PathFilter questions [\#313](https://github.com/whipper-team/whipper/issues/313)
+- Let `debug musicbrainzngs` look up based on MusicBrainz Release ID in addition to Disc ID [\#251](https://github.com/whipper-team/whipper/issues/251)
+- Ability to skip unrippable track [\#128](https://github.com/whipper-team/whipper/issues/128)
+- add manpage [\#73](https://github.com/whipper-team/whipper/issues/73)
+- Grab cover art [\#50](https://github.com/whipper-team/whipper/issues/50)
+- cdda2wav from cdrtools instead of cdparanoia [\#38](https://github.com/whipper-team/whipper/issues/38)
 
 **Fixed bugs:**
 
-- Fix regression introduced due to Python 3 port [\#424](https://github.com/whipper-team/whipper/issues/424)
-- Properly tagging releases on dockerhub [\#423](https://github.com/whipper-team/whipper/issues/423)
+- Unable to find offset with a single-track cd [\#532](https://github.com/whipper-team/whipper/issues/532)
+- Rip of CD fails to set "Various Artists" flac tag [\#518](https://github.com/whipper-team/whipper/issues/518)
+- AccurateRipResponse test failures [\#515](https://github.com/whipper-team/whipper/issues/515)
+- path\_filter\_whitespace not working [\#513](https://github.com/whipper-team/whipper/issues/513)
+- got exception IndexError\('list index out of range'\) [\#512](https://github.com/whipper-team/whipper/issues/512)
+- no CD detected, please insert one and retry [\#511](https://github.com/whipper-team/whipper/issues/511) [[Regression](https://github.com/whipper-team/whipper/labels/Regression)]
+- whipper not finding the drive \(whipper docker install\) [\#499](https://github.com/whipper-team/whipper/issues/499)
+- Missing .toc files when ripping a CD multiple times due to whipper ToC caching [\#486](https://github.com/whipper-team/whipper/issues/486)
+- Change the docker alias in the readme to use {HOME} rather than ~ [\#482](https://github.com/whipper-team/whipper/issues/482)
+- Musicbrainz lookup fails for multiple CD rip [\#477](https://github.com/whipper-team/whipper/issues/477)
+- whipper drive analyze appears to be stuck [\#469](https://github.com/whipper-team/whipper/issues/469) [[Upstream Bug](https://github.com/whipper-team/whipper/labels/Upstream%20Bug)]
+- Whipper configuration file: `cover_art` option does nothing [\#465](https://github.com/whipper-team/whipper/issues/465) [[Design](https://github.com/whipper-team/whipper/labels/Design)]
+- Improve Docker instructions in README [\#452](https://github.com/whipper-team/whipper/issues/452)
+- Whipper gives up even if 5th rip attempt is successful [\#449](https://github.com/whipper-team/whipper/issues/449)
+- Don't include full file path in log files [\#445](https://github.com/whipper-team/whipper/issues/445) [[Regression](https://github.com/whipper-team/whipper/labels/Regression)]
+- Whipper example config file: `%` character in inline comment causes `InterpolationSyntaxError` [\#443](https://github.com/whipper-team/whipper/issues/443)
+- output directory isn't read [\#441](https://github.com/whipper-team/whipper/issues/441) [[Regression](https://github.com/whipper-team/whipper/labels/Regression)]
+- Requests to accuraterip.com are missing a user agent which identifies whipper [\#439](https://github.com/whipper-team/whipper/issues/439)
+- Bug: MusicBrainz lookup URL is hardcoded to always use https [\#437](https://github.com/whipper-team/whipper/issues/437)
+- `whipper drive analyze` is broken on Python 3 [\#431](https://github.com/whipper-team/whipper/issues/431) [[Regression](https://github.com/whipper-team/whipper/labels/Regression)]
+- Make it possible to build from tarball again [\#428](https://github.com/whipper-team/whipper/issues/428) [[Regression](https://github.com/whipper-team/whipper/labels/Regression)]
+- TypeError: float argument required, not NoneType [\#402](https://github.com/whipper-team/whipper/issues/402)
+- Drop whipper caching [\#335](https://github.com/whipper-team/whipper/issues/335)
+- musicbrainz calculation fails on cd with data tracks that are not positioned at the end [\#289](https://github.com/whipper-team/whipper/issues/289)
+- AttributeError: 'Namespace' object has no attribute 'offset' [\#230](https://github.com/whipper-team/whipper/issues/230) [[Regression](https://github.com/whipper-team/whipper/labels/Regression)]
+- `'NoneType' object has no attribute '__getitem__'` after rip with current master \(a3e9260\) [\#196](https://github.com/whipper-team/whipper/issues/196)
+- Use the track title instead the recoding title \(MusicBrainz related\) [\#192](https://github.com/whipper-team/whipper/issues/192)
+- pygobject\_register\_sinkfunc is deprecated [\#45](https://github.com/whipper-team/whipper/issues/45)
+
+**Merged pull requests:**
+
+- Fixed error when ripping using `--keep-going` without specifying `--o… [\#537](https://github.com/whipper-team/whipper/pull/537) ([blueblots](https://github.com/blueblots))
+- Add requested template variables [\#536](https://github.com/whipper-team/whipper/pull/536) ([JoeLametta](https://github.com/JoeLametta))
+- Added --keep-going option to cd rip command [\#524](https://github.com/whipper-team/whipper/pull/524) ([blueblots](https://github.com/blueblots))
+- Parameterise the UID of the worker user in the docker build file. [\#517](https://github.com/whipper-team/whipper/pull/517) ([unclealex72](https://github.com/unclealex72))
+- Fix capitalization of "Health status" in rip log [\#510](https://github.com/whipper-team/whipper/pull/510) ([MasterOdin](https://github.com/MasterOdin))
+- Tag audio tracks with ISRCs \(if available\) [\#509](https://github.com/whipper-team/whipper/pull/509) ([JoeLametta](https://github.com/JoeLametta))
+- Provide better error message when there's no CD in the drive [\#507](https://github.com/whipper-team/whipper/pull/507) ([JoeLametta](https://github.com/JoeLametta))
+- Add checks and warnings for \(known\) cdparanoia's upstream bugs [\#506](https://github.com/whipper-team/whipper/pull/506) ([JoeLametta](https://github.com/JoeLametta))
+- Allow configuring whether to auto close the drive's tray [\#505](https://github.com/whipper-team/whipper/pull/505) ([JoeLametta](https://github.com/JoeLametta))
+- Travis CI: Add Python 3.9 release candidate 1 [\#504](https://github.com/whipper-team/whipper/pull/504) ([cclauss](https://github.com/cclauss))
+- Define libcdio version as environment variables in docker [\#498](https://github.com/whipper-team/whipper/pull/498) ([MasterOdin](https://github.com/MasterOdin))
+- Add man pages. [\#490](https://github.com/whipper-team/whipper/pull/490) ([baldurmen](https://github.com/baldurmen))
+- Restore the ability to use inline comments in config files [\#461](https://github.com/whipper-team/whipper/pull/461) ([neilmayhew](https://github.com/neilmayhew))
+- Fix cd rip --max-retries option handling [\#460](https://github.com/whipper-team/whipper/pull/460) ([kevinoid](https://github.com/kevinoid))
+- Fix crash fetching cover art for unknown album [\#459](https://github.com/whipper-team/whipper/pull/459) ([kevinoid](https://github.com/kevinoid))
+- Fix cover file saving with /tmp on different FS [\#458](https://github.com/whipper-team/whipper/pull/458) ([kevinoid](https://github.com/kevinoid))
+- Test all four cases of whipper version scheme [\#456](https://github.com/whipper-team/whipper/pull/456) ([ABCbum](https://github.com/ABCbum))
+- Allow customization of maximum rip attempts value [\#455](https://github.com/whipper-team/whipper/pull/455) ([ABCbum](https://github.com/ABCbum))
+- Update docker instructions to use --bind instead of -v. [\#454](https://github.com/whipper-team/whipper/pull/454) ([MartinPaulEve](https://github.com/MartinPaulEve))
+- Use https and http appropriately when connecting to MusicBrainz [\#450](https://github.com/whipper-team/whipper/pull/450) ([ABCbum](https://github.com/ABCbum))
+- Add PERFORMER & COMPOSER metadata tags to audio tracks \(if available\) [\#444](https://github.com/whipper-team/whipper/pull/444) ([ABCbum](https://github.com/ABCbum))
+- Grab cover art from MusicBrainz/Cover Art Archive and add it to the resulting whipper rips [\#436](https://github.com/whipper-team/whipper/pull/436) ([ABCbum](https://github.com/ABCbum))
+- Fix whipper's MusicBrainz Disc ID calculation for CDs with data tracks that are not positioned at the end of the disc  [\#435](https://github.com/whipper-team/whipper/pull/435) ([ABCbum](https://github.com/ABCbum))
+- Fix failed\(\) task of AnalyzeTask \(program/cdparanoia\) [\#434](https://github.com/whipper-team/whipper/pull/434) ([Freso](https://github.com/Freso))
+- Test against Python versions 3.6, 3.7, and 3.8 [\#433](https://github.com/whipper-team/whipper/pull/433) ([Freso](https://github.com/Freso))
+- Allow whipper's mblookup command to look up information based on Release MBID [\#432](https://github.com/whipper-team/whipper/pull/432) ([ABCbum](https://github.com/ABCbum))
+- Enable whipper to use track title [\#430](https://github.com/whipper-team/whipper/pull/430) ([ABCbum](https://github.com/ABCbum))
+- Improve docstrings [\#389](https://github.com/whipper-team/whipper/pull/389) ([JoeLametta](https://github.com/JoeLametta))
+- Drop whipper caching [\#336](https://github.com/whipper-team/whipper/pull/336) ([JoeLametta](https://github.com/JoeLametta))
+- Rewrite PathFilter [\#324](https://github.com/whipper-team/whipper/pull/324) ([JoeLametta](https://github.com/JoeLametta))
+
+## [v0.9.0](https://github.com/whipper-team/whipper/tree/v0.9.0) (2019-12-04)
+
+[Full Changelog](https://github.com/whipper-team/whipper/compare/v0.8.0...v0.9.0)
+
+**Fixed bugs:**
+
+- Fix regression introduced due to Python 3 port [\#424](https://github.com/whipper-team/whipper/issues/424) [[Regression](https://github.com/whipper-team/whipper/labels/Regression)]
 - Test failure when building a release [\#420](https://github.com/whipper-team/whipper/issues/420)
 - Dockerfile is missing ruamel.yaml [\#419](https://github.com/whipper-team/whipper/issues/419)
+- exception while reading CD [\#413](https://github.com/whipper-team/whipper/issues/413)
+- Unable to find offset using specific CD. [\#252](https://github.com/whipper-team/whipper/issues/252)
+- cdparanoia toc does not agree with cdrdao-toc, cd-paranoia also reports different \(but better\) lengths [\#175](https://github.com/whipper-team/whipper/issues/175) [[Upstream Bug](https://github.com/whipper-team/whipper/labels/Upstream%20Bug)]
 - Port to Python 3 [\#78](https://github.com/whipper-team/whipper/issues/78)
-
-**Closed issues:**
-
-- Why is CD-Text  if found not used for naming Disk and Tracks? [\#397](https://github.com/whipper-team/whipper/issues/397)
 
 **Merged pull requests:**
 
@@ -31,31 +119,27 @@
 
 **Implemented enhancements:**
 
+- Separate out Release in log into two value map [\#416](https://github.com/whipper-team/whipper/issues/416)
 - Include MusicBrainz Release ID in the log file [\#381](https://github.com/whipper-team/whipper/issues/381)
+- Note in the whipper output/log if development version was used [\#337](https://github.com/whipper-team/whipper/issues/337) [[Design](https://github.com/whipper-team/whipper/labels/Design)]
+- read-toc progress information [\#299](https://github.com/whipper-team/whipper/issues/299) [[Design](https://github.com/whipper-team/whipper/labels/Design)]
+- Look into adding more MusicBrainz identifiers to ripped files [\#200](https://github.com/whipper-team/whipper/issues/200)
 - Specify supported version\(s\) of Python in setup.py [\#378](https://github.com/whipper-team/whipper/pull/378) ([Freso](https://github.com/Freso))
 
 **Fixed bugs:**
 
 - whipper bails out if MusicBrainz release group doesn’t have a type [\#396](https://github.com/whipper-team/whipper/issues/396)
-- object has no attribute 'working\_directory' when running cd info [\#375](https://github.com/whipper-team/whipper/issues/375)
-- Failure to rip CD: "ValueError: could not convert string to float: " [\#374](https://github.com/whipper-team/whipper/issues/374)
-- "AttributeError: Program instance has no attribute '\_presult'" when ripping [\#369](https://github.com/whipper-team/whipper/issues/369)
+- object has no attribute 'working\_directory' when running cd info [\#375](https://github.com/whipper-team/whipper/issues/375) [[Regression](https://github.com/whipper-team/whipper/labels/Regression)]
+- Failure to rip CD: "ValueError: could not convert string to float: " [\#374](https://github.com/whipper-team/whipper/issues/374) [[Regression](https://github.com/whipper-team/whipper/labels/Regression)]
+- "AttributeError: Program instance has no attribute '\_presult'" when ripping [\#369](https://github.com/whipper-team/whipper/issues/369) [[Regression](https://github.com/whipper-team/whipper/labels/Regression)]
 - Drive analysis fails [\#361](https://github.com/whipper-team/whipper/issues/361)
-- Eliminate warning "eject: CD-ROM tray close command failed" [\#354](https://github.com/whipper-team/whipper/issues/354)
+- Eliminate warning "eject: CD-ROM tray close command failed" [\#354](https://github.com/whipper-team/whipper/issues/354) [[Design](https://github.com/whipper-team/whipper/labels/Design)]
 - Flac file permissions [\#284](https://github.com/whipper-team/whipper/issues/284)
 
 **Closed issues:**
 
-- Separate out Release in log into two value map [\#416](https://github.com/whipper-team/whipper/issues/416)
-- Network issue [\#412](https://github.com/whipper-team/whipper/issues/412)
-- RequestsDependencyWarning: urllib3 \(1.25.2\) or chardet \(3.0.4\) doesn't match a supported version [\#400](https://github.com/whipper-team/whipper/issues/400)
 - Add git/mercurial dependency to the README [\#386](https://github.com/whipper-team/whipper/issues/386)
-- Doesn't eject - "eject: unable to eject" \(but manual eject works\) [\#355](https://github.com/whipper-team/whipper/issues/355)
-- Note in the whipper output/log if development version was used [\#337](https://github.com/whipper-team/whipper/issues/337)
-- fedora 29, whipper 0.72, Error While Executing Any Command [\#332](https://github.com/whipper-team/whipper/issues/332)
-- read-toc progress information [\#299](https://github.com/whipper-team/whipper/issues/299)
-- ripping fails frequently, but not repeatably [\#290](https://github.com/whipper-team/whipper/issues/290)
-- Look into adding more MusicBrainz identifiers to ripped files [\#200](https://github.com/whipper-team/whipper/issues/200)
+- Rip while entering MusicBrainz data [\#360](https://github.com/whipper-team/whipper/issues/360)
 
 **Merged pull requests:**
 
@@ -90,25 +174,27 @@
 
 [Full Changelog](https://github.com/whipper-team/whipper/compare/v0.7.2...v0.7.3)
 
+**Implemented enhancements:**
+
+- Write musicbrainz\_discid tag when disc is unknown [\#280](https://github.com/whipper-team/whipper/issues/280)
+- Write .toc files in addition to .cue files to support cdrdao and non-compliant .cue sheets [\#214](https://github.com/whipper-team/whipper/issues/214)
+
 **Fixed bugs:**
 
 - Error when parsing log file due to left pad track number [\#340](https://github.com/whipper-team/whipper/issues/340)
-- Failing AccurateRipResponse tests [\#333](https://github.com/whipper-team/whipper/issues/333)
+- Failing AccurateRipResponse tests [\#333](https://github.com/whipper-team/whipper/issues/333) [[Regression](https://github.com/whipper-team/whipper/labels/Regression)]
+- CRITICAL:whipper.command.cd:output directory is a finished rip output directory [\#287](https://github.com/whipper-team/whipper/issues/287)
+- Possible HTOA error [\#281](https://github.com/whipper-team/whipper/issues/281) [[Upstream Bug](https://github.com/whipper-team/whipper/labels/Upstream%20Bug)]
 - Disc template KeyError [\#279](https://github.com/whipper-team/whipper/issues/279)
+- Enhanced CD causes computer to freeze. [\#256](https://github.com/whipper-team/whipper/issues/256) [[Upstream Bug](https://github.com/whipper-team/whipper/labels/Upstream%20Bug)]
 - Unicode issues [\#215](https://github.com/whipper-team/whipper/issues/215)
 - whipper offset find exception [\#208](https://github.com/whipper-team/whipper/issues/208)
 - ZeroDivisionError: float division by zero [\#202](https://github.com/whipper-team/whipper/issues/202)
-- Allow plugins from system directories [\#135](https://github.com/whipper-team/whipper/issues/135)
+- Allow plugins from system directories [\#135](https://github.com/whipper-team/whipper/issues/135) [[Regression](https://github.com/whipper-team/whipper/labels/Regression)]
 
 **Closed issues:**
 
-- On Ubuntu 18.10 cd-paranoia binary is called cdparanoia [\#347](https://github.com/whipper-team/whipper/issues/347)
-- WARNING:whipper.common.program:network error: NetworkError\(\) [\#338](https://github.com/whipper-team/whipper/issues/338)
-- Can not install [\#314](https://github.com/whipper-team/whipper/issues/314)
-- use standard logging [\#303](https://github.com/whipper-team/whipper/issues/303)
-- Write musicbrainz\_discid tag when disc is unknown [\#280](https://github.com/whipper-team/whipper/issues/280)
-- pycdio & libcdio issues [\#238](https://github.com/whipper-team/whipper/issues/238)
-- Write .toc files in addition to .cue files to support cdrdao and non-compliant .cue sheets [\#214](https://github.com/whipper-team/whipper/issues/214)
+- use standard logging [\#303](https://github.com/whipper-team/whipper/issues/303) [[Design](https://github.com/whipper-team/whipper/labels/Design)]
 
 **Merged pull requests:**
 
@@ -128,15 +214,13 @@
 
 [Full Changelog](https://github.com/whipper-team/whipper/compare/v0.7.1...v0.7.2)
 
+**Implemented enhancements:**
+
+- automatically build Docker images [\#301](https://github.com/whipper-team/whipper/issues/301)
+
 **Fixed bugs:**
 
 - UnicodeEncodeError: 'ascii' codec can't encode characters in position 17-18: ordinal not in range\(128\) [\#315](https://github.com/whipper-team/whipper/issues/315)
-
-**Closed issues:**
-
-- Add whipper to Hydrogen Audio wiki's "Comparison of CD rippers" [\#317](https://github.com/whipper-team/whipper/issues/317)
-- Make 0.7.1 release \(before GCI 😅\) [\#312](https://github.com/whipper-team/whipper/issues/312)
-- automatically build Docker images [\#301](https://github.com/whipper-team/whipper/issues/301)
 
 **Merged pull requests:**
 
@@ -147,6 +231,12 @@
 
 [Full Changelog](https://github.com/whipper-team/whipper/compare/v0.7.0...v0.7.1)
 
+**Implemented enhancements:**
+
+- Disable eject button when ripping [\#308](https://github.com/whipper-team/whipper/issues/308)
+- Add cdparanoia version to log file [\#267](https://github.com/whipper-team/whipper/issues/267)
+- Add a requirements.txt file [\#221](https://github.com/whipper-team/whipper/issues/221)
+
 **Fixed bugs:**
 
 - TypeError on whipper offset find [\#263](https://github.com/whipper-team/whipper/issues/263)
@@ -155,16 +245,6 @@
 - Catch DNS error [\#206](https://github.com/whipper-team/whipper/issues/206)
 - Limit length of filenames [\#197](https://github.com/whipper-team/whipper/issues/197)
 - Loggers [\#117](https://github.com/whipper-team/whipper/issues/117)
-
-**Closed issues:**
-
-- Disable eject button when ripping [\#308](https://github.com/whipper-team/whipper/issues/308)
-- Transfer repository ownership to GitHub organization [\#306](https://github.com/whipper-team/whipper/issues/306)
-- Variable offset detected [\#295](https://github.com/whipper-team/whipper/issues/295)
-- Github repo [\#293](https://github.com/whipper-team/whipper/issues/293)
-- pre emphasis documentation [\#275](https://github.com/whipper-team/whipper/issues/275)
-- Add cdparanoia version to log file [\#267](https://github.com/whipper-team/whipper/issues/267)
-- Add a requirements.txt file [\#221](https://github.com/whipper-team/whipper/issues/221)
 
 **Merged pull requests:**
 
@@ -192,16 +272,10 @@
 
 **Fixed bugs:**
 
-- cd rip   is not able to rip the last track [\#203](https://github.com/whipper-team/whipper/issues/203)
+- cd rip   is not able to rip the last track [\#203](https://github.com/whipper-team/whipper/issues/203) [[Upstream Bug](https://github.com/whipper-team/whipper/labels/Upstream%20Bug)]
+- CD-ROM powers off during rip command. [\#189](https://github.com/whipper-team/whipper/issues/189) [[Upstream Bug](https://github.com/whipper-team/whipper/labels/Upstream%20Bug)]
 - Various ripping issues [\#179](https://github.com/whipper-team/whipper/issues/179)
 - whipper not picking up all settings in whipper.conf [\#99](https://github.com/whipper-team/whipper/issues/99)
-
-**Closed issues:**
-
-- How to choose device \(if there are more\)? [\#241](https://github.com/whipper-team/whipper/issues/241)
-- Make a 0.6.0 release [\#219](https://github.com/whipper-team/whipper/issues/219)
-- flac settings [\#184](https://github.com/whipper-team/whipper/issues/184)
-- Remove connection to parent fork. [\#79](https://github.com/whipper-team/whipper/issues/79)
 
 **Merged pull requests:**
 
@@ -222,14 +296,19 @@
 
 **Implemented enhancements:**
 
+- using your own MusicBrainz server [\#172](https://github.com/whipper-team/whipper/issues/172)
+- Use 'Artist as credited' in filename instead of 'Artist in MusicBrainz' \(e.g. to solve \[unknown\]\) [\#155](https://github.com/whipper-team/whipper/issues/155)
 - Declare supported Python version [\#152](https://github.com/whipper-team/whipper/issues/152)
+- Identify media type in log file \(ie CD vs CD-R\) [\#137](https://github.com/whipper-team/whipper/issues/137)
+- Rename the Python module [\#100](https://github.com/whipper-team/whipper/issues/100)
+- libcdio-paranoia instead of cdparanoia [\#87](https://github.com/whipper-team/whipper/issues/87)
+- Support both AccurateRip V1 and AccurateRip V2 at the same time [\#18](https://github.com/whipper-team/whipper/issues/18)
 
 **Fixed bugs:**
 
 - Error: NotFoundException message displayed while ripping an unknown disc [\#198](https://github.com/whipper-team/whipper/issues/198)
 - whipper doesn't name files .flac, which leads to it not being able to find ripped files [\#194](https://github.com/whipper-team/whipper/issues/194)
-- Issues with finding offset [\#182](https://github.com/whipper-team/whipper/issues/182)
-- cdparanoia toc does not agree with cdrdao-toc, cd-paranoia also reports different \(but better\) lengths [\#175](https://github.com/whipper-team/whipper/issues/175)
+- Issues with finding offset [\#182](https://github.com/whipper-team/whipper/issues/182) [[Upstream Bug](https://github.com/whipper-team/whipper/labels/Upstream%20Bug)]
 - failing unittests in systemd-nspawn container [\#157](https://github.com/whipper-team/whipper/issues/157)
 - Update doc/release or remove it [\#149](https://github.com/whipper-team/whipper/issues/149)
 - Test HTOA peak value against 0 \(integer equality\) [\#143](https://github.com/whipper-team/whipper/issues/143)
@@ -238,19 +317,6 @@
 - Track "can't be ripped" but EAC can :\) [\#116](https://github.com/whipper-team/whipper/issues/116)
 - ERROR: stopping task which is already stopped [\#59](https://github.com/whipper-team/whipper/issues/59)
 - can't find accuraterip-checksum binary in morituri-uninstalled mode [\#47](https://github.com/whipper-team/whipper/issues/47)
-
-**Closed issues:**
-
-- ImportError - CDDB on Solus. [\#209](https://github.com/whipper-team/whipper/issues/209)
-- rename milestone 101010 to backlog [\#190](https://github.com/whipper-team/whipper/issues/190)
-- .log, .cue, and .m3u file names [\#180](https://github.com/whipper-team/whipper/issues/180)
-- using your own MusicBrainz server [\#172](https://github.com/whipper-team/whipper/issues/172)
-- Use 'Artist as credited' in filename instead of 'Artist in MusicBrainz' \(e.g. to solve \[unknown\]\) [\#155](https://github.com/whipper-team/whipper/issues/155)
-- Identify media type in log file \(ie CD vs CD-R\) [\#137](https://github.com/whipper-team/whipper/issues/137)
-- Rename the Python module [\#100](https://github.com/whipper-team/whipper/issues/100)
-- libcdio-paranoia instead of cdparanoia [\#87](https://github.com/whipper-team/whipper/issues/87)
-- Release, Tags, NEWS? [\#63](https://github.com/whipper-team/whipper/issues/63)
-- Support both AccurateRip V1 and AccurateRip V2 at the same time [\#18](https://github.com/whipper-team/whipper/issues/18)
 
 **Merged pull requests:**
 
@@ -290,24 +356,19 @@
 
 [Full Changelog](https://github.com/whipper-team/whipper/compare/v0.4.2...v0.5.0)
 
+**Implemented enhancements:**
+
+- Remove gstreamer dependency [\#29](https://github.com/whipper-team/whipper/issues/29)
+
 **Fixed bugs:**
 
-- Final track rip failure due to file size mismatch [\#146](https://github.com/whipper-team/whipper/issues/146)
+- Final track rip failure due to file size mismatch [\#146](https://github.com/whipper-team/whipper/issues/146) [[Upstream Bug](https://github.com/whipper-team/whipper/labels/Upstream%20Bug)]
 - Fails to rip if MB Release doesn't have a release date/year [\#133](https://github.com/whipper-team/whipper/issues/133)
-- overly verbose warning logging [\#131](https://github.com/whipper-team/whipper/issues/131)
+- overly verbose warning logging [\#131](https://github.com/whipper-team/whipper/issues/131) [[Design](https://github.com/whipper-team/whipper/labels/Design)]
 - fb271f08cdee877795091065c344dcc902d1dcbf breaks HEAD [\#129](https://github.com/whipper-team/whipper/issues/129)
 - 'whipper drive list' returns a suggestion to run 'rip offset find' [\#112](https://github.com/whipper-team/whipper/issues/112)
 - EmptyError\('not a single buffer gotten',\) [\#101](https://github.com/whipper-team/whipper/issues/101)
-- Julie Roberts bug [\#74](https://github.com/whipper-team/whipper/issues/74)
-
-**Closed issues:**
-
-- `whipper find offset` still requiring gst [\#141](https://github.com/whipper-team/whipper/issues/141)
-- Burn FLACs 1:1 CD ? [\#125](https://github.com/whipper-team/whipper/issues/125)
-- Check that whipper deals properly with CD pre-emphasis [\#120](https://github.com/whipper-team/whipper/issues/120)
-- Difficulty getting flac encoding working. [\#118](https://github.com/whipper-team/whipper/issues/118)
-- additional tag creation [\#108](https://github.com/whipper-team/whipper/issues/108)
-- Remove gstreamer dependency [\#29](https://github.com/whipper-team/whipper/issues/29)
+- Julie Roberts bug [\#74](https://github.com/whipper-team/whipper/issues/74) [[Upstream Bug](https://github.com/whipper-team/whipper/labels/Upstream%20Bug)]
 
 **Merged pull requests:**
 
@@ -329,10 +390,6 @@
 - 0.4.1 Release created but version number in code not bumped [\#105](https://github.com/whipper-team/whipper/issues/105)
 - Whipper attempts to rip with no CD inserted [\#81](https://github.com/whipper-team/whipper/issues/81)
 
-**Closed issues:**
-
-- Make a 0.4.1 release [\#104](https://github.com/whipper-team/whipper/issues/104)
-
 **Merged pull requests:**
 
 - Amend previous tagged release [\#107](https://github.com/whipper-team/whipper/pull/107) ([JoeLametta](https://github.com/JoeLametta))
@@ -344,8 +401,7 @@
 
 **Closed issues:**
 
-- Please don't stop - despite the recent events \(ANSWERED\) [\#76](https://github.com/whipper-team/whipper/issues/76)
-- Migrate away from the "rip" command [\#21](https://github.com/whipper-team/whipper/issues/21)
+- Migrate away from the "rip" command [\#21](https://github.com/whipper-team/whipper/issues/21) [[Design](https://github.com/whipper-team/whipper/labels/Design)]
 
 **Merged pull requests:**
 
@@ -406,6 +462,7 @@
 **Implemented enhancements:**
 
 - Don't allow ripping without an explicit offset, and make pycdio a required dependency [\#23](https://github.com/whipper-team/whipper/issues/23)
+- get rid of the gstreamer-0.10 dependency [\#2](https://github.com/whipper-team/whipper/issues/2)
 
 **Fixed bugs:**
 
@@ -415,16 +472,6 @@
 - Fix HTOA handling [\#14](https://github.com/whipper-team/whipper/issues/14)
 - rip offset find seems to fail [\#4](https://github.com/whipper-team/whipper/issues/4)
 - rip cd info seems to fail [\#3](https://github.com/whipper-team/whipper/issues/3)
-
-**Closed issues:**
-
-- Error selecting Drive for ripping [\#34](https://github.com/whipper-team/whipper/issues/34)
-- Offset not saved: could not get device info \(requires pycdio\) [\#33](https://github.com/whipper-team/whipper/issues/33)
-- On Arch Linux, CDDB does not know how to install morituri. [\#28](https://github.com/whipper-team/whipper/issues/28)
-- Minimal makedepends for building [\#17](https://github.com/whipper-team/whipper/issues/17)
-- Delete stale branches [\#7](https://github.com/whipper-team/whipper/issues/7)
-- get rid of the gstreamer-0.10 dependency [\#2](https://github.com/whipper-team/whipper/issues/2)
-- Merge 'fork' into 'master' [\#1](https://github.com/whipper-team/whipper/issues/1)
 
 **Merged pull requests:**
 
@@ -453,7 +500,7 @@
 
 ## [v0.2.0](https://github.com/whipper-team/whipper/tree/v0.2.0) (2013-01-20)
 
-[Full Changelog](https://github.com/whipper-team/whipper/compare/20421488be8a82606f7ae82a16c9d8bc015b9e01...v0.2.0)
+[Full Changelog](https://github.com/whipper-team/whipper/compare/e84361b6534a116445bd27b48708fff9ffb589e9...v0.2.0)
 
 
 

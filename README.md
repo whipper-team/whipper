@@ -127,8 +127,8 @@ If you are building from a source tarball or checkout, you can choose to use whi
 Whipper relies on the following packages in order to run correctly and provide all the supported features:
 
 - [cd-paranoia](https://github.com/rocky/libcdio-paranoia), for the actual ripping
-  - To avoid bugs it's advised to use `cd-paranoia` versions ≥ **10.2+0.94+2-2**
-  - The package named `libcdio-utils`, available on Debian and Ubuntu, is affected by a bug (except for Debian testing/sid where a separate `cd-paranoia` package has been added): it doesn't include the `cd-paranoia` binary (needed by whipper). For more details see: [#888053 (Debian)](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=888053), [#889803 (Debian)](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=889803) and [#1750264 (Ubuntu)](https://bugs.launchpad.net/ubuntu/+source/libcdio/+bug/1750264).
+  - To avoid bugs it's advised to use `cd-paranoia` versions ≥ **10.2+0.94+2**
+  - The package named `libcdio-utils`, available on certain Debian and Ubuntu versions, is affected by a bug: it doesn't include the `cd-paranoia` binary (needed by whipper). Only Debian bullseye (testing) / sid (unstable) and Ubuntu focal (20.04) and later versions have a separate `cd-paranoia` package where the binary is provided. For more details on this issue check the relevant bug reports: [#888053 (Debian)](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=888053), [#889803 (Debian)](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=889803) and [#1750264 (Ubuntu)](https://bugs.launchpad.net/ubuntu/+source/libcdio/+bug/1750264).
 - [cdrdao](http://cdrdao.sourceforge.net/), for session, TOC, pre-gap, and ISRC extraction
 - [GObject Introspection](https://wiki.gnome.org/Projects/GObjectIntrospection), to provide GLib-2.0 methods used by `task.py`
 - [PyGObject](https://pypi.org/project/PyGObject/), required by `task.py`
@@ -136,7 +136,7 @@ Whipper relies on the following packages in order to run correctly and provide a
 - [mutagen](https://pypi.python.org/pypi/mutagen), for tagging support
 - [setuptools](https://pypi.python.org/pypi/setuptools), for installation, plugins support
 - [pycdio](https://pypi.python.org/pypi/pycdio/), for drive identification (required for drive offset and caching behavior to be stored in the configuration file).
-  - To avoid bugs it's advised to use the most recent `pycdio` version with the corresponding `libcdio` release or, if stuck to old pycdio versions, **0.20**/**0.21** with `libcdio` ≥ **0.90** ≤ **0.94**. All other combinations won't probably work.
+  - To avoid bugs it's advised to use the most recent `pycdio` version with the corresponding `libcdio` release or, if stuck on old pycdio versions, **0.20**/**0.21** with `libcdio` ≥ **0.90** ≤ **0.94**. All other combinations won't probably work.
 - [discid](https://pypi.org/project/discid/), for calculating Musicbrainz disc id.
 - [ruamel.yaml](https://pypi.org/project/ruamel.yaml/), for generating well formed YAML report logfiles
 - [libsndfile](http://www.mega-nerd.com/libsndfile/), for reading wav files
@@ -183,6 +183,8 @@ Install whipper: `python3 setup.py install`
 
 Note that, depending on the chosen installation path, this command may require elevated rights.
 
+To build the man pages, follow the instructions in the relevant [README](https://github.com/whipper-team/whipper/blob/develop/man/README.md) which is located in the `man` subfolder.
+
 ## Usage
 
 Whipper currently only has a command-line interface called `whipper` which is self-documenting: `whipper -h` gives you the basic instructions.
@@ -217,6 +219,8 @@ The simplest way to get started making accurate rips is:
    `whipper offset find -o insert-numeric-value-here`
 
    If you omit the `-o` argument, whipper will try a long, popularity-sorted list of drive offsets.
+
+   Please note that whipper's offset find feature is quite primitive so it may not always achieve its task: in this case using the value listed in [AccurateRip's CD Drive Offset database](http://www.accuraterip.com/driveoffsets.htm) should be enough.
 
    If you can not confirm your drive offset value but wish to set a default regardless, set `read_offset = insert-numeric-value-here` in `whipper.conf`.
 
@@ -311,6 +315,8 @@ On a default Debian/Ubuntu installation, the following paths are searched by whi
 - `/usr/lib/python3.X/dist-packages/whipper/plugins`
 
 Where `X` stands for the minor version of the Python 3 release available on the system.
+
+Please note that locally installed logger plugins won't be recognized when whipper has been installed through the official Docker image.
 
 ### Official logger plugins
 
