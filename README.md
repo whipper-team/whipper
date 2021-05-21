@@ -445,10 +445,9 @@ And to all the [contributors](https://github.com/whipper-team/whipper/graphs/con
 
 You can find us and talk about the project on:
 
-- IRC: [freenode](https://webchat.freenode.net/?channels=%23whipper), **#whipper** channel
-- Matrix (the room is a bridge to freenode IRC)
-  - Access Matrix  through the [Riot.im web client](https://riot.im/app/#/room/!wxdgcGzudITUpZMCrn:matrix.org)
-  - Join to the room named `#freenode_#whipper:matrix.org`
+- IRC: **`#whipper`** channel on the [Libera.Chat](ircs://irc.libera.chat:6697) network
+  - See [Libera.Chat’s guide on how to connect](https://libera.chat/guides/connect)
+    - Or just use the [Kiwi IRC web client](https://kiwiirc.com/nextclient/irc.libera.chat/?#whipper)
 - [Redacted thread (official)](https://redacted.ch/forums.php?action=viewthread&threadid=150)
 
 Other relevant links:
