@@ -120,9 +120,11 @@ class ImageVerifyTask(task.MultiSeparateTask):
     description = "Checking tracks"
     lengths = None
 
-    def __init__(self, image, skipped_tracks=[]):
+    def __init__(self, image, skipped_tracks=None):
         task.MultiSeparateTask.__init__(self)
 
+        if skipped_tracks is None:
+            skipped_tracks = []
         self._image = image
         # XXX: Pylint, redefining name 'cue' from outer scope (import)
         cue = image.cue
