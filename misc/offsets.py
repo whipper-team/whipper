@@ -8,6 +8,10 @@ import sys
 
 from bs4 import BeautifulSoup
 
+if len(sys.argv) < 2:
+    print("Usage: %s driveoffsets_file" % sys.argv[0], file=sys.stderr)
+    raise SystemExit(1)
+
 with open(sys.argv[1]) as f:
     doc = f.read()
 
