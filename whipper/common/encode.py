@@ -103,7 +103,8 @@ class EmbedPictureTask(task.Task):
         task.Task.start(self, runner)
         self.schedule(0.0, self._embed_picture)
 
-    def _make_flac_picture(self, cover_art_filename):
+    @staticmethod
+    def _make_flac_picture(cover_art_filename):
         """
         Given a path to a jpg/png file, return a FLAC picture for embedding.
 

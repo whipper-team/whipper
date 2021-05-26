@@ -92,7 +92,8 @@ class Program:
             logger.info('changing to working directory %s', workingDirectory)
             os.chdir(workingDirectory)
 
-    def getFastToc(self, runner, device):
+    @staticmethod
+    def getFastToc(runner, device):
         """
         Retrieve the normal TOC table from the drive.
 
@@ -507,7 +508,8 @@ class Program:
         stop = track.getIndex(1).absolute - 1
         return start, stop
 
-    def getCoverArt(self, path, release_id):
+    @staticmethod
+    def getCoverArt(path, release_id):
         """
         Get cover art image from Cover Art Archive.
 

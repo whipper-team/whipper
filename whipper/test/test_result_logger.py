@@ -30,13 +30,16 @@ class MockImageTable:
             MockImageTrack(2, 16264, 33487)
         ]
 
-    def getCDDBDiscId(self):
+    @staticmethod
+    def getCDDBDiscId():
         return "c30bde0d"
 
-    def getMusicBrainzDiscId(self):
+    @staticmethod
+    def getMusicBrainzDiscId():
         return "eyjySLXGdKigAjY3_C0nbBmNUHc-"
 
-    def getMusicBrainzSubmitURL(self):
+    @staticmethod
+    def getMusicBrainzSubmitURL():
         return (
             "https://musicbrainz.org/cdtoc/attach?toc=1+13+228039+150+16414+"
             "33638+51378+69369+88891+104871+121645+138672+160748+178096+194680"

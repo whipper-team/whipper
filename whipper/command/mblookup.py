@@ -18,7 +18,8 @@ Example Disc ID: KnpGsLhvH.lPrNc1PBL21lb9Bg4-"""
             help="MusicBrainz Disc ID or Release ID to look up"
         )
 
-    def _printMetadata(self, md):
+    @staticmethod
+    def _printMetadata(md):
         """
         Print out metadata received in a sensible way.
 
