@@ -578,6 +578,8 @@ class Program:
         :type overread: bool
         :param what: a string representing what's being read; e.g. Track
         :type what: str or None
+        :param coverArtPath: path to the downloaded cover art file
+        :type coverArtPath: str or None
         """
         if trackResult.number == 0:
             start, stop = self.getHTOA()

@@ -21,7 +21,9 @@ elif len(sys.argv) == 5:
         use_v1 = False
 
 if use_v1 is None:
-    print('Syntax: accuraterip-checksum [--version / --accuraterip-v1 / --accuraterip-v2 (default)] filename track_number total_tracks')
+    print('Syntax: accuraterip-checksum [--version / --accuraterip-v1 / '
+          '--accuraterip-v2 (default)] filename track_number total_tracks',
+          file=sys.stderr)
     raise SystemExit(1)
 
 filename = sys.argv[offset + 1]

@@ -95,7 +95,7 @@ alias whipper="docker run -ti --rm --device=/dev/cdrom \
     whipperteam/whipper"
 ```
 
-You should put this e.g. into your `.bash_aliases`. Also keep in mind to substitute the path definitions to something that fits to your needs (e.g. replace `… -v ${PWD}/output:/output …` with `… -v ${HOME}/ripped:/output \ …`).
+You should put this e.g. into your `.bash_aliases`. Also keep in mind to replace the path definitions to something that fits to your needs (e.g. replace `… -v ${PWD}/output:/output …` with `… -v ${HOME}/ripped:/output \ …`).
 
 Essentially, what this does is to map the /home/worker/.config/whipper and ${PWD}/output (or whatever other directory you specified) on your host system to locations inside the Docker container where the files can be written and read. These directories need to exist on your system before you can run the container:
 
@@ -103,7 +103,7 @@ Essentially, what this does is to map the /home/worker/.config/whipper and ${PWD
 
 Please note that the example alias written above only provides access to a single disc drive: if you've got many you will need to customise it in order to use all of them in whipper's Docker container.
 
-Finally you can test the correct installation as such:
+Finally, you can test the correct installation as such:
 
 ```
 whipper -v
@@ -362,7 +362,7 @@ To make a good faith effort to ensure licensing criteria are met, this project r
 The Developer Certificate of Origin (DCO) is a document that certifies you own and/or have the right to contribute the work and license it appropriately. The DCO is used instead of a _much more annoying_
 [CLA (Contributor License Agreement)](https://en.wikipedia.org/wiki/Contributor_License_Agreement). With the DCO, you retain copyright of your own work :). The DCO originated in the Linux community, and is used by other projects like Git and Docker.
 
-The DCO agreement is shown below and it's also available online: [HERE](https://developercertificate.org/).
+The DCO agreement is shown below, and it's also available online: [HERE](https://developercertificate.org/).
 
 ```
 Developer Certificate of Origin
@@ -425,7 +425,7 @@ WHIPPER_DEBUG=DEBUG WHIPPER_LOGFILE=whipper.log whipper offset find
 gzip whipper.log
 ```
 
-And attach the gzipped log file to your bug report.
+Finally, attach the gzipped log file to your bug report.
 
 Without `WHIPPER_LOGFILE` set, logging messages will go to stderr. `WHIPPER_DEBUG` accepts a string of the [default python logging levels](https://docs.python.org/3/library/logging.html#logging-levels).
 

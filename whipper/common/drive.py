@@ -88,7 +88,7 @@ def get_cdrom_drive_status(drive_path):
     - https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/uapi/linux/cdrom.h  # noqa: E501
 
     :param drive_path: path to the disc drive
-    :type device: str
+    :type drive_path: str
     :returns: return code of the 'CDROM_DRIVE_STATUS' ioctl
     :rtype: int
     """

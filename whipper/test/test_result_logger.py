@@ -147,7 +147,7 @@ class LoggerTestCase(unittest.TestCase):
         ]
         created_by_re = re.compile((
                             r'Log created by: whipper '
-                            r'[\d]+\.[\d]+\.[\d]+(\+d\d{8}|\.dev[\w\.\+]+)? '
+                            r'[\d]+\.[\d]+\.[\d]+(\+d\d{8}|\.dev[\w.+]+)? '
                             r'\(internal logger\)'
                         ))
         for versionScheme in versionSchemes:
@@ -156,7 +156,7 @@ class LoggerTestCase(unittest.TestCase):
             actualLines[1],
             re.compile((
                 r'Log creation date: '
-                r'20[\d]{2}\-[\d]{2}\-[\d]{2}T[\d]{2}:[\d]{2}:[\d]{2}Z'
+                r'20[\d]{2}-[\d]{2}-[\d]{2}T[\d]{2}:[\d]{2}:[\d]{2}Z'
             ))
         )
 

@@ -37,7 +37,7 @@ class Config:
         self._path = path or directory.config_path()
 
         self._parser = configparser.ConfigParser(
-            inline_comment_prefixes=(';'))
+            inline_comment_prefixes=';')
 
         self.open()
 

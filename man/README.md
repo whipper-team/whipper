@@ -3,7 +3,7 @@ line tool provided by the Python `docutils` project:
 
     rst2man whipper.rst whipper.1
 
-Alternatively, you can also build all of the man pages in this directory at the
+Alternatively, you can also build all the man pages in this directory at the
 same time by running (requires `make`):
 
     make
