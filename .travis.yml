@@ -19,7 +19,7 @@ virtualenv:
 cache: pip
 
 env:
-    - FLAKE8=false
+    - FLAKE8=false MANPAGES=false
 
 jobs:
   allow_failures:
@@ -27,7 +27,9 @@ jobs:
    - python: "3.10-dev"
   include:
   - python: 3.9
-    env: FLAKE8=true
+    env: FLAKE8=true MANPAGES=false
+  - python: 3.9
+    env: FLAKE8=false MANPAGES=true
 
 install:
     # Dependencies
@@ -37,9 +39,12 @@ install:
     - pip install pycdio==2.1.0
     # flake8 and twisted are testing dependencies
     - pip install flake8 twisted -r requirements.txt
+    # Docutils is needed to build the man pages
+    - sudo apt-get -qq install python3-docutils
     # Installing
     - python setup.py install
 
 script:
-    - if [ ! "$FLAKE8" = true ]; then python -m unittest discover; fi
+    - if [ ! "$FLAKE8" = true ] && [ ! "$MANPAGES" = true ]; then python -m unittest discover; fi
     - if [ "$FLAKE8" = true ]; then flake8 --benchmark --statistics; fi
+    - if [ "$MANPAGES" = true ]; then cd man && make; fi
