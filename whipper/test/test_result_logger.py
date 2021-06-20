@@ -3,8 +3,8 @@ import hashlib
 import os
 import re
 import unittest
-import ruamel.yaml
 
+from whipper.common.yaml import YAML
 from whipper.result.result import TrackResult, RipResult
 from whipper.result.logger import WhipperLogger
 
@@ -163,16 +163,14 @@ class LoggerTestCase(unittest.TestCase):
             ))
         )
 
-        yaml = ruamel.yaml.YAML()
+        yaml = YAML(
+            typ='rt',
+            pure=True
+        )
         parsedLog = yaml.load(actual)
         self.assertEqual(
             actual,
-            ruamel.yaml.dump(
-                parsedLog,
-                default_flow_style=False,
-                width=4000,
-                Dumper=ruamel.yaml.RoundTripDumper
-            )
+            yaml.dump(parsedLog)
         )
         log_body = "\n".join(actualLines[:-1]).encode()
         self.assertEqual(

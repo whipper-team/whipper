@@ -1,12 +1,12 @@
 import time
 import hashlib
 import re
-import ruamel.yaml as yaml
 from ruamel.yaml.comments import CommentedMap as OrderedDict
 
 import whipper
 
 from whipper.common import common
+from whipper.common.yaml import YAML
 from whipper.result import result
 
 
@@ -148,11 +148,12 @@ class WhipperLogger(result.Logger):
         data["EOF"] = "End of status report"
         riplog["Conclusive status report"] = data
 
+        yaml = YAML(
+            typ="rt",
+            pure=True
+        )
         riplog = yaml.dump(
-            riplog,
-            default_flow_style=False,
-            width=4000,
-            Dumper=yaml.RoundTripDumper
+            riplog
         )
         # Add a newline after the "Log creation date" line
         riplog = re.sub(
