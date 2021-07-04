@@ -448,6 +448,10 @@ You can find us and talk about the project on:
 - IRC: **`#whipper`** channel on the [Libera.Chat](ircs://irc.libera.chat:6697) network
   - See [Libera.Chat’s guide on how to connect](https://libera.chat/guides/connect)
     - Or just use the [Kiwi IRC web client](https://kiwiirc.com/nextclient/irc.libera.chat/?#whipper)
+- Matrix (the room is a portal to Libera Chat's IRC channel)
+  - Join to the room named **`#whipper`** (**`libera.chat`** is the homeserver)
+  - Use Matrix's invite link for [#whipper:libera.chat](https://matrix.to/#/#whipper:libera.chat)
+  - Access Matrix through the [Element web client](https://app.element.io/#/room/#whipper:libera.chat)
 - [Redacted thread (official)](https://redacted.ch/forums.php?action=viewthread&threadid=150)
 
 Other relevant links:
