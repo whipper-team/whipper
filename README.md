@@ -429,6 +429,8 @@ Finally, attach the gzipped log file to your bug report.
 
 Without `WHIPPER_LOGFILE` set, logging messages will go to stderr. `WHIPPER_DEBUG` accepts a string of the [default python logging levels](https://docs.python.org/3/library/logging.html#logging-levels).
 
+_If you can, please try to help to solve [THIS issue](https://github.com/rocky/libcdio-paranoia/issues/14) which also has an [open bounty](https://www.bountysource.com/issues/60536098-incorrectly-fetches-track-length-with-certain-offsets) on Bountysource._
+
 ## Credits
 
 Thanks to:
