@@ -378,7 +378,7 @@ Log files will log the path to tracks relative to this directory.
                                         self.program.metadata)
         dirname = os.path.dirname(discName)
         if os.path.exists(dirname):
-            logs = glob.glob(os.path.join(dirname, '*.log'))
+            logs = glob.glob(os.path.join(glob.escape(dirname), '*.log'))
             if logs:
                 msg = ("output directory %s is a finished rip" % dirname)
                 logger.debug(msg)
