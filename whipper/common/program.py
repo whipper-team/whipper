@@ -362,7 +362,8 @@ class Program:
                     print("\nPlease select a release. You only need to match "
                           "the last few characters.")
                     release = input(
-                        "With no input the release will be [%s]: " % guess)
+                        "With no input the release will be [%s]: " %
+                        guess).lower()
 
                     if not release:
                         release = guess
