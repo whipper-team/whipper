@@ -128,7 +128,6 @@ Whipper relies on the following packages in order to run correctly and provide a
 
 - [cd-paranoia](https://github.com/rocky/libcdio-paranoia), for the actual ripping
   - To avoid bugs it's advised to use `cd-paranoia` versions ≥ **10.2+0.94+2**
-  - The package named `libcdio-utils`, available on certain Debian and Ubuntu versions, is affected by a bug: it doesn't include the `cd-paranoia` binary (needed by whipper). Only Debian bullseye (testing) / sid (unstable) and Ubuntu focal (20.04) and later versions have a separate `cd-paranoia` package where the binary is provided. For more details on this issue check the relevant bug reports: [#888053 (Debian)](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=888053), [#889803 (Debian)](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=889803) and [#1750264 (Ubuntu)](https://bugs.launchpad.net/ubuntu/+source/libcdio/+bug/1750264).
 - [cdrdao](http://cdrdao.sourceforge.net/), for session, TOC, pre-gap, and ISRC extraction
 - [GObject Introspection](https://wiki.gnome.org/Projects/GObjectIntrospection), to provide GLib-2.0 methods used by `task.py`
 - [PyGObject](https://pypi.org/project/PyGObject/), required by `task.py`
