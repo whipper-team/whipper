@@ -10,7 +10,6 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     curl \
     eject \
     flac \
-    gir1.2-glib-2.0 \
     git \
     libdiscid0 \
     libiso9660-dev \
@@ -20,7 +19,6 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     make \
     pkgconf \
     python3-dev \
-    python3-gi \
     python3-musicbrainzngs \
     python3-mutagen \
     python3-pil \
