@@ -35,8 +35,13 @@ retrieves and display accuraterip data from the given URL
         self.parser.add_argument('url', action='store',
                                  help="accuraterip URL to load data from")
 
+    def _strip_url_prefix(self, url):
+        if self.options.url.startswith(ACCURATERIP_URL):
+            return self.options.url[len(ACCURATERIP_URL):]
+        return url
+
     def do(self):
-        responses = get_db_entry(self.options.url.lstrip(ACCURATERIP_URL))
+        responses = get_db_entry(self._strip_url_prefix(self.options.url))
 
         count = responses[0].num_tracks
 
