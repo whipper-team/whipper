@@ -1,6 +1,7 @@
 from ruamel.yaml import YAML as ruamel_YAML
 from ruamel.yaml.compat import StringIO
 
+
 # https://yaml.readthedocs.io/en/latest/example.html#output-of-dump-as-a-string
 class YAML(ruamel_YAML):
     def __init__(self, *args, **kwargs):
