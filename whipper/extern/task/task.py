@@ -18,10 +18,9 @@
 # You should have received a copy of the GNU General Public License
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
 import logging
 import sys
-
-from gi.repository import GLib as GLib
 
 logger = logging.getLogger(__name__)
 
@@ -470,7 +469,7 @@ class TaskRunner(LogStub):
 
 
 class SyncRunner(TaskRunner, ITaskListener):
-    """Run the task synchronously in a GObject MainLoop."""
+    """Run the task synchronously in an asyncio event loop."""
 
     def __init__(self, verbose=True):
         self._verbose = verbose
@@ -484,13 +483,13 @@ class SyncRunner(TaskRunner, ITaskListener):
             self._verboseRun = verbose
         self._skip = skip
 
-        self._loop = GLib.MainLoop()
+        self._loop = asyncio.new_event_loop()
         self._task.addListener(self)
         # only start the task after going into the mainloop,
         # otherwise the task might complete before we are in it
-        GLib.timeout_add(0, self._startWrap, self._task)
+        self._loop.call_soon(self._startWrap, self._task)
         self.debug('run loop')
-        self._loop.run()
+        self._loop.run_forever()
 
         self.debug('done running task %r', task)
         if task.exception:
@@ -529,7 +528,7 @@ class SyncRunner(TaskRunner, ITaskListener):
                 self.stopped(task)
                 raise
 
-        GLib.timeout_add(int(delta * 1000), c)
+        self._loop.call_later(delta, c)
 
     # ITaskListener methods
     def progressed(self, task, value):
@@ -564,7 +563,7 @@ class SyncRunner(TaskRunner, ITaskListener):
     def stopped(self, task):
         self.debug('stopped task %r', task)
         self.progressed(task, 1.0)
-        self._loop.quit()
+        self._loop.stop()
 
     def _report(self):
         self._output('%s %3d %%' % (
