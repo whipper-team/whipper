@@ -253,6 +253,7 @@ path_filter_posix = True		; replace illegal chars in *nix OSes with _
 path_filter_vfat = False		; replace illegal chars in VFAT filesystems with _
 path_filter_whitespace = False		; replace all whitespace chars with _
 path_filter_printable = False		; replace all non printable ASCII chars with _
+# cdparanoia = cdparanoia		; cdparanoia executable to use.  Default is cd-paranoia
 
 [musicbrainz]
 server = https://musicbrainz.org	; use MusicBrainz server at host[:port]
