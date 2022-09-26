@@ -253,7 +253,6 @@ path_filter_posix = True		; replace illegal chars in *nix OSes with _
 path_filter_vfat = False		; replace illegal chars in VFAT filesystems with _
 path_filter_whitespace = False		; replace all whitespace chars with _
 path_filter_printable = False		; replace all non printable ASCII chars with _
-# cdparanoia = cdparanoia		; cdparanoia executable to use.  Default is cd-paranoia
 
 [musicbrainz]
 server = https://musicbrainz.org	; use MusicBrainz server at host[:port]
@@ -264,6 +263,14 @@ server = https://musicbrainz.org	; use MusicBrainz server at host[:port]
 defeats_cache = True			; whether the drive is capable of defeating the audio cache
 read_offset = 6				; drive read offset in positive/negative frames (no leading +)
 # do not edit the values 'vendor', 'model', and 'release'; they are used by whipper to match the drive
+
+[drive:PIONEER%20%3ABD-RW%20%20%20BDR-209D%3A1.10]
+defeats_cache = True
+read_offset = 667
+cdparanoia = cdparanoia			; cdparanoia executable to use.  Default is cd-paranoia
+					; cd-paranoia has a bug that makes drives with large read_offset
+					; unusable, see https://github.com/whipper-team/whipper/issues/234
+
 
 # command line defaults for `whipper cd rip`
 [whipper.cd.rip]
