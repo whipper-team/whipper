@@ -16,6 +16,7 @@ class WhipperLogger(result.Logger):
     _inARDatabase = 0
     _errors = False
     _skippedTracks = False
+    _unverifiedTracks = False
 
     def log(self, ripResult, epoch=time.time()):
         """Return logfile as string."""
@@ -142,6 +143,8 @@ class WhipperLogger(result.Logger):
             message = "There were errors"
         elif self._skippedTracks:
             message = "Some tracks were not ripped (skipped)"
+        elif self._unverifiedTracks:
+            message = "Some tracks could not be verified (but were kept)"
         else:
             message = "No errors occurred"
         data["Health status"] = message
@@ -250,6 +253,10 @@ class WhipperLogger(result.Logger):
         if trackResult.skipped:
             track["Status"] = "Track not ripped (skipped)"
             self._skippedTracks = True
+        # Check if the track has failed verification, but has been kept
+        elif trackResult.unverified:
+            track["Status"] = "Copy NOT OK (unverified file kept)"
+            self._unverifiedTracks = True
         # Check if Test & Copy CRCs are equal
         elif trackResult.testcrc == trackResult.copycrc:
             track["Status"] = "Copy OK"

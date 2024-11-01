@@ -39,6 +39,7 @@ class TrackResult:
     AR = None
     classVersion = 3
     skipped = False
+    unverified = False
 
     def __init__(self):
         """

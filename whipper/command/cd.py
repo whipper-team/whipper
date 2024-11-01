@@ -231,6 +231,9 @@ class Rip(_CD):
     skipped_tracks = []
     # this holds tracks that fail to rip -
     # currently only used when the --keep-going option is used
+    unverified_tracks = []
+    # this holds tracks that failed to verify -
+    # currently only used when the --keep-unverified option is used
     description = """
 Rips a CD.
 
@@ -326,6 +329,11 @@ Log files will log the path to tracks relative to this directory.
                                  help="continue ripping further tracks "
                                  "instead of giving up if a track "
                                  "can't be ripped")
+        self.parser.add_argument('-u', '--keep-unverified',
+                                 action='store_true',
+                                 help="keep unverified (partial) results "
+                                 "instead of deleleting the data if a track "
+                                 "can't be verified")
 
     def handle_arguments(self):
         self.options.output_directory = os.path.expanduser(
@@ -481,7 +489,8 @@ Log files will log the path to tracks relative to this directory.
                                                   number,
                                                   len(self.itable.tracks),
                                                   extra),
-                                              coverArtPath=self.coverArtPath)
+                                              coverArtPath=self.coverArtPath,
+                                              keep=self.options.keep_unverified)
                         break
                     # FIXME: catching too general exception (Exception)
                     except Exception as e:
@@ -492,7 +501,15 @@ Log files will log the path to tracks relative to this directory.
                     tries -= 1
                     logger.critical('giving up on track %d after %d times',
                                     number, tries)
-                    if self.options.keep_going:
+                    if self.options.keep_unverified and not number == 0:
+                        logger.warning("track %d failed to rip. keeping unverified file.", number)
+                        logger.debug("adding %s to unverified_tracks",
+                                     trackResult)
+                        self.unverified_tracks.append(trackResult)
+                        logger.debug("unverified_tracks = %s",
+                                     self.unverified_tracks)
+                        trackResult.unverified = True
+                    elif self.options.keep_going:
                         logger.warning("track %d failed to rip.", number)
                         logger.debug("adding %s to skipped_tracks",
                                      trackResult)
@@ -504,7 +521,7 @@ Log files will log the path to tracks relative to this directory.
                         raise RuntimeError("track can't be ripped. "
                                            "Rip attempts number is equal "
                                            "to {}".format(self.options.max_retries))
-                if trackResult in self.skipped_tracks:
+                if trackResult in (self.skipped_tracks or self.unverified_tracks):
                     print("Skipping CRC comparison for track %d "
                           "due to rip failure" % number)
                 else:
@@ -572,6 +589,8 @@ Log files will log the path to tracks relative to this directory.
         logger.debug('writing m3u file for %r', discName)
         self.program.write_m3u(discName)
 
+        if len(self.unverified_tracks) > 0:
+            self.program.unverified_tracks = self.unverified_tracks
         if len(self.skipped_tracks) > 0:
             logger.warning("the generated cue sheet references %d track(s) "
                            "which failed to rip so the associated file(s) "
@@ -591,6 +610,10 @@ Log files will log the path to tracks relative to this directory.
             logger.warning('%d tracks have been skipped from this rip attempt',
                            len(self.skipped_tracks))
             return 5
+        elif len(self.unverified_tracks) > 0:
+            logger.warning('%d tracks could not be verified from this rip attempt',
+                           len(self.unverified_tracks))
+            return 6
 
 
 class CD(BaseCommand):

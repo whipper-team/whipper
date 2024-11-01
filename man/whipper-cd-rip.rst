@@ -73,6 +73,10 @@ Options
 |     continue ripping further tracks instead of giving up if a track can't be
 |     ripped
 
+| **-u** | **--keep-unverified**
+|     keep unverified tracks instead of deleting the data if a track can't be
+|     verified
+
 Template schemes
 ================
 

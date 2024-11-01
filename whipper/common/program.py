@@ -60,6 +60,7 @@ class Program:
     outdir = None
     result = None
     skipped_tracks = None
+    unverified_tracks = None
 
     def __init__(self, config, record=False):
         """
@@ -562,7 +563,7 @@ class Program:
         return ret
 
     def ripTrack(self, runner, trackResult, offset, device, taglist,
-                 overread, what=None, coverArtPath=None):
+                 overread, what=None, coverArtPath=None, keep=False):
         """
         Rip and store a track of the disc.
 
@@ -606,7 +607,8 @@ class Program:
                                            device=device,
                                            taglist=taglist,
                                            what=what,
-                                           coverArtPath=coverArtPath)
+                                           coverArtPath=coverArtPath,
+                                           keep=keep)
 
         runner.run(t)
 
