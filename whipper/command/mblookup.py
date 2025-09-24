@@ -26,15 +26,15 @@ Example Disc ID: KnpGsLhvH.lPrNc1PBL21lb9Bg4-"""
         :param md: MusicBrainz's metadata about the disc
         :type md: `DiscMetadata`
         """
-        print('    Artist: %s' % md.artist.encode('utf-8'))
-        print('    Title:  %s' % md.releaseTitle.encode('utf-8'))
-        print('    Type:   %s' % str(md.releaseType).encode('utf-8'))
-        print('    URL:    %s' % md.url)
-        print('    Tracks: %d' % len(md.tracks))
-        if md.catalogNumber:
-            print('    Cat no: %s' % md.catalogNumber)
+        print('    Artist:    %s' % md.artist.encode('utf-8'))
+        print('    Title:     %s' % md.releaseTitle.encode('utf-8'))
+        print('    Type:      %s' % str(md.releaseType).encode('utf-8'))
+        print('    URL:       %s' % md.url)
+        print('    Tracks:    %d' % len(md.tracks))
+        if md.catalogNumbers:
+            print('    Cat no(s): %s' % ', '.join(md.catalogNumbers))
         if md.barcode:
-            print('    Barcode: %s' % md.barcode)
+            print('    Barcode:   %s' % md.barcode)
 
             for j, track in enumerate(md.tracks):
                 print('      Track %2d: %s - %s' % (

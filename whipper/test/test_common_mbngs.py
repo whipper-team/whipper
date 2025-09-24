@@ -287,7 +287,7 @@ class MetadataTestCase(unittest.TestCase):
         self.assertEqual(metadata.url,
                          'https://musicbrainz.org/release'
                          '/6109ceed-7e21-490b-b5ad-3a66b4e4cfbb')
-        self.assertEqual(metadata.catalogNumber, '[none]')
+        self.assertEqual(metadata.catalogNumbers, ['[none]'])
         self.assertEqual(metadata.barcode, '700261430249')
 
         self.assertEqual(len(metadata.tracks), 16)
