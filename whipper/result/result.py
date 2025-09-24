@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
-import pkg_resources
+from importlib.metadata import entry_points
 import time
 
 
@@ -157,7 +157,7 @@ def getLoggers():
     """
     d = {}
 
-    pluggables = list(pkg_resources.iter_entry_points("whipper.logger"))
+    pluggables = list(entry_points(group="whipper.logger"))
     for entrypoint in [EntryPoint(), ] + pluggables:
         plugin_class = entrypoint.load()
         d[entrypoint.name] = plugin_class
