@@ -17,7 +17,8 @@ setup(
                   sources=['src/accuraterip-checksum.c'])
     ],
     extras_require={
-        'cover_art': ["pillow"]
+        'cover_art': ["pillow"],
+        'color_log': ["coloredlogs"]
     },
     entry_points={
         'console_scripts': [
