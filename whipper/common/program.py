@@ -373,7 +373,7 @@ class Program:
                 logger.debug('asked for release %r, only kept %r', release,
                              metadatas)
                 if len(metadatas) == 1:
-                    logger.info('picked requested release id %s', release)
+                    logger.info('picked requested release id %s', metadatas[0].mbid)
                     print('Artist: %s' % metadatas[0].artist)
                     print('Title : %s' % metadatas[0].releaseTitle)
                 elif not metadatas:
