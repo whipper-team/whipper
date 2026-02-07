@@ -81,8 +81,8 @@ class DiscMetadata:
     :vartype discNumber: int or None
     :cvar discTotal: total number of discs in the chosen release
     :vartype discTotal: int or None
-    :cvar catalogNumber: release catalog number
-    :vartype catalogNumber: str or None
+    :cvar catalogNumbers: release catalog number
+    :vartype catalogNumbers: list[str]
     :cvar barcode: release barcode
     :vartype barcode: str or None
     """
@@ -103,7 +103,7 @@ class DiscMetadata:
     mbidArtist = None
     url = None
 
-    catalogNumber = None
+    catalogNumbers: list[str]
     barcode = None
     countries = None
     discNumber = None
@@ -112,6 +112,7 @@ class DiscMetadata:
 
     def __init__(self):
         self.tracks = []
+        self.catalogNumbers = []
 
 
 def _record(record, which, name, what):
@@ -289,9 +290,13 @@ def _getMetadata(release, discid=None, country=None):
         discMD.countries = list(filter(None, countries))
     else:
         discMD.countries = list(filter(None, [release.get('country', None)]))
-    lil = release.get('label-info-list', [{}])
-    if lil:
-        discMD.catalogNumber = lil[0].get('catalog-number')
+    lil = release.get('label-info-list', [])
+    catalog_numbers = []
+    for li in lil:
+        cn = li.get('catalog-number')
+        if cn and cn not in catalog_numbers:
+            catalog_numbers.append(cn)
+    discMD.catalogNumbers = catalog_numbers
     tainted = False
     duration = 0
 

@@ -151,8 +151,8 @@ class Program:
     @staticmethod
     def addDisambiguation(template_part, metadata):
         """Add disambiguation to template path part string."""
-        if metadata.catalogNumber:
-            template_part += ' (%s)' % metadata.catalogNumber
+        if metadata.catalogNumbers:
+            template_part += ' (%s)' % ', '.join(metadata.catalogNumbers)
         elif metadata.barcode:
             template_part += ' (%s)' % metadata.barcode
         return template_part
@@ -221,7 +221,7 @@ class Program:
             v['d'] = metadata.releaseTitle
             v['D'] = metadata.title
             v['B'] = metadata.barcode
-            v['C'] = metadata.catalogNumber
+            v['C'] = ', '.join(metadata.catalogNumbers)
             v['c'] = metadata.releaseDisambCmt
             v['M'] = metadata.discTotal
             v['N'] = metadata.discNumber
@@ -332,20 +332,20 @@ class Program:
             print('\nMatching releases:')
 
             for metadata in metadatas:
-                print('\nArtist  : %s' % metadata.artist)
-                print('Title   : %s' % metadata.releaseTitle)
-                print('Duration: %s' % common.formatTime(
+                print('\nArtist   : %s' % metadata.artist)
+                print('Title    : %s' % metadata.releaseTitle)
+                print('Duration : %s' % common.formatTime(
                                            metadata.duration / 1000.0))
-                print('URL     : %s' % metadata.url)
-                print('Release : %s' % metadata.mbid)
-                print('Type    : %s' % metadata.releaseType)
+                print('URL      : %s' % metadata.url)
+                print('Release  : %s' % metadata.mbid)
+                print('Type     : %s' % metadata.releaseType)
                 if metadata.barcode:
-                    print("Barcode : %s" % metadata.barcode)
+                    print("Barcode  : %s" % metadata.barcode)
                 if metadata.countries:
-                    print("Country : %s" % ', '.join(metadata.countries))
+                    print("Country  : %s" % ', '.join(metadata.countries))
                 # TODO: Add test for non ASCII catalog numbers: see issue #215
-                if metadata.catalogNumber:
-                    print("Cat no  : %s" % metadata.catalogNumber)
+                if metadata.catalogNumbers:
+                    print("Cat no(s): %s" % ', '.join(metadata.catalogNumbers))
 
                 delta = abs(metadata.duration - ittoc.duration())
                 if delta not in deltas:
