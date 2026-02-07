@@ -2,11 +2,11 @@ import logging
 import os
 import sys
 
-from pkg_resources import (get_distribution,
-                           DistributionNotFound, RequirementParseError)
+from importlib.metadata import version, PackageNotFoundError
+
 try:
-    __version__ = get_distribution(__name__).version
-except (DistributionNotFound, RequirementParseError):
+    __version__ = version('whipper')
+except PackageNotFoundError:
     # not installed as package or is being run from source/git checkout
     from setuptools_scm import get_version
     __version__ = get_version()

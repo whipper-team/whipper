@@ -298,24 +298,8 @@ The available plugins can be listed with `whipper cd rip -h`. Specify a logger t
 whipper cd rip -L eac
 ```
 
-Whipper searches for logger plugins in the following paths:
-
-- `$XDG_DATA_HOME/whipper/plugins`
-- Paths returned by the following Python instruction:
-
-  `[x + '/whipper/plugins' for x in site.getsitepackages()]`
-
-- If whipper is run in a `virtualenv`, it will use these alternative instructions (from `distutils.sysconfig`):
-  - `get_python_lib(plat_specific=False, standard_lib=False, prefix='/usr/local') + '/whipper/plugins'`
-  - `get_python_lib(plat_specific=False, standard_lib=False) + '/whipper/plugins'`
-
-On a default Debian/Ubuntu installation, the following paths are searched by whipper:
-
-- `$HOME/.local/share/whipper/plugins`
-- `/usr/local/lib/python3.X/dist-packages/whipper/plugins`
-- `/usr/lib/python3.X/dist-packages/whipper/plugins`
-
-Where `X` stands for the minor version of the Python 3 release available on the system.
+Whipper searches for logger plugins using `importlib.metadata.entry_points`, meaning any package visible to the Python
+interpreter exporting a `whipper.logger` entry point will be loaded.
 
 Please note that locally installed logger plugins won't be recognized when whipper has been installed through the official Docker image.
 

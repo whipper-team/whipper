@@ -4,3 +4,4 @@ pycdio>0.20
 ruamel.yaml
 setuptools_scm
 discid
+packaging
