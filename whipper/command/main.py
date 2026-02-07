@@ -33,7 +33,7 @@ def main():
         musicbrainzngs.set_hostname(server['netloc'])
 
     try:
-        cmd = Whipper(sys.argv[1:], os.path.basename(sys.argv[0]), None)
+        cmd = Whipper(sys.argv[1:], 'whipper', None)
         ret = cmd.do()
     except SystemError as e:
         logger.critical("SystemError: %s", e)
