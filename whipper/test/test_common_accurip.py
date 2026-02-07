@@ -5,6 +5,8 @@ import sys
 from io import StringIO
 from os.path import dirname, join
 from unittest import TestCase
+from unittest.mock import MagicMock, patch
+from urllib.error import HTTPError
 
 from whipper.common.accurip import (
     calculate_checksums, get_db_entry, print_report, verify_result,
@@ -14,19 +16,20 @@ from whipper.result.result import RipResult, TrackResult
 
 
 class TestAccurateRipResponse(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.path = 'c/1/2/dBAR-002-0000f21c-00027ef8-05021002.bin'
-        with open(join(dirname(__file__), cls.path[6:]), 'rb') as f:
-            cls.entry = _split_responses(f.read())
-        cls.other_path = '4/8/2/dBAR-011-0010e284-009228a3-9809ff0b.bin'
-
+    @patch(
+        "whipper.common.accurip.urlopen",
+        MagicMock(side_effect=HTTPError("", 404, "Not Found", None, None)),
+    )
     def test_raises_entrynotfound_for_no_entry(self):
         with self.assertRaises(EntryNotFound):
             get_db_entry('definitely_a_404')
 
+    @patch(
+        "whipper.common.accurip.urlopen",
+        MagicMock(return_value=open(join(dirname(__file__), 'dBAR-002-0000f21c-00027ef8-05021002.bin'), 'rb')),
+    )
     def test_AccurateRipResponse_parses_correctly(self):
-        responses = get_db_entry(self.path)
+        responses = get_db_entry('c/1/2/dBAR-002-0000f21c-00027ef8-05021002.bin')
         self.assertEqual(len(responses), 2)
 
         self.assertEqual(responses[0].num_tracks, 2)
