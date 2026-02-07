@@ -1,19 +1,17 @@
-FROM debian:buster
+FROM debian:trixie
 ARG optical_gid
 ARG uid=1000
 
 RUN apt-get update && apt-get install --no-install-recommends -y \
-    autoconf \
-    automake \
+    cd-paranoia \
     cdrdao \
+    python3-cdio \
     bzip2 \
     curl \
     eject \
     flac \
     git \
     libdiscid0 \
-    libiso9660-dev \
-    libsndfile1-dev \
     libtool \
     locales \
     make \
@@ -25,33 +23,12 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     python3-pip \
     python3-ruamel.yaml \
     python3-setuptools \
+    libsndfile1-dev \
+    libiso9660-dev \
+    libcdio-dev \
     sox \
     swig \
-    && apt-get clean && rm -rf /var/lib/apt/lists/* \
-    && pip3 --no-cache-dir install pycdio==2.1.0 discid
-
-# libcdio-paranoia / libcdio-utils are wrongfully packaged in Debian, thus built manually
-# see https://github.com/whipper-team/whipper/pull/237#issuecomment-367985625
-ENV LIBCDIO_VERSION 2.1.0
-RUN curl -o - "https://ftp.gnu.org/gnu/libcdio/libcdio-${LIBCDIO_VERSION}.tar.bz2" | tar jxf - \
-    && cd libcdio-${LIBCDIO_VERSION} \
-    && autoreconf -fi \
-    && ./configure --disable-dependency-tracking --disable-cxx --disable-example-progs --disable-static \
-    && make install \
-    && cd .. \
-    && rm -rf libcdio-${LIBCDIO_VERSION}
-
-# Install cd-paranoia from tarball
-ENV LIBCDIO_PARANOIA_VERSION 10.2+2.0.1
-RUN curl -o - "https://ftp.gnu.org/gnu/libcdio/libcdio-paranoia-${LIBCDIO_PARANOIA_VERSION}.tar.bz2" | tar jxf - \
-    && cd libcdio-paranoia-${LIBCDIO_PARANOIA_VERSION} \
-    && autoreconf -fi \
-    && ./configure --disable-dependency-tracking --disable-example-progs --disable-static \
-    && make install \
-    && cd .. \
-    && rm -rf libcdio-paranoia-${LIBCDIO_PARANOIA_VERSION}
-
-RUN ldconfig
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # add user (+ group workaround for ArchLinux)
 RUN useradd -m worker --uid ${uid} -G cdrom \
@@ -66,6 +43,9 @@ RUN echo "LC_ALL=en_US.UTF-8" >> /etc/environment \
     && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
     && echo "LANG=en_US.UTF-8" > /etc/locale.conf \
     && locale-gen en_US.UTF-8
+
+# Trixie-shipped setuptools doesn't work, need to upgrade...
+RUN pip install -U setuptools --break-system-packages
 
 # install whipper
 RUN mkdir /whipper
