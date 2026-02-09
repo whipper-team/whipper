@@ -284,16 +284,21 @@ class ReadTrackTask(task.Task):
             self.path])
         logger.debug('running %s', (" ".join(argv), ))
         if self._offset > 587:
-            logger.warning(
-                "because of a cd-paranoia upstream bug whipper may fail to "
-                "work correctly when using offset values > 587 (current "
-                "value: %d) and print warnings like this: 'file size 0 did "
-                "not match expected size'. For more details please check the "
-                "following issues: "
-                "https://github.com/whipper-team/whipper/issues/234 and "
-                "https://github.com/rocky/libcdio-paranoia/issues/14",
-                self._offset
-            )
+            from pkg_resources import parse_version as V
+            if V(_CDPARANOIA_VERSION) <= V('10.2'):
+                # the bug was fixed in cd-paranoia 10.2+2.0.2
+                # but all cd-paranoia 10.2 releases have the same version number,
+                # so we match up to 10.2
+                logger.warning(
+                    "because of a cd-paranoia upstream bug whipper may fail to "
+                    "work correctly when using offset values > 587 (current "
+                    "value: %d) and print warnings like this: 'file size 0 did "
+                    "not match expected size'. For more details please check the "
+                    "following issues: "
+                    "https://github.com/whipper-team/whipper/issues/234 and "
+                    "https://github.com/rocky/libcdio-paranoia/issues/14",
+                    self._offset
+                )
         if stopTrack == 99:
             logger.warning(
                 "because of a cd-paranoia upstream bug whipper may fail to "
@@ -578,6 +583,12 @@ def getCdParanoiaVersion():
                                   "%(version)s %(release)s")
 
     return getter.get()
+
+
+try:
+    _CDPARANOIA_VERSION = getCdParanoiaVersion().split(' ')[1]
+except IndexError:
+    _CDPARANOIA_VERSION = '0'
 
 
 _OK_RE = re.compile(r'Drive tests OK with Paranoia.')
