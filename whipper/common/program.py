@@ -242,10 +242,8 @@ class Program:
         v_fltr = {k: self._filter.filter(v2) if isinstance(v2, str) else ''
                   if v2 is None else v2 for k, v2 in v.items()}
         parts = (template % v_fltr).split('/')
-        print(parts)
         truncated_path = os.path.join(*
                 [common.truncate_filename(p, has_file_ext=False) for p in parts])
-        print(truncated_path)
         if outdir != os.curdir: # Avoid useless './' in file paths
             truncated_path = os.path.join(outdir, truncated_path)
         return truncated_path
