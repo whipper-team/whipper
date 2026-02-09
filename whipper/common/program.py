@@ -529,7 +529,7 @@ class Program:
         logger.debug('fetching cover art for release: %r', release_id)
         try:
             data = musicbrainzngs.get_image_front(release_id, 500)
-        except musicbrainzngs.ResponseError as e:
+        except musicbrainzngs.WebServiceError as e:
             logger.error('error fetching cover art: %r', e)
             return
 
