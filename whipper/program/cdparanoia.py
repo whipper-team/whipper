@@ -27,6 +27,8 @@ import subprocess
 import tempfile
 import time
 
+from packaging.version import Version
+
 from whipper.common import common
 from whipper.common import task as ctask
 from whipper.extern import asyncsub
@@ -284,8 +286,7 @@ class ReadTrackTask(task.Task):
             self.path])
         logger.debug('running %s', (" ".join(argv), ))
         if self._offset > 587:
-            from pkg_resources import parse_version as V
-            if V(_CDPARANOIA_VERSION) <= V('10.2'):
+            if Version(_CDPARANOIA_VERSION) <= Version('10.2'):
                 # the bug was fixed in cd-paranoia 10.2+2.0.2
                 # but all cd-paranoia 10.2 releases have the same version number,
                 # so we match up to 10.2
