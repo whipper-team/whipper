@@ -439,8 +439,10 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
     _tmpwavpath = None
     _tmppath = None
 
+    _keep = False
+
     def __init__(self, path, table, start, stop, overread, offset=0,
-                 device=None, taglist=None, what="track", coverArtPath=None):
+                 device=None, taglist=None, what="track", coverArtPath=None, keep=False):
         """
         Init ReadVerifyTrackTask.
 
@@ -470,6 +472,8 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         os.fchmod(fd, 0o644)
         os.close(fd)
         self._tmpwavpath = tmppath
+
+        self._keep = keep
 
         from whipper.common import checksum
 
@@ -547,9 +551,11 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
                 # delete the unencoded file
                 os.unlink(self._tmpwavpath)
 
-                if not self.exception:
+                if not self.exception or self._keep:
                     try:
                         logger.debug('moving to final path %r', self.path)
+                        if self.exception:
+                            logger.debug('keeping unverified result')
                         shutil.move(self._tmppath, self.path)
                     # FIXME: catching too general exception (Exception)
                     except Exception as e:
