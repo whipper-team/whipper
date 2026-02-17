@@ -527,10 +527,13 @@ Log files will log the path to tracks relative to this directory.
                                  'threshold, disregarding', trackResult.peak)
                     self.itable.setFile(1, 0, None,
                                         self.itable.getTrackStart(1), number)
-                    logger.debug('unlinking %r', trackResult.filename)
-                    os.unlink(trackResult.filename)
+                    if os.path.exists(trackResult.filename):
+                        logger.debug('unlinking %r', trackResult.filename)
+                        os.unlink(trackResult.filename)
+                        logger.info('HTOA discarded, contains digital silence')
+                    else:
+                        logger.info('HTOA could not be ripped, discarded')
                     trackResult.filename = None
-                    logger.info('HTOA discarded, contains digital silence')
                 else:
                     self.itable.setFile(1, 0, trackResult.filename,
                                         self.itable.getTrackStart(1), number)
