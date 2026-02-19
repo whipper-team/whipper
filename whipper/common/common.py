@@ -19,6 +19,7 @@
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
 
+from pathlib import Path
 import os
 import os.path
 import math
@@ -151,12 +152,38 @@ class MissingFrames(Exception):
     pass
 
 
-def truncate_filename(path):
-    """Truncate filename to the max. len. allowed by the path's filesystem."""
+def truncate_filename(path, has_file_ext=True):
+    """
+    Truncate filename to the maximum length allowed by the path's filesystem.
+
+    :param path: path to truncate
+    :param has_file_ext: if True, will keep the file extension intact;
+                       set to False for:
+                       - directories (which may contain dots but do not have an
+                         extension),
+                       - filenames without a file extension (dots will be
+                         considered like normal characters)
+    :type path: str
+    :type has_file_ext: bool
+    """
     p, f = os.path.split(os.path.normpath(path))
-    f, e = os.path.splitext(f)
+    if has_file_ext:
+        f, e = os.path.splitext(f)
+    else:
+        f, e = (f, '')
     # Get the filename length limit in bytes
-    fn_lim = os.pathconf(p.encode('utf-8'), 'PC_NAME_MAX')
+    def get_existing_parent(path):
+        for p in [Path(path)] + list(Path(path).parents):
+            if p.exists():
+                return str(p)
+    try:
+        fn_lim = os.pathconf(get_existing_parent(p).encode('utf-8'), 'PC_NAME_MAX')
+    except OSError as e:
+        import errno
+        if e.errno == errno.EINVAL:
+            fn_lim = 255
+        else:
+            raise
     f_max = fn_lim - len(e.encode('utf-8'))
     f = unicodedata.normalize('NFC', f)
     f_trunc = f.encode()[:f_max].decode('utf-8', errors='ignore')
