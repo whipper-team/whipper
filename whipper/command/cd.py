@@ -493,7 +493,7 @@ Log files will log the path to tracks relative to this directory.
                     logger.critical('giving up on track %d after %d times',
                                     number, tries)
                     if self.options.keep_going:
-                        logger.warning("track %d failed to rip.", number)
+                        logger.warning("track %d failed to rip." % number)
                         logger.debug("adding %s to skipped_tracks",
                                      trackResult)
                         self.skipped_tracks.append(trackResult)
