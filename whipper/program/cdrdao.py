@@ -184,7 +184,7 @@ def version():
         logger.warning("cdrdao version detection failed: "
                        "return code is %s", cdrdao.returncode)
         return None
-    m = re.compile(r'^Cdrdao version (?P<version>.*)').search(
+    m = re.compile(r'^Cdrdao version (?P<version>\S+)').search(
         err.decode('utf-8'))
     if not m:
         logger.warning("cdrdao version detection failed: "
