@@ -1,4 +1,4 @@
-FROM debian:buster
+FROM debian:trixie
 ARG optical_gid
 ARG uid=1000
 
@@ -28,7 +28,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     sox \
     swig \
     && apt-get clean && rm -rf /var/lib/apt/lists/* \
-    && pip3 --no-cache-dir install pycdio==2.1.0 discid
+    && pip3 --no-cache-dir install --break-system-packages pycdio==2.1.0 discid
 
 # libcdio-paranoia / libcdio-utils are wrongfully packaged in Debian, thus built manually
 # see https://github.com/whipper-team/whipper/pull/237#issuecomment-367985625
