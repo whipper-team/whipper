@@ -45,7 +45,7 @@ RUN echo "LC_ALL=en_US.UTF-8" >> /etc/environment \
     && locale-gen en_US.UTF-8
 
 # Trixie-shipped setuptools doesn't work, need to upgrade...
-RUN pip install -U setuptools --break-system-packages
+RUN pip install -U setuptools discid --break-system-packages
 
 # install whipper
 RUN mkdir /whipper
