@@ -32,7 +32,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 
 # libcdio-paranoia / libcdio-utils are wrongfully packaged in Debian, thus built manually
 # see https://github.com/whipper-team/whipper/pull/237#issuecomment-367985625
-ENV LIBCDIO_VERSION 2.1.0
+ENV LIBCDIO_VERSION=2.1.0
 RUN curl -o - "https://ftp.gnu.org/gnu/libcdio/libcdio-${LIBCDIO_VERSION}.tar.bz2" | tar jxf - \
     && cd libcdio-${LIBCDIO_VERSION} \
     && autoreconf -fi \
@@ -42,7 +42,7 @@ RUN curl -o - "https://ftp.gnu.org/gnu/libcdio/libcdio-${LIBCDIO_VERSION}.tar.bz
     && rm -rf libcdio-${LIBCDIO_VERSION}
 
 # Install cd-paranoia from tarball
-ENV LIBCDIO_PARANOIA_VERSION 10.2+2.0.1
+ENV LIBCDIO_PARANOIA_VERSION=10.2+2.0.1
 RUN curl -o - "https://ftp.gnu.org/gnu/libcdio/libcdio-paranoia-${LIBCDIO_PARANOIA_VERSION}.tar.bz2" | tar jxf - \
     && cd libcdio-paranoia-${LIBCDIO_PARANOIA_VERSION} \
     && autoreconf -fi \
