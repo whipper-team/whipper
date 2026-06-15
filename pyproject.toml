@@ -22,7 +22,6 @@ dependencies = [
     "musicbrainzngs",
     "mutagen",
     "pycdio",
-    "PyGObject",
     "ruamel.yaml",
     "setuptools_scm",
     "discid",

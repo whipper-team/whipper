@@ -50,7 +50,7 @@ RUN pip install -U setuptools discid --break-system-packages
 # install whipper
 RUN mkdir /whipper
 COPY . /whipper/
-RUN cd /whipper && python3 setup.py install \
+RUN cd /whipper && pip install . --break-system-packages \
     && rm -rf /whipper \
     && whipper -v
 
