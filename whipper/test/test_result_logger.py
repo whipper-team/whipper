@@ -177,3 +177,72 @@ class LoggerTestCase(unittest.TestCase):
             parsedLog['SHA-256 hash'],
             hashlib.sha256(log_body).hexdigest().upper()
         )
+
+    def testLoggerSkippedTrack(self):
+        # A track that failed to rip is marked skipped and never gets a peak
+        # level (trackResult.peak stays None). Writing the log for such a rip
+        # must not crash. Regression test for the TypeError raised by
+        # `peak = trackResult.peak / 32768.0` in trackLog().
+        ripResult = RipResult()
+        ripResult.offset = 6
+        ripResult.overread = False
+        ripResult.isCdr = False
+        ripResult.table = MockImageTable()
+        ripResult.artist = "Example Artist"
+        ripResult.title = "Example Album"
+        ripResult.vendor = "HL-DT-STBD-RE  "
+        ripResult.model = "WH14NS40"
+        ripResult.release = "1.03"
+        ripResult.cdrdaoVersion = "1.2.4"
+        ripResult.cdparanoiaVersion = (
+            "cdparanoia III 10.2 "
+            "libcdio 2.0.0 x86_64-pc-linux-gnu"
+        )
+        ripResult.cdparanoiaDefeatsCache = True
+
+        # Track 1: ripped successfully.
+        trackResult = TrackResult()
+        trackResult.number = 1
+        trackResult.filename = "01. Good track.flac"
+        trackResult.pregap = 0
+        trackResult.peak = 29503
+        trackResult.quality = 1
+        trackResult.copyspeed = 7
+        trackResult.testduration = 10
+        trackResult.copyduration = 10
+        trackResult.testcrc = 0x0025D726
+        trackResult.copycrc = 0x0025D726
+        trackResult.AR = {
+            "v1": {"DBConfidence": 14, "DBCRC": "95E6A189", "CRC": "95E6A189"},
+            "v2": {"DBConfidence": 11, "DBCRC": "113FA733", "CRC": "113FA733"},
+        }
+        ripResult.tracks.append(trackResult)
+
+        # Track 2: failed to rip -> skipped, with peak/quality/CRCs unset.
+        trackResult = TrackResult()
+        trackResult.number = 2
+        trackResult.filename = "02. Failed track.flac"
+        trackResult.pregap = 0
+        trackResult.peak = None
+        trackResult.quality = None
+        trackResult.skipped = True
+        trackResult.testcrc = None
+        trackResult.copycrc = None
+        trackResult.AR = {
+            "v1": {"DBConfidence": None, "DBCRC": None, "CRC": None},
+            "v2": {"DBConfidence": None, "DBCRC": None, "CRC": None},
+        }
+        ripResult.tracks.append(trackResult)
+
+        # Must not raise (previously a TypeError on None / 32768.0).
+        actual = WhipperLogger().log(ripResult)
+
+        yaml = YAML(typ='rt', pure=True)
+        parsedLog = yaml.load(actual)
+        tracks = parsedLog["Tracks"]
+
+        # The successful track keeps its peak level...
+        self.assertIn("Peak level", tracks[1])
+        # ...while the skipped track omits it and is marked accordingly.
+        self.assertNotIn("Peak level", tracks[2])
+        self.assertEqual(tracks[2]["Status"], "Track not ripped (skipped)")
