@@ -203,8 +203,13 @@ class WhipperLogger(result.Logger):
             track["Pre-gap length"] = common.framesToMSF(pregap)
 
         # Peak level
-        peak = trackResult.peak / 32768.0
-        track["Peak level"] = float("%.6f" % peak)
+        # A track that failed to rip (skipped) never gets a peak level, so
+        # trackResult.peak is None; omit the line instead of crashing while
+        # writing the log. This mirrors cd.py, which already avoids the same
+        # division for skipped tracks.
+        if trackResult.peak is not None:
+            peak = trackResult.peak / 32768.0
+            track["Peak level"] = float("%.6f" % peak)
 
         # Pre-emphasis status
         # Only implemented in whipper (trackResult.pre_emphasis)
