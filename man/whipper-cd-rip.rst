@@ -73,6 +73,10 @@ Options
 |     continue ripping further tracks instead of giving up if a track can't be
 |     ripped
 
+| **--no-htoa**
+|     don't rip Hidden Track One Audio (HTOA) even when it's detected; useful
+|     on drives that read the pregap very slowly
+
 Template schemes
 ================
 
