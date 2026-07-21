@@ -326,6 +326,12 @@ Log files will log the path to tracks relative to this directory.
                                  help="continue ripping further tracks "
                                  "instead of giving up if a track "
                                  "can't be ripped")
+        self.parser.add_argument('--no-htoa',
+                                 action="store_true", dest="no_htoa",
+                                 help="don't rip Hidden Track One Audio "
+                                 "(HTOA) even when it's detected; useful on "
+                                 "drives that read the pregap very slowly",
+                                 default=False)
 
     def handle_arguments(self):
         self.options.output_directory = os.path.expanduser(
@@ -548,7 +554,10 @@ Log files will log the path to tracks relative to this directory.
             start, stop = htoa
             logger.info('found Hidden Track One Audio from frame %d to %d',
                         start, stop)
-            _ripIfNotRipped(0)
+            if self.options.no_htoa:
+                logger.info('skipping Hidden Track One Audio (--no-htoa)')
+            else:
+                _ripIfNotRipped(0)
 
         for i, track in enumerate(self.itable.tracks):
             # FIXME: rip data tracks differently
