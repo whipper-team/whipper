@@ -279,7 +279,7 @@ class Program:
 
         return None
 
-    def getMusicBrainz(self, ittoc, mbdiscid, release=None, country=None,
+    def getMusicBrainz(self, ittoc, mbdiscid, release=None, countries=None,
                        prompt=False):
         """
         Fetch MusicBrainz's metadata for the given MusicBrainz disc id.
@@ -309,7 +309,7 @@ class Program:
         for _ in range(0, 4):
             try:
                 metadatas = mbngs.musicbrainz(mbdiscid,
-                                              country=country,
+                                              countries=countries,
                                               record=self._record)
                 break
             except mbngs.NotFoundException as e:

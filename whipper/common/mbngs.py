@@ -232,7 +232,7 @@ def _getPerformers(recording):
     return sorted(performers)  # convert to list: mutagen doesn't support set
 
 
-def _getMetadata(release, discid=None, country=None):
+def _getMetadata(release, discid=None, countries=None):
     """
     Get disc metadata based upon the provided release id.
 
@@ -248,8 +248,8 @@ def _getMetadata(release, discid=None, country=None):
 
     assert release['id'], 'Release does not have an id'
 
-    if 'country' in release and country and release['country'] != country:
-        logger.warning('%r was not released in %r', release, country)
+    if 'country' in release and countries and release['country'] not in countries:
+        logger.warning('%r was not released in %r', release, countries)
         return None
 
     discMD = DiscMetadata()
@@ -362,7 +362,7 @@ def _getMetadata(release, discid=None, country=None):
     return discMD
 
 
-def getReleaseMetadata(release_id, discid=None, country=None, record=False):
+def getReleaseMetadata(release_id, discid=None, countries=None, record=False):
     """
     Return a DiscMetadata object based on MusicBrainz Release ID and Disc ID.
 
@@ -394,14 +394,14 @@ def getReleaseMetadata(release_id, discid=None, country=None, record=False):
     releaseDetail = res['release']
     formatted = json.dumps(releaseDetail, sort_keys=False, indent=4)
     logger.debug('release %s', formatted)
-    return _getMetadata(releaseDetail, discid, country)
+    return _getMetadata(releaseDetail, discid, countries)
 
 
 # see http://bugs.musicbrainz.org/browser/python-musicbrainz2/trunk/examples/
 #     ripper.py
 
 
-def musicbrainz(discid, country=None, record=False):
+def musicbrainz(discid, countries=None, record=False):
     """
     Get a list of DiscMetadata objects for the given MusicBrainz disc id.
 
@@ -444,7 +444,7 @@ def musicbrainz(discid, country=None, record=False):
             logger.debug('result %s: artist %r, title %r', formatted,
                          release['artist-credit-phrase'], release['title'])
 
-            md = getReleaseMetadata(release['id'], discid, country, record)
+            md = getReleaseMetadata(release['id'], discid, countries, record)
             if md:
                 logger.debug('duration %r', md.duration)
                 ret.append(md)
