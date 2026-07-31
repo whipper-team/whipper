@@ -29,7 +29,9 @@ Options
 |     Prompt if there are multiple matching releases
 
 | **-c** *<COUNTRY>* | **--country** *<COUNTRY>*
-|     Filter releases by country
+|     Filter releases by country; specify multiple times or a
+      comma-separated list of countries to accept releases from multiple
+      countries. See https://musicbrainz.org/doc/Release/Country for abbreviations.
 
 
 See Also

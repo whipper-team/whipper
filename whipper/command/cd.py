@@ -87,7 +87,8 @@ class _CD(BaseCommand):
                             help="Prompt if there are multiple "
                             "matching releases")
         parser.add_argument('-c', '--country',
-                            action="store", dest="country",
+                            action="extend", dest="country",
+                            type=lambda arg: (c.strip() for c in arg.split(",")),
                             help="Filter releases by country")
 
     def do(self):
@@ -122,7 +123,7 @@ class _CD(BaseCommand):
         self.program.metadata = (
             self.program.getMusicBrainz(self.ittoc, self.mbdiscid,
                                         release=self.options.release_id,
-                                        country=self.options.country,
+                                        countries=self.options.country,
                                         prompt=self.options.prompt)
         )
 
