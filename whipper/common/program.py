@@ -513,7 +513,7 @@ class Program:
         return start, stop
 
     @staticmethod
-    def getCoverArt(path, release_id):
+    def getCoverArt(path, release_id, filename='cover.jpg', size=500):
         """
         Get cover art image from Cover Art Archive.
 
@@ -521,14 +521,18 @@ class Program:
         :type  path: str
         :param release_id: a release id (self.program.metadata.mbid)
         :type  release_id: str
+        :param filename: filename to store the image as
+        :type  filename: str
+        :param size: size of the image to fetch (0, 250, 500, 1200)
+        :type  size: int
         :returns: path to the downloaded cover art, else `None`
         :rtype: str or None
         """
-        cover_art_path = os.path.join(path, 'cover.jpg')
+        cover_art_path = os.path.join(path, filename)
 
         logger.debug('fetching cover art for release: %r', release_id)
         try:
-            data = musicbrainzngs.get_image_front(release_id, 500)
+            data = musicbrainzngs.get_image_front(release_id, size)
         except musicbrainzngs.WebServiceError as e:
             logger.error('error fetching cover art: %r', e)
             return

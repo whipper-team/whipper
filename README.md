@@ -276,6 +276,9 @@ output_directory = ~/My Music
 # Do not add inline comments with an unescaped '%' character (else an 'InterpolationSyntaxError' will occur).
 track_template = new/%%A/%%y - %%d/%%t - %%n
 disc_template =  new/%%A/%%y - %%d/%%A - %%d
+# Note: accepted values are 0, 250, 500, and 1200
+cover_art_size = 1200
+cover_art_filename = folder.jpg
 # ...
 ```
 

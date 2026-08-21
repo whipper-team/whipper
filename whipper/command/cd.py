@@ -314,6 +314,18 @@ Log files will log the path to tracks relative to this directory.
                                  "complete option values respectively",
                                  choices=['file', 'embed', 'complete'],
                                  default=None)
+        self.parser.add_argument('--cover-art-size',
+                                 action="store", dest="cover_art_size",
+                                 help="size of cover art to fetch. Valid values are 0, 250, 500, and 1200. "
+                                      "Default is 500. When set to 0, the cover art will be fetched in the original "
+                                      "size.",
+                                 type=int,
+                                 choices=[0, 250, 500, 1200],
+                                 default=500)
+        self.parser.add_argument('--cover-art-filename',
+                                 action="store", dest="cover_art_filename",
+                                 help="name of cover art file to fetch",
+                                 default='cover.jpg')
         self.parser.add_argument('-r', '--max-retries',
                                  action="store", dest="max_retries",
                                  help="number of rip attempts before giving "
@@ -397,7 +409,9 @@ Log files will log the path to tracks relative to this directory.
             if getattr(self.program.metadata, "mbid", None) is not None:
                 self.coverArtPath = self.program.getCoverArt(
                                         dirname,
-                                        self.program.metadata.mbid)
+                                        self.program.metadata.mbid,
+                                        filename=self.options.cover_art_filename,
+                                        size=self.options.cover_art_size)
             else:
                 logger.warning("the cover art option '%s' won't be honored "
                                "because disc metadata isn't available",
