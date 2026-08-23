@@ -45,12 +45,14 @@ RUN echo "LC_ALL=en_US.UTF-8" >> /etc/environment \
     && locale-gen en_US.UTF-8
 
 # Trixie-shipped setuptools doesn't work, need to upgrade...
-RUN pip install -U setuptools --break-system-packages
+# Pin setuptools_scm as versions 10>= require packaging>=26.2 which conflicts with
+# the version from debian.
+RUN pip install -U setuptools discid "setuptools_scm<10" --break-system-packages
 
 # install whipper
 RUN mkdir /whipper
 COPY . /whipper/
-RUN cd /whipper && python3 setup.py install \
+RUN cd /whipper && pip install . --break-system-packages \
     && rm -rf /whipper \
     && whipper -v
 
