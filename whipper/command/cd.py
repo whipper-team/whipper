@@ -77,6 +77,20 @@ class _CD(BaseCommand):
 
     # XXX: Pylint, parameters differ from overridden 'add_arguments' method
     @staticmethod
+    def _format_peak(peak):
+        """Format peak level; peak may be None if soxi failed (#601)."""
+        if peak is None:
+            return 'unknown'
+        return '%.6f' % (peak / 32768.0)
+
+    @staticmethod
+    def _format_quality(quality):
+        """Format extraction quality; quality may be None (#621)."""
+        if quality is None:
+            return 'unknown'
+        return '{:.2%}'.format(quality)
+
+    @staticmethod
     def add_arguments(parser):
         parser.add_argument('-R', '--release-id',
                             action="store", dest="release_id",
@@ -89,6 +103,15 @@ class _CD(BaseCommand):
         parser.add_argument('-c', '--country',
                             action="store", dest="country",
                             help="Filter releases by country")
+
+    def _eject_on_refusal(self):
+        """Eject when --eject says to on failed/refused runs (#619)."""
+        eject = getattr(self.options, 'eject', 'success')
+        if eject in ('always', 'failure'):
+            try:
+                utils.eject_device(self.device)
+            except Exception as e:
+                logger.warning('eject failed after refusal: %s', e)
 
     def do(self):
         self.config = config.Config()
@@ -137,6 +160,7 @@ class _CD(BaseCommand):
             if not getattr(self.options, 'unknown', False):
                 logger.critical("unable to retrieve disc metadata, "
                                 "--unknown argument not passed")
+                self._eject_on_refusal()
                 return -1
 
         self.program.result.isCdr = cdrdao.DetectCdr(self.device)
@@ -144,6 +168,8 @@ class _CD(BaseCommand):
                 not getattr(self.options, 'cdr', False)):
             logger.critical("inserted disc seems to be a CD-R, "
                             "--cdr not passed")
+            # Issue #619: honour --eject on refusal paths too
+            self._eject_on_refusal()
             return -1
 
         # Change working directory before cdrdao's task
@@ -515,8 +541,10 @@ Log files will log the path to tracks relative to this directory.
                             "CRCs did not match for track %d" % number
                         )
 
-                    print('Peak level: %.6f' % (trackResult.peak / 32768.0))
-                    print('Rip quality: {:.2%}'.format(trackResult.quality))
+                    print('Peak level: %s' % self._format_peak(
+                        trackResult.peak))
+                    print('Rip quality: %s' % self._format_quality(
+                        trackResult.quality))
 
             # overlay this rip onto the Table
             if number == 0:

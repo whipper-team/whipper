@@ -177,3 +177,73 @@ class LoggerTestCase(unittest.TestCase):
             parsedLog['SHA-256 hash'],
             hashlib.sha256(log_body).hexdigest().upper()
         )
+
+
+class PeakQualityGuardTestCase(unittest.TestCase):
+    """Issues #601 / #621: None peak and missing quality must not crash."""
+
+    def testLoggerPeakNone(self):
+        ripResult = RipResult()
+        ripResult.offset = 0
+        ripResult.overread = False
+        ripResult.isCdr = False
+        ripResult.table = MockImageTable()
+        ripResult.artist = "Artist"
+        ripResult.title = "Title"
+        ripResult.vendor = "VEN"
+        ripResult.model = "MOD"
+        ripResult.release = "1"
+        ripResult.cdrdaoVersion = "1.2.4"
+        ripResult.cdparanoiaVersion = "cdparanoia III 10.2"
+        ripResult.cdparanoiaDefeatsCache = True
+        trackResult = TrackResult()
+        trackResult.number = 1
+        trackResult.filename = "./01.flac"
+        trackResult.peak = None  # soxi failed / skipped track
+        trackResult.quality = None
+        trackResult.testduration = 1
+        trackResult.copyduration = 1
+        trackResult.testcrc = 0x1
+        trackResult.copycrc = 0x1
+        trackResult.AR = {
+            "v1": {"DBConfidence": None, "DBCRC": None, "CRC": None},
+            "v2": {"DBConfidence": None, "DBCRC": None, "CRC": None},
+        }
+        ripResult.tracks.append(trackResult)
+        log = WhipperLogger().log(ripResult, epoch=0)
+        self.assertIn("Peak level:", log)
+        self.assertIn("Peak level:\n", log)
+        self.assertNotIn("Extraction quality", log)
+
+    def testLoggerNormalPeakStillWorks(self):
+        ripResult = RipResult()
+        ripResult.offset = 0
+        ripResult.overread = False
+        ripResult.isCdr = False
+        ripResult.table = MockImageTable()
+        ripResult.artist = "Artist"
+        ripResult.title = "Title"
+        ripResult.vendor = "VEN"
+        ripResult.model = "MOD"
+        ripResult.release = "1"
+        ripResult.cdrdaoVersion = "1.2.4"
+        ripResult.cdparanoiaVersion = "cdparanoia III 10.2"
+        ripResult.cdparanoiaDefeatsCache = True
+        trackResult = TrackResult()
+        trackResult.number = 1
+        trackResult.filename = "./01.flac"
+        trackResult.peak = 32768
+        trackResult.quality = 1.0
+        trackResult.copyspeed = 2.0
+        trackResult.testduration = 1
+        trackResult.copyduration = 1
+        trackResult.testcrc = 0x1
+        trackResult.copycrc = 0x1
+        trackResult.AR = {
+            "v1": {"DBConfidence": None, "DBCRC": None, "CRC": None},
+            "v2": {"DBConfidence": None, "DBCRC": None, "CRC": None},
+        }
+        ripResult.tracks.append(trackResult)
+        log = WhipperLogger().log(ripResult, epoch=0)
+        self.assertIn("Peak level: 1.0", log)
+        self.assertIn("Extraction quality: 100.00 %", log)

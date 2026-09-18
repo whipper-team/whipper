@@ -202,9 +202,13 @@ class WhipperLogger(result.Logger):
         if pregap:
             track["Pre-gap length"] = common.framesToMSF(pregap)
 
-        # Peak level
-        peak = trackResult.peak / 32768.0
-        track["Peak level"] = float("%.6f" % peak)
+        # Peak level (issue #601/#694: peak can be None after soxi failure
+        # or a skipped track)
+        peak = trackResult.peak
+        if peak is not None:
+            track["Peak level"] = float("%.6f" % (peak / 32768.0))
+        else:
+            track["Peak level"] = None
 
         # Pre-emphasis status
         # Only implemented in whipper (trackResult.pre_emphasis)
