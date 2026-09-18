@@ -94,6 +94,7 @@ _CATALOG_RE = re.compile(r'^CATALOG "(?P<catalog>\d+)"$')
 
 # pre emphasis
 _PRE_EMPHASIS_RE = re.compile(r'^PRE_EMPHASIS$')
+_NO_PRE_EMPHASIS_RE = re.compile(r'^NO PRE_EMPHASIS$')
 
 # records
 _TRACK_RE = re.compile(r"""
@@ -320,6 +321,12 @@ class TocFile:
             if m:
                 currentTrack.pre_emphasis = True
                 logger.debug('track has PRE_EMPHASIS')
+
+            # explicit absence (cdrdao writes NO PRE_EMPHASIS)
+            m = _NO_PRE_EMPHASIS_RE.search(line)
+            if m:
+                currentTrack.pre_emphasis = False
+                logger.debug('track has NO PRE_EMPHASIS')
 
             # look for ISRC lines
             m = _ISRC_RE.search(line)

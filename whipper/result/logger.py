@@ -206,9 +206,20 @@ class WhipperLogger(result.Logger):
         peak = trackResult.peak / 32768.0
         track["Peak level"] = float("%.6f" % peak)
 
-        # Pre-emphasis status
-        # Only implemented in whipper (trackResult.pre_emphasis)
-        track["Pre-emphasis"] = trackResult.pre_emphasis
+        # Pre-emphasis status (issue #275 / #296)
+        # TOC value is what cdrdao writes into .toc / cue FLAGS
+        toc_pe = trackResult.pre_emphasis_toc
+        if toc_pe is None:
+            toc_pe = trackResult.pre_emphasis
+        track["Pre-emphasis"] = toc_pe
+        sub_pe = getattr(trackResult, 'pre_emphasis_subcode', None)
+        conflict = bool(getattr(trackResult, 'pre_emphasis_conflict', False))
+        if sub_pe is not None or conflict:
+            track["Pre-emphasis (subcode)"] = sub_pe
+        if conflict:
+            track["Pre-emphasis conflict"] = (
+                "TOC=%s, subcode=%s; cue FLAGS follow TOC" % (
+                    toc_pe, sub_pe))
 
         # Extraction speed
         if trackResult.copyspeed:

@@ -430,9 +430,15 @@ Log files will log the path to tracks relative to this directory.
             if number > 0:
                 trackResult.pregap = self.itable.tracks[number - 1].getPregap()
 
-                trackResult.pre_emphasis = (
-                    self.itable.tracks[number - 1].pre_emphasis
-                )
+                trk = self.itable.tracks[number - 1]
+                trackResult.pre_emphasis = trk.pre_emphasis
+                # Issue #296: TOC vs subcode pre-emphasis
+                trackResult.pre_emphasis_toc = getattr(
+                    trk, 'pre_emphasis_toc', trk.pre_emphasis)
+                trackResult.pre_emphasis_subcode = getattr(
+                    trk, 'pre_emphasis_subcode', None)
+                trackResult.pre_emphasis_conflict = bool(getattr(
+                    trk, 'pre_emphasis_conflict', False))
 
             # FIXME: optionally allow overriding reripping
             if os.path.exists(path):

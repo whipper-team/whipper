@@ -573,7 +573,7 @@ class Table:
                     if track.isrc is not None:
                         lines.append("    ISRC %s" % track.isrc)
 
-                    if track.pre_emphasis is not None:
+                    if track.pre_emphasis:
                         lines.append("    FLAGS PRE")
 
                     # handle TRACK 01 INDEX 00 specially

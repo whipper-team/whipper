@@ -24,12 +24,33 @@ _LEADOUT_RE = re.compile(
     r"^Leadout AUDIO\s*[0-9]\s*[0-9]*:[0-9]*:[0-9]*\([0-9]*\)")
 _SUBCODE_EMPHASIS_LINE = ("Pre-emphasis flag of track differs from TOC - "
                           "toc file contains TOC setting.")
+_SUBCODE_CHANNEL_LINE = (
+    "2-/4-channel-audio  flag of track differs from TOC - "
+    "toc file contains TOC setting.")
+_SUBCODE_CHANNEL_RE = re.compile(
+    r"2-/4-channel-audio\s+flag of track differs from TOC")
+_CONTROL_MATCH_LINE = (
+    "Control nibbles of track match CD-TOC settings.")
 
 
 class ProgressParser:
+    """
+    Parse cdrdao read-toc diagnostics (issue #296).
+
+    Records per-track whether subcode control nibbles matched the TOC.
+    """
+
     tracks = 0
     currentTrack = 0
     oldline = ''  # for leadout/final track number detection
+
+    def __init__(self):
+        # track number -> True when subcode pre-emphasis differs from TOC
+        self.preEmphasisMismatch = {}
+        # track number -> True when control nibbles matched TOC
+        self.controlMatch = {}
+        # track number -> True when 2/4-channel flag differed from TOC
+        self.channelMismatch = {}
 
     def parse(self, line):
         cdrdao_m = _BEGIN_CDRDAO_RE.match(line)
@@ -57,11 +78,44 @@ class ProgressParser:
                   "found %d Q sub-channels with CRC errors" %
                   (self.currentTrack, int(crc_s.group('channels'))))
 
-        # TODO: add subcode pre-emphasis info for each track to logger too
+        # Issue #296: subcode vs TOC control nibbles
         if _SUBCODE_EMPHASIS_LINE in line:
-            logger.warning(_SUBCODE_EMPHASIS_LINE)
+            logger.warning('track %d: %s',
+                           self.currentTrack, _SUBCODE_EMPHASIS_LINE)
+            if self.currentTrack:
+                self.preEmphasisMismatch[self.currentTrack] = True
+
+        if _SUBCODE_CHANNEL_LINE in line or _SUBCODE_CHANNEL_RE.search(line):
+            logger.warning(
+                'track %d: 2-/4-channel flag differs from TOC',
+                self.currentTrack)
+            if self.currentTrack:
+                self.channelMismatch[self.currentTrack] = True
+
+        if _CONTROL_MATCH_LINE in line:
+            logger.debug('track %d: %s',
+                         self.currentTrack, _CONTROL_MATCH_LINE)
+            if self.currentTrack:
+                self.controlMatch[self.currentTrack] = True
 
         self.oldline = line
+
+    def subcodePreEmphasis(self, trackNumber, tocPreEmphasis):
+        """
+        Infer subcode pre-emphasis for a track from cdrdao diagnostics.
+
+        :param trackNumber: 1-based track number
+        :param tocPreEmphasis: TOC pre-emphasis (True/False/None)
+        :returns: True/False when known, else None
+        """
+        if trackNumber in self.preEmphasisMismatch:
+            # cdrdao writes the TOC value into the .toc; subcode differs
+            if tocPreEmphasis is None:
+                return None
+            return not bool(tocPreEmphasis)
+        if trackNumber in self.controlMatch:
+            return bool(tocPreEmphasis) if tocPreEmphasis is not None else False
+        return None
 
 
 class ReadTOCTask(task.Task):
@@ -151,6 +205,8 @@ class ReadTOCTask(task.Task):
         self.setProgress(1.0)
         self.toc = TocFile(self.tocfile)
         self.toc.parse()
+        # Issue #296: attach subcode pre-emphasis diagnostics to the table
+        self._applySubcodePreEmphasis(self.toc.table)
         if self.toc_path is not None:
             t_comp = os.path.abspath(self.toc_path).split(os.sep)
             t_dirn = os.sep.join(t_comp[:-1])
@@ -166,6 +222,35 @@ class ReadTOCTask(task.Task):
         os.unlink(self.tocfile)
         self.stop()
         return
+
+    def _applySubcodePreEmphasis(self, table):
+        """
+        Copy subcode pre-emphasis diagnostics onto table tracks (#296).
+
+        TOC values stay authoritative for cue FLAGS (cdrdao writes TOC
+        settings into the .toc). Subcode values are reported separately.
+        """
+        parser = self._parser
+        for track in getattr(table, 'tracks', []) or []:
+            number = getattr(track, 'number', None)
+            if not number:
+                continue
+            toc_pe = getattr(track, 'pre_emphasis', None)
+            if toc_pe is None:
+                # explicit "NO PRE_EMPHASIS" was not seen; treat missing
+                # PRE_EMPHASIS line as False when cdrdao reported match
+                if number in parser.controlMatch:
+                    toc_pe = False
+                    track.pre_emphasis = False
+            track.pre_emphasis_toc = toc_pe
+            track.pre_emphasis_subcode = parser.subcodePreEmphasis(
+                number, toc_pe)
+            track.pre_emphasis_conflict = number in parser.preEmphasisMismatch
+            if track.pre_emphasis_conflict:
+                logger.warning(
+                    'track %d: TOC pre-emphasis=%s but subcode=%s; '
+                    'cue FLAGS will follow the TOC (cdrdao behaviour)',
+                    number, toc_pe, track.pre_emphasis_subcode)
 
 
 def DetectCdr(device):

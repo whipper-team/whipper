@@ -27,6 +27,10 @@ class TrackResult:
     filename = None
     pregap = 0  # in frames
     pre_emphasis = None
+    # Issue #296: TOC vs subcode pre-emphasis
+    pre_emphasis_toc = None
+    pre_emphasis_subcode = None
+    pre_emphasis_conflict = False
     peak = 0
     quality = 0.0
     testspeed = 0.0
