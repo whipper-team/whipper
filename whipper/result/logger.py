@@ -1,5 +1,6 @@
 import time
 import hashlib
+import os
 import re
 from ruamel.yaml.comments import CommentedMap as OrderedDict
 
@@ -8,6 +9,53 @@ import whipper
 from whipper.common import common
 from whipper.common.yaml import YAML
 from whipper.result import result
+
+# Markers written by WhipperLogger. Presence of both a start marker and an
+# end marker is used to decide whether a .log on disk is a finished rip
+# (issue #352): empty/partial logs from failed runs must not block re-ripping.
+LOG_START_MARKERS = (
+    'Log created by:',
+    'Conclusive status report:',
+)
+LOG_END_MARKERS = (
+    'EOF: End of status report',
+    'SHA-256 hash:',
+)
+
+
+def is_complete_rip_log(path):
+    """
+    Return True if ``path`` looks like a completed whipper rip log (#352).
+
+    Existence alone is not enough: failed rips and crashes can leave empty
+    or truncated ``.log`` files that would otherwise permanently block
+    re-ripping into the same output path.
+
+    :param path: path to a candidate ``.log`` file
+    :type  path: str
+    :rtype: bool
+    """
+    if not path or not os.path.isfile(path):
+        return False
+    try:
+        if os.path.getsize(path) <= 0:
+            return False
+        with open(path, 'r', encoding='utf-8', errors='replace') as handle:
+            # Completeness markers are at the end; read a bounded tail.
+            handle.seek(0, os.SEEK_END)
+            size = handle.tell()
+            handle.seek(max(0, size - 8192), os.SEEK_SET)
+            tail = handle.read()
+            handle.seek(0)
+            head = handle.read(2048)
+    except OSError:
+        return False
+
+    text = head + '\n' + tail
+    if not all(marker in text for marker in LOG_START_MARKERS):
+        return False
+    # At least one end marker written only after the log body is finished
+    return any(marker in tail or marker in text for marker in LOG_END_MARKERS)
 
 
 class WhipperLogger(result.Logger):

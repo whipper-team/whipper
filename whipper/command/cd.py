@@ -31,6 +31,7 @@ from whipper.common import (
 from whipper.common.common import validate_template
 from whipper.program import cdrdao, cdparanoia, utils
 from whipper.result import result
+from whipper.result.logger import is_complete_rip_log
 
 logger = logging.getLogger(__name__)
 
@@ -379,10 +380,17 @@ Log files will log the path to tracks relative to this directory.
         dirname = os.path.dirname(discName)
         if os.path.exists(dirname):
             log_file = discName + '.log'
-            if os.path.exists(log_file):
+            # Issue #352: only treat a *complete* whipper log as proof of a
+            # finished rip. Empty/partial logs from failed runs must not
+            # block re-ripping.
+            if is_complete_rip_log(log_file):
                 msg = ("output directory %s is a finished rip" % dirname)
                 logger.debug(msg)
                 raise RuntimeError(msg)
+            if os.path.exists(log_file):
+                logger.warning(
+                    'found incomplete rip log %r; it will be overwritten',
+                    log_file)
         else:
             logger.info("creating output directory %s", dirname)
             os.makedirs(dirname)
