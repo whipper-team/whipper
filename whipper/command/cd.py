@@ -98,6 +98,9 @@ class _CD(BaseCommand):
 
         # if the device is mounted (data session), unmount it
         self.device = self.options.device
+        if not self.device:
+            raise OSError(
+                "No CD-DA drives found! Connect a drive and try again.")
         logger.info('checking device %s', self.device)
 
         if self.options.drive_auto_close is True:
@@ -251,7 +254,9 @@ Log files will log the path to tracks relative to this directory.
     def add_arguments(self):
         loggers = list(result.getLoggers())
         default_offset = None
-        info = drive.getDeviceInfo(self.opts.device)
+        # opts.device may be None when no drive is present (e.g. --help)
+        device = getattr(self.opts, 'device', None)
+        info = drive.getDeviceInfo(device) if device else None
         if info:
             try:
                 default_offset = config.Config().getReadOffset(*info)

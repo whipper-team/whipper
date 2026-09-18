@@ -54,6 +54,11 @@ class BaseCommand:
     no_add_help = False  # for rip.main.Whipper
     formatter_class = argparse.RawDescriptionHelpFormatter
 
+    @staticmethod
+    def _is_help_request(argv):
+        """True if argv asks for argparse help (this command or a child)."""
+        return any(arg in ('-h', '--help') for arg in (argv or []))
+
     def __init__(self, argv, prog_name, opts):
         self.opts = opts  # for Rip.add_arguments()
         self.prog_name = prog_name
@@ -80,26 +85,39 @@ class BaseCommand:
                                      help=argparse.SUPPRESS)
 
         if self.device_option:
-            # pick the first drive as default
+            # Default to the first drive when present. Missing drives must
+            # not prevent --help (issue #164); real commands still fail
+            # later if no device is available.
             drives = drive.getAllDevicePaths()
-            if not drives:
-                msg = 'No CD-DA drives found!'
-                logger.critical(msg)
-                # whipper exited with return code 3 here
-                raise IOError(msg)
+            default_device = drives[0] if drives else None
             self.parser.add_argument('-d', '--device',
                                      action="store",
                                      dest="device",
-                                     default=drives[0],
+                                     default=default_device,
                                      help="CD-DA device")
 
         self.options = self.parser.parse_args(argv, namespace=opts)
 
+        # argparse already printed help and exited for -h/--help on this
+        # parser. Still allow building child parsers when help is requested
+        # for a subcommand (e.g. "whipper cd rip --help").
+        help_pending = self._is_help_request(argv)
+        remainder = getattr(self.options, 'remainder', None)
+        if remainder and self._is_help_request(remainder):
+            help_pending = True
+
         if self.device_option:
-            # this can be a symlink to another device
-            self.options.device = os.path.realpath(self.options.device)
-            if not os.path.exists(self.options.device):
-                msg = 'CD-DA device %s not found!' % self.options.device
+            if self.options.device:
+                # this can be a symlink to another device
+                self.options.device = os.path.realpath(self.options.device)
+                if not os.path.exists(self.options.device):
+                    if not help_pending:
+                        msg = 'CD-DA device %s not found!' % (
+                            self.options.device, )
+                        logger.critical(msg)
+                        raise IOError(msg)
+            elif not help_pending:
+                msg = 'No CD-DA drives found!'
                 logger.critical(msg)
                 raise IOError(msg)
 
