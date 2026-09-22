@@ -157,6 +157,37 @@ PyPI installable dependencies are listed in the [requirements.txt](https://githu
 
 `pip3 install -r requirements.txt`
 
+### FreeBSD
+
+FreeBSD needs the same Python dependencies as Linux, including `pycdio`.
+Install native libraries and tools before building in a virtual environment:
+
+```sh
+pkg install python3 git pkgconf swig ninja libcdio libcdio-paranoia \
+    libdiscid libsndfile cdrdao flac sox cairo gobject-introspection
+```
+
+Also install the `py*-pip` package matching your installed Python version.
+For optional cover-art support, install `jpeg-turbo` before building Pillow.
+After fetching the source, create a virtual environment and install with:
+
+```sh
+python3 -m venv .venv
+. .venv/bin/activate
+CFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib" python3 -m pip install .
+```
+
+Include `/usr/local/bin` and `/usr/local/sbin` in `PATH`. The ripping user
+needs read/write access to the optical device, its associated CAM pass
+node, and `/dev/xpt0`; configure the relevant `operator` group permissions with
+`devfs.rules(5)` instead of changing permissions on every pass device.
+
+Use `whipper drive list`, then `whipper cd -d /dev/cd0 info` to check the
+setup. FreeBSD tray control uses `camcontrol`, with the optional `eject`
+package as a fallback. Set the drive's read offset before ripping.
+Overread (`-x`) requires a patched cd-paranoia and a compatible drive;
+normal ripping does not request it.
+
 ### Optional dependencies
 - [Pillow](https://pypi.org/project/Pillow/), for completely supporting the cover art feature (`embed` and `complete` option values won't work otherwise).
 - [docutils](https://pypi.org/project/docutils/), to build the man pages.
