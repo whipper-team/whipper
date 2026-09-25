@@ -83,10 +83,8 @@ class BaseCommand:
             # pick the first drive as default
             drives = drive.getAllDevicePaths()
             if not drives:
-                msg = 'No CD-DA drives found!'
-                logger.critical(msg)
-                # whipper exited with return code 3 here
-                raise IOError(msg)
+                logger.critical('No CD-DA drives found!')
+                raise SystemExit(3)
             self.parser.add_argument('-d', '--device',
                                      action="store",
                                      dest="device",
@@ -99,9 +97,9 @@ class BaseCommand:
             # this can be a symlink to another device
             self.options.device = os.path.realpath(self.options.device)
             if not os.path.exists(self.options.device):
-                msg = 'CD-DA device %s not found!' % self.options.device
-                logger.critical(msg)
-                raise IOError(msg)
+                logger.critical('CD-DA device %s not found!',
+                                self.options.device)
+                raise SystemExit(3)
 
         self.handle_arguments()
 
