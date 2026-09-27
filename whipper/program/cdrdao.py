@@ -64,6 +64,21 @@ class ProgressParser:
         self.oldline = line
 
 
+def saved_toc_path(toc_path):
+    """
+    Return the path ReadTOCTask saves the TOC to for the given toc_path.
+
+    :param toc_path: disc path (without extension) passed to ReadTOCTask
+    :type toc_path: str
+    :returns: path of the saved .toc file; None if its directory is missing
+    :rtype: str or None
+    """
+    t_dirn = os.path.dirname(os.path.abspath(toc_path))
+    if not os.path.isdir(t_dirn):
+        return None
+    return truncate_filename(os.path.abspath(toc_path) + '.toc')
+
+
 class ReadTOCTask(task.Task):
     """Task that reads the TOC of the disc using cdrdao."""
 
@@ -160,9 +175,7 @@ class ReadTOCTask(task.Task):
                 logger.info("creating output directory %s", t_dirn)
             except FileExistsError as e:
                 logger.debug(e)
-            t_dst = truncate_filename(
-                os.path.join(t_dirn, t_comp[-1] + '.toc'))
-            shutil.copy(self.tocfile, os.path.join(t_dirn, t_dst))
+            shutil.copy(self.tocfile, saved_toc_path(self.toc_path))
         os.unlink(self.tocfile)
         self.stop()
         return

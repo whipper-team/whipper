@@ -4,11 +4,87 @@
 
 import os
 import shutil
+import tempfile
 import unittest
 
 from tempfile import NamedTemporaryFile
 from whipper.common import program, mbngs, config
 from whipper.command.cd import DEFAULT_DISC_TEMPLATE
+from whipper.image.toc import TocFile
+from whipper.program.cdrdao import saved_toc_path
+
+
+class SavedTableTestCase(unittest.TestCase):
+    """Reusing the TOC an earlier rip saved (rip --tracks)."""
+
+    def setUp(self):
+        self.dir = tempfile.mkdtemp()
+        self.toc_path = os.path.join(self.dir, 'Artist - Album')
+        fixture = os.path.join(os.path.dirname(__file__), 'bloc.toc')
+        shutil.copy(fixture, self.toc_path + '.toc')
+        toc = TocFile(fixture)
+        toc.parse()
+        self.cddb = toc.table.getCDDBDiscId()
+        self.mb = toc.table.getMusicBrainzDiscId()
+        self.prog = program.Program(config.Config())
+        self.prog.getRipResult()
+
+    def tearDown(self):
+        shutil.rmtree(self.dir)
+
+    def testSavedPathMatchesReadTOCTask(self):
+        self.assertEqual(saved_toc_path(self.toc_path), self.toc_path + '.toc')
+        self.assertIsNone(saved_toc_path('/does/not/exist/disc'))
+
+    def testMatchingSavedTableIsLoaded(self):
+        table = program.Program.loadSavedTable(self.toc_path, self.cddb,
+                                               self.mb)
+        self.assertEqual(table.getMusicBrainzDiscId(), self.mb)
+
+    def testOtherDiscIsRejected(self):
+        self.assertIsNone(program.Program.loadSavedTable(
+            self.toc_path, self.cddb, 'another-mb-disc-id'))
+
+    def testMissingIsRejected(self):
+        os.unlink(self.toc_path + '.toc')
+        self.assertIsNone(program.Program.loadSavedTable(
+            self.toc_path, self.cddb, self.mb))
+
+    def testUnparsableIsRejected(self):
+        with open(self.toc_path + '.toc', 'w') as f:
+            f.write('not a toc file {{{')
+        self.assertIsNone(program.Program.loadSavedTable(
+            self.toc_path, self.cddb, self.mb))
+
+    def getTable(self, reuse_toc, mb=None):
+        """Run getTable with a runner that records whether it read the disc."""
+        runs = []
+        fixture = os.path.join(os.path.dirname(__file__), 'bloc.toc')
+
+        class Runner:
+            @staticmethod
+            def run(t):
+                runs.append(t)
+                t.toc = TocFile(fixture)
+                t.toc.parse()
+
+        table = self.prog.getTable(Runner, self.cddb, mb or self.mb,
+                                   '/dev/null', 0, self.toc_path,
+                                   reuse_toc=reuse_toc)
+        return table, runs
+
+    def testReuseSkipsTheDisc(self):
+        table, runs = self.getTable(reuse_toc=True)
+        self.assertEqual(runs, [])
+        self.assertEqual(table.getMusicBrainzDiscId(), self.mb)
+
+    def testNoReuseReadsTheDisc(self):
+        _, runs = self.getTable(reuse_toc=False)
+        self.assertEqual(len(runs), 1)
+
+    def testReuseFallsBackToTheDisc(self):
+        _, runs = self.getTable(reuse_toc=True, mb='another-mb-disc-id')
+        self.assertEqual(len(runs), 1)
 
 
 class PathTestCase(unittest.TestCase):

@@ -39,6 +39,8 @@ class TrackResult:
     AR = None
     classVersion = 3
     skipped = False
+    # not ripped because --tracks left it out (skipped is also set)
+    not_selected = False
 
     def __init__(self):
         """

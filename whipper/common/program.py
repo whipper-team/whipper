@@ -33,6 +33,7 @@ from whipper.common import accurip, checksum, common, mbngs, path
 from whipper.program import cdrdao, cdparanoia
 from whipper.result import result
 from whipper.image import image
+from whipper.image.toc import TocFile
 from whipper.extern import freedb
 from whipper.extern.task import task
 
@@ -114,19 +115,25 @@ class Program:
         return toc
 
     def getTable(self, runner, cddbdiscid, mbdiscid, device, offset,
-                 toc_path):
+                 toc_path, reuse_toc=False):
         """
         Retrieve the Table from the drive.
 
+        :param reuse_toc: use the TOC an earlier rip saved at toc_path
+                          instead of reading it, if it matches the disc
+        :type reuse_toc: bool
         :rtype: table.Table
         """
         itable = None
         tdict = {}
 
-        t = cdrdao.ReadTOCTask(device, toc_path=toc_path)
-        t.description = "Reading table"
-        runner.run(t)
-        itable = t.toc.table
+        if reuse_toc and toc_path is not None:
+            itable = self.loadSavedTable(toc_path, cddbdiscid, mbdiscid)
+        if itable is None:
+            t = cdrdao.ReadTOCTask(device, toc_path=toc_path)
+            t.description = "Reading table"
+            runner.run(t)
+            itable = t.toc.table
         tdict[offset] = itable
         logger.debug('getTable: read table %r', itable)
 
@@ -136,6 +143,48 @@ class Program:
 
         logger.debug('getTable: returning table with mb id %s',
                      itable.getMusicBrainzDiscId())
+        return itable
+
+    @staticmethod
+    def loadSavedTable(toc_path, cddbdiscid, mbdiscid):
+        """
+        Load the TOC an earlier rip saved, if it belongs to this disc.
+
+        Reading the full TOC scans the whole disc, which is slow on a
+        damaged one; the saved copy is the same cdrdao output.
+
+        :param toc_path: disc path (without extension) the TOC was saved for
+        :type toc_path: str
+        :param cddbdiscid: CDDB disc id of the inserted disc
+        :type cddbdiscid: str
+        :param mbdiscid: MusicBrainz disc id of the inserted disc
+        :type mbdiscid: str
+        :returns: the saved table, or None if missing or not matching
+        :rtype: table.Table or None
+        """
+        path = cdrdao.saved_toc_path(toc_path)
+        if path is None or not os.path.exists(path):
+            logger.info('no saved table of contents, reading it from disc')
+            return None
+        toc = TocFile(path)
+        try:
+            toc.parse()
+        # FIXME: catching too general exception (Exception); the parser
+        # raises several kinds, and any of them means: read the disc
+        except Exception as e:
+            logger.warning('cannot parse saved table of contents %s (%s), '
+                           'reading it from disc', path, e)
+            return None
+        itable = toc.table
+        if not (itable.hasTOC() and
+                itable.getCDDBDiscId() == cddbdiscid and
+                itable.getMusicBrainzDiscId() == mbdiscid):
+            logger.warning('saved table of contents %s is for another disc, '
+                           'reading it from disc', path)
+            return None
+        logger.info('reusing the table of contents saved by an earlier rip: '
+                    '%s (--reread-toc reads it from disc)',
+                    os.path.basename(path))
         return itable
 
     def getRipResult(self):
@@ -673,7 +722,9 @@ class Program:
                 if not track.filename:
                     # false positive htoa
                     continue
-                if track.skipped:
+                # a skipped track may still have a file from an earlier rip
+                # (see --tracks); list what is there
+                if not os.path.exists(track.filename):
                     continue
                 if track.number == 0:
                     length = (self.result.table.getTrackStart(1) /

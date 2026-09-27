@@ -24,6 +24,7 @@ import importlib.util
 import os
 import glob
 import logging
+import re
 from whipper.command.basecommand import BaseCommand
 from whipper.common import (
     accurip, config, drive, program, task
@@ -70,6 +71,57 @@ disc and track template are:
  - %X: audio extension, uppercase
 
 '''
+
+_TRACK_ITEM_RE = re.compile(r'(\d+)(?:-(\d+))?', re.ASCII)
+
+
+def parse_track_selection(spec, track_count=None):
+    """
+    Parse a track selection like ``3,5`` or ``3-7,10-13``.
+
+    :param spec: comma-separated track numbers and ranges
+    :type spec: str
+    :param track_count: number of tracks on the disc; None skips the
+                        upper bound check
+    :type track_count: int or None
+    :returns: the selected track numbers, sorted, without duplicates
+    :rtype: list(int)
+    :raises ValueError: when the selection is malformed or out of range
+    """
+    selected = set()
+    for item in spec.replace(' ', '').split(','):
+        match = _TRACK_ITEM_RE.fullmatch(item)
+        if not match:
+            raise ValueError("invalid track selection %r: %r is not a track "
+                             "number or range" % (spec, item))
+        start = int(match.group(1))
+        stop = int(match.group(2) or start)
+        if start < 1 or stop < start:
+            raise ValueError("invalid track selection %r: %r is not a valid "
+                             "range" % (spec, item))
+        if track_count is not None and stop > track_count:
+            raise ValueError("invalid track selection %r: the disc has only "
+                             "%d tracks" % (spec, track_count))
+        selected.update(range(start, stop + 1))
+    return sorted(selected)
+
+
+def format_track_selection(tracks):
+    """
+    Format track numbers as a compact selection, e.g. ``3-7,10``.
+
+    :param tracks: track numbers, sorted, without duplicates
+    :type tracks: list(int)
+    :rtype: str
+    """
+    ranges = []
+    for number in tracks:
+        if ranges and number == ranges[-1][1] + 1:
+            ranges[-1][1] = number
+        else:
+            ranges.append([number, number])
+    return ','.join(str(a) if a == b else '%d-%d' % (a, b)
+                    for a, b in ranges)
 
 
 class _CD(BaseCommand):
@@ -158,12 +210,16 @@ class _CD(BaseCommand):
                                              self.program.metadata)
         else:
             out_fpath = None
-        # now, read the complete index table, which is slower
+        # now, read the complete index table, which is slower; ripping
+        # selected tracks reuses the one an earlier rip of the disc saved
         offset = getattr(self.options, 'offset', 0)
+        reuse_toc = (getattr(self.options, 'tracks', None) is not None and
+                     not getattr(self.options, 'reread_toc', False))
         self.itable = self.program.getTable(self.runner,
                                             self.ittoc.getCDDBDiscId(),
                                             self.ittoc.getMusicBrainzDiscId(),
-                                            self.device, offset, out_fpath)
+                                            self.device, offset, out_fpath,
+                                            reuse_toc=reuse_toc)
 
         assert self.itable.getCDDBDiscId() == self.ittoc.getCDDBDiscId(), \
             "full table's id %s differs from toc id %s" % (
@@ -326,6 +382,21 @@ Log files will log the path to tracks relative to this directory.
                                  help="continue ripping further tracks "
                                  "instead of giving up if a track "
                                  "can't be ripped")
+        self.parser.add_argument('-t', '--tracks',
+                                 action="store", dest="tracks",
+                                 help="rip only these tracks, e.g. 3,5 or "
+                                 "3-7,10-13. May rip into a finished rip "
+                                 "of the disc: other tracks are kept, "
+                                 "selected ones are ripped again, and the "
+                                 "log is written next to the existing one. "
+                                 "Reuses the table of contents that rip "
+                                 "saved, instead of reading it again")
+        self.parser.add_argument('--reread-toc',
+                                 action="store_true", dest="reread_toc",
+                                 default=False,
+                                 help="with --tracks, read the table of "
+                                 "contents from the disc even if an "
+                                 "earlier rip saved it")
 
     def handle_arguments(self):
         self.options.output_directory = os.path.expanduser(
@@ -365,6 +436,14 @@ Log files will log the path to tracks relative to this directory.
         elif self.options.max_retries < 0:
             raise ValueError("number of max retries must be positive")
 
+        # check the syntax before the (slow) TOC read; the track count is
+        # checked in doCommand, once it is known
+        if self.options.tracks is not None:
+            try:
+                parse_track_selection(self.options.tracks)
+            except ValueError as e:
+                raise SystemExit("Error: %s" % e)
+
     def doCommand(self):
         self.program.setWorkingDirectory(self.options.working_directory)
         self.program.outdir = self.options.output_directory
@@ -376,13 +455,29 @@ Log files will log the path to tracks relative to this directory.
                                         self.options.disc_template,
                                         self.mbdiscid,
                                         self.program.metadata)
+        selected = None
+        if self.options.tracks is not None:
+            try:
+                selected = set(parse_track_selection(
+                    self.options.tracks, len(self.itable.tracks)))
+            except ValueError as e:
+                raise SystemExit("Error: %s" % e)
+
+        # the log of this run; with --tracks, an earlier rip's log is kept
+        logName = discName
         dirname = os.path.dirname(discName)
         if os.path.exists(dirname):
             log_file = discName + '.log'
             if os.path.exists(log_file):
-                msg = ("output directory %s is a finished rip" % dirname)
-                logger.debug(msg)
-                raise RuntimeError(msg)
+                if selected is None:
+                    msg = ("output directory %s is a finished rip" % dirname)
+                    logger.debug(msg)
+                    raise RuntimeError(msg)
+                logName = '%s (tracks %s)' % (
+                    discName, format_track_selection(sorted(selected)))
+                logger.info('output directory %s holds an earlier rip; '
+                            'its log is kept, this run logs to %s.log',
+                            dirname, os.path.basename(logName))
         else:
             logger.info("creating output directory %s", dirname)
             os.makedirs(dirname)
@@ -404,6 +499,10 @@ Log files will log the path to tracks relative to this directory.
                                self.options.cover_art)
         if self.options.cover_art == "file":
             self.coverArtPath = None  # NOTE: avoid image embedding (hacky)
+
+        def _isSelected(number):
+            # HTOA (track 0) sits in track 1's pregap, so it follows track 1
+            return selected is None or max(number, 1) in selected
 
         # FIXME: turn this into a method
         def _ripIfNotRipped(number):
@@ -434,8 +533,22 @@ Log files will log the path to tracks relative to this directory.
                     self.itable.tracks[number - 1].pre_emphasis
                 )
 
+            if not _isSelected(number):
+                logger.info('not ripping track %d of %d: not selected',
+                            number, len(self.itable.tracks))
+                trackResult.skipped = True
+                trackResult.not_selected = True
+                trackResult.peak = None  # not measured: no peak in the log
+            # with --tracks, a selected track is ripped even if its file
+            # exists; the new rip replaces the file only once it succeeds
+            rerip = selected is not None and _isSelected(number)
+            if rerip and os.path.exists(path):
+                logger.info('re-ripping selected track %d of %d: %s',
+                            number, len(self.itable.tracks),
+                            os.path.basename(path))
+
             # FIXME: optionally allow overriding reripping
-            if os.path.exists(path):
+            if selected is None and os.path.exists(path):
                 if path != trackResult.filename:
                     # the path is different (different name/template ?)
                     # but we can copy it
@@ -449,8 +562,8 @@ Log files will log the path to tracks relative to this directory.
                     logger.warning('verification failed, reripping...')
                     os.unlink(path)
 
-            if not os.path.exists(path):
-                logger.debug('path %r does not exist, ripping...', path)
+            if rerip or (selected is None and not os.path.exists(path)):
+                logger.debug('ripping %r', path)
                 # we reset durations for test and copy here
                 trackResult.testduration = 0.0
                 trackResult.copyduration = 0.0
@@ -521,8 +634,13 @@ Log files will log the path to tracks relative to this directory.
             # overlay this rip onto the Table
             if number == 0:
                 # HTOA goes on index 0 of track 1
+                if (trackResult.not_selected and
+                        not os.path.exists(trackResult.filename)):
+                    self.itable.setFile(1, 0, None,
+                                        self.itable.getTrackStart(1), number)
+                    trackResult.filename = None
                 # ignore silence in PREGAP
-                if trackResult.peak == SILENT:
+                elif trackResult.peak == SILENT:
                     logger.debug('HTOA peak %r is equal to the SILENT '
                                  'threshold, disregarding', trackResult.peak)
                     self.itable.setFile(1, 0, None,
@@ -579,7 +697,14 @@ Log files will log the path to tracks relative to this directory.
             logger.warning("the generated cue sheet references %d track(s) "
                            "which failed to rip so the associated file(s) "
                            "won't be available", len(self.skipped_tracks))
-            self.program.skipped_tracks = self.skipped_tracks
+        # tracks without a file, which verification must not look for:
+        # failed ones, and unselected ones no earlier rip left behind
+        missing = self.skipped_tracks + [
+            t for t in self.program.result.tracks
+            if t.not_selected and t.filename and
+            not os.path.exists(t.filename)]
+        if missing:
+            self.program.skipped_tracks = missing
 
         try:
             self.program.verifyImage(self.runner, self.itable)
@@ -588,7 +713,7 @@ Log files will log the path to tracks relative to this directory.
 
         accurip.print_report(self.program.result)
 
-        self.program.writeLog(discName, self.logger)
+        self.program.writeLog(logName, self.logger)
 
         if len(self.skipped_tracks) > 0:
             logger.warning('%d tracks have been skipped from this rip attempt',

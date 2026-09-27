@@ -60,6 +60,14 @@ class TestCalculateChecksums(TestCase):
             {'v1': [None], 'v2': [None]}
         )
 
+    def test_missing_file_is_a_warning_not_an_error(self):
+        # a track that was not ripped (skipped, or not selected) has no file;
+        # that is expected and must not be logged as an error
+        with self.assertLogs('whipper.common.accurip', 'DEBUG') as cm:
+            calculate_checksums(['/does/not/exist'])
+        self.assertEqual([r.levelname for r in cm.records
+                          if r.levelname != 'DEBUG'], ['WARNING'])
+
     # TODO: test success when file exists
 
 
@@ -223,6 +231,29 @@ class TestAccurateRipReport(TestCase):
         self.assertEqual(
             sys.stdout.getvalue(),
             'track  1: unknown          (error)\n'
+        )
+
+    def test_report_skipped_track(self):
+        track = TrackResult()
+        track.number = 1
+        track.skipped = True
+        self.result.tracks[0] = track
+        with self.assertNoLogs('whipper.common.accurip', 'ERROR'):
+            print_report(self.result)
+        self.assertEqual(
+            sys.stdout.getvalue(),
+            'track  1: not ripped       (skipped)\n'
+        )
+
+    def test_report_not_selected_track(self):
+        track = TrackResult()
+        track.number = 1
+        track.skipped = track.not_selected = True
+        self.result.tracks[0] = track
+        print_report(self.result)
+        self.assertEqual(
+            sys.stdout.getvalue(),
+            'track  1: not ripped       (not selected)\n'
         )
 
     def test_track_not_found(self):

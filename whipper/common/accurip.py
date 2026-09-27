@@ -112,11 +112,14 @@ def calculate_checksums(track_paths):
     logger.debug('checksumming %d tracks', track_count)
     # This is done sequentially because it is very fast.
     for i, path in enumerate(track_paths):
-        if os.path.exists(path):
-            v1_sum, v2_sum = accuraterip_checksum(path, i+1, track_count)
-        else:
+        if not os.path.exists(path):
+            # a track that was not ripped (skipped or not selected); expected,
+            # unlike a file that exists but cannot be checksummed
             logger.warning('Can\'t checksum %s; path doesn\'t exist', path)
-            v1_sum, v2_sum = None, None
+            v1_checksums.append(None)
+            v2_checksums.append(None)
+            continue
+        v1_sum, v2_sum = accuraterip_checksum(path, i+1, track_count)
         if v1_sum is None:
             logger.error('could not calculate AccurateRip v1 checksum '
                          'for track %d %r', i + 1, path)
@@ -240,6 +243,15 @@ def print_report(result):
             print('track  0: unknown          (not tracked)')
             continue
         if not (track.AR['v1']['CRC'] or track.AR['v2']['CRC']):
+            if track.not_selected:
+                # left out with --tracks and no file from an earlier rip
+                print('track %2d: not ripped       (not selected)' %
+                      track.number)
+                continue
+            if track.skipped:
+                # failed to rip (--keep-going): no file, so no checksum
+                print('track %2d: not ripped       (skipped)' % track.number)
+                continue
             logger.error('no track AR CRC on non-HTOA track %d', track.number)
             print('track %2d: unknown          (error)' % track.number)
         else:

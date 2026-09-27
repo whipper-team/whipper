@@ -16,6 +16,7 @@ class WhipperLogger(result.Logger):
     _inARDatabase = 0
     _errors = False
     _skippedTracks = False
+    _notSelectedTracks = False
 
     def log(self, ripResult, epoch=time.time()):
         """Return logfile as string."""
@@ -142,6 +143,8 @@ class WhipperLogger(result.Logger):
             message = "There were errors"
         elif self._skippedTracks:
             message = "Some tracks were not ripped (skipped)"
+        elif self._notSelectedTracks:
+            message = "Only selected tracks were ripped"
         else:
             message = "No errors occurred"
         data["Health status"] = message
@@ -203,8 +206,13 @@ class WhipperLogger(result.Logger):
             track["Pre-gap length"] = common.framesToMSF(pregap)
 
         # Peak level
-        peak = trackResult.peak / 32768.0
-        track["Peak level"] = float("%.6f" % peak)
+        # A track that failed to rip (skipped) never gets a peak level, so
+        # trackResult.peak is None; omit the line instead of crashing while
+        # writing the log. This mirrors cd.py, which already avoids the same
+        # division for skipped tracks.
+        if trackResult.peak is not None:
+            peak = trackResult.peak / 32768.0
+            track["Peak level"] = float("%.6f" % peak)
 
         # Pre-emphasis status
         # Only implemented in whipper (trackResult.pre_emphasis)
@@ -246,8 +254,11 @@ class WhipperLogger(result.Logger):
                 data["Result"] = "Track not present in AccurateRip database"
             track["AccurateRip %s" % v] = data
 
-        # Check if track has been skipped
-        if trackResult.skipped:
+        # Check if track has been left out (--tracks) or skipped
+        if trackResult.not_selected:
+            track["Status"] = "Track not ripped (not selected)"
+            self._notSelectedTracks = True
+        elif trackResult.skipped:
             track["Status"] = "Track not ripped (skipped)"
             self._skippedTracks = True
         # Check if Test & Copy CRCs are equal
