@@ -456,6 +456,9 @@ Log files will log the path to tracks relative to this directory.
                 trackResult.copyduration = 0.0
                 extra = ""
                 tries = 1
+                # checksums of failed tries: a later copy read matching any
+                # of them is as good as a matching test read
+                earlier_checksums = set()
                 while tries <= self.options.max_retries:
                     if tries > 1:
                         extra = " (try %d)" % tries
@@ -481,7 +484,9 @@ Log files will log the path to tracks relative to this directory.
                                                   number,
                                                   len(self.itable.tracks),
                                                   extra),
-                                              coverArtPath=self.coverArtPath)
+                                              coverArtPath=self.coverArtPath,
+                                              earlier_checksums=(
+                                                  earlier_checksums))
                         break
                     # FIXME: catching too general exception (Exception)
                     except Exception as e:

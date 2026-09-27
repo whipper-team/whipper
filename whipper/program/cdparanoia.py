@@ -405,6 +405,26 @@ class ReadTrackTask(task.Task):
         return
 
 
+def accepted_checksum(test, copy, earlier):
+    """
+    Return the checksum a read can be accepted with, or None.
+
+    The copy read is the one that gets encoded, so it is accepted when
+    the test read agrees with it, or when a read from an earlier try did.
+
+    :param test: checksum of this try's test read
+    :type test: int
+    :param copy: checksum of this try's copy read
+    :type copy: int
+    :param earlier: checksums of the reads of earlier, failed tries
+    :type earlier: set(int)
+    :rtype: int or None
+    """
+    if test == copy or copy in earlier:
+        return copy
+    return None
+
+
 class ReadVerifyTrackTask(task.MultiSeparateTask):
     """
     Task that reads and verifies a track using cdparanoia.
@@ -440,7 +460,8 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
     _tmppath = None
 
     def __init__(self, path, table, start, stop, overread, offset=0,
-                 device=None, taglist=None, what="track", coverArtPath=None):
+                 device=None, taglist=None, what="track", coverArtPath=None,
+                 earlier_checksums=None):
         """
         Init ReadVerifyTrackTask.
 
@@ -458,8 +479,15 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         :type device: str
         :param taglist: a dict of tags
         :type taglist: dict
+        :param earlier_checksums: checksums of earlier failed tries of this
+                                  track; a mismatching try adds its own
+        :type earlier_checksums: set(int) or None
         """
         task.MultiSeparateTask.__init__(self)
+
+        self._earlier_checksums = (earlier_checksums
+                                   if earlier_checksums is not None
+                                   else set())
 
         logger.debug('creating read and verify task on %r', path)
 
@@ -533,7 +561,15 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
                 if c1 == c2:
                     logger.info('checksums match, %08x', c1)
                     self.checksum = self.testchecksum
+                elif accepted_checksum(c1, c2,
+                                       self._earlier_checksums) is not None:
+                    logger.info('checksums do not match, %08x %08x, but the '
+                                'copy matches a read from an earlier try',
+                                c1, c2)
+                    # the verifying read is the earlier one
+                    self.testchecksum = self.checksum = c2
                 else:
+                    self._earlier_checksums.update((c1, c2))
                     # FIXME: detect this before encoding
                     logger.info('checksums do not match, %08x %08x',
                                 c1, c2)

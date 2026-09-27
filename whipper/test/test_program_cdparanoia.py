@@ -2,6 +2,8 @@
 # vi:si:et:sw=4:sts=4:ts=4
 
 import os
+import shutil
+import tempfile
 
 from whipper.extern.task import task
 
@@ -77,6 +79,72 @@ class AnalyzeFileTask(cdparanoia.AnalyzeTask):
 
     def readbytesout(self, bytes_stdout):
         self.readbyteserr(bytes_stdout)
+
+
+class AcceptedChecksumTestCase(common.TestCase):
+
+    def testMatchingReads(self):
+        self.assertEqual(cdparanoia.accepted_checksum(1, 1, set()), 1)
+
+    def testMismatch(self):
+        self.assertIsNone(cdparanoia.accepted_checksum(1, 2, set()))
+
+    def testCopyMatchesEarlierTry(self):
+        self.assertEqual(cdparanoia.accepted_checksum(1, 2, {3, 2}), 2)
+
+    def testOnlyTestMatchesEarlierTry(self):
+        # the copy read is what gets encoded, so it must be the one matching
+        self.assertIsNone(cdparanoia.accepted_checksum(1, 2, {1}))
+
+
+class FakeTask:
+
+    def __init__(self, checksum=None):
+        self.checksum = checksum
+        self.quality = 1.0
+        self.speed = 1.0
+        self.duration = 1.0
+        self.peak = 0
+
+
+class ReadVerifyAcrossTriesTestCase(common.TestCase):
+
+    def setUp(self):
+        self.dir = tempfile.mkdtemp()
+        self.path = os.path.join(self.dir, 'track.flac')
+        self.earlier = set()
+
+    def tearDown(self):
+        shutil.rmtree(self.dir)
+
+    def tryRead(self, test, copy):
+        """Run the checksum step of one try, with the given read checksums."""
+        t = cdparanoia.ReadVerifyTrackTask(self.path, None, 0, 1, False,
+                                           earlier_checksums=self.earlier)
+        t.tasks = [FakeTask(), FakeTask(test), FakeTask(), FakeTask(copy),
+                   FakeTask(), FakeTask(copy), FakeTask()]
+        t.runner = object()
+        t.stop()
+        return t
+
+    def testMismatchFailsAndIsRemembered(self):
+        t = self.tryRead(0x11, 0x22)
+        self.assertIsInstance(t.exception, cdparanoia.ChecksumException)
+        self.assertEqual(self.earlier, {0x11, 0x22})
+        self.assertFalse(os.path.exists(self.path))
+
+    def testCopyMatchingEarlierTryIsKept(self):
+        self.tryRead(0x11, 0x22)
+        t = self.tryRead(0x33, 0x22)
+        self.assertIsNone(t.exception)
+        self.assertEqual(t.checksum, 0x22)
+        self.assertEqual(t.testchecksum, t.copychecksum)
+        self.assertTrue(os.path.exists(self.path))
+
+    def testNewMismatchStillFails(self):
+        self.tryRead(0x11, 0x22)
+        t = self.tryRead(0x33, 0x44)
+        self.assertIsInstance(t.exception, cdparanoia.ChecksumException)
 
 
 class CacheTestCase(common.TestCase):

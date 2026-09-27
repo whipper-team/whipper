@@ -562,7 +562,8 @@ class Program:
         return ret
 
     def ripTrack(self, runner, trackResult, offset, device, taglist,
-                 overread, what=None, coverArtPath=None):
+                 overread, what=None, coverArtPath=None,
+                 earlier_checksums=None):
         """
         Rip and store a track of the disc.
 
@@ -586,6 +587,9 @@ class Program:
         :type what: str or None
         :param coverArtPath: path to the downloaded cover art file
         :type coverArtPath: str or None
+        :param earlier_checksums: checksums of earlier failed tries of this
+                                  track, shared across tries
+        :type earlier_checksums: set(int) or None
         """
         if trackResult.number == 0:
             start, stop = self.getHTOA()
@@ -606,7 +610,8 @@ class Program:
                                            device=device,
                                            taglist=taglist,
                                            what=what,
-                                           coverArtPath=coverArtPath)
+                                           coverArtPath=coverArtPath,
+                                           earlier_checksums=earlier_checksums)
 
         runner.run(t)
 
