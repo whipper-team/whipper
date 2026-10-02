@@ -5,6 +5,7 @@ import os
 import json
 
 import unittest
+from unittest.mock import patch
 
 from whipper.common import mbngs
 
@@ -305,3 +306,70 @@ class MetadataTestCase(unittest.TestCase):
                          'b191794d-b7c6-4d6f-971e-0a543959b5ad')
         self.assertEqual(track1.mbidWorks,
                          ['90d5be68-0b29-45a3-ba01-c27ad78e3625'])
+
+
+class ReleaseByTocTestCase(unittest.TestCase):
+    """Look up a release whose medium doesn't have the disc id attached."""
+
+    # Using: Gustafsson, Österberg & Cowle - What's Up? 8 (4 mediums)
+    # https://musicbrainz.org/release/d8e6153a-2c47-4804-9d73-0aac1081c3b1
+    RELEASE_ID = 'd8e6153a-2c47-4804-9d73-0aac1081c3b1'
+    UNKNOWN_DISCID = 'h7d9QcErIIaZ_VQsUxEdg4W9Vvc-'
+
+    def setUp(self):
+        filename = 'whipper.release.%s.json' % self.RELEASE_ID
+        path = os.path.join(os.path.dirname(__file__), filename)
+        with open(path, "rb") as handle:
+            self.response = json.loads(handle.read().decode('utf-8'))
+
+    def testPickMediumByTrackCount(self):
+        # mediums have 20, 15, 18 and 14 tracks
+        release = self.response['release']
+        self.assertEqual(mbngs._pickMedium(release, 15, 0), 2)
+        self.assertEqual(mbngs._pickMedium(release, 14, 0), 4)
+        self.assertIsNone(mbngs._pickMedium(release, 12, 0))
+
+    def testPickMediumByDuration(self):
+        def medium(position, lengths):
+            return {'position': str(position),
+                    'track-list': [{'recording': {'length': str(length)}}
+                                   for length in lengths]}
+
+        release = {'medium-list': [medium(1, [100000, 100000]),
+                                   medium(2, [200000, 200000]),
+                                   medium(3, [100000, 100000, 100000])]}
+        self.assertEqual(mbngs._pickMedium(release, 2, 210000), 1)
+        self.assertEqual(mbngs._pickMedium(release, 2, 390000), 2)
+
+    def testGetReleaseMetadataByToc(self):
+        with patch('whipper.common.mbngs.musicbrainzngs.get_release_by_id',
+                   return_value=self.response) as get_release:
+            metadata = mbngs.getReleaseMetadataByToc(
+                self.RELEASE_ID, 15, 4640901, discid=self.UNKNOWN_DISCID)
+
+        get_release.assert_called_once()
+        self.assertEqual(get_release.call_args[0][0], self.RELEASE_ID)
+        self.assertEqual(metadata.mbid, self.RELEASE_ID)
+        self.assertEqual(metadata.discNumber, 2)
+        self.assertEqual(metadata.discTotal, 4)
+        self.assertEqual(len(metadata.tracks), 15)
+        self.assertEqual(metadata.duration, 4640901)
+        # same tracks as when looking up medium 2 by its attached disc id
+        expected = mbngs._getMetadata(self.response['release'],
+                                      'Xu6RInhlajCJO7qolsctKG71COA-')
+        self.assertEqual([t.mbid for t in metadata.tracks],
+                         [t.mbid for t in expected.tracks])
+        self.assertEqual(metadata.releaseTitle, expected.releaseTitle)
+
+    def testGetReleaseMetadataByTocNoMatchingMedium(self):
+        with patch('whipper.common.mbngs.musicbrainzngs.get_release_by_id',
+                   return_value=self.response):
+            metadata = mbngs.getReleaseMetadataByToc(
+                self.RELEASE_ID, 12, 3000000, discid=self.UNKNOWN_DISCID)
+        self.assertIsNone(metadata)
+
+    def testUnknownDiscIdMatchesNoMedium(self):
+        # without a medium position, an unattached disc id yields no tracks
+        metadata = mbngs._getMetadata(self.response['release'],
+                                      self.UNKNOWN_DISCID)
+        self.assertEqual(metadata.tracks, [])

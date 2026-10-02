@@ -232,13 +232,16 @@ def _getPerformers(recording):
     return sorted(performers)  # convert to list: mutagen doesn't support set
 
 
-def _getMetadata(release, discid=None, country=None):
+def _getMetadata(release, discid=None, country=None, medium_position=None):
     """
     Get disc metadata based upon the provided release id.
 
     :param release: a release dict as returned in the value for key release
                     from get_release_by_id
     :type release: dict
+    :param medium_position: position of the medium to use; when set, it is
+                            used instead of matching the disc id
+    :type medium_position: int or None
     :rtype: DiscMetadata or None
     """
     logger.debug('getMetadata for release id %r', release['id'])
@@ -301,9 +304,15 @@ def _getMetadata(release, discid=None, country=None):
     duration = 0
 
     # only show discs from medium-list->disc-list with matching discid
+    # (or the requested medium, if the disc id isn't attached to the release)
     for medium in release['medium-list']:
-        for disc in medium['disc-list']:
-            if discid is None or disc['id'] == discid:
+        if medium_position is not None:
+            matches = [int(medium['position']) == medium_position]
+        else:
+            matches = [discid is None or disc['id'] == discid
+                       for disc in medium.get('disc-list', [])]
+        for match in matches:
+            if match:
                 discMD.title = release['title']
                 discMD.releaseTitle = releaseTitle = discMD.title
                 if 'disambiguation' in release:
@@ -381,6 +390,20 @@ def getReleaseMetadata(release_id, discid=None, country=None, record=False):
     :returns: a DiscMetadata object based on MusicBrainz Release ID & Disc ID
     :rtype: `DiscMetadata`
     """
+    releaseDetail = _getRelease(release_id, record)
+    return _getMetadata(releaseDetail, discid, country)
+
+
+def _getRelease(release_id, record=False):
+    """
+    Fetch the full release dict for the given MusicBrainz Release ID.
+
+    :param release_id: MusicBrainz Release ID
+    :type release_id: str
+    :param record: whether to record to disc as a JSON serialization
+    :type record: bool
+    :rtype: dict
+    """
     # to get titles of recordings, we need to query the release with
     # artist-credits
 
@@ -394,7 +417,67 @@ def getReleaseMetadata(release_id, discid=None, country=None, record=False):
     releaseDetail = res['release']
     formatted = json.dumps(releaseDetail, sort_keys=False, indent=4)
     logger.debug('release %s', formatted)
-    return _getMetadata(releaseDetail, discid, country)
+    return releaseDetail
+
+
+def _pickMedium(release, track_count, duration):
+    """
+    Pick the medium of a release which best matches a disc's TOC.
+
+    Only mediums with the same number of tracks are considered; among
+    those the one closest in duration wins.
+
+    :param release: a release dict as returned by get_release_by_id
+    :type release: dict
+    :param track_count: number of audio tracks on the disc
+    :type track_count: int
+    :param duration: duration of the disc in milliseconds
+    :type duration: int
+    :returns: the position of the best matching medium, or None
+    :rtype: int or None
+    """
+    candidates = [m for m in release['medium-list']
+                  if len(m.get('track-list', [])) == track_count]
+    if not candidates:
+        return None
+
+    def delta(medium):
+        length = sum(int(t['recording'].get('length', 0))
+                     for t in medium['track-list'])
+        return abs(length - duration)
+
+    return int(min(candidates, key=delta)['position'])
+
+
+def getReleaseMetadataByToc(release_id, track_count, duration, discid=None,
+                            country=None, record=False):
+    """
+    Get disc metadata for a release the disc id isn't attached to (yet).
+
+    The medium is chosen by matching the disc's track count and duration.
+
+    :param release_id: MusicBrainz Release ID
+    :type release_id: str
+    :param track_count: number of audio tracks on the disc
+    :type track_count: int
+    :param duration: duration of the disc in milliseconds
+    :type duration: int
+    :param discid: MusicBrainz Disc ID
+    :type discid: str or None
+    :param country: the country the release was issued in
+    :type country: str or None
+    :param record: whether to record to disc as a JSON serialization
+    :type record: bool
+    :rtype: `DiscMetadata` or None
+    """
+    releaseDetail = _getRelease(release_id, record)
+    position = _pickMedium(releaseDetail, track_count, duration)
+    if position is None:
+        logger.warning('release %s has no medium with %d tracks',
+                       release_id, track_count)
+        return None
+    logger.debug('picked medium %d of release %s', position, release_id)
+    return _getMetadata(releaseDetail, discid, country, position)
 
 
 # see http://bugs.musicbrainz.org/browser/python-musicbrainz2/trunk/examples/

@@ -323,6 +323,23 @@ class Program:
                 time.sleep(5)
                 continue
 
+        if not metadatas and release:
+            # the disc id isn't attached to any release in MusicBrainz yet:
+            # look up the release requested by the user directly instead
+            logger.info('looking up requested release %s directly', release)
+            try:
+                metadata = mbngs.getReleaseMetadataByToc(
+                    release, ittoc.getAudioTracks(), ittoc.duration(),
+                    discid=mbdiscid, country=country, record=self._record)
+            except musicbrainzngs.WebServiceError as e:
+                logger.warning("unable to look up release %s: %r",
+                               release, (e, ))
+                metadata = None
+            if metadata:
+                metadatas = [metadata]
+                print('Disc id is not attached to release %s, please '
+                      'submit it at the above URL.' % release)
+
         if not metadatas:
             logger.warning('continuing without metadata')
 
