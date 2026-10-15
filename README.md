@@ -264,6 +264,13 @@ defeats_cache = True			; whether the drive is capable of defeating the audio cac
 read_offset = 6				; drive read offset in positive/negative frames (no leading +)
 # do not edit the values 'vendor', 'model', and 'release'; they are used by whipper to match the drive
 
+[drive:PIONEER%20%3ABD-RW%20%20%20BDR-209D%3A1.10]
+defeats_cache = True
+read_offset = 667
+cdparanoia = cdparanoia			; cdparanoia executable to use.  Default is cd-paranoia
+					; cd-paranoia has a bug that makes drives with large read_offset
+					; unusable, see https://github.com/whipper-team/whipper/issues/234
+
 # top-level whipper arguments go in [whipper]; subcommand arguments go in [whipper.subcommand...]
 [whipper]
 eject = always
