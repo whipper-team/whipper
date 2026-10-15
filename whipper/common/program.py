@@ -212,6 +212,8 @@ class Program:
                 v['n'] = 'Hidden Track One Audio'
             else:
                 v['n'] = 'Unknown Track %d' % track_number
+        v['M'] = '%02d' % 0  # Default values to avoid key errors
+        v['N'] = '%02d' % 1
 
         if metadata:
             release = metadata.release or '0000'
@@ -223,8 +225,8 @@ class Program:
             v['B'] = metadata.barcode
             v['C'] = ', '.join(metadata.catalogNumbers)
             v['c'] = metadata.releaseDisambCmt
-            v['M'] = metadata.discTotal
-            v['N'] = metadata.discNumber
+            v['M'] = '%02d' % (metadata.discTotal or 0)
+            v['N'] = '%02d' % (metadata.discNumber or 1)
             v['T'] = metadata.mediumTitle
             if metadata.releaseType:
                 v['R'] = metadata.releaseType
