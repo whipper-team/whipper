@@ -48,6 +48,14 @@ class GetRelativePathTestCase(tcommon.TestCase):
         self.assertEqual(common.getRelativePath(track, cue),
                          '01. Placebo - Taste in Men.flac')
 
+    def testBareFilenameNotWalkedUpTree(self):
+        """#508: TOC placeholder data.wav must not become ../../data.wav."""
+        cue = '/output/Artist - Album/Artist - Album.cue'
+        self.assertEqual(common.getRelativePath('data.wav', cue),
+                         'data.wav')
+        self.assertEqual(common.getRelativePath('./data.wav', cue),
+                         'data.wav')
+
 
 class GetRealPathTestCase(tcommon.TestCase):
 
@@ -63,3 +71,10 @@ class GetRealPathTestCase(tcommon.TestCase):
 
         os.close(fd)
         os.unlink(path)
+
+    def testDataWavPlaceholderRaisesKeyError(self):
+        try:
+            common.getRealPath('/nonexistent/disc.cue', 'data.wav')
+        except KeyError:
+            return
+        self.fail('expected KeyError for missing data.wav')

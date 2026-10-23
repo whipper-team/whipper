@@ -485,6 +485,10 @@ class Table:
         lines = []
 
         def writeFile(path):
+            if not path:
+                return
+            # File references describe the image even before audio exists.
+            # Skipped data tracks and discarded HTOA clear their paths.
             targetPath = common.getRelativePath(path, cuePath)
             line = 'FILE "%s" WAVE' % targetPath
             lines.append(line)
@@ -523,7 +527,12 @@ class Table:
         track = firstTrack
 
         while not index.path:
-            t, i = self.getNextTrackIndex(track.number, index.number)
+            try:
+                t, i = self.getNextTrackIndex(track.number, index.number)
+            except Exception as e:
+                logger.debug('no further indexes after %r/%r: %s',
+                             track.number, index.number, e)
+                break
             track = self.tracks[t - 1]
             index = track.getIndex(i)
             counter = index.counter

@@ -261,9 +261,15 @@ def getRelativePath(targetPath, collectionPath):
     logger.debug('getRelativePath: target %r, collection %r',
                  targetPath, collectionPath)
 
+    targetPath = os.path.normpath(targetPath)
+    collectionPath = os.path.normpath(collectionPath)
     targetDir = os.path.dirname(targetPath)
     collectionDir = os.path.dirname(collectionPath)
-    if targetDir == collectionDir:
+    # Bare filenames (e.g. TOC placeholders like data.wav) have an empty
+    # dirname; treat them as living in the collection directory (#508).
+    # Otherwise os.path.relpath walks up the tree and emits ../../data.wav.
+    if (not targetDir or targetDir == os.curdir or
+            targetDir == collectionDir):
         logger.debug('getRelativePath: target and collection in same dir')
         return os.path.basename(targetPath)
     rel = os.path.relpath(

@@ -151,15 +151,23 @@ class ImageVerifyTask(task.MultiSeparateTask):
             if length == -1:
                 try:
                     path = image.getRealPath(index.path)
-                except KeyError:
+                except (KeyError, TypeError):
+                    # Issue #508: cue FILE paths can be TOC placeholders
+                    # (data.wav) or empty after discarded HTOA/data tracks.
+                    # Do not abort the whole rip during image verification.
+                    path_name = getattr(index, 'path', None)
                     logger.debug('Path not found; Checking '
-                                 'if %s is a skipped track', index.path)
-                    if os.path.basename(index.path) in skipped_tracks:
+                                 'if %s is a skipped track', path_name)
+                    if path_name and os.path.basename(path_name) in (
+                            skipped_tracks or []):
                         logger.warning('Missing file %s due to skipped track',
-                                       index.path)
+                                       path_name)
                         continue
-                    else:
-                        raise
+                    logger.warning(
+                        'cannot resolve cue FILE %r for track %d; '
+                        'skipping length check for this track',
+                        path_name, trackIndex + 1)
+                    continue
                 assert isinstance(path, str), "%r is not str" % path
                 logger.debug('schedule scan of audio length of %r', path)
                 taskk = AudioLengthTask(path)

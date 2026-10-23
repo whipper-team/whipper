@@ -2,8 +2,9 @@
 # vi:si:et:sw=4:sts=4:ts=4
 
 from os import environ
+from pathlib import Path
 from shutil import rmtree
-from tempfile import mkdtemp
+from tempfile import mkdtemp, TemporaryDirectory
 from whipper.image import table
 from whipper.common import config
 
@@ -141,3 +142,50 @@ class PregapTestCase(tcommon.TestCase):
     def testPreGap(self):
         self.assertEqual(self.table.tracks[0].getPregap(), 0)
         self.assertEqual(self.table.tracks[1].getPregap(), 200)
+
+
+class CueFileReferenceTestCase(tcommon.TestCase):
+
+    def make_table(self, path):
+        disc = table.Table()
+        for i in range(2):
+            track = table.Track(i + 1, audio=True)
+            track.index(1, absolute=i * 2000, path=path,
+                        relative=i * 2000, counter=1)
+            disc.tracks.append(track)
+        disc.leadout = 4000
+        return disc
+
+    def test_audio_reference_does_not_require_an_existing_file(self):
+        with TemporaryDirectory() as directory:
+            audio = Path(directory) / 'data.wav'
+            disc = self.make_table(str(audio))
+            cue_path = str(Path(directory) / 'disc.cue')
+            missing_audio = disc.cue(cue_path)
+            self.assertIn('FILE "data.wav" WAVE\n', missing_audio)
+            audio.touch()
+            self.assertEqual(disc.cue(cue_path), missing_audio)
+
+    def test_skipped_data_track_does_not_add_a_file_reference(self):
+        disc = self.make_table('track01.flac')
+        data = disc.tracks[1]
+        data.audio = False
+        for path in ('data.wav', None):
+            data.index(1, absolute=2000, path=path, relative=0, counter=2)
+            cue = disc.cue('/output/disc.cue')
+            self.assertIn('FILE "track01.flac" WAVE\n', cue)
+            self.assertNotIn('data.wav', cue)
+            self.assertNotIn('TRACK 02', cue)
+
+    def test_discarded_htoa_retains_pregap_and_audio_reference(self):
+        disc = self.make_table('data.wav')
+        track = table.Track(1, audio=True)
+        track.index(0, absolute=0, path=None, relative=0, counter=0)
+        track.index(1, absolute=150, path='data.wav', relative=0, counter=1)
+        disc.tracks[0] = track
+        disc.tracks[1].getIndex(1).relative = 1850
+        cue = disc.cue('/output/disc.cue')
+        self.assertEqual(cue.count('FILE '), 1)
+        self.assertIn('FILE "data.wav" WAVE\n', cue)
+        self.assertIn('    PREGAP 00:02:00\n', cue)
+        self.assertNotIn('FILE "None"', cue)

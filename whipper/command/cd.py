@@ -556,7 +556,12 @@ Log files will log the path to tracks relative to this directory.
                 logger.warning('skipping data track %d, not implemented',
                                i + 1)
                 # FIXME: make it work for now
-                track.indexes[1].relative = 0
+                if 1 in track.indexes:
+                    track.indexes[1].relative = 0
+                # Issue #508: drop TOC placeholder paths (data.wav) so cue
+                # generation does not emit a FILE that cannot be resolved.
+                for idx in track.indexes.values():
+                    idx.path = None
                 continue
             _ripIfNotRipped(i + 1)
 

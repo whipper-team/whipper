@@ -542,23 +542,52 @@ class Program:
             return cover_art_path
         return
 
-    @staticmethod
-    def verifyTrack(runner, trackResult):
+    def verifyTrack(self, runner, trackResult):
         is_wave = not trackResult.filename.endswith('.flac')
         t = checksum.CRC32Task(trackResult.filename, is_wave=is_wave)
 
         try:
             runner.run(t)
         except task.TaskException as e:
-            if isinstance(e.exception, common.MissingFrames):
-                logger.warning('missing frames for %r', trackResult.filename)
+            if isinstance(e.exception, (common.MissingFrames,
+                                        checksum.InvalidAudioError)):
+                logger.warning('invalid audio for %r: %s',
+                               trackResult.filename, e.exception)
                 return False
             else:
                 raise
 
-        ret = trackResult.testcrc == t.checksum
-        logger.debug('verifyTrack: track result crc %r, file crc %r, '
-                     'result %r', trackResult.testcrc, t.checksum, ret)
+        if trackResult.number == 0:
+            start, stop = self.getHTOA()
+            length = stop - start + 1
+        else:
+            length = self.result.table.getTrackLength(trackResult.number)
+        # The same inclusive frame range is used by ripTrack. Drive sample
+        # offsets shift the audio, not its length (also with overreading).
+        # Table handles pregaps and session boundaries; do not round samples
+        # or allow an offset-sized truncation at either end of a track.
+        expected = length * common.SAMPLES_PER_FRAME
+        if t.sampleCount == 0 or t.sampleCount != expected:
+            logger.warning('decoded sample count %d did not match expected '
+                           '%d for %r', t.sampleCount, expected,
+                           trackResult.filename)
+            return False
+
+        # Issue #681: on a resume, TrackResult is fresh and testcrc is None.
+        # Comparing None == checksum always failed, so every existing track
+        # was re-ripped. If we have no prior CRC, accept the file and record
+        # its checksum so later CRC checks in the rip command succeed.
+        if trackResult.testcrc is not None:
+            ret = trackResult.testcrc == t.checksum
+            logger.debug('verifyTrack: track result crc %r, file crc %r, '
+                         'result %r', trackResult.testcrc, t.checksum, ret)
+        else:
+            trackResult.testcrc = t.checksum
+            trackResult.copycrc = t.checksum
+            logger.info('reusing existing track file %r (CRC %08X); '
+                        'no prior CRC on record to verify against',
+                        trackResult.filename, t.checksum)
+            ret = True
         return ret
 
     def ripTrack(self, runner, trackResult, offset, device, taglist,

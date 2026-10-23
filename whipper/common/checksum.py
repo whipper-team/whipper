@@ -33,6 +33,10 @@ logger = logging.getLogger(__name__)
 # checksums are not CRC's. a CRC is a specific type of checksum.
 
 
+class InvalidAudioError(Exception):
+    """The file could not be decoded as complete CD audio."""
+
+
 class CRC32Task(etask.Task):
     # TODO: Support sampleStart, sampleLength later on (should be trivial, just
     # add change the read part in _crc32 to skip some samples and/or not
@@ -46,19 +50,37 @@ class CRC32Task(etask.Task):
         self.schedule(0.0, self._crc32)
 
     def _crc32(self):
-        if not self.is_wave:
-            _, tmpf = tempfile.mkstemp()
-
-            try:
+        tmpf = None
+        try:
+            path = self.path
+            if not self.is_wave:
+                fd, tmpf = tempfile.mkstemp()
+                os.close(fd)
                 subprocess.check_call(['flac', '-d', self.path, '-fo', tmpf])
+                path = tmpf
 
-                w = wave.open(tmpf)
-            finally:
-                os.remove(tmpf)
-        else:
-            w = wave.open(self.path)
-
-        d = w._data_chunk.read()
+            with wave.open(path) as w:
+                if (w.getnchannels(), w.getsampwidth(), w.getframerate()) != (
+                        2, 2, 44100):
+                    raise InvalidAudioError('expected 16-bit stereo 44100 Hz')
+                d = w._data_chunk.read()
+                if len(d) != w.getnframes() * 4 or len(d) % 4:
+                    raise InvalidAudioError('truncated PCM data')
+                # Count decoded stereo samples, not compressed bytes or a
+                # possibly stale WAV header's declared length.
+                self.sampleCount = len(d) // 4
+        # wave's chunk reader raises RuntimeError for an out-of-bounds seek
+        # when a corrupt subchunk length exceeds its enclosing RIFF chunk.
+        except (wave.Error, EOFError, RuntimeError,
+                subprocess.CalledProcessError) as e:
+            raise InvalidAudioError(str(e)) from e
+        finally:
+            if tmpf is not None:
+                try:
+                    os.remove(tmpf)
+                except FileNotFoundError:
+                    # flac removes its output when decoding fails.
+                    pass
 
         self.checksum = binascii.crc32(d) & 0xffffffff
         self.stop()
