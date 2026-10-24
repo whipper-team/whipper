@@ -19,6 +19,7 @@
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
 import errno
+import math
 import os
 import re
 import shutil
@@ -53,6 +54,20 @@ class ReturnCodeError(Exception):
     def __init__(self, returncode):
         self.args = (returncode, )
         self.returncode = returncode
+
+
+class ReadTimeoutError(Exception):
+    """A read exceeded its elapsed-time or inactivity limit."""
+
+    def __init__(self, kind, seconds):
+        self.kind = kind
+        self.seconds = seconds
+        super().__init__('cd-paranoia read timed out after %g seconds (%s)' %
+                         (seconds, kind))
+
+
+class ReadCleanupError(Exception):
+    """A killed reader could not be reaped; further reads must not start."""
 
 
 class ChecksumException(Exception):
@@ -207,9 +222,11 @@ class ReadTrackTask(task.Task):
     duration = None  # in seconds
 
     _MAXERROR = 100  # number of errors detected by parser
+    _TERMINATE_GRACE = 2.0  # seconds before escalating to SIGKILL
 
     def __init__(self, path, table, start, stop, overread, offset=0,
-                 device=None, action="Reading", what="track"):
+                 device=None, action="Reading", what="track",
+                 read_timeout=None, idle_timeout=None):
         """
         Read the given track.
 
@@ -229,8 +246,14 @@ class ReadTrackTask(task.Task):
         :type action: str
         :param what: a string representing what's being read; e.g. Track
         :type what: str
+        :param read_timeout: maximum elapsed read time in seconds, or None
+        :param idle_timeout: maximum time without forward progress, or None
         """
         assert isinstance(path, str), "%r is not str" % path
+        for name, value in (('read_timeout', read_timeout),
+                            ('idle_timeout', idle_timeout)):
+            if value is not None and (not math.isfinite(value) or value <= 0):
+                raise ValueError('%s must be positive and finite' % name)
 
         self.path = path
         self._table = table
@@ -241,6 +264,14 @@ class ReadTrackTask(task.Task):
         self._device = device
         self._start_time = None
         self._overread = overread
+        self._read_timeout = read_timeout
+        self._idle_timeout = idle_timeout
+        self._last_progress_time = None
+        self._read_highwater = start
+        self._wrote_highwater = start
+        self._output_size = 0
+        self._popen = None
+        self._poll_handle = None
 
         self._buffer = ""  # accumulate characters
         self._errors = []
@@ -259,7 +290,9 @@ class ReadTrackTask(task.Task):
             if self._table.getTrackStart(i + 1) <= self._start:
                 startTrack = i + 1
                 startOffset = self._start - self._table.getTrackStart(i + 1)
-            if self._table.getTrackEnd(i + 1) <= self._stop:
+            # Select the track containing the end of a partial read too.
+            # An endpoint before track 1 stays in the existing HTOA span.
+            if self._table.getTrackStart(i + 1) <= self._stop:
                 stopTrack = i + 1
                 stopOffset = self._stop - self._table.getTrackStart(i + 1)
 
@@ -314,19 +347,83 @@ class ReadTrackTask(task.Task):
 
             raise
 
-        self._start_time = time.time()
-        self.schedule(1.0, self._read, runner)
+        self._start_time = time.monotonic()
+        self._last_progress_time = self._start_time
+        self._schedule_read(runner, 1.0)
+
+    def _schedule_read(self, runner, delay=0.01):
+        # A short configured limit must apply to the initial read too.
+        now = time.monotonic()
+        for limit, start in ((self._read_timeout, self._start_time),
+                             (self._idle_timeout, self._last_progress_time)):
+            if limit is not None:
+                delay = min(delay, max(0, start + limit - now))
+        self._poll_handle = self.schedule(delay, self._read, runner)
+
+    def _note_progress(self, now):
+        # cd-paranoia can seek backwards to verify a sector. Only new forward
+        # progress within this read's span counts, not repeated reports.
+        read = min(self._parser.read, self._stop + 1)
+        wrote = min(self._parser.wrote, self._stop + 1)
+        if read > self._read_highwater or wrote > self._wrote_highwater:
+            self._last_progress_time = now
+            self._read_highwater = max(read, self._read_highwater)
+            self._wrote_highwater = max(wrote, self._wrote_highwater)
+
+    def stop(self):
+        if not self.running:
+            return
+        if self._poll_handle is not None:
+            self._poll_handle.cancel()
+            self._poll_handle = None
+
+        try:
+            if self._popen is not None:
+                if self._popen.poll() is None:
+                    try:
+                        self._popen.terminate()
+                    except ProcessLookupError:
+                        pass  # exited between poll() and terminate()
+                    try:
+                        self._popen.wait(timeout=self._TERMINATE_GRACE)
+                    except subprocess.TimeoutExpired:
+                        try:
+                            self._popen.kill()
+                        except ProcessLookupError:
+                            pass
+                        try:
+                            self._popen.wait(timeout=self._TERMINATE_GRACE)
+                        except subprocess.TimeoutExpired:
+                            self.setAndRaiseException(ReadCleanupError(
+                                'cd-paranoia could not be reaped within %g '
+                                'seconds after kill; stop further reads' %
+                                self._TERMINATE_GRACE))
+                else:
+                    self._popen.wait(timeout=self._TERMINATE_GRACE)
+        finally:
+            if self._popen is not None:
+                for name in ('stdin', 'stdout', 'stderr'):
+                    pipe = getattr(self._popen, name)
+                    if pipe is not None:
+                        pipe.close()
+            task.Task.stop(self)
 
     def _read(self, runner):
-        ret = self._popen.recv_err()
-        if not ret:
-            if self._popen.poll() is not None:
-                self._done()
-                return
-            self.schedule(0.01, self._read, runner)
+        # A cancelled callback may already be ready on the event loop.
+        if not self.running:
             return
+        self._poll_handle = None
+        try:
+            self._read_once(runner)
+        except Exception as e:
+            self.setException(e)
+            self.stop()
 
-        self._buffer += ret.decode()
+    def _read_once(self, runner):
+        now = time.monotonic()
+        ret = self._popen.recv_err()
+        if ret:
+            self._buffer += ret.decode()
 
         # parse buffer into lines if possible, and parse them
         if "\n" in self._buffer:
@@ -340,6 +437,7 @@ class ReadTrackTask(task.Task):
 
             for line in lines:
                 self._parser.parse(line)
+                self._note_progress(now)
 
             # fail if too many errors
             if self._parser.errors > self._MAXERROR:
@@ -354,9 +452,32 @@ class ReadTrackTask(task.Task):
             if progress < 1.0:
                 self.setProgress(progress)
 
+        try:
+            size = os.stat(self.path).st_size
+        except FileNotFoundError:
+            size = 0
+        if size > self._output_size:
+            self._output_size = size
+            self._last_progress_time = now
+
+        # Observe exit before checking deadlines, and drain remaining stderr.
+        if self._popen.poll() is not None:
+            if not ret:
+                self._done()
+                return
+        else:
+            for kind, limit, start in (
+                    ('elapsed time', self._read_timeout, self._start_time),
+                    ('inactivity', self._idle_timeout,
+                     self._last_progress_time)):
+                if limit is not None and now - start >= limit:
+                    self.setAndRaiseException(ReadTimeoutError(kind, limit))
+                    self.stop()
+                    return
+
         # 0 does not give us output before we complete, 1.0 gives us output
         # too late
-        self.schedule(0.01, self._read, runner)
+        self._schedule_read(runner)
 
     def _poll(self, runner):
         if self._popen.poll() is None:
@@ -366,7 +487,7 @@ class ReadTrackTask(task.Task):
         self._done()
 
     def _done(self):
-        end_time = time.time()
+        end_time = time.monotonic()
         self.setProgress(1.0)
 
         # check if the length matches
@@ -389,6 +510,8 @@ class ReadTrackTask(task.Task):
                                                     "match expected "
                                                     "size %d" % (
                                                         size, expected)))
+            self.stop()
+            return
 
         if not self.exception and self._popen.returncode != 0:
             if self._errors:
@@ -396,6 +519,8 @@ class ReadTrackTask(task.Task):
             else:
                 logger.warning('exit code %r', self._popen.returncode)
                 self.exception = ReturnCodeError(self._popen.returncode)
+            self.stop()
+            return
 
         self.quality = self._parser.getTrackQuality()
         self.duration = end_time - self._start_time

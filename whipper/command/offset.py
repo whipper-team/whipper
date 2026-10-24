@@ -19,11 +19,13 @@
 # along with whipper.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
+import math
 import os
 import tempfile
 import logging
 from whipper.command.basecommand import BaseCommand
 from whipper.common import accurip, common, config, drive
+from whipper.common import drive_offsets, offsetfind
 from whipper.common import task as ctask
 from whipper.program import arc, cdrdao, cdparanoia, utils
 from whipper.extern.task import task
@@ -46,6 +48,16 @@ OFFSETS = ("+6, +667, +48, +102, +30, +12, +103, +618, +96, +738, "
            "+1364, +1336, +1262, +1161, +1127")
 
 
+def _positive_seconds(value):
+    try:
+        seconds = float(value)
+    except (TypeError, ValueError):
+        raise argparse.ArgumentTypeError('must be positive, finite seconds')
+    if not math.isfinite(seconds) or seconds <= 0:
+        raise argparse.ArgumentTypeError('must be positive, finite seconds')
+    return seconds
+
+
 class Find(BaseCommand):
     summary = "find drive read offset"
     description = """Find drive's read offset by ripping tracks from a
@@ -56,13 +68,32 @@ CD in the AccurateRip database."""
     def add_arguments(self):
         self.parser.add_argument(
             '-o', '--offsets',
-            action="store", dest="offsets", default=OFFSETS,
-            help="list of offsets, comma-separated, colon-separated for ranges"
+            action="store", dest="offsets", default=None,
+            help="probe only these offsets, in order (comma-separated; "
+                 "colon-separated ranges); otherwise detect automatically"
         )
 
+        self.parser.add_argument(
+            '--no-prioritize-known', action='store_true',
+            help='do not prioritize configured or published model offsets')
+        self.parser.add_argument(
+            '--no-frame450', action='store_true',
+            help='skip the short AccurateRip checksum window')
+        self.parser.add_argument(
+            '--read-timeout', type=_positive_seconds, metavar='SECONDS',
+            default=offsetfind.DEFAULT_READ_TIMEOUT,
+            help='maximum seconds for each offset window or confirmation read')
+        self.parser.add_argument(
+            '--read-idle-timeout', type=_positive_seconds, metavar='SECONDS',
+            default=offsetfind.DEFAULT_IDLE_TIMEOUT,
+            help='maximum seconds without forward read/write progress during '
+                 'offset detection')
+
     def handle_arguments(self):
+        self._explicit_offsets = self.options.offsets is not None
         self._offsets = []
-        blocks = self.options.offsets.split(',')
+        blocks = (self.options.offsets if self._explicit_offsets
+                  else OFFSETS).split(',')
         for b in blocks:
             if ':' in b:
                 a, b = b.split(':')
@@ -76,7 +107,6 @@ CD in the AccurateRip database."""
         runner = ctask.SyncRunner()
 
         device = self.options.device
-
         # if necessary, load and unmount
         logger.info('checking device %s', device)
 
@@ -84,8 +114,27 @@ CD in the AccurateRip database."""
             utils.load_device(device)
         utils.unmount_device(device)
 
+        configured = None
+        known = []
+        if not self._explicit_offsets:
+            try:
+                info = drive.getDeviceInfo(device)
+            except OSError as error:
+                logger.debug('drive identity unavailable: %s', error)
+                info = None
+            if info:
+                known = drive_offsets.known_offsets_for(*info[:2])
+                try:
+                    configured = config.Config().getReadOffset(*info)
+                except (KeyError, TypeError, ValueError):
+                    pass
+        offsets = drive_offsets.order_offsets(
+            self._offsets, configured, known,
+            prioritize=not (self._explicit_offsets or
+                            self.options.no_prioritize_known))
+
         # first get the Table Of Contents of the CD
-        t = cdrdao.ReadTOCTask(device)
+        t = cdrdao.ReadTOCTask(device, fast_toc=True)
         runner.run(t)
         table = t.toc.table
 
@@ -108,75 +157,53 @@ CD in the AccurateRip database."""
                 logger.warning("AccurateRip response discid different: %s",
                                responses[0].cddbDiscId)
 
-        # now rip the first track at various offsets, calculating AccurateRip
-        # CRC, and matching it against the retrieved ones
+        # An explicit list remains an ordered probe request; automatic
+        # candidate selection must not jump ahead or add other offsets.
+        if not self.options.no_frame450 and not self._explicit_offsets:
+            guess = configured if configured is not None else (
+                known[0] if known else 0)
+            fast = offsetfind.find_offsets(
+                runner, table, device, responses, guess=guess,
+                read_timeout=self.options.read_timeout,
+                idle_timeout=self.options.read_idle_timeout)
+            # Several pressings may match the short window. Prefer known
+            # drive offsets among those matches before trying other shifts.
+            fast = drive_offsets.order_offsets(
+                fast, configured=configured if configured in fast else None,
+                known=[candidate for candidate in known if candidate in fast],
+                prioritize=not self.options.no_prioritize_known)
+            offsets = drive_offsets.order_offsets(offsets, known=fast)
 
-        # archecksums is a tuple of accuraterip checksums: (v1, v2)
-        def match(archecksums, track, responses):
-            for i, r in enumerate(responses):
-                for checksum in archecksums:
-                    if checksum == r.checksums[track - 1]:
-                        return checksum, i
-
-            return None, None
-
-        for offset in self._offsets:
+        for offset in offsets:
             logger.info('trying read offset %d...', offset)
-            try:
-                archecksums = self._arcs(runner, table, 1, offset)
-            except task.TaskException as e:
-
-                # let MissingDependency fall through
-                if isinstance(e.exception, common.MissingDependencyException):
-                    raise e
-
-                if isinstance(e.exception, cdparanoia.FileSizeError):
-                    logger.warning('cannot rip with offset %d...', offset)
-                    continue
-
-                logger.warning("unknown task exception for offset %d: %s",
-                               offset, e)
-                logger.warning('cannot rip with offset %d...', offset)
-                continue
-
-            logger.debug('AR checksums calculated: %s', archecksums)
-
-            c, i = match(archecksums, 1, responses)
-            if c:
-                count = 1
-                logger.debug('matched against response %d', i)
-                logger.info('offset of device is likely %d, confirming...',
-                            offset)
-
-                # now try and rip all other tracks as well, except for the
-                # last one (to avoid readers that can't do overread
-                for track in range(2, (len(table.tracks) + 1) - 1):
-                    try:
-                        archecksums = self._arcs(runner, table, track, offset)
-                    except task.TaskException as e:
-                        if isinstance(e.exception, cdparanoia.FileSizeError):
-                            logger.warning('cannot rip with offset %d...',
-                                           offset)
-                            continue
-
-                    c, i = match(archecksums, track, responses)
-                    if c:
-                        logger.debug('matched track %d against response %d',
-                                     track, i)
-                        count += 1
-
-                if count == len(table.tracks) - 1:
-                    self._foundOffset(device, offset)
-                    return 0
-                else:
-                    logger.warning('only %d of %d tracks matched, '
-                                   'continuing...', count,
-                                   len(table.tracks))
+            if self._confirm_offset(runner, table, responses, offset):
+                self._foundOffset(device, offset)
+                return 0
 
         logger.error('no matching offset found. '
                      'Consider trying again with a different disc')
-
         return None
+
+    def _confirm_offset(self, runner, table, responses, offset):
+        """Keep the existing confirmation threshold for every candidate."""
+        # Skip the last track because some drives cannot overread lead-out.
+        for track in range(1, len(table.tracks)):
+            try:
+                checksums = self._arcs(runner, table, track, offset)
+            except task.TaskException as error:
+                if isinstance(error.exception,
+                              (common.MissingDependencyException,
+                               cdparanoia.ReadCleanupError)):
+                    raise
+                logger.warning('cannot confirm track %d at offset %d: %s',
+                               track, offset, error)
+                return False
+            if not any(checksum == response.checksums[track - 1]
+                       for checksum in checksums for response in responses):
+                logger.debug('track %d did not confirm offset %d',
+                             track, offset)
+                return False
+        return True
 
     def _arcs(self, runner, table, track, offset):
         # rips the track with the given offset, return the arcs checksums
@@ -187,19 +214,20 @@ CD in the AccurateRip database."""
                 track, offset))
         os.close(fd)
 
-        t = cdparanoia.ReadTrackTask(path, table,
-                                     table.getTrackStart(
-                                         track), table.getTrackEnd(track),
-                                     overread=False, offset=offset,
-                                     device=self.options.device)
-        t.description = 'Ripping track %d with read offset %d' % (
-            track, offset)
-        runner.run(t)
-
-        v1, v2 = arc.accuraterip_checksum(path, track, len(table.tracks))
-
-        os.unlink(path)
-        return "%08x" % v1, "%08x" % v2
+        try:
+            t = cdparanoia.ReadTrackTask(
+                path, table, table.getTrackStart(track),
+                table.getTrackEnd(track), overread=False, offset=offset,
+                device=self.options.device,
+                read_timeout=self.options.read_timeout,
+                idle_timeout=self.options.read_idle_timeout)
+            t.description = 'Ripping track %d with read offset %d' % (
+                track, offset)
+            runner.run(t)
+            v1, v2 = arc.accuraterip_checksum(path, track, len(table.tracks))
+            return "%08x" % v1, "%08x" % v2
+        finally:
+            os.unlink(path)
 
     @staticmethod
     def _foundOffset(device, offset):

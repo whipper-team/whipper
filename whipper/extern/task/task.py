@@ -217,7 +217,8 @@ class Task(LogStub):
             import traceback
             traceback.print_stack()
             return
-        self.runner.schedule(self, delta, callable_task, *args, **kwargs)
+        return self.runner.schedule(self, delta, callable_task,
+                                    *args, **kwargs)
 
     def addListener(self, listener):
         """
@@ -528,7 +529,7 @@ class SyncRunner(TaskRunner, ITaskListener):
                 self.stopped(task)
                 raise
 
-        self._loop.call_later(delta, c)
+        return self._loop.call_later(delta, c)
 
     # ITaskListener methods
     def progressed(self, task, value):

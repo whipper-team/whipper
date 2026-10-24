@@ -4,6 +4,9 @@
 
 [Full Changelog](https://github.com/whipper-team/whipper/compare/v0.10.0...HEAD)
 
+- Speed up offset candidate selection with a short AccurateRip window and
+  published model hints, retaining full-track confirmation.
+
 ## [v0.10.0](https://github.com/whipper-team/whipper/tree/v0.10.0) (2021-05-17)
 
 [Full Changelog](https://github.com/whipper-team/whipper/compare/v0.9.0...v0.10.0)

@@ -67,12 +67,17 @@ class _AccurateRipResponse:
 
         self.confidences = []
         self.checksums = []
+        # The final four bytes of each track record contain OffsetFindCRC.
+        # https://forum.dbpoweramp.com/forum/other-topics/developers-corner/20117-accuraterip-crc-calculation  # noqa: E501
+        self.offsetfind_checksums = []
         pos = 13
         for _ in range(self.num_tracks):
             confidence = data[pos]
             checksum = "%08x" % struct.unpack("<L", data[pos + 1:pos + 5])[0]
             self.confidences.append(confidence)
             self.checksums.append(checksum)
+            self.offsetfind_checksums.append(
+                '%08x' % struct.unpack('<L', data[pos + 5:pos + 9])[0])
             pos += 9
 
     def __eq__(self, other):
