@@ -28,7 +28,7 @@ from whipper.command.basecommand import BaseCommand
 from whipper.common import (
     accurip, config, drive, program, task
 )
-from whipper.common.common import validate_template
+from whipper.common.common import truncate_filename, validate_template
 from whipper.program import cdrdao, cdparanoia, utils
 from whipper.result import result
 
@@ -422,6 +422,9 @@ Log files will log the path to tracks relative to this directory.
                                         self.mbdiscid,
                                         self.program.metadata,
                                         track_number=number) + '.flac'
+            # Issue #453: keep the final component under NAME_MAX after
+            # appending the audio extension.
+            path = truncate_filename(path)
             logger.debug('ripIfNotRipped: path %r', path)
             trackResult.number = number
 

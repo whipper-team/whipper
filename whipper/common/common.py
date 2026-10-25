@@ -151,16 +151,103 @@ class MissingFrames(Exception):
     pass
 
 
-def truncate_filename(path):
-    """Truncate filename to the max. len. allowed by the path's filesystem."""
-    p, f = os.path.split(os.path.normpath(path))
-    f, e = os.path.splitext(f)
-    # Get the filename length limit in bytes
-    fn_lim = os.pathconf(p.encode('utf-8'), 'PC_NAME_MAX')
-    f_max = fn_lim - len(e.encode('utf-8'))
-    f = unicodedata.normalize('NFC', f)
-    f_trunc = f.encode()[:f_max].decode('utf-8', errors='ignore')
-    return os.path.join(p, f_trunc + e)
+# Fallback when os.pathconf is unavailable or reports a useless limit.
+_DEFAULT_NAME_MAX = 255
+# Bytes to leave free on the last path component when an extension will be
+# appended later (e.g. getPath() + '.flac' / '.log' / '.cue').
+EXTENSION_RESERVE = 8
+_EXTENSION_RESERVE = EXTENSION_RESERVE
+
+
+def _existing_ancestor(path):
+    """Return the nearest existing ancestor directory of ``path``."""
+    current = os.path.abspath(path) if path else os.getcwd()
+    while True:
+        if os.path.exists(current):
+            return current
+        parent = os.path.dirname(current)
+        if parent == current:
+            return current
+        current = parent
+
+
+def name_max_for(path):
+    """
+    Return the filesystem ``NAME_MAX`` for ``path``'s filesystem.
+
+    Use the nearest existing ancestor when the directory does not exist yet.
+    Fall back to 255 when ``pathconf`` is unavailable or reports no limit.
+    """
+    try:
+        limit = os.pathconf(_existing_ancestor(path), 'PC_NAME_MAX')
+    except (AttributeError, OSError, ValueError):
+        return _DEFAULT_NAME_MAX
+    if not limit or limit < 1:
+        return _DEFAULT_NAME_MAX
+    return int(limit)
+
+
+def truncate_filename(path, has_file_ext=True, reserve=0):
+    """
+    Truncate the last path component to the filesystem name-length limit.
+
+    Continuation of PR #672 for issue #453 (extremely long MusicBrainz
+    titles breaking rips with ``ENAMETOOLONG``).
+
+    :param path: path whose last component may be too long
+    :param has_file_ext: if True, keep the file extension intact; set False
+                         for directories or extension-less names
+    :param reserve: extra bytes to leave free on the component (for a
+                    suffix the caller will append later)
+    :type path: str
+    :type has_file_ext: bool
+    :type reserve: int
+    """
+    path = os.path.normpath(path)
+    directory, name = os.path.split(path)
+    if has_file_ext:
+        stem, ext = os.path.splitext(name)
+    else:
+        stem, ext = name, ''
+    limit = name_max_for(directory or os.curdir)
+    max_stem_bytes = limit - len(ext.encode('utf-8')) - max(0, int(reserve))
+    if max_stem_bytes < 1:
+        max_stem_bytes = 1
+    stem = unicodedata.normalize('NFC', stem)
+    stem_trunc = stem.encode('utf-8')[:max_stem_bytes].decode(
+        'utf-8', errors='ignore')
+    if not stem_trunc:
+        stem_trunc = (stem[:1] if stem else 'x')
+    truncated = stem_trunc + ext
+    if directory:
+        return os.path.join(directory, truncated)
+    return truncated
+
+
+def truncate_path_components(path, reserve_last=_EXTENSION_RESERVE):
+    """
+    Truncate every component of ``path`` to the filesystem name limit.
+
+    Used for template-expanded paths where each directory segment can come
+    from MusicBrainz metadata (issue #453).
+
+    :param path: path with '/' or OS separators
+    :param reserve_last: bytes reserved on the last component (extension)
+    """
+    path = os.path.normpath(path)
+    if not path:
+        return path
+    is_abs = os.path.isabs(path)
+    parts = [p for p in path.split(os.sep) if p not in ('', '.')]
+    if not parts:
+        return path
+    directory = os.sep if is_abs else ''
+    for index, part in enumerate(parts):
+        last = index == len(parts) - 1
+        directory = truncate_filename(
+            os.path.join(directory, part), has_file_ext=False,
+            reserve=reserve_last if last else 0)
+    return directory
 
 
 def shrinkPath(path):

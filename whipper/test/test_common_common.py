@@ -63,3 +63,52 @@ class GetRealPathTestCase(tcommon.TestCase):
 
         os.close(fd)
         os.unlink(path)
+
+
+class TruncateFilenameTestCase(tcommon.TestCase):
+    """Issue #453 / PR #672: path components must respect NAME_MAX."""
+
+    def testShortPathUnchanged(self):
+        path = os.path.join('/tmp', 'Artist - Album', '01. Track.flac')
+        self.assertEqual(common.truncate_filename(path), path)
+
+    def testLongFilenameTruncatedWithExtension(self):
+        long_name = 'a' * 400
+        path = os.path.join('/tmp', long_name + '.flac')
+        result = common.truncate_filename(path)
+        base = os.path.basename(result)
+        self.assertLessEqual(len(base.encode('utf-8')), 255)
+        self.assertTrue(base.endswith('.flac'))
+
+    def testLongDirectoryNameTruncated(self):
+        long_dir = 'D' * 400
+        result = common.truncate_filename(
+            os.path.join('/tmp', long_dir), has_file_ext=False)
+        self.assertLessEqual(len(os.path.basename(result).encode('utf-8')),
+                             255)
+
+    def testReserveRoomForExtension(self):
+        long_name = 'b' * 400
+        path = os.path.join('/tmp', long_name)
+        result = common.truncate_filename(path, has_file_ext=False,
+                                          reserve=8)
+        base = os.path.basename(result)
+        # Leave room for e.g. '.flac' (5) plus margin
+        self.assertLessEqual(len(base.encode('utf-8')), 255 - 8)
+
+    def testMissingParentDoesNotCrash(self):
+        path = os.path.join('/tmp', 'does-not-exist-xyz', 'n' * 400 + '.flac')
+        result = common.truncate_filename(path)
+        self.assertLessEqual(len(os.path.basename(result).encode('utf-8')),
+                             255)
+
+    def testTruncatePathComponents(self):
+        long_dir = 'L' * 300
+        long_file = 'F' * 300
+        path = os.path.join(long_dir, long_file)
+        result = common.truncate_path_components(path)
+        parts = result.split(os.sep)
+        for part in parts:
+            if part:
+                self.assertLessEqual(len(part.encode('utf-8')), 255)
+        self.assertEqual(len(parts), 2)

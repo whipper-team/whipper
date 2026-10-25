@@ -5,7 +5,7 @@ import tempfile
 import subprocess
 from subprocess import Popen, PIPE
 
-from whipper.common.common import truncate_filename
+from whipper.common.common import truncate_filename, truncate_path_components
 from whipper.image.toc import TocFile
 from whipper.extern.task import task
 from whipper.extern import asyncsub
@@ -152,7 +152,10 @@ class ReadTOCTask(task.Task):
         self.toc = TocFile(self.tocfile)
         self.toc.parse()
         if self.toc_path is not None:
-            t_comp = os.path.abspath(self.toc_path).split(os.sep)
+            # Issue #453: long directory names from templates must be
+            # truncated before makedirs, not only the .toc basename.
+            toc_path = truncate_path_components(self.toc_path)
+            t_comp = os.path.abspath(toc_path).split(os.sep)
             t_dirn = os.sep.join(t_comp[:-1])
             # If the output path doesn't exist, make it recursively
             try:
