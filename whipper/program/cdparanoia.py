@@ -326,7 +326,8 @@ class ReadTrackTask(task.Task):
             self.schedule(0.01, self._read, runner)
             return
 
-        self._buffer += ret.decode()
+        # Issue #654: damaged discs / odd drive strings can be non-UTF-8
+        self._buffer += ret.decode('utf-8', errors='replace')
 
         # parse buffer into lines if possible, and parse them
         if "\n" in self._buffer:
@@ -597,6 +598,7 @@ class AnalyzeTask(ctask.PopenTask):
     _output = []
 
     def __init__(self, device=None):
+        self._output = []
         # cdparanoia -A *always* writes cdparanoia.log
         self.cwd = tempfile.mkdtemp(suffix='.whipper.cache')
         self.command = ['cd-paranoia', '-A']
@@ -609,17 +611,30 @@ class AnalyzeTask(ctask.PopenTask):
     def readbyteserr(self, bytes_stderr):
         self._output.append(bytes_stderr)
 
+    @staticmethod
+    def _joined_output(chunks):
+        """Join captured process output that may be bytes or str."""
+        parts = []
+        for chunk in chunks:
+            if isinstance(chunk, bytes):
+                parts.append(chunk.decode('utf-8', errors='replace'))
+            elif isinstance(chunk, str):
+                parts.append(chunk)
+            else:
+                parts.append(str(chunk))
+        return "".join(parts)
+
     def done(self):
         if self.cwd:
             shutil.rmtree(self.cwd)
-        output = "".join(o.decode() for o in self._output)
+        output = self._joined_output(self._output)
         m = _OK_RE.search(output)
         self.defeatsCache = bool(m)
 
     def failed(self):
         # cdparanoia exits with return code 1 if it can't determine
         # whether it can defeat the audio cache
-        output = "".join(o.decode() for o in self._output)
+        output = self._joined_output(self._output)
         m = _WARNING_RE.search(output)
         if m or _ABORTING_RE.search(output):
             self.defeatsCache = False

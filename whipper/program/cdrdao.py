@@ -85,6 +85,7 @@ class ReadTOCTask(task.Task):
         self.fast_toc = fast_toc
         self.toc_path = toc_path
         self._buffer = ""  # accumulate characters
+        self._stderr_tail = ""  # independent of consumed progress lines
         self._parser = ProgressParser()
 
         self.fd, self.tocfile = tempfile.mkstemp(
@@ -116,7 +117,10 @@ class ReadTOCTask(task.Task):
                 return
             self.schedule(0.01, self._read, runner)
             return
-        self._buffer += ret.decode()
+        # Issue #654: cdrdao stderr can contain non-UTF-8 bytes
+        text = ret.decode('utf-8', errors='replace')
+        self._buffer += text
+        self._stderr_tail = (self._stderr_tail + text)[-500:]
 
         # parse buffer into lines if possible, and parse them
         if "\n" in self._buffer:
@@ -149,6 +153,24 @@ class ReadTOCTask(task.Task):
 
     def _done(self):
         self.setProgress(1.0)
+        # Issue #594: do not parse a TOC cdrdao never wrote. Common when
+        # the process crashes, the tray has no disc, or a concurrent
+        # reader races on the same drive.
+        rc = getattr(self._popen, 'returncode', None)
+        if not os.path.isfile(self.tocfile):
+            stderr_tail = self._stderr_tail
+            logger.error(
+                'cdrdao did not produce a TOC file %r (returncode=%s). '
+                'Is a disc in %r? Concurrent ripper running? stderr: %s',
+                self.tocfile, rc, self.device, stderr_tail or '(empty)')
+            self.setAndRaiseException(
+                FileNotFoundError(
+                    "cdrdao TOC missing for device %r (returncode=%s); "
+                    "stderr: %s" % (self.device, rc, stderr_tail)))
+            self.stop()
+            return
+        if rc not in (None, 0):
+            logger.warning('cdrdao exited with returncode %s', rc)
         self.toc = TocFile(self.tocfile)
         self.toc.parse()
         if self.toc_path is not None:
@@ -173,7 +195,9 @@ def DetectCdr(device):
     cmd = [CDRDAO, 'disk-info', '-v1', '--device', device]
     logger.debug("executing %r", cmd)
     p = Popen(cmd, stdout=PIPE, stderr=PIPE)
-    return 'CD-R medium          : n/a' not in p.stdout.read().decode()
+    # Issue #654: avoid UnicodeDecodeError on odd drive strings
+    out = p.stdout.read().decode('utf-8', errors='replace')
+    return 'CD-R medium          : n/a' not in out
 
 
 def version():
@@ -184,8 +208,8 @@ def version():
         logger.warning("cdrdao version detection failed: "
                        "return code is %s", cdrdao.returncode)
         return None
-    m = re.compile(r'^Cdrdao version (?P<version>[^ ]*)').search(
-        err.decode('utf-8'))
+    err_text = (err or b'').decode('utf-8', errors='replace')
+    m = re.compile(r'^Cdrdao version (?P<version>[^ ]*)').search(err_text)
     if not m:
         logger.warning("cdrdao version detection failed: "
                        "could not find version")

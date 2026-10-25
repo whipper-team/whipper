@@ -24,6 +24,7 @@ Read .toc files.
 The .toc file format is described in the man page of cdrdao.
 """
 
+import os
 import re
 
 from whipper.common import common
@@ -220,8 +221,11 @@ class TocFile:
                      absolute, s)
         counterStart = self._sources.getCounterStart(c)
         relative = absolute - counterStart
+        # Issue #550: generic/multi-session TOCs can yield a source with
+        # no FILE path (s is None or s.path is None).
+        source_path = getattr(s, 'path', None) if s is not None else None
 
-        currentTrack.index(i, path=s.path,
+        currentTrack.index(i, path=source_path,
                            absolute=absolute,
                            relative=relative,
                            counter=c)
@@ -253,7 +257,13 @@ class TocFile:
         # the first track's INDEX 1 can only be gotten from the .toc
         # file once the first pregap is calculated; so we add INDEX 1
         # at the end of each parsed  TRACK record
-        with open(self._path) as f:
+        if not os.path.isfile(self._path):
+            raise FileNotFoundError(
+                "cdrdao TOC file missing (did cdrdao fail or exit "
+                "without writing?): %r" % self._path)
+        # Issue #654: cdrdao may emit non-UTF-8 (broken CD-TEXT / data
+        # FILE names) on some discs; do not abort the whole rip.
+        with open(self._path, encoding='utf-8', errors='replace') as f:
             content = f.readlines()
         for number, line in enumerate(content):
             line = line.rstrip()

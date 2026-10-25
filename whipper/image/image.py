@@ -96,13 +96,19 @@ class Image:
         for i in range(len(self.cue.table.tracks)):
             length = self.cue.getTrackLength(self.cue.table.tracks[i])
             if length == -1:
-                length = verify.lengths[i + 1]
+                length = verify.lengths.get(i + 1, 0)
             t = table.Track(i + 1, audio=True)
             tracks.append(t)
             # FIXME: this probably only works for non-compliant .CUE files
             # where pregap is put at end of previous file
+            # Issue #550: index/path may be missing on generic TOCs
+            try:
+                idx1 = self.cue.table.tracks[i].getIndex(1)
+                idx_path = getattr(idx1, 'path', None)
+            except (KeyError, IndexError):
+                idx_path = None
             t.index(1, absolute=offset,
-                    path=self.cue.table.tracks[i].getIndex(1).path,
+                    path=idx_path,
                     relative=0)
 
             offset += length
@@ -134,13 +140,16 @@ class ImageVerifyTask(task.MultiSeparateTask):
         try:
             htoa = cue.table.tracks[0].indexes[0]
             track = cue.table.tracks[0]
+            # Issue #550: HTOA index may exist with a null FILE path
+            if not getattr(htoa, 'path', None):
+                raise KeyError('HTOA has no FILE path')
             path = image.getRealPath(htoa.path)
             assert isinstance(path, str), "%r is not str" % path
             logger.debug('schedule scan of audio length of %r', path)
             taskk = AudioLengthTask(path)
             self.addTask(taskk)
             self._tasks.append((0, track, taskk))
-        except (KeyError, IndexError):
+        except (KeyError, IndexError, TypeError, AttributeError):
             logger.debug('no HTOA track')
 
         for trackIndex, track in enumerate(cue.table.tracks):
@@ -150,16 +159,28 @@ class ImageVerifyTask(task.MultiSeparateTask):
 
             if length == -1:
                 try:
-                    path = image.getRealPath(index.path)
-                except KeyError:
-                    logger.debug('Path not found; Checking '
-                                 'if %s is a skipped track', index.path)
-                    if os.path.basename(index.path) in skipped_tracks:
-                        logger.warning('Missing file %s due to skipped track',
-                                       index.path)
+                    # Issue #550: index.path can be None on broken/generic
+                    # TOCs (multi-session fallback); do not crash.
+                    if not index.path:
+                        logger.warning(
+                            'track %d has no FILE path; skipping length check',
+                            trackIndex + 1)
                         continue
-                    else:
-                        raise
+                    path = image.getRealPath(index.path)
+                except (KeyError, TypeError, AttributeError):
+                    path_name = getattr(index, 'path', None)
+                    logger.debug('Path not found; Checking '
+                                 'if %s is a skipped track', path_name)
+                    if path_name and os.path.basename(str(path_name)) in (
+                            skipped_tracks or []):
+                        logger.warning('Missing file %s due to skipped track',
+                                       path_name)
+                        continue
+                    logger.warning(
+                        'cannot resolve cue FILE %r for track %d; '
+                        'skipping length check for this track',
+                        path_name, trackIndex + 1)
+                    continue
                 assert isinstance(path, str), "%r is not str" % path
                 logger.debug('schedule scan of audio length of %r', path)
                 taskk = AudioLengthTask(path)
@@ -203,7 +224,10 @@ class ImageEncodeTask(task.MultiSeparateTask):
         self.lengths = {}
 
         def add(index):
-
+            if not getattr(index, 'path', None):
+                logger.warning('skipping encode; no FILE path for index %r',
+                               index)
+                return
             path = image.getRealPath(index.path)
             assert isinstance(path, str), "%r is not str" % path
             logger.debug('schedule encode of %r', path)
@@ -218,7 +242,7 @@ class ImageEncodeTask(task.MultiSeparateTask):
             htoa = cue.table.tracks[0].indexes[0]
             logger.debug('encoding HTOA track')
             add(htoa)
-        except (KeyError, IndexError):
+        except (KeyError, IndexError, TypeError, AttributeError):
             logger.debug('no HTOA track')
 
         for trackIndex, track in enumerate(cue.table.tracks):

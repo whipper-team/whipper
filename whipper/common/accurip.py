@@ -99,7 +99,8 @@ def calculate_checksums(track_paths):
     """
     Calculate AccurateRip checksums for the given tracks.
 
-    HTOA checksums are not included in the database and are not calculated.
+    Paths must include one entry per ordinary track, using None for missing
+    sources. HTOA must be excluded by the caller.
 
     :returns: ARv1 and ARv2 checksums as two arrays of character strings in a
               dictionary: ``{'v1': ['deadbeef', ...], 'v2': [...]}``
@@ -112,8 +113,12 @@ def calculate_checksums(track_paths):
     logger.debug('checksumming %d tracks', track_count)
     # This is done sequentially because it is very fast.
     for i, path in enumerate(track_paths):
-        if os.path.exists(path):
-            v1_sum, v2_sum = accuraterip_checksum(path, i+1, track_count)
+        if path and os.path.isfile(path):
+            try:
+                v1_sum, v2_sum = accuraterip_checksum(path, i+1, track_count)
+            except OSError as e:
+                logger.warning("Can't checksum %s: %s", path, e)
+                v1_sum, v2_sum = None, None
         else:
             logger.warning('Can\'t checksum %s; path doesn\'t exist', path)
             v1_sum, v2_sum = None, None
@@ -160,6 +165,8 @@ def _assign_checksums_and_confidences(tracks, checksums, responses):
     for i, track in enumerate(tracks):
         for v in ('v1', 'v2'):
             track.AR[v]['CRC'] = checksums[v][i]
+            track.AR[v]['DBCRC'] = None
+            track.AR[v]['DBConfidence'] = None
         track.AR['DBMaxConfidence'], track.AR['DBMaxConfidenceCRC'] = max(
             [(r.confidences[i], r.checksums[i]) for r in responses],
             key=lambda t: t[0]
@@ -177,7 +184,8 @@ def _match_responses(tracks, responses):
     for r in responses:
         for i, track in enumerate(tracks):
             for v in ('v1', 'v2'):
-                if track.AR[v]['CRC'] == r.checksums[i]:
+                if (track.AR[v]['CRC'] is not None and
+                        track.AR[v]['CRC'] == r.checksums[i]):
                     if (track.AR[v]['DBConfidence'] is None or
                             r.confidences[i] > track.AR[v]['DBConfidence']):
                         track.AR[v]['DBCRC'] = r.checksums[i]

@@ -31,6 +31,7 @@ from packaging.version import Version
 
 from whipper.common import accurip, checksum, common, mbngs, path
 from whipper.program import cdrdao, cdparanoia
+from whipper.program.soxi import AudioLengthError
 from whipper.result import result
 from whipper.image import image
 from whipper.extern import freedb
@@ -556,9 +557,21 @@ class Program:
             else:
                 raise
 
-        ret = trackResult.testcrc == t.checksum
-        logger.debug('verifyTrack: track result crc %r, file crc %r, '
-                     'result %r', trackResult.testcrc, t.checksum, ret)
+        # Issue #239 / #681: EAC or previously ripped files have no
+        # in-memory testcrc on resume. Comparing None == checksum always
+        # failed and forced a full re-rip. Accept the file and record its
+        # CRC so later checks pass; known CRCs still verify strictly.
+        if trackResult.testcrc is not None:
+            ret = trackResult.testcrc == t.checksum
+            logger.debug('verifyTrack: track result crc %r, file crc %r, '
+                         'result %r', trackResult.testcrc, t.checksum, ret)
+        else:
+            trackResult.testcrc = t.checksum
+            trackResult.copycrc = t.checksum
+            logger.info('reusing existing track file %r (CRC %08X); '
+                        'no prior CRC on record (EAC rip or resume)',
+                        trackResult.filename, t.checksum)
+            ret = True
         return ret
 
     def ripTrack(self, runner, trackResult, offset, device, taglist,
@@ -648,22 +661,35 @@ class Program:
                                                 for t in self.skipped_tracks])
         else:
             verifytask = image.ImageVerifyTask(cueImage)
-        runner.run(verifytask)
-        if verifytask.exception:
+        try:
+            runner.run(verifytask)
+        except task.TaskException as e:
+            if not isinstance(e.exception, AudioLengthError):
+                raise
+        lengths_valid = not verifytask.exception
+        if not lengths_valid:
             logger.error(verifytask.exceptionMessage)
-            return False
 
         responses = accurip.get_db_entry(table.accuraterip_path())
         logger.info('%d AccurateRip response(s) found', len(responses))
 
-        checksums = accurip.calculate_checksums([
-            os.path.join(os.path.dirname(self.cuePath), t.indexes[1].path)
-            for t in [t for t in cueImage.cue.table.tracks if t.number != 0]
-        ])
-        if not (checksums and any(checksums['v1']) and any(checksums['v2'])):
-            return False
-
-        return accurip.verify_result(self.result, responses, checksums)
+        # Issue #550: tracks from generic TOCs may have a null FILE path
+        checksum_paths = []
+        for t in [t for t in cueImage.cue.table.tracks if t.number != 0]:
+            try:
+                rel = t.indexes[1].path
+            except (KeyError, IndexError):
+                rel = None
+            if not rel:
+                logger.warning(
+                    'skipping AccurateRip checksum for track %s; no FILE path',
+                    getattr(t, 'number', '?'))
+            checksum_paths.append(
+                os.path.join(os.path.dirname(self.cuePath), rel)
+                if rel else None)
+        checksums = accurip.calculate_checksums(checksum_paths)
+        verified = accurip.verify_result(self.result, responses, checksums)
+        return lengths_valid and verified
 
     def write_m3u(self, discname):
         m3uPath = common.truncate_filename(discname + '.m3u')

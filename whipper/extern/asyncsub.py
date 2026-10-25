@@ -149,4 +149,6 @@ def recv_some(p, t=.1, e=1, tr=5, stderr=0):
             y.append(r)
         else:
             time.sleep(max((x - time.time()) / tr, 0))
-    return ''.join(x.decode() for x in y).encode()
+    return ''.join(
+        x.decode('utf-8', errors='replace') if isinstance(x, bytes) else x
+        for x in y).encode()

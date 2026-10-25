@@ -83,7 +83,8 @@ class CueFile:
         counter = 0
 
         logger.info('parsing .cue file %r', self._path)
-        with open(self._path) as f:
+        # Issue #654: tolerate non-UTF-8 cue content
+        with open(self._path, encoding='utf-8', errors='replace') as f:
             content = f.readlines()
         for number, line in enumerate(content):
             line = line.rstrip()
@@ -139,11 +140,13 @@ class CueFile:
                                   + minutes * common.FRAMES_PER_SECOND * 60)
 
                 logger.debug('found index %d of track %r in %r:%d',
-                             indexNumber, currentTrack, currentFile.path,
+                             indexNumber, currentTrack,
+                             getattr(currentFile, 'path', None),
                              frameOffset)
                 # FIXME: what do we do about File's FORMAT ?
                 currentTrack.index(indexNumber,
-                                   path=currentFile.path, relative=frameOffset,
+                                   path=getattr(currentFile, 'path', None),
+                                   relative=frameOffset,
                                    counter=counter)
                 continue
 

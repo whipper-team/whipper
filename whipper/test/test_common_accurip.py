@@ -129,7 +129,7 @@ class TestVerifyResult(TestCase):
                 'v1': ['284fc705', None],
                 'v2': [None, 'dd97d2c3'],
             }),
-            True
+            False
         )
 
     def test_matches_only_v1_or_v2_responses(self):

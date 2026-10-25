@@ -209,7 +209,10 @@ def getRealPath(refPath, filePath):
     :type refPath: str
     :type filePath: str
     """
-    assert isinstance(filePath, str), "%r is not str" % filePath
+    # Issue #550: None/non-str FILE paths must fail as KeyError, not
+    # AttributeError/AssertionError later in path.split().
+    if filePath is None or not isinstance(filePath, str):
+        raise KeyError("Cannot find file for %r" % (filePath, ))
 
     if os.path.exists(filePath):
         return filePath
@@ -316,7 +319,8 @@ class VersionGetter:
                                 stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE, close_fds=True) as p:
                 p.wait()
-                output = asyncsub.recv_some(p, e=0, stderr=1).decode()
+                output = asyncsub.recv_some(
+                    p, e=0, stderr=1).decode('utf-8', errors='replace')
             vre = self._regexp.search(output)
             if vre:
                 version = self._expander % vre.groupdict()
