@@ -39,6 +39,17 @@ class TrackResult:
     AR = None
     classVersion = 3
     skipped = False
+    # None is reserved for legacy/image-verification results. Rip commands
+    # explicitly record pending, completed, failed, interrupted or skipped.
+    status = None
+
+    def hasMatchingCRCs(self):
+        return (self.testcrc is not None and self.copycrc is not None and
+                self.testcrc == self.copycrc)
+
+    def isComplete(self):
+        return (self.status == 'completed' and not self.skipped and
+                self.hasMatchingCRCs())
 
     def __init__(self):
         """
@@ -102,6 +113,7 @@ class RipResult:
     cdparanoiaDefeatsCache = None
 
     classVersion = 3
+    complete = None
 
     def __init__(self):
         self.tracks = []

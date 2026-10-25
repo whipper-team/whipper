@@ -23,6 +23,8 @@ class WhipperLogger(result.Logger):
 
     def logRip(self, ripResult, epoch):
         """Return logfile as list of lines."""
+        self._accuratelyRipped = self._inARDatabase = 0
+        self._errors = self._skippedTracks = False
         riplog = OrderedDict()
 
         # Ripper version
@@ -107,7 +109,7 @@ class WhipperLogger(result.Logger):
         data = OrderedDict()
         duration = 0.0
         for t in ripResult.tracks:
-            if not t.filename:
+            if not t.filename and ripResult.complete is None:
                 continue
             track_dict, ARDB_entry, ARDB_match = self.trackLog(t)
             self._inARDatabase += int(ARDB_entry)
@@ -122,9 +124,8 @@ class WhipperLogger(result.Logger):
             message = ("None of the tracks are present in the "
                        "AccurateRip database")
         else:
-            nonHTOA = len(ripResult.tracks)
-            if ripResult.tracks[0].number == 0:
-                nonHTOA -= 1
+            nonHTOA = sum(t.number != 0 and not t.skipped
+                          for t in ripResult.tracks)
             if self._accuratelyRipped == 0:
                 message = ("No tracks could be verified as accurate "
                            "(you may have a different pressing from the "
@@ -138,14 +139,17 @@ class WhipperLogger(result.Logger):
                 message = "All tracks accurately ripped"
         data["AccurateRip summary"] = message
 
-        if self._errors:
+        if ripResult.complete is False:
+            message = "Incomplete rip; recovery diagnostics only"
+        elif self._errors:
             message = "There were errors"
         elif self._skippedTracks:
             message = "Some tracks were not ripped (skipped)"
         else:
             message = "No errors occurred"
         data["Health status"] = message
-        data["EOF"] = "End of status report"
+        if ripResult.complete is not False:
+            data["EOF"] = "End of status report"
         riplog["Conclusive status report"] = data
 
         yaml = YAML(
@@ -187,7 +191,11 @@ class WhipperLogger(result.Logger):
         # Log hash
         hasher = hashlib.sha256()
         hasher.update(riplog.encode("utf-8"))
-        riplog += "\nSHA-256 hash: %s\n" % hasher.hexdigest().upper()
+        # #704 accepts either EOF or the ordinary hash label as an end
+        # marker. Keep a diagnostic digest without either completion marker.
+        label = ("Partial log digest" if ripResult.complete is False else
+                 "SHA-256 hash")
+        riplog += "\n%s: %s\n" % (label, hasher.hexdigest().upper())
         return riplog
 
     def trackLog(self, trackResult):
@@ -247,13 +255,20 @@ class WhipperLogger(result.Logger):
             track["AccurateRip %s" % v] = data
 
         # Check if track has been skipped
-        if trackResult.skipped:
+        if (trackResult.status == 'skipped' or
+                (trackResult.skipped and trackResult.status is None)):
             track["Status"] = "Track not ripped (skipped)"
             self._skippedTracks = True
         # Check if Test & Copy CRCs are equal
-        elif trackResult.testcrc == trackResult.copycrc:
+        elif trackResult.status not in (None, 'completed'):
+            self._errors = True
+            track["Status"] = "Track not completed (%s)" % trackResult.status
+        elif trackResult.hasMatchingCRCs():
             track["Status"] = "Copy OK"
         else:
             self._errors = True
-            track["Status"] = "Error, CRC mismatch"
+            track["Status"] = ("Error, missing CRC" if
+                               trackResult.testcrc is None or
+                               trackResult.copycrc is None else
+                               "Error, CRC mismatch")
         return track, bool(ARDB_entry), bool(ARDB_match)

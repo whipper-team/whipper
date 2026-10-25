@@ -57,6 +57,8 @@ class Image:
         self._lengths = []  # 0 .. trackCount - 1
 
         self.table = None
+        # AccurateRip database path recorded in the .cue at rip time
+        self.accuraterip_path = getattr(self.cue, 'accuraterip_path', None)
 
     def getRealPath(self, path):
         """
@@ -86,10 +88,15 @@ class Image:
 
         # CD's have a standard lead-in time of 2 seconds;
         # checksums that use it should add it there
+        # Track 1 index 1 starts after any HTOA / PREGAP (issue #677).
+        track1 = self.cue.table.tracks[0]
         if 0 in verify.lengths:
+            # HTOA audio file provides the hidden-track length
             offset = verify.lengths[0]
+            logger.debug('image setup: HTOA length %d frames', offset)
         else:
-            offset = self.cue.table.tracks[0].getIndex(1).relative
+            offset = self._pregap_frames(track1)
+            logger.debug('image setup: track 1 pregap %d frames', offset)
 
         tracks = []
 
@@ -109,7 +116,35 @@ class Image:
 
         self.table = table.Table(tracks)
         self.table.leadout = offset
-        logger.debug('setup image done')
+        logger.debug('setup image done: leadout %d, ar path %r',
+                     offset, self.accuraterip_path)
+
+    @staticmethod
+    def _pregap_frames(track):
+        """
+        Return the pregap length before track index 1, in CD frames.
+
+        Prefers an explicit .cue ``PREGAP`` directive, then an INDEX 00
+        with known absolute offsets, then INDEX 00 relative offsets in the
+        same file. Falls back to the index 1 relative offset (0 for
+        per-track files without a recorded pregap).
+        """
+        if getattr(track, 'pregap', None):
+            return track.pregap
+        try:
+            index00 = track.getIndex(0)
+            index01 = track.getIndex(1)
+        except KeyError:
+            index00 = index01 = None
+        if index00 is not None and index01 is not None:
+            if index00.absolute is not None and index01.absolute is not None:
+                return index01.absolute - index00.absolute
+            if index00.relative is not None and index01.relative is not None:
+                return max(0, index01.relative - index00.relative)
+        try:
+            return track.getIndex(1).relative or 0
+        except KeyError:
+            return 0
 
 
 class ImageVerifyTask(task.MultiSeparateTask):

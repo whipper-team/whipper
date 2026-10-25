@@ -47,7 +47,8 @@ class PathFilter:
             if path[:1] == '.':  # Slicing tolerant to empty strings
                 path = R_CH + path[1:]
         if self._posix:
-            path = re.sub(r'[/\x00]', R_CH, path)
+            # Double quotes break .cue FILE lines and some TOC parsers.
+            path = re.sub(r'[/\x00"]', R_CH, path)
         if self._vfat:
             path = re.sub(r'[\x00-\x1F\x7F\"*/:<>?\\|]', R_CH, path)
         if self._whitespace:

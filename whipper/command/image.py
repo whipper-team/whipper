@@ -60,6 +60,9 @@ Verifies the image from the given .cue files against the AccurateRip database.
             except accurip.EntryNotFound:
                 print('AccurateRip entry not found')
             accurip.print_report(prog.result)
+            if getattr(cueImage, 'accuraterip_path', None):
+                logger.info('AccurateRip entry from cue: %s',
+                            cueImage.accuraterip_path)
             if not verified:
                 raise SystemExit(1)
 

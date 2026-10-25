@@ -36,10 +36,20 @@ _REM_RE = re.compile(r"^REM\s(\w+)\s(.*)$")
 _PERFORMER_RE = re.compile(r"^PERFORMER\s(.*)$")
 _TITLE_RE = re.compile(r"^TITLE\s(.*)$")
 
+# REM ACCURATERIP_PATH is written by whipper when generating .cue files so
+# `whipper image verify` can reuse the rip-time AccurateRip entry (#677).
+_REM_ACCURATERIP_RE = re.compile(
+    r"^REM\s+ACCURATERIP_PATH\s+(?P<path>\S+)\s*$")
+
+_PREGAP_RE = re.compile(r"""
+    ^\s+PREGAP            # PREGAP
+    \s+(\d\d):(\d\d):(\d\d)$
+""", re.VERBOSE)
+
 _FILE_RE = re.compile(r"""
-    ^FILE                 # FILE
-    \s+"(?P<name>.*)"     # 'file name' in quotes
-    \s+(?P<format>\w+)$   # format (WAVE/MP3/AIFF/...)
+    ^FILE                       # FILE
+    \s+"(?P<name>(?:\\.|[^"\\])*)"  # 'file name' in quotes (\" escaped)
+    \s+(?P<format>\w+)$         # format (WAVE/MP3/AIFF/...)
 """, re.VERBOSE)
 
 _TRACK_RE = re.compile(r"""
@@ -55,6 +65,11 @@ _INDEX_RE = re.compile(r"""
     :(\d\d)     # seconds
     :(\d\d)$    # frames
 """, re.VERBOSE)
+
+
+def _cue_unescape(value):
+    """Unescape a quoted .cue string (``\\"`` and ``\\\\``)."""
+    return value.replace('\\"', '"').replace('\\\\', '\\')
 
 
 class CueFile:
@@ -75,6 +90,8 @@ class CueFile:
         self._messages = []
         self.leadout = None
         self.table = table.Table()
+        # AccurateRip database path recorded at rip time, if any
+        self.accuraterip_path = None
 
     def parse(self):
         state = 'HEADER'
@@ -87,6 +104,12 @@ class CueFile:
             content = f.readlines()
         for number, line in enumerate(content):
             line = line.rstrip()
+
+            m = _REM_ACCURATERIP_RE.match(line)
+            if m:
+                self.accuraterip_path = m.group('path')
+                self._rems['ACCURATERIP_PATH'] = self.accuraterip_path
+                continue
 
             m = _REM_RE.search(line)
             if m:
@@ -102,7 +125,7 @@ class CueFile:
             m = _FILE_RE.search(line)
             if m:
                 counter += 1
-                filePath = m.group('name')
+                filePath = _cue_unescape(m.group('name'))
                 fileFormat = m.group('format')
                 currentFile = File(filePath, fileFormat)
 
@@ -120,6 +143,25 @@ class CueFile:
                 logger.debug('found track %d', trackNumber)
                 currentTrack = table.Track(trackNumber)
                 self.table.tracks.append(currentTrack)
+                continue
+
+            # look for PREGAP lines (silent HTOA / track pregap)
+            m = _PREGAP_RE.search(line)
+            if m:
+                if not currentTrack:
+                    self.message(number, 'PREGAP without preceding TRACK')
+                    continue
+                minutes = int(m.group(1))
+                seconds = int(m.group(2))
+                frames = int(m.group(3))
+                pregap = (frames
+                          + seconds * common.FRAMES_PER_SECOND
+                          + minutes * common.FRAMES_PER_SECOND * 60)
+                currentTrack.pregap = pregap
+                currentTrack.index(0, absolute=None, path=None,
+                                   relative=0, counter=None)
+                logger.debug('track %d pregap %d frames',
+                             currentTrack.number, pregap)
                 continue
 
             # look for INDEX lines

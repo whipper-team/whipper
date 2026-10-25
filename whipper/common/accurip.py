@@ -204,7 +204,7 @@ def verify_result(result, responses, checksums):
     # exclude HTOA from AccurateRip verification
     # NOTE: if pre-gap hidden audio support is expanded to include
     # tracks other than HTOA, this is invalid.
-    tracks = [t for t in result.tracks if t.number != 0]
+    tracks = [t for t in result.tracks if t.number != 0 and not t.skipped]
     if not tracks:
         return False
     _assign_checksums_and_confidences(tracks, checksums, responses)
@@ -212,7 +212,12 @@ def verify_result(result, responses, checksums):
 
 
 def print_report(result):
-    """Print AccurateRip verification results."""
+    """Print AccurateRip verification results.
+
+    The DB column shows the matched AccurateRip CRCs when a track is
+    accurate. When it is not, DB shows the highest-confidence CRC present
+    in the queried database entry (which did not match this rip).
+    """
     for _, track in enumerate(result.tracks):
         status = 'rip NOT accurate'
         conf = '(not found)'

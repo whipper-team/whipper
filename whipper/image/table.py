@@ -31,6 +31,9 @@ from whipper.extern.freedb import DiscID
 import logging
 logger = logging.getLogger(__name__)
 
+# libdiscid rejects TOCs with a leadout beyond ~90 minutes of audio.
+MAX_CD_SECTORS = 405000
+
 # FIXME: taken from libcdio, but no reference found for these
 
 CDTEXT_FIELDS = [
@@ -76,6 +79,8 @@ class Track:
     cdtext = None
     session = None
     pre_emphasis = None
+    # pregap length in frames when only known from a .cue PREGAP directive
+    pregap = None
 
     def __repr__(self):
         return '<Track %02d>' % self.number
@@ -85,6 +90,7 @@ class Track:
         self.audio = audio
         self.indexes = {}
         self.cdtext = {}
+        self.pregap = None
 
     def index(self, number, absolute=None, path=None, relative=None,
               counter=None):
@@ -136,7 +142,13 @@ class Track:
         if 0 not in self.indexes:
             return 0
 
-        return self.indexes[1].absolute - self.indexes[0].absolute
+        index0 = self.indexes[0]
+        index1 = self.indexes[1]
+        if index0.absolute is not None and index1.absolute is not None:
+            return index1.absolute - index0.absolute
+        if getattr(self, 'pregap', None) is not None:
+            return self.pregap
+        return 0
 
 
 class Index:
@@ -353,23 +365,71 @@ class Table:
         values = self.getCDDBValues()
         return "%08x" % int(values)
 
+    def hasSaneTOC(self):
+        """
+        Check whether this table looks like a usable CD TOC.
+
+        :returns: ``(True, None)`` when sane, otherwise ``(False, reason)``
+        :rtype: tuple(bool, str or None)
+        """
+        if not self.hasTOC():
+            return False, 'incomplete TOC'
+
+        previous = None
+        for track in self.tracks:
+            try:
+                start = track.getIndex(1).absolute
+            except KeyError:
+                return False, 'track %d has no index 1' % track.number
+            if start is None:
+                return False, 'track %d has no absolute index 1' % track.number
+            if previous is not None and start < previous:
+                return False, (
+                    'track %d starts at %d, before previous track end %d'
+                    % (track.number, start, previous)
+                )
+            previous = start
+
+        leadout = self.getTrackEnd(self.tracks[-1].number) + 1
+        if leadout is not None and leadout > MAX_CD_SECTORS:
+            return False, (
+                'disc leadout %d exceeds libdiscid maximum %d'
+                % (leadout, MAX_CD_SECTORS)
+            )
+        return True, None
+
     def getMusicBrainzDiscId(self):
         """
         Calculate the MusicBrainz disc ID.
 
-        :returns: the 28-character base64-encoded disc ID
-        :rtype: str
+        :returns: the 28-character base64-encoded disc ID, or None when the
+                  TOC is rejected by libdiscid
+        :rtype: str or None
         """
         if self.mbdiscid:
             logger.debug('getMusicBrainzDiscId: returning cached %r',
                          self.mbdiscid)
             return self.mbdiscid
 
+        sane, reason = self.hasSaneTOC()
+        if not sane:
+            logger.error('cannot compute MusicBrainz disc id: %s', reason)
+            return None
+
         from discid import put
+        from discid.disc import TOCError
 
         values = self._getMusicBrainzValues()
 
-        disc = put(values[0], values[1], values[2], values[3:])
+        try:
+            disc = put(values[0], values[1], values[2], values[3:])
+        except TOCError as e:
+            # Issue #583: over-long / corrupt TOCs used to abort the rip here
+            logger.error(
+                'libdiscid rejected TOC %r: %s '
+                '(MusicBrainz lookup will be unavailable)', values, e)
+            return None
+
         logger.debug('getMusicBrainzDiscId: returning %r', disc.id)
         self.mbdiscid = disc.id
         return disc.id
@@ -469,7 +529,7 @@ class Table:
         logger.debug('MusicBrainz values: %r', result)
         return result
 
-    def cue(self, cuePath='', program='whipper'):
+    def cue(self, cuePath='', program='whipper', track_numbers=None):
         """
         Dump our internal representation to a .cue file content.
 
@@ -478,15 +538,21 @@ class Table:
         :type cuePath: unicode
         :param program: name of the program (ripping software)
         :type program: str
+        :param track_numbers: completed disc track numbers for a partial cue;
+                              None retains full-disc serialization
+        :type track_numbers: set(int) or None
         :rtype: str
         """
         logger.debug('generating .cue for cuePath %r', cuePath)
 
         lines = []
 
+        def cueEscape(value):
+            return value.replace('\\', '\\\\').replace('"', '\\"')
+
         def writeFile(path):
             targetPath = common.getRelativePath(path, cuePath)
-            line = 'FILE "%s" WAVE' % targetPath
+            line = 'FILE "%s" WAVE' % cueEscape(targetPath)
             lines.append(line)
             logger.debug('writeFile: %r', line)
 
@@ -495,24 +561,49 @@ class Table:
 
         for key in CDTEXT_FIELDS:
             if key not in main and key in self.cdtext:
-                lines.append("    %s %s" % (key, self.cdtext[key]))
+                lines.append('    %s "%s"' % (
+                    key, cueEscape(self.cdtext[key])))
 
         assert self.hasTOC(), "Table does not represent a full CD TOC"
         lines.append('REM DISCID %s' % self.getCDDBDiscId().upper())
         lines.append('REM COMMENT "%s %s"' % (program, whipper.__version__))
+        # Persist AccurateRip disc ids so `whipper image verify` queries the
+        # same database entry the rip used (issue #677).
+        try:
+            lines.append('REM ACCURATERIP_PATH %s' % self.accuraterip_path())
+        except Exception as e:  # noqa: BLE001 - never break cue writing
+            logger.warning('could not record AccurateRip path: %s', e)
 
         if self.catalog:
             lines.append("CATALOG %s" % self.catalog)
 
         for key in main:
             if key in self.cdtext:
-                lines.append('%s "%s"' % (key, self.cdtext[key]))
+                lines.append('%s "%s"' % (key, cueEscape(self.cdtext[key])))
 
         # FIXME:
         # - the first FILE statement goes before the first TRACK, even if
         #   there is a non-file-using PREGAP
         # - the following FILE statements come after the last INDEX that
         #   use that FILE; so before a next TRACK, PREGAP silence, ...
+
+        if track_numbers is not None:
+            lines.append('REM INCOMPLETE_RIP')
+            # Disc offsets describe unavailable material without claiming a
+            # playable track or synthesizing silence for an unread pregap.
+            for track in self.tracks:
+                lines.append('REM ORIGINAL_TRACK %02d START %d LENGTH %d '
+                             'PREGAP %d' % (
+                                 track.number,
+                                 self.getTrackStart(track.number),
+                                 self.getTrackLength(track.number),
+                                 track.getPregap()))
+            selected = [t for t in self.tracks
+                        if t.audio and t.number in track_numbers]
+            sources = [idx for t in selected
+                       for _, idx in sorted(t.indexes.items()) if idx.path]
+            if not sources:
+                return '\n'.join(lines) + '\n'
 
         # add the first FILE line; EAC always puts the first FILE
         # statement before TRACK 01 and any possible PRE-GAP
@@ -521,6 +612,10 @@ class Table:
         indexOne = firstTrack.getIndex(1)
         counter = index.counter
         track = firstTrack
+
+        if track_numbers is not None:
+            index = sources[0]
+            counter = index.counter
 
         while not index.path:
             t, i = self.getNextTrackIndex(track.number, index.number)
@@ -537,6 +632,8 @@ class Table:
             # FIXME: skip data tracks for now
             if not track.audio:
                 continue
+            if track_numbers is not None and track.number not in track_numbers:
+                continue
 
             indexes = sorted(track.indexes.keys())
 
@@ -545,6 +642,8 @@ class Table:
             for number in indexes:
                 index = track.indexes[number]
                 logger.debug('index %r, %r', number, index)
+                if track_numbers is not None and not index.path:
+                    continue
 
                 # any time the source counter changes to a higher value,
                 # write a FILE statement
@@ -568,7 +667,7 @@ class Table:
                     for key in CDTEXT_FIELDS:
                         if key in track.cdtext:
                             lines.append('    %s "%s"' % (
-                                key, track.cdtext[key]))
+                                key, cueEscape(track.cdtext[key])))
 
                     if track.isrc is not None:
                         lines.append("    ISRC %s" % track.isrc)
@@ -577,7 +676,13 @@ class Table:
                         lines.append("    FLAGS PRE")
 
                     # handle TRACK 01 INDEX 00 specially
-                    if 0 in indexes:
+                    if (track_numbers is not None and 0 in indexes and
+                            not track.indexes[0].path):
+                        lines.append('    REM UNAVAILABLE_PREGAP %s' %
+                                     common.framesToMSF(track.getPregap()))
+
+                    if (0 in indexes and
+                            (track_numbers is None or track.indexes[0].path)):
                         index00 = track.indexes[0]
                         if i == 0:
                             # if we have a silent pre-gap, output it

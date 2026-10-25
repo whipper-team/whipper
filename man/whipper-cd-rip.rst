@@ -73,6 +73,32 @@ Options
 |     continue ripping further tracks instead of giving up if a track can't be
 |     ripped
 
+Partial rips
+============
+
+A failed or interrupted read preserves previously completed audio and writes
+recovery diagnostics to ``<disc>.partial.log``. Only an attempt completing all
+requested audio tracks writes the ordinary ``<disc>.log`` used to identify a
+finished rip. ``--keep-going`` still returns an error if any audio track fails.
+Missing test or copy CRCs never qualify as a successful copy.
+
+Partial cue sheets and playlists reference only completed audio. Cue track
+numbers retain their disc numbering. ``REM ORIGINAL_TRACK`` comments record
+the original sector boundaries and pregap lengths. When pregap audio is
+unavailable, ``REM UNAVAILABLE_PREGAP`` records it without synthesizing silence.
+A completed HTOA file remains in the playlist and diagnostics if track 1 fails;
+it cannot form a playable cue track without inventing an INDEX 01 for track 1.
+Partial cues describe the available files, not a complete disc image, and are
+not submitted for full-disc AccurateRip verification.
+
+The partial log remains as a record of the earlier attempt after recovery.
+Resume still uses the existing audio validation gate. When integrating #707,
+retain its decoded sample-count, format and CRC checks before reusing audio;
+CRC equality alone does not establish a complete audio file. The separate
+finished-log check in #704 must reject incomplete logs: the internal partial
+log omits both finished-log markers (EOF and the ordinary hash label),
+as well as using a separate filename.
+
 Template schemes
 ================
 

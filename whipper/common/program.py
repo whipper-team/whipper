@@ -21,6 +21,7 @@
 """Common functionality and class for all programs using whipper."""
 
 import musicbrainzngs
+import copy
 import re
 import os
 import shutil
@@ -132,10 +133,19 @@ class Program:
 
         assert itable.hasTOC()
 
+        sane, reason = itable.hasSaneTOC()
+        if not sane:
+            # Issue #583: cdrdao occasionally produces a corrupt TOC
+            # (non-monotonic track offsets / absurd leadout) which used to
+            # crash later inside libdiscid with "Disc too long".
+            raise RuntimeError(
+                'cdrdao produced an invalid TOC (%s); try re-reading the '
+                'disc or checking the drive/media' % reason)
+
         self.result.table = itable
 
-        logger.debug('getTable: returning table with mb id %s',
-                     itable.getMusicBrainzDiscId())
+        mbdiscid = itable.getMusicBrainzDiscId()
+        logger.debug('getTable: returning table with mb id %s', mbdiscid)
         return itable
 
     def getRipResult(self):
@@ -653,7 +663,8 @@ class Program:
             logger.error(verifytask.exceptionMessage)
             return False
 
-        responses = accurip.get_db_entry(table.accuraterip_path())
+        ar_path = self._accuraterip_path(cueImage, table)
+        responses = accurip.get_db_entry(ar_path)
         logger.info('%d AccurateRip response(s) found', len(responses))
 
         checksums = accurip.calculate_checksums([
@@ -665,6 +676,23 @@ class Program:
 
         return accurip.verify_result(self.result, responses, checksums)
 
+    @staticmethod
+    def _accuraterip_path(cueImage, table):
+        """
+        Choose the AccurateRip database entry to query.
+
+        Prefer the path recorded in the .cue at rip time so verify hits the
+        same entry the rip used, even if the reconstructed TOC offsets differ
+        (issue #677). Fall back to computing it from the given table.
+        """
+        recorded = getattr(cueImage, 'accuraterip_path', None)
+        if recorded:
+            logger.debug('using AccurateRip path from cue: %s', recorded)
+            return recorded
+        path = table.accuraterip_path()
+        logger.debug('using AccurateRip path from table: %s', path)
+        return path
+
     def write_m3u(self, discname):
         m3uPath = common.truncate_filename(discname + '.m3u')
         with open(m3uPath, 'w') as f:
@@ -673,7 +701,9 @@ class Program:
                 if not track.filename:
                     # false positive htoa
                     continue
-                if track.skipped:
+                if (track.skipped or
+                        (self.result.complete is not None and
+                         not track.isComplete())):
                     continue
                 if track.number == 0:
                     length = (self.result.table.getTrackStart(1) /
@@ -689,12 +719,27 @@ class Program:
                 f.write(u)
 
     def writeCue(self, discName):
-        assert self.result.table.canCue()
         cuePath = common.truncate_filename(discName + '.cue')
         logger.debug('write .cue file to %s', cuePath)
         handle = open(cuePath, 'w')
         # FIXME: do we always want utf-8 ?
-        handle.write(self.result.table.cue(cuePath))
+        table = self.result.table
+        if self.result.complete is False:
+            # Never mutate the source TOC or discard recovery files.
+            table = copy.deepcopy(table)
+            completed = [t for t in self.result.tracks
+                         if t.isComplete() and t.filename]
+            paths = {t.filename for t in completed}
+            for track in table.tracks:
+                for index in track.indexes.values():
+                    if index.path not in paths:
+                        index.path = None
+            numbers = {t.number for t in completed}
+            text = table.cue(cuePath, track_numbers=numbers)
+        else:
+            assert table.canCue()
+            text = table.cue(cuePath)
+        handle.write(text)
         handle.close()
 
         self.cuePath = cuePath
@@ -702,9 +747,13 @@ class Program:
         return cuePath
 
     def writeLog(self, discName, txt_logger):
-        logPath = common.truncate_filename(discName + '.log')
+        suffix = '.partial.log' if self.result.complete is False else '.log'
+        logPath = common.truncate_filename(discName + suffix)
         handle = open(logPath, 'w')
         log = txt_logger.log(self.result)
+        if self.result.complete is False:
+            # Also distinguish plugin logs from finished-album logs (#704).
+            log = '# INCOMPLETE RIP - recovery diagnostics only\n' + log
         handle.write(log)
         handle.close()
 

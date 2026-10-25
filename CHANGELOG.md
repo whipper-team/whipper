@@ -4,6 +4,24 @@
 
 [Full Changelog](https://github.com/whipper-team/whipper/compare/v0.10.0...HEAD)
 
+**Fixed bugs:**
+
+- Path with multiple quotes raises exception [\#494](https://github.com/whipper-team/whipper/issues/494)
+- whipper completely stops when one track is faulty [\#560](https://github.com/whipper-team/whipper/issues/560)
+- TOCError: Disc too long [\#583](https://github.com/whipper-team/whipper/issues/583)
+- AccurateRip disagreement between initial rip and image verify [\#677](https://github.com/whipper-team/whipper/issues/677)
+
+**Changes:**
+
+- `path_filter_posix` now also replaces `"` in path components (CUE-safe)
+- Generated `.cue` files record `REM ACCURATERIP_PATH` so `whipper image verify`
+  queries the same AccurateRip entry the rip used
+- `.cue` parser understands `PREGAP` and restores HTOA offsets during verify
+- Invalid/corrupt TOCs from cdrdao raise a clear error instead of crashing
+  inside libdiscid with `TOCError: Disc too long`
+- Aborting a rip after track failures still writes cue/log for finished tracks
+  and points users at `--keep-going`
+
 ## [v0.10.0](https://github.com/whipper-team/whipper/tree/v0.10.0) (2021-05-17)
 
 [Full Changelog](https://github.com/whipper-team/whipper/compare/v0.9.0...v0.10.0)

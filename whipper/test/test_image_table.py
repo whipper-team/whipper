@@ -141,3 +141,53 @@ class PregapTestCase(tcommon.TestCase):
     def testPreGap(self):
         self.assertEqual(self.table.tracks[0].getPregap(), 0)
         self.assertEqual(self.table.tracks[1].getPregap(), 200)
+
+
+class SaneTOCAndMusicBrainzTestCase(tcommon.TestCase):
+    """Issue #583: corrupt / over-long TOCs must not crash in libdiscid."""
+
+    def _table_with_offsets(self, offsets, leadout):
+        t = table.Table()
+        for i, offset in enumerate(offsets):
+            track = table.Track(i + 1, audio=True)
+            track.index(1, absolute=offset)
+            t.tracks.append(track)
+        t.leadout = leadout
+        return t
+
+    def test_sane_normal_toc(self):
+        t = self._table_with_offsets([0, 150, 300], 450)
+        self.assertEqual(t.hasSaneTOC(), (True, None))
+
+    def test_insane_non_monotonic(self):
+        t = self._table_with_offsets([0, 300, 200], 400)
+        ok, reason = t.hasSaneTOC()
+        self.assertFalse(ok)
+        self.assertIn('before previous', reason)
+        self.assertIsNone(t.getMusicBrainzDiscId())
+
+    def test_insane_disc_too_long(self):
+        # leadout beyond libdiscid's ~90 minute limit
+        t = self._table_with_offsets([0, 100, 200], table.MAX_CD_SECTORS + 10)
+        ok, reason = t.hasSaneTOC()
+        self.assertFalse(ok)
+        self.assertIn('exceeds', reason)
+        self.assertIsNone(t.getMusicBrainzDiscId())
+
+    def test_incomplete_toc(self):
+        t = table.Table()
+        track = table.Track(1, audio=True)
+        t.tracks.append(track)
+        ok, reason = t.hasSaneTOC()
+        self.assertFalse(ok)
+
+    def test_cue_records_accuraterip_path(self):
+        # Issue #677: cue must carry the rip-time AccurateRip entry
+        t = self._table_with_offsets([0, 2000], 5000)
+        for i, track in enumerate(t.tracks):
+            track.index(1, absolute=track.getIndex(1).absolute,
+                        path='track%02d.flac' % (i + 1),
+                        relative=0, counter=i + 1)
+        cue_text = t.cue()
+        self.assertIn('REM ACCURATERIP_PATH ', cue_text)
+        self.assertIn(t.accuraterip_path(), cue_text)

@@ -34,7 +34,7 @@ class FilterTestCase(common.TestCase):
                                            whitespace=True, printable=True)
 
     def testNone(self):
-        part = '<<< $&*!\' "()`{}[]spaceship>>>'
+        part = "<<< $&*!' `(){}[]spaceship>>>"
         self.assertEqual(self._filter_posix.filter(part), part)
 
     def testDot(self):
@@ -44,6 +44,19 @@ class FilterTestCase(common.TestCase):
     def testPosix(self):
         part = 'A Charm/A \x00Blade'
         self.assertEqual(self._filter_posix.filter(part), 'A Charm_A _Blade')
+
+    def testPosixQuotes(self):
+        # Issue #494: double quotes in paths break .cue generation
+        self.assertEqual(
+            self._filter_posix.filter('12" edit'),
+            '12_ edit')
+        self.assertEqual(
+            self._filter_posix.filter('He said "hi"'),
+            'He said _hi_')
+        # single quotes remain valid on POSIX filesystems
+        self.assertEqual(
+            self._filter_posix.filter("Guns 'N Roses"),
+            "Guns 'N Roses")
 
     def testVfat(self):
         part = 'A Word: F**k you?'
@@ -63,3 +76,9 @@ class FilterTestCase(common.TestCase):
         part = 'Greatest Ever! Soul: The Definitive Collection'
         self.assertEqual(self._filter_all.filter(part),
                          'Greatest_Ever!_Soul__The_Definitive_Collection')
+
+    def testAllQuotes(self):
+        # double quotes filtered by posix/vfat; single quotes remain;
+        # whitespace filter also applies under filter_all
+        self.assertEqual(self._filter_all.filter('12" edit \'x\''),
+                         "12__edit_'x'")
