@@ -63,3 +63,45 @@ class GetRealPathTestCase(tcommon.TestCase):
 
         os.close(fd)
         os.unlink(path)
+
+
+class AlignTrackPathTestCase(tcommon.TestCase):
+    """Issue #692: track files must land in the disc output directory."""
+
+    def testPathIsWithin(self):
+        self.assertTrue(common.path_is_within(
+            '/tmp/disc/01.flac', '/tmp/disc'))
+        self.assertFalse(common.path_is_within(
+            '/tmp/other/01.flac', '/tmp/disc'))
+        self.assertFalse(common.path_is_within(
+            '/tmp/disc', '/tmp/disc'))
+        self.assertFalse(common.path_is_within('', '/tmp/disc'))
+
+    def testAlreadyUnderDiscDirUnchanged(self):
+        disc = '/out/Artist - Album/Artist - Album'
+        track = '/out/Artist - Album/01. Title.flac'
+        path, aligned = common.align_track_path(
+            track, disc, '%r/%A - %d/%t. %a - %n', '/out')
+        self.assertEqual(path, track)
+        self.assertFalse(aligned)
+
+    def testBasenameTemplateJoinedUnderDiscDir(self):
+        """--track-template '%t. %n' without a directory prefix."""
+        disc = '/out/Artist - Album/Artist - Album'
+        track = '/out/01. Speed of Life.flac'
+        path, aligned = common.align_track_path(
+            track, disc, '%t. %n', '/out')
+        self.assertTrue(aligned)
+        self.assertEqual(
+            path,
+            '/out/Artist - Album/01. Speed of Life.flac')
+
+    def testHierarchicalTemplateOutsideDiscDirPreservesDirectories(self):
+        disc = '/out/Artist - Album/Artist - Album'
+        track = '/out/subdir/01. Title.flac'
+        path, aligned = common.align_track_path(
+            track, disc, 'subdir/%t. %n', '/out')
+        self.assertTrue(aligned)
+        self.assertEqual(
+            path,
+            '/out/Artist - Album/subdir/01. Title.flac')

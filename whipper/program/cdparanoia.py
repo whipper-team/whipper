@@ -487,13 +487,13 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
         # encode to the final path + '.part'
         try:
             tmpoutpath = path + '.part'
-            open(tmpoutpath, 'wb').close()
+            open(tmpoutpath, 'xb').close()
         except IOError as e:
             if errno.ENAMETOOLONG != e.errno:
                 raise
             path = common.truncate_filename(common.shrinkPath(path))
             tmpoutpath = common.truncate_filename(path + '.part')
-            open(tmpoutpath, 'wb').close()
+            open(tmpoutpath, 'xb').close()
         self._tmppath = tmpoutpath
         self.path = path
 
@@ -550,16 +550,21 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
                 if not self.exception:
                     try:
                         logger.debug('moving to final path %r', self.path)
-                        shutil.move(self._tmppath, self.path)
+                        # Publish without replacing a file created since the
+                        # command's preflight (also covers shortened paths).
+                        os.link(self._tmppath, self.path)
+                        os.unlink(self._tmppath)
                     # FIXME: catching too general exception (Exception)
                     except Exception as e:
                         logger.debug('exception while moving to final '
                                      'path %r: %s', self.path, e)
                         self.exception = e
+                        os.unlink(self._tmppath)
                 else:
                     os.unlink(self._tmppath)
             else:
                 logger.debug('stop: exception %r', self.exception)
+                os.unlink(self._tmppath)
         # FIXME: catching too general exception (Exception)
         except Exception as e:
             print('WARNING: unhandled exception %r' % (e, ))
