@@ -594,9 +594,9 @@ class AnalyzeTask(ctask.PopenTask):
 
     cwd = None
 
-    _output = []
-
     def __init__(self, device=None):
+        # Per-instance buffer; do not use a class attribute (shared state).
+        self._output = []
         # cdparanoia -A *always* writes cdparanoia.log
         self.cwd = tempfile.mkdtemp(suffix='.whipper.cache')
         self.command = ['cd-paranoia', '-A']
@@ -609,17 +609,30 @@ class AnalyzeTask(ctask.PopenTask):
     def readbyteserr(self, bytes_stderr):
         self._output.append(bytes_stderr)
 
+    @staticmethod
+    def _joined_output(chunks):
+        """Join captured process output that may be bytes or str."""
+        parts = []
+        for chunk in chunks:
+            if isinstance(chunk, bytes):
+                parts.append(chunk.decode('utf-8', errors='replace'))
+            elif isinstance(chunk, str):
+                parts.append(chunk)
+            else:
+                parts.append(str(chunk))
+        return "".join(parts)
+
     def done(self):
         if self.cwd:
             shutil.rmtree(self.cwd)
-        output = "".join(o.decode() for o in self._output)
+        output = self._joined_output(self._output)
         m = _OK_RE.search(output)
         self.defeatsCache = bool(m)
 
     def failed(self):
         # cdparanoia exits with return code 1 if it can't determine
         # whether it can defeat the audio cache
-        output = "".join(o.decode() for o in self._output)
+        output = self._joined_output(self._output)
         m = _WARNING_RE.search(output)
         if m or _ABORTING_RE.search(output):
             self.defeatsCache = False

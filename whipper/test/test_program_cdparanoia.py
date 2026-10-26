@@ -73,10 +73,64 @@ class VersionTestCase(common.TestCase):
 class AnalyzeFileTask(cdparanoia.AnalyzeTask):
 
     def __init__(self, path):
+        self._output = []
+        self.cwd = None
         self.command = ['cat', path]
 
     def readbytesout(self, bytes_stdout):
         self.readbyteserr(bytes_stdout)
+
+
+class AnalyzeOutputTestCase(common.TestCase):
+    """Issue #608: AnalyzeTask must tolerate bytes/str process output."""
+
+    def testJoinedOutputDecodesBytes(self):
+        out = cdparanoia.AnalyzeTask._joined_output(
+            [b'Drive tests OK', b' with Paranoia.'])
+        self.assertEqual(out, 'Drive tests OK with Paranoia.')
+
+    def testJoinedOutputAcceptsMixedTypes(self):
+        out = cdparanoia.AnalyzeTask._joined_output(
+            [b'bytes', ' and ', b'\xffinvalid'])
+        self.assertIn('bytes', out)
+        self.assertIn(' and ', out)
+        # invalid utf-8 must not raise
+        self.assertIsInstance(out, str)
+
+    def testFailedWithBytesDoesNotRaise(self):
+        task = AnalyzeFileTask.__new__(AnalyzeFileTask)
+        task._output = [b'WARNING! PARANOIA MAY NOT BE', b'\naborting test.']
+        task.cwd = None
+        # failed() must not TypeError on bytes
+        task.failed()
+        self.assertIs(task.defeatsCache, False)
+
+    def testFailedWithStringOutput(self):
+        task = AnalyzeFileTask.__new__(AnalyzeFileTask)
+        task._output = ['WARNING! PARANOIA MAY NOT BE', '\naborting test.']
+        task.cwd = None
+        task.failed()
+        self.assertIs(task.defeatsCache, False)
+
+    def testDoneDetectsOk(self):
+        task = AnalyzeFileTask.__new__(AnalyzeFileTask)
+        task._output = [b'Drive tests OK with Paranoia.']
+        task.cwd = None
+        task.done()
+        self.assertIs(task.defeatsCache, True)
+
+    def testInstancesDoNotShareOutputBuffers(self):
+        class Dummy(cdparanoia.AnalyzeTask):
+            def __init__(self):
+                self._output = []
+                self.cwd = None
+                self.command = []
+
+        a = Dummy()
+        b = Dummy()
+        a.readbyteserr(b'from-a')
+        self.assertEqual(a._output, [b'from-a'])
+        self.assertEqual(b._output, [])
 
 
 class CacheTestCase(common.TestCase):

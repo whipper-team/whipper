@@ -40,6 +40,68 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def fetch_front_image(release_id, size=500):
+    """
+    Download the front cover image for a MusicBrainz release.
+
+    Prefers ``musicbrainzngs.get_image_front`` when available. Some
+    musicbrainzngs builds omit that helper (issue #554); fall back to
+    ``get_image_list`` plus a Cover Art Archive HTTP download.
+
+    :param release_id: MusicBrainz release MBID
+    :type  release_id: str
+    :param size: preferred thumbnail size in pixels
+    :type  size: int
+    :returns: image bytes, or None if no front image is available
+    :rtype: bytes or None
+    :raises musicbrainzngs.WebServiceError: on MusicBrainz/CAA errors
+    """
+    getter = getattr(musicbrainzngs, 'get_image_front', None)
+    if callable(getter):
+        try:
+            return getter(release_id, size)
+        except TypeError:
+            # Older/newer signatures may not accept a size argument
+            try:
+                return getter(release_id)
+            except AttributeError:
+                pass
+        except AttributeError:
+            logger.warning(
+                'musicbrainzngs.get_image_front is broken, '
+                'falling back to get_image_list')
+
+    if not hasattr(musicbrainzngs, 'get_image_list'):
+        logger.error('musicbrainzngs provides no cover art API')
+        return None
+
+    listing = musicbrainzngs.get_image_list(release_id)
+    images = (listing or {}).get('images') or []
+    if not images:
+        return None
+    front = next((img for img in images if img.get('front')), None)
+    if front is None:
+        return None
+    thumbs = front.get('thumbnails') or {}
+    url = (
+        thumbs.get(str(size))
+        or thumbs.get('500')
+        or thumbs.get('large')
+        or front.get('image')
+    )
+    if not url:
+        return None
+
+    from urllib.request import urlopen
+    from urllib.error import URLError
+    try:
+        with urlopen(url, timeout=30) as resp:
+            return resp.read()
+    except (URLError, OSError) as e:
+        logger.error('error downloading cover art from %r: %r', url, e)
+        return None
+
+
 # FIXME: should Program have a runner ?
 
 
@@ -202,11 +264,18 @@ class Program:
         v['R'] = 'Unknown'
         v['B'] = ''  # barcode
         v['C'] = ''  # catalog number
+        v['c'] = ''  # disambiguation comment
+        v['T'] = ''  # medium title
         v['x'] = 'flac'
         v['X'] = v['x'].upper()
         v['y'] = '0000'
+        # Disc number fields must always exist for templates such as %N/%M
+        # (see issue #585: KeyError when ripping --unknown discs).
+        v['N'] = '1'
+        v['M'] = '1'
         if track_number is not None:
             v['a'] = v['A']
+            v['s'] = v['S']
             v['t'] = '%02d' % track_number
             if track_number == 0:
                 v['n'] = 'Hidden Track One Audio'
@@ -223,16 +292,21 @@ class Program:
             v['B'] = metadata.barcode
             v['C'] = ', '.join(metadata.catalogNumbers)
             v['c'] = metadata.releaseDisambCmt
-            v['M'] = metadata.discTotal
-            v['N'] = metadata.discNumber
+            if metadata.discTotal is not None:
+                v['M'] = metadata.discTotal
+            if metadata.discNumber is not None:
+                v['N'] = metadata.discNumber
             v['T'] = metadata.mediumTitle
             if metadata.releaseType:
                 v['R'] = metadata.releaseType
                 v['r'] = metadata.releaseType.lower()
+            if track_number is not None:
+                v['s'] = metadata.sortName or v['S']
             if track_number is not None and track_number > 0:
-                v['a'] = metadata.tracks[track_number - 1].artist
-                v['s'] = metadata.tracks[track_number - 1].sortName
-                v['n'] = metadata.tracks[track_number - 1].title
+                if metadata.tracks and len(metadata.tracks) >= track_number:
+                    v['a'] = metadata.tracks[track_number - 1].artist
+                    v['s'] = metadata.tracks[track_number - 1].sortName
+                    v['n'] = metadata.tracks[track_number - 1].title
             elif track_number == 0:
                 # htoa defaults to disc's artist
                 v['a'] = metadata.artist
@@ -528,7 +602,7 @@ class Program:
 
         logger.debug('fetching cover art for release: %r', release_id)
         try:
-            data = musicbrainzngs.get_image_front(release_id, 500)
+            data = fetch_front_image(release_id)
         except musicbrainzngs.WebServiceError as e:
             logger.error('error fetching cover art: %r', e)
             return
