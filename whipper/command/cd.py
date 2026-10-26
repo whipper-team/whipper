@@ -28,6 +28,7 @@ from whipper.command.basecommand import BaseCommand
 from whipper.common import (
     accurip, config, drive, program, task
 )
+from whipper.common import common
 from whipper.common.common import validate_template
 from whipper.program import cdrdao, cdparanoia, utils
 from whipper.result import result
@@ -517,6 +518,24 @@ Log files will log the path to tracks relative to this directory.
 
                     print('Peak level: %.6f' % (trackResult.peak / 32768.0))
                     print('Rip quality: {:.2%}'.format(trackResult.quality))
+                    events = trackResult.cdparanoiaEvents or {}
+                    nonzero = {k: v for k, v in events.items() if v}
+                    if nonzero:
+                        summary = ', '.join(
+                            '%s=%d' % (k, nonzero[k])
+                            for k in sorted(nonzero))
+                        logger.warning(
+                            'cdparanoia reported read diagnostics on '
+                            'track %d: %s', number, summary)
+                    if trackResult.suspiciousPositions:
+                        pretty = ', '.join(
+                            '%s - %s' % (
+                                common.framesToMSF(start),
+                                common.framesToMSF(end))
+                            for start, end in trackResult.suspiciousPositions)
+                        logger.warning(
+                            'suspicious positions on track %d: %s',
+                            number, pretty)
 
             # overlay this rip onto the Table
             if number == 0:

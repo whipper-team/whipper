@@ -74,6 +74,7 @@ Tracks:
 
 Conclusive status report:
   AccurateRip summary: All tracks accurately ripped
+  cdparanoia health: clean
   Health status: No errors occurred
   EOF: End of status report
 

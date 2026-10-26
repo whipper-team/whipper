@@ -61,22 +61,159 @@ class ChecksumException(Exception):
 
 # example:
 # ##: 0 [read] @ 24696
+# ##: 12 [transport error] @ -2352
 _PROGRESS_RE = re.compile(r"""
     ^\#\#: (?P<code>.+)\s         # function code
     \[(?P<function>.*)\]\s@\s     # [function name] @
-    (?P<offset>\d+)               # offset in words (2-byte one channel value)
+    (?P<offset>-?\d+)             # callback argument; usually absolute words
 """, re.VERBOSE)
 
 _ERROR_RE = re.compile("^scsi_read error:")
+_SCSI_SECTOR_RE = re.compile(r"^scsi_read error: sector=(-?\d+)(?:\s|$)")
 
-# from reading cdparanoia source code, it looks like offset is reported in
-# number of single-channel samples, ie. 2 bytes (word) per unit, and absolute
+# Positional callbacks use absolute single-channel samples (2-byte words).
+# OVERLAP instead reports a window size; unsupported callbacks have no
+# established positional contract. See lib/paranoia/{paranoia,overlap}.c.
+
+# cdparanoia --stderr-progress function names, classified for reporting.
+#
+# Mapping derived from libcdio/libcdio-paranoia:
+#   include/cdio/paranoia/paranoia.h  (paranoia_cb_mode_t)
+#   src/cd-paranoia.c                 (callback_strings[] / --stderr-progress)
+#   src/usage.txt.in                  (progress-bar symbols)
+#
+# Enum name → stderr callback string → progress-bar symbol:
+#   PARANOIA_CB_READ            read              (progress)
+#   PARANOIA_CB_VERIFY          verify            (pass 2 verify)
+#   PARANOIA_CB_FIXUP_EDGE      jitter            '-' jitter correction
+#   PARANOIA_CB_FIXUP_ATOM      correction        '+' loss of streaming,
+#                                                  fixed in atom stage
+#   PARANOIA_CB_SCRATCH         scratch           scratch detected
+#   PARANOIA_CB_REPAIR          scratch repair    (unsupported upstream)
+#   PARANOIA_CB_SKIP            skip              'V' uncorrected / gave up
+#   PARANOIA_CB_DRIFT           drift             read drift
+#   PARANOIA_CB_BACKOFF         backoff           (unsupported upstream)
+#   PARANOIA_CB_OVERLAP         overlap           dynamic overlap adjust
+#   PARANOIA_CB_FIXUP_DROPPED   dropped           '!' stage-2 corrected
+#   PARANOIA_CB_FIXUP_DUPED     duped             '!' stage-2 corrected
+#   PARANOIA_CB_READERR         transport error   'e' SCSI/ATAPI (may recover)
+#   PARANOIA_CB_CACHEERR        cache error       'C' cache modelling issue
+#   PARANOIA_CB_WROTE           wrote
+#   PARANOIA_CB_FINISHED        finished
+#
+# scsi_read error: whipper also matches raw "scsi_read error:" stderr lines
+# from libcdio's SCSI layer (not a callback string).
+
+# Routine callbacks do not indicate a problem with the disc.
+ROUTINE_FUNCTIONS = frozenset({
+    'read', 'wrote', 'verify', 'finished',
+})
+
+# Corrections: paranoia patched data. Final samples are often still
+# accurate (test/copy CRCs match); positions are worth listing (cf. EAC).
+# Progress bar: '-', '+', '!'.
+CORRECTION_FUNCTIONS = frozenset({
+    'jitter',           # edge jitter, re-aligned
+    'correction',       # atom fix / unreported streaming loss
+    'overlap',          # overlap search adjusted
+    'dropped',          # dropped bytes fixed in stage 2
+    'duped',            # duplicate bytes fixed in stage 2
+    'drift',            # read drift
+    'backoff',          # unsupported upstream, treat as correction
+    'scratch repair',   # unsupported upstream, treat as correction
+})
+
+# Severe events that may still be recovered by later paranoia stages
+# (progress bar 'e' notes transport errors as "corrected"). Reported as
+# errors for archival caution.
+SEVERE_RECOVERABLE_FUNCTIONS = frozenset({
+    'transport error',  # PARANOIA_CB_READERR
+    'cache error',      # PARANOIA_CB_CACHEERR (drive/cache model)
+    'scratch',          # unsupported upstream; no proof of abandoned audio
+})
+
+# Definitely-lossy events: retries exhausted / damaged sectors given up on.
+# Progress bar 'V' (uncorrected error/skip). Issue #294.
+DEFINITELY_LOSSY_FUNCTIONS = frozenset({
+    'skip',             # PARANOIA_CB_SKIP — data abandoned
+})
+
+# All events that force Health status "There were errors" when present
+# (even if test/copy CRCs match — both passes may agree on bad fill).
+SEVERE_FUNCTIONS = DEFINITELY_LOSSY_FUNCTIONS | SEVERE_RECOVERABLE_FUNCTIONS
+
+# Raw SCSI-layer failures printed outside the callback protocol.
+SCSI_ERROR_NAME = 'scsi_read error'
+# Raw failures may succeed on retry; only SKIP establishes abandoned audio.
+LOSSY_EVENT_NAMES = DEFINITELY_LOSSY_FUNCTIONS
+
+# Explicit allowlist from upstream call sites. OVERLAP supplies dynoverlap,
+# while drift supplies the root vector end (a position, not a drift amount).
+POSITIONAL_FUNCTIONS = frozenset({
+    'jitter', 'correction', 'dropped', 'duped', 'drift',
+    'transport error', 'cache error', 'skip',
+})
+
+# Backwards-compatible aliases
+_ROUTINE_FUNCTIONS = ROUTINE_FUNCTIONS
+_CORRECTION_FUNCTIONS = CORRECTION_FUNCTIONS
+_SEVERE_FUNCTIONS = SEVERE_FUNCTIONS
+
+
+def classify_cdparanoia_events(events):
+    """
+    Classify cdparanoia event counts for rip-health reporting (#294).
+
+    :param events: mapping of callback name -> count
+    :type  events: dict or None
+    :returns: ``(severe, corrections, lossy_names)``
+      - ``severe``: lower bound from counts alone
+        (lossy + potentially recoverable)
+      - ``corrections``: total count of re-read/patch events
+      - ``lossy_names``: sorted names of definitely-lossy events present
+        (skip) — these can make a rip wrong
+        even when CRCs match
+    :rtype: tuple(int, int, list(str))
+    """
+    # These channels can describe the same failed read, without a shared ID.
+    # Keep their raw counts, but use the larger count as a conservative lower
+    # bound rather than summing overlapping evidence. Repeated raw retries
+    # Abort accounting uses sector-aware evidence in ProgressParser instead.
+    # Aggregated counts alone cannot establish which reports overlap.
+    events = events or {}
+    severe = max(events.get(SCSI_ERROR_NAME, 0),
+                 events.get('transport error', 0))
+    corrections = 0
+    lossy_names = set()
+    for name, count in (events or {}).items():
+        if not count:
+            continue
+        if name in DEFINITELY_LOSSY_FUNCTIONS:
+            severe += count
+            lossy_names.add(name)
+        elif name in SEVERE_RECOVERABLE_FUNCTIONS:
+            if name != 'transport error':
+                severe += count
+        elif name == SCSI_ERROR_NAME:
+            pass  # already accounted for with transport errors above
+        elif name in CORRECTION_FUNCTIONS:
+            corrections += count
+        elif name not in ROUTINE_FUNCTIONS:
+            # Unknown non-routine callback: report as a correction
+            corrections += count
+    return severe, corrections, sorted(lossy_names)
+
+
+# Merge suspicious frames within this many CD frames (~1s) into one range.
+_SUSPICIOUS_MERGE_FRAMES = 75
 
 
 class ProgressParser:
     read = 0  # last [read] frame
     wrote = 0  # last [wrote] frame
     errors = 0  # count of number of scsi errors
+    corrections = 0  # count of correction-type callbacks
+    severeErrors = 0  # severe diagnostics, overlapping channels deduplicated
     _nframes = None  # number of frames read on each [read]
     _firstFrames = None  # number of frames read on first [read]
     reads = 0  # total number of reads
@@ -97,6 +234,11 @@ class ProgressParser:
         self.read = start
 
         self._reads = {}  # read count for each sector
+        self.eventCounts = {}
+        self._suspiciousFrames = []
+        self._rawFailures = {}
+        self._transportFailures = {}
+        self._unlocatedFailures = 0
 
     def parse(self, line):
         """Parse a line."""
@@ -109,12 +251,97 @@ class ProgressParser:
                 self._parse_read(wordOffset)
             elif function == 'wrote':
                 self._parse_wrote(wordOffset)
+            self._record_event(function, wordOffset)
 
         m = _ERROR_RE.search(line)
         if m:
             self.errors += 1
+            self.eventCounts[SCSI_ERROR_NAME] = (
+                self.eventCounts.get(SCSI_ERROR_NAME, 0) + 1)
+            sector = _SCSI_SECTOR_RE.search(line)
+            if sector:
+                key = int(sector.group(1))
+                self._rawFailures[key] = self._rawFailures.get(key, 0) + 1
+            else:
+                self._unlocatedFailures += 1
+            self._update_severe_errors()
+            # A raw message has no callback position; the last read pointer
+            # may be unrelated (messages can be buffered). Do not invent one.
+
+    def _record_event(self, function, wordOffset):
+        """Count non-routine cdparanoia callbacks and remember positions."""
+        if function in ROUTINE_FUNCTIONS:
+            return
+
+        self.eventCounts[function] = self.eventCounts.get(function, 0) + 1
+
+        if function in SEVERE_FUNCTIONS:
+            if function == 'transport error':
+                sector = wordOffset // common.WORDS_PER_FRAME
+                self._transportFailures[sector] = (
+                    self._transportFailures.get(sector, 0) + 1)
+            self._update_severe_errors()
+        elif function in CORRECTION_FUNCTIONS:
+            self.corrections += 1
+        else:
+            # Unknown non-routine callback: treat as a correction for
+            # reporting purposes, but do not abort on it.
+            self.corrections += 1
+            return
+
+        if function not in POSITIONAL_FUNCTIONS or wordOffset < 0:
+            return
+        frame = wordOffset // common.WORDS_PER_FRAME
+        if self.start <= frame <= self.stop:
+            self._suspiciousFrames.append(frame)
+
+    def _update_severe_errors(self):
+        # Pair only matching sectors, independent of stderr buffering/order.
+        # Retain repeated retries, unmatched reports and non-transport severe
+        # callbacks. A different sector must never suppress an abort.
+        sectors = self._rawFailures.keys() | self._transportFailures.keys()
+        failures = self._unlocatedFailures + sum(
+            max(self._rawFailures.get(sector, 0),
+                self._transportFailures.get(sector, 0))
+            for sector in sectors)
+        self.severeErrors = failures + sum(
+            self.eventCounts.get(name, 0) for name in SEVERE_FUNCTIONS
+            if name != 'transport error')
+
+    def getEventCounts(self):
+        """Return a dict of non-routine callback name -> count."""
+        return dict(self.eventCounts)
+
+    def getSuspiciousPositions(self):
+        """
+        Return track-relative (start, end) frame ranges to report.
+
+        Ranges are inclusive and use MSF-friendly track-relative frames.
+        Nearby frames are merged so the log stays readable.
+        """
+        frames = sorted({
+            f - self.start for f in self._suspiciousFrames
+            if self.start <= f <= self.stop
+        })
+        if not frames:
+            return []
+
+        ranges = []
+        range_start = range_end = frames[0]
+        for frame in frames[1:]:
+            if frame <= range_end + _SUSPICIOUS_MERGE_FRAMES:
+                range_end = frame
+            else:
+                ranges.append((range_start, range_end))
+                range_start = range_end = frame
+        ranges.append((range_start, range_end))
+        return ranges
 
     def _parse_read(self, wordOffset):
+        # Negative offsets appear on pre-track/failed reads; they are not
+        # meaningful progress samples.
+        if wordOffset < 0:
+            return
         if wordOffset % common.WORDS_PER_FRAME != 0:
             logger.debug('THOMAS: not a multiple of %d: %d',
                          common.WORDS_PER_FRAME, wordOffset)
@@ -173,6 +400,8 @@ class ProgressParser:
         self.read = frameOffset
 
     def _parse_wrote(self, wordOffset):
+        if wordOffset < 0:
+            return
         # cdparanoia outputs most [wrote] calls with one word less than a frame
         frameOffset = (wordOffset + 1) / common.WORDS_PER_FRAME
         self.wrote = frameOffset
@@ -205,8 +434,13 @@ class ReadTrackTask(task.Task):
     quality = None  # set at end of reading
     speed = None
     duration = None  # in seconds
+    # Populated at end of reading from ProgressParser
+    errorCounts = None
+    corrections = 0
+    severeErrors = 0
+    suspiciousPositions = None
 
-    _MAXERROR = 100  # number of errors detected by parser
+    _MAXERROR = 100  # number of severe errors detected by parser
 
     def __init__(self, path, table, start, stop, overread, offset=0,
                  device=None, action="Reading", what="track"):
@@ -341,9 +575,10 @@ class ReadTrackTask(task.Task):
             for line in lines:
                 self._parser.parse(line)
 
-            # fail if too many errors
-            if self._parser.errors > self._MAXERROR:
-                logger.debug('%d errors, terminating', self._parser.errors)
+            # fail if too many severe errors
+            if self._parser.severeErrors > self._MAXERROR:
+                logger.debug('%d severe errors, terminating',
+                             self._parser.severeErrors)
                 self._popen.terminate()
 
             num = self._parser.wrote - self._start + 1
@@ -397,12 +632,37 @@ class ReadTrackTask(task.Task):
                 logger.warning('exit code %r', self._popen.returncode)
                 self.exception = ReturnCodeError(self._popen.returncode)
 
+        self.errorCounts = self._parser.getEventCounts()
+        self.corrections = self._parser.corrections
+        self.severeErrors = self._parser.severeErrors
+        self.suspiciousPositions = self._parser.getSuspiciousPositions()
+        self._report_cdparanoia_errors()
+
         self.quality = self._parser.getTrackQuality()
         self.duration = end_time - self._start_time
         self.speed = (offsetLength / 75.0) / self.duration
 
         self.stop()
         return
+
+    def _report_cdparanoia_errors(self):
+        """Report non-fatal cdparanoia errors; do not abort on them alone."""
+        if self.severeErrors:
+            logger.warning(
+                '%s: cdparanoia reported %d severe read diagnostic(s); '
+                'recovery is not established by these counts; see rip log',
+                self.description, self.severeErrors)
+        if self.corrections:
+            logger.warning(
+                '%s: cdparanoia reported %d read correction(s); '
+                'see event counts and available positions in the rip log',
+                self.description, self.corrections)
+        if self.suspiciousPositions:
+            pretty = ', '.join(
+                '%s - %s' % (common.framesToMSF(a), common.framesToMSF(b))
+                for a, b in self.suspiciousPositions)
+            logger.warning('%s: suspicious positions: %s',
+                           self.description, pretty)
 
 
 class ReadVerifyTrackTask(task.MultiSeparateTask):
@@ -435,6 +695,11 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
     copyspeed = None
     testduration = None
     copyduration = None
+    # Aggregated from the test and copy ReadTrackTasks
+    errorCounts = None
+    corrections = 0
+    severeErrors = 0
+    suspiciousPositions = None
 
     _tmpwavpath = None
     _tmppath = None
@@ -514,10 +779,39 @@ class ReadVerifyTrackTask(task.MultiSeparateTask):
 
         self.checksum = None
 
+    def _aggregate_cdparanoia_errors(self):
+        """Union test/copy ReadTrackTask error stats onto this task."""
+        read_tasks = [t for t in self.tasks
+                      if isinstance(t, ReadTrackTask)]
+        counts = {}
+        positions = []
+        corrections = 0
+        severe = 0
+        for read_task in read_tasks:
+            corrections += read_task.corrections or 0
+            severe += read_task.severeErrors or 0
+            for name, count in (read_task.errorCounts or {}).items():
+                counts[name] = counts.get(name, 0) + count
+            for span in read_task.suspiciousPositions or []:
+                positions.append(span)
+        # Merge overlapping/nearby ranges across test and copy passes
+        positions.sort()
+        merged = []
+        for start, end in positions:
+            if merged and start <= merged[-1][1] + _SUSPICIOUS_MERGE_FRAMES:
+                merged[-1] = (merged[-1][0], max(merged[-1][1], end))
+            else:
+                merged.append((start, end))
+        self.errorCounts = counts
+        self.corrections = corrections
+        self.severeErrors = severe
+        self.suspiciousPositions = merged
+
     def stop(self):
         # FIXME: maybe this kind of try-wrapping to make sure
         # we chain up should be handled by a parent class function ?
         try:
+            self._aggregate_cdparanoia_errors()
             if not self.exception:
                 self.quality = max(self.tasks[0].quality,
                                    self.tasks[2].quality)

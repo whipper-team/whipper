@@ -621,6 +621,9 @@ class Program:
         trackResult.quality = t.quality
         trackResult.testspeed = t.testspeed
         trackResult.copyspeed = t.copyspeed
+        trackResult.cdparanoiaEvents = t.errorCounts
+        trackResult.cdparanoiaSevereErrors = t.severeErrors
+        trackResult.suspiciousPositions = t.suspiciousPositions
         # we want rerips to add cumulatively to the time
         trackResult.testduration += t.testduration
         trackResult.copyduration += t.copyduration

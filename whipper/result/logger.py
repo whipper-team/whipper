@@ -7,6 +7,7 @@ import whipper
 
 from whipper.common import common
 from whipper.common.yaml import YAML
+from whipper.program.cdparanoia import classify_cdparanoia_events
 from whipper.result import result
 
 
@@ -16,13 +17,54 @@ class WhipperLogger(result.Logger):
     _inARDatabase = 0
     _errors = False
     _skippedTracks = False
+    _cdparanoiaSevere = False
+    _cdparanoiaCorrections = False
+    _cdparanoiaLossyNames = None
+    _cdparanoiaCorrectionCount = 0
+    _cdparanoiaSevereCount = 0
 
     def log(self, ripResult, epoch=time.time()):
         """Return logfile as string."""
         return self.logRip(ripResult, epoch)
 
+    def _reset_counters(self):
+        self._accuratelyRipped = 0
+        self._inARDatabase = 0
+        self._errors = False
+        self._skippedTracks = False
+        self._cdparanoiaSevere = False
+        self._cdparanoiaCorrections = False
+        self._cdparanoiaLossyNames = set()
+        self._cdparanoiaCorrectionCount = 0
+        self._cdparanoiaSevereCount = 0
+
+    @staticmethod
+    def _cdparanoia_health_label(severe, corrections, lossy_names):
+        """
+        Human-readable cdparanoia health for the status report (#294).
+
+        * ``clean`` — no non-routine callbacks
+        * ``corrections only`` — re-reads/patches; usually not lossy
+        * ``severe recoverable errors`` — transport/cache errors that
+          paranoia may have corrected (progress bar 'e')
+        * ``definitely lossy (uncorrected/skipped): …`` — skip
+          (progress bar 'V'); CRC match does not prove
+          the audio is correct
+        """
+        if lossy_names:
+            return "definitely lossy (uncorrected/skipped): %s" % (
+                ', '.join(lossy_names),)
+        if severe:
+            return ("severe recoverable errors "
+                    "(read/cache; recovery unverified; "
+                    "verify against AccurateRip)")
+        if corrections:
+            return "corrections only"
+        return "clean"
+
     def logRip(self, ripResult, epoch):
         """Return logfile as list of lines."""
+        self._reset_counters()
         riplog = OrderedDict()
 
         # Ripper version
@@ -138,7 +180,27 @@ class WhipperLogger(result.Logger):
                 message = "All tracks accurately ripped"
         data["AccurateRip summary"] = message
 
-        if self._errors:
+        # Issue #294: make the cdparanoia-error health explicit so readers
+        # can tell "CRCs match but sectors may be wrong" from a clean rip.
+        data["cdparanoia health"] = self._cdparanoia_health_label(
+            self._cdparanoiaSevereCount,
+            self._cdparanoiaCorrectionCount,
+            sorted(self._cdparanoiaLossyNames or []),
+        )
+
+        # Health status (issue #294), using libcdio-paranoia semantics:
+        # - CRC mismatch always means errors.
+        # - Definitely-lossy events (skip;
+        #   progress bar 'V') can be wrong even when test and copy CRCs
+        #   match, because both passes may agree on the same bad fill.
+        #   Treat as errors.
+        # - Potentially recoverable events (SCSI / transport / cache;
+        #   progress bar 'e') still force "There were errors" so archival
+        #   users notice; AccurateRip can confirm the result.
+        # - Corrections-only rips usually recover; keep "No errors occurred"
+        #   for compatibility. Event counts and suspicious positions remain
+        #   on each track; see also "cdparanoia health" above.
+        if self._errors or self._cdparanoiaSevere:
             message = "There were errors"
         elif self._skippedTracks:
             message = "Some tracks were not ripped (skipped)"
@@ -219,6 +281,39 @@ class WhipperLogger(result.Logger):
             track["Extraction quality"] = "%.2f %%" % (
                 trackResult.quality * 100.0, )
 
+        # Non-routine cdparanoia callbacks (issue #88 / #294 / #492)
+        events = trackResult.cdparanoiaEvents or {}
+        severe, corrections, lossy_names = classify_cdparanoia_events(events)
+        # New results preserve per-pass, sector-aware accounting. Older saved
+        # results only have raw counts, so retain the classifier lower bound.
+        recorded_severe = getattr(trackResult, 'cdparanoiaSevereErrors', None)
+        if recorded_severe is not None:
+            severe = recorded_severe
+        nonzero = OrderedDict()
+        for name in sorted(events):
+            if events[name]:
+                nonzero[name] = events[name]
+        if nonzero:
+            track["cdparanoia events"] = nonzero
+            self._cdparanoiaSevereCount += severe
+            self._cdparanoiaCorrectionCount += corrections
+            if severe:
+                self._cdparanoiaSevere = True
+                if self._cdparanoiaLossyNames is None:
+                    self._cdparanoiaLossyNames = set()
+                self._cdparanoiaLossyNames.update(lossy_names)
+            if corrections:
+                self._cdparanoiaCorrections = True
+
+        # EAC-style suspicious positions
+        positions = trackResult.suspiciousPositions or []
+        if positions:
+            track["Suspicious positions"] = [
+                "%s - %s" % (common.framesToMSF(start),
+                             common.framesToMSF(end))
+                for start, end in positions
+            ]
+
         # Ripper Test CRC
         if trackResult.testcrc is not None:
             track["Test CRC"] = "%08X" % trackResult.testcrc
@@ -252,7 +347,16 @@ class WhipperLogger(result.Logger):
             self._skippedTracks = True
         # Check if Test & Copy CRCs are equal
         elif trackResult.testcrc == trackResult.copycrc:
-            track["Status"] = "Copy OK"
+            if lossy_names:
+                track["Status"] = (
+                    "Copy OK (WARNING: uncorrected/skipped sectors: %s)" %
+                    ', '.join(lossy_names))
+            elif severe:
+                track["Status"] = (
+                    "Copy OK (cdparanoia reported severe recoverable "
+                    "errors; recovery unverified)")
+            else:
+                track["Status"] = "Copy OK"
         else:
             self._errors = True
             track["Status"] = "Error, CRC mismatch"

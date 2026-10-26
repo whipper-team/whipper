@@ -37,6 +37,13 @@ class TrackResult:
     testcrc = None
     copycrc = None
     AR = None
+    # Non-routine cdparanoia callbacks observed while ripping this track
+    # (name -> count). None if the rip path did not record them.
+    cdparanoiaEvents = None
+    # Sector-aware count summed separately for test and copy passes.
+    cdparanoiaSevereErrors = None
+    # Track-relative inclusive (start, end) frame ranges with read problems
+    suspiciousPositions = None
     classVersion = 3
     skipped = False
 
