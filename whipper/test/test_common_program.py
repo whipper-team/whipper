@@ -6,9 +6,13 @@ import os
 import shutil
 import unittest
 
-from tempfile import NamedTemporaryFile
+from tempfile import NamedTemporaryFile, TemporaryDirectory
 from whipper.common import program, mbngs, config
 from whipper.command.cd import DEFAULT_DISC_TEMPLATE
+from whipper.result.logger import WhipperLogger
+from whipper.result.result import RipResult, TrackResult
+from whipper.common.yaml import YAML
+from whipper.test.test_result_logger import MockImageTable
 
 
 class PathTestCase(unittest.TestCase):
@@ -41,6 +45,55 @@ class PathTestCase(unittest.TestCase):
         path = prog.getPath('/tmp', '%A/%d', 'mbdiscid', md, 0)
         self.assertEqual(path,
                          '/tmp/Jeff Buckley/Grace')
+
+
+class WriteLogTestCase(unittest.TestCase):
+    def testPrivatePathsOnlyChangeInWrittenLog(self):
+        with TemporaryDirectory() as directory:
+            album = os.path.join(directory, 'private-user', 'Album')
+            os.makedirs(os.path.join(album, 'Disc 1'))
+            prog = program.Program(config.Config())
+            prog.result = RipResult()
+            prog.result.table = MockImageTable()
+            names = ('00. Hidden.flac', 'Disc 1/01.flac')
+            for number, relative in enumerate(names):
+                track = TrackResult()
+                track.number = number
+                track.filename = os.path.join(album, relative)
+                with open(track.filename, 'wb') as handle:
+                    handle.write(b'synthetic audio placeholder')
+                prog.result.tracks.append(track)
+            original = [t.filename for t in prog.result.tracks]
+            for disc in ('disc', 'disc.partial'):
+                with self.subTest(disc=disc):
+                    filename = prog.writeLog(os.path.join(album, disc),
+                                             WhipperLogger())
+                    self.assertEqual(prog.logPath, filename)
+                    with open(filename) as handle:
+                        parsed = YAML(typ='rt', pure=True).load(handle.read())
+                    self.assertEqual(parsed['Tracks'][0]['Filename'],
+                                     '00. Hidden.flac')
+                    self.assertEqual(parsed['Tracks'][1]['Filename'],
+                                     'Disc 1/01.flac')
+                    self.assertEqual([t.filename for t in prog.result.tracks],
+                                     original)
+                    for path in original:
+                        with open(path, 'rb') as handle:
+                            self.assertEqual(handle.read(),
+                                             b'synthetic audio placeholder')
+
+    def testLoggerPluginSignatureIsUnchanged(self):
+        class PluginLogger(WhipperLogger):
+            def log(self, ripResult):
+                return 'plugin log\n'
+
+        with TemporaryDirectory() as directory:
+            prog = program.Program(config.Config())
+            prog.result = RipResult()
+            filename = prog.writeLog(os.path.join(directory, 'disc'),
+                                     PluginLogger())
+            with open(filename) as handle:
+                self.assertEqual(handle.read(), 'plugin log\n')
 
 
 # TODO: Test cover art embedding too.

@@ -1,6 +1,7 @@
 import time
 import hashlib
 import re
+import os
 from ruamel.yaml.comments import CommentedMap as OrderedDict
 
 import whipper
@@ -17,11 +18,11 @@ class WhipperLogger(result.Logger):
     _errors = False
     _skippedTracks = False
 
-    def log(self, ripResult, epoch=time.time()):
-        """Return logfile as string."""
-        return self.logRip(ripResult, epoch)
+    def log(self, ripResult, epoch=time.time(), output_directory=None):
+        """Return logfile with filenames relative to output_directory."""
+        return self.logRip(ripResult, epoch, output_directory)
 
-    def logRip(self, ripResult, epoch):
+    def logRip(self, ripResult, epoch, output_directory=None):
         """Return logfile as list of lines."""
         riplog = OrderedDict()
 
@@ -109,7 +110,8 @@ class WhipperLogger(result.Logger):
         for t in ripResult.tracks:
             if not t.filename:
                 continue
-            track_dict, ARDB_entry, ARDB_match = self.trackLog(t)
+            track_dict, ARDB_entry, ARDB_match = self.trackLog(
+                t, output_directory)
             self._inARDatabase += int(ARDB_entry)
             self._accuratelyRipped += int(ARDB_match)
             data[t.number] = track_dict
@@ -190,12 +192,33 @@ class WhipperLogger(result.Logger):
         riplog += "\nSHA-256 hash: %s\n" % hasher.hexdigest().upper()
         return riplog
 
-    def trackLog(self, trackResult):
+    @staticmethod
+    def _logFilename(filename, output_directory):
+        """Hide private parent paths without changing the stored filename.
+
+        Use lexical paths: log formatting must not access the audio files or
+        expose symlink targets. Without directory context, retain safe relative
+        paths and reduce absolute or escaping paths to their basename.
+        """
+        if not filename:
+            return filename
+        if output_directory is not None:
+            filename = os.path.relpath(filename, output_directory)
+        normalized = os.path.normpath(filename)
+        if (os.path.isabs(normalized) or normalized == os.pardir or
+                normalized.startswith(os.pardir + os.sep)):
+            return os.path.basename(normalized)
+        if os.pardir in filename.split(os.sep):
+            return normalized
+        return filename
+
+    def trackLog(self, trackResult, output_directory=None):
         """Return Tracks section lines: data picked from trackResult."""
         track = OrderedDict()
 
-        # Filename (including path) of ripped track
-        track["Filename"] = trackResult.filename
+        # Publication filename; retain the original path for file access.
+        track["Filename"] = self._logFilename(trackResult.filename,
+                                              output_directory)
 
         # Pre-gap length
         pregap = trackResult.pregap

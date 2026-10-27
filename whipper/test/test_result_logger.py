@@ -3,6 +3,7 @@ import hashlib
 import os
 import re
 import unittest
+from unittest.mock import patch
 
 from whipper.common.yaml import YAML
 from whipper.result.result import TrackResult, RipResult
@@ -177,3 +178,82 @@ class LoggerTestCase(unittest.TestCase):
             parsedLog['SHA-256 hash'],
             hashlib.sha256(log_body).hexdigest().upper()
         )
+
+
+class LogPathTestCase(unittest.TestCase):
+    def makeResult(self, filenames):
+        rip = RipResult()
+        rip.table = MockImageTable()
+        for number, filename in enumerate(filenames, 1):
+            track = TrackResult()
+            track.number = number
+            track.filename = filename
+            rip.tracks.append(track)
+        return rip
+
+    def assertLog(self, rip, expected, directory=None):
+        original = [t.filename for t in rip.tracks]
+        text = WhipperLogger().log(rip, 0, output_directory=directory)
+        yaml = YAML(typ='rt', pure=True)
+        parsed = yaml.load(text)
+        self.assertEqual([t['Filename'] for t in parsed['Tracks'].values()],
+                         expected)
+        self.assertEqual([t.filename for t in rip.tracks], original)
+        self.assertEqual(yaml.dump(parsed), text)
+        body, digest = text.rsplit('\nSHA-256 hash: ', 1)
+        calculated = hashlib.sha256(body.encode('utf-8')).hexdigest().upper()
+        self.assertEqual(calculated, digest.strip())
+        return parsed
+
+    def testAbsolutePathsAndHierarchy(self):
+        for directory in ('/home/private-user/Music/Album',
+                          '/mnt/private-volume/Album'):
+            with self.subTest(directory=directory):
+                names = ['Disc 1/01. Étoile.flac', 'Disc 2/01. Étoile.flac']
+                rip = self.makeResult([os.path.join(directory, n)
+                                       for n in names])
+                self.assertLog(rip, names, directory)
+
+    def testOutsidePaths(self):
+        directory = '/home/private-user/Music/Album'
+        paths = ['/home/other-user/private/01.flac',
+                 directory + '-private/02.flac',
+                 directory + '/../private/03.flac']
+        self.assertLog(self.makeResult(paths),
+                       ['01.flac', '02.flac', '03.flac'], directory)
+
+    def testRelativePathsUseWorkingDirectory(self):
+        with patch('os.getcwd', return_value='/synthetic/work'):
+            rip = self.makeResult(['Album/Disc 1/01.flac',
+                                   './Album/Disc 2/01.flac',
+                                   '../private-user/02.flac'])
+            expected = ['Disc 1/01.flac', 'Disc 2/01.flac', '02.flac']
+            self.assertLog(rip, expected, 'Album')
+
+    def testNoDirectoryContext(self):
+        rip = self.makeResult(['./Album/Disc 1/01.flac',
+                               '/home/private-user/Music/02.flac',
+                               '../../private-user/03.flac',
+                               'Disc 1/../Disc 2/04.flac'])
+        self.assertLog(rip, ['./Album/Disc 1/01.flac', '02.flac', '03.flac',
+                             'Disc 2/04.flac'])
+
+    def testHTOAAndPartialLog(self):
+        directory = '/mnt/private-volume/Album'
+        rip = self.makeResult([directory + '/00. Hidden.flac',
+                               directory + '/Disc 1/01.flac', None])
+        rip.tracks[0].number = 0
+        rip.tracks[1].number = 1
+        rip.tracks[2].number = 2
+        rip.tracks[-1].skipped = True
+        parsed = self.assertLog(rip, ['00. Hidden.flac', 'Disc 1/01.flac'],
+                                directory)
+        self.assertEqual(list(parsed['Tracks']), [0, 1])
+
+    def testMissingFilenameInTrackDiagnostics(self):
+        for filename in (None, ''):
+            with self.subTest(filename=filename):
+                track = TrackResult()
+                track.filename = filename
+                logged, _, _ = WhipperLogger().trackLog(track, '/rip')
+                self.assertEqual(logged['Filename'], filename)

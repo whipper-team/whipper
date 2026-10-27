@@ -31,7 +31,7 @@ from packaging.version import Version
 
 from whipper.common import accurip, checksum, common, mbngs, path
 from whipper.program import cdrdao, cdparanoia
-from whipper.result import result
+from whipper.result import result, logger as result_logger
 from whipper.image import image
 from whipper.extern import freedb
 from whipper.extern.task import task
@@ -704,7 +704,12 @@ class Program:
     def writeLog(self, discName, txt_logger):
         logPath = common.truncate_filename(discName + '.log')
         handle = open(logPath, 'w')
-        log = txt_logger.log(self.result)
+        if type(txt_logger) is result_logger.WhipperLogger:
+            log = txt_logger.log(self.result,
+                                 output_directory=os.path.dirname(logPath))
+        else:
+            # Preserve the logger plugin interface.
+            log = txt_logger.log(self.result)
         handle.write(log)
         handle.close()
 
