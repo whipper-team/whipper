@@ -56,6 +56,13 @@ class Analyze(BaseCommand):
 
         config.Config().setDefeatsCache(
             info[0], info[1], info[2], t.defeatsCache)
+        # Issue #346: remember this drive as the default device
+        try:
+            config.Config().setDefaultDevice(self.options.device)
+            logger.info('set default device to %s in the config file',
+                        self.options.device)
+        except Exception as e:
+            logger.warning('could not save default device: %r', e)
 
 
 class List(BaseCommand):

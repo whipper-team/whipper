@@ -326,6 +326,13 @@ Log files will log the path to tracks relative to this directory.
                                  help="continue ripping further tracks "
                                  "instead of giving up if a track "
                                  "can't be ripped")
+        self.parser.add_argument('--skip-htoa',
+                                 action='store_true',
+                                 dest='skip_htoa',
+                                 default=False,
+                                 help="do not rip Hidden Track One Audio "
+                                 "(HTOA); default is to rip it when present "
+                                 "(issue #282)")
 
     def handle_arguments(self):
         self.options.output_directory = os.path.expanduser(
@@ -546,9 +553,20 @@ Log files will log the path to tracks relative to this directory.
         htoa = self.program.getHTOA()
         if htoa:
             start, stop = htoa
-            logger.info('found Hidden Track One Audio from frame %d to %d',
-                        start, stop)
-            _ripIfNotRipped(0)
+            if getattr(self.options, 'skip_htoa', False):
+                # Issue #282: leave HTOA out of the rip; clear the index so
+                # cue generation does not reference a missing file.
+                logger.info(
+                    'skipping Hidden Track One Audio (frames %d to %d) '
+                    'because --skip-htoa is set', start, stop)
+                self.itable.setFile(
+                    1, 0, None,
+                    self.itable.getTrackStart(1), 0)
+            else:
+                logger.info(
+                    'found Hidden Track One Audio from frame %d to %d',
+                    start, stop)
+                _ripIfNotRipped(0)
 
         for i, track in enumerate(self.itable.tracks):
             # FIXME: rip data tracks differently

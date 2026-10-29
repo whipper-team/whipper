@@ -80,26 +80,47 @@ class BaseCommand:
                                      help=argparse.SUPPRESS)
 
         if self.device_option:
-            # pick the first drive as default
+            # pick the first drive as default; config may override (#346)
             drives = drive.getAllDevicePaths()
-            if not drives:
+            config_device = None
+            try:
+                cfg = config.Config()
+                config_device = cfg.get(config_section, 'device')
+                if not config_device:
+                    # global default: [main] device / helper (#346)
+                    config_device = cfg.getDefaultDevice()
+            except Exception as e:
+                logger.debug('could not read default device from config: %r',
+                             e)
+            if config_device:
+                default_device = config_device
+                logger.debug('default device from config: %r', default_device)
+            elif drives:
+                default_device = drives[0]
+            else:
                 msg = 'No CD-DA drives found!'
                 logger.critical(msg)
-                # whipper exited with return code 3 here
                 raise IOError(msg)
             self.parser.add_argument('-d', '--device',
                                      action="store",
                                      dest="device",
-                                     default=drives[0],
-                                     help="CD-DA device")
+                                     default=default_device,
+                                     help="CD-DA device (default: first "
+                                          "drive, or [main] device / "
+                                          "command-section device in the "
+                                          "config file)")
 
         self.options = self.parser.parse_args(argv, namespace=opts)
 
         if self.device_option:
-            # this can be a symlink to another device
-            self.options.device = os.path.realpath(self.options.device)
-            if not os.path.exists(self.options.device):
-                msg = 'CD-DA device %s not found!' % self.options.device
+            if self.options.device:
+                self.options.device = os.path.realpath(self.options.device)
+                if not os.path.exists(self.options.device):
+                    msg = 'CD-DA device %s not found!' % self.options.device
+                    logger.critical(msg)
+                    raise IOError(msg)
+            else:
+                msg = 'No CD-DA drives found!'
                 logger.critical(msg)
                 raise IOError(msg)
 

@@ -83,6 +83,25 @@ class Config:
         scheme, netloc, _, _, _, _ = urlparse(conf)
         return {'scheme': scheme, 'netloc': netloc}
 
+    def getDefaultDevice(self):
+        """
+        Get the configured default CD device (#346).
+
+        Looks at ``[main] device`` first, then ``[whipper.cd] device``.
+        """
+        for section in ('main', 'whipper.cd'):
+            val = self.get(section, 'device')
+            if val:
+                return val
+        return None
+
+    def setDefaultDevice(self, device):
+        """Set ``[main] device`` as the default CD device (#346)."""
+        if 'main' not in self._parser.sections():
+            self._parser.add_section('main')
+        self._parser.set('main', 'device', device)
+        self.write()
+
     # drive sections
 
     def setReadOffset(self, vendor, model, release, offset):

@@ -20,10 +20,12 @@
 
 """Handle communication with the MusicBrainz server using NGS."""
 from urllib.error import HTTPError
+from functools import lru_cache
 
 import whipper
 import json
 import musicbrainzngs
+import os
 
 import logging
 logger = logging.getLogger(__name__)
@@ -109,10 +111,15 @@ class DiscMetadata:
     discNumber = None
     discTotal = None
     mediumTitle = None
+    # Issue #309: MusicBrainz genres (release and/or release-group)
+    genres = None
+    # Issue #485: title of the selected medium's pregap, when documented
+    htoaTitle = None
 
     def __init__(self):
         self.tracks = []
         self.catalogNumbers = []
+        self.genres = []
 
 
 def _record(record, which, name, what):
@@ -232,6 +239,48 @@ def _getPerformers(recording):
     return sorted(performers)  # convert to list: mutagen doesn't support set
 
 
+@lru_cache(maxsize=1)
+def _known_genres():
+    """Load recognized genres, or none if the list cannot be read."""
+    # Source: https://musicbrainz.org/ws/2/genre/all?fmt=txt
+    # Snapshot: 2026-10-21. Refresh this file to recognize newly added genres.
+    filename = os.path.join(os.path.dirname(__file__),
+                            'musicbrainz-genres.txt')
+    try:
+        with open(filename, encoding='utf-8') as handle:
+            return frozenset(line.strip().casefold() for line in handle
+                             if line.strip())
+    except (OSError, UnicodeError) as e:
+        logger.warning('could not read MusicBrainz genre list: %s', e)
+        return frozenset()
+
+
+def _genre_names(entity):
+    """
+    Extract explicit genres or recognized genre tags from an MB entity.
+
+    MusicBrainzNGS 0.7.1 supports ``tags`` and parses ``tag-list``, but
+    does not support the ``genres`` include. Filter public tags through
+    MusicBrainz's genre list so other classifications do not become genres.
+
+    :param entity: MB entity with ``genre-list`` or ``tag-list``
+    :type entity: dict
+    :rtype: list(str)
+    """
+    names = []
+    seen = set()
+    genres = entity.get('genre-list')
+    tags = entity.get('tag-list') or []
+    known = _known_genres() if not genres and tags else frozenset()
+    for genre in (genres or tags):
+        name = genre.get('name')
+        if (name and name.casefold() not in seen
+                and (genres or name.casefold() in known)):
+            names.append(name)
+            seen.add(name.casefold())
+    return names
+
+
 def _getMetadata(release, discid=None, country=None):
     """
     Get disc metadata based upon the provided release id.
@@ -283,6 +332,9 @@ def _getMetadata(release, discid=None, country=None):
     discMD.url = 'https://musicbrainz.org/release/' + release['id']
 
     discMD.barcode = release.get('barcode', None)
+    # Issue #309: collect genres from the release and release-group
+    discMD.genres = _genre_names(release) or _genre_names(
+        release.get('release-group') or {})
     mb_rel = release.get('release-event-list', None)
     # NOTE: check included as I don't know if this one is always available
     if mb_rel is not None:
@@ -318,6 +370,10 @@ def _getMetadata(release, discid=None, country=None):
                     discMD.mediumTitle = medium['title']
                     releaseTitle += ": %s" % medium['title']
                 discMD.releaseTitle = releaseTitle
+                pregap = medium.get('pregap') or {}
+                pregap_recording = pregap.get('recording') or {}
+                discMD.htoaTitle = (pregap.get('title')
+                                    or pregap_recording.get('title') or None)
                 for t in medium['track-list']:
                     track = TrackMetadata()
                     trackCredit = _Credit(
@@ -389,12 +445,27 @@ def getReleaseMetadata(release_id, discid=None, country=None, record=False):
                                   "recordings", "discids",
                                   "labels", "recording-level-rels",
                                   "work-rels", "release-groups",
-                                  "work-level-rels", "artist-rels"])
+                                  "work-level-rels", "artist-rels", "tags"])
     _record(record, 'release', release_id, res)
     releaseDetail = res['release']
     formatted = json.dumps(releaseDetail, sort_keys=False, indent=4)
     logger.debug('release %s', formatted)
-    return _getMetadata(releaseDetail, discid, country)
+    metadata = _getMetadata(releaseDetail, discid, country)
+    if metadata and not metadata.genres:
+        # Release lookups need not return tags for the linked release-group.
+        # This extra metadata is optional: an unavailable group must not make
+        # an otherwise usable release lookup fail.
+        try:
+            group_result = musicbrainzngs.get_release_group_by_id(
+                metadata.mbidReleaseGroup, includes=["tags"])
+        except musicbrainzngs.MusicBrainzError as e:
+            logger.warning('could not retrieve release-group tags: %s', e)
+        else:
+            _record(record, 'release-group', metadata.mbidReleaseGroup,
+                    group_result)
+            metadata.genres = _genre_names(
+                group_result.get('release-group') or {})
+    return metadata
 
 
 # see http://bugs.musicbrainz.org/browser/python-musicbrainz2/trunk/examples/
