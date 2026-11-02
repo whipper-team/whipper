@@ -249,6 +249,9 @@ class TocFile:
         totalLength = 0
         # length of the pre-gap, current track in for loop
         pregapLength = 0
+        # the absolute end of the track, when the next START line carries an
+        # absolute position
+        self._absoluteEnd = None
 
         # the first track's INDEX 1 can only be gotten from the .toc
         # file once the first pregap is calculated; so we add INDEX 1
@@ -356,22 +359,37 @@ class TocFile:
             m = _FILE_RE.search(line)
             if m:
                 filePath = m.group('name')
-                start = m.group('start')
-                length = m.group('length')
+                start = common.msfToFrames(m.group('start'))
+                length = common.msfToFrames(m.group('length'))
                 logger.debug('file %s, start %r, length %r',
-                             filePath, common.msfToFrames(start),
-                             common.msfToFrames(length))
+                             filePath, start, length)
                 if not currentFile or filePath != currentFile.path:
                     counter += 1
                     relativeOffset = 0
                     logger.debug('track %d, switched to new file, '
                                  'increased counter to %d',
                                  trackNumber, counter)
-                currentFile = File(filePath, common.msfToFrames(start),
-                                   common.msfToFrames(length))
+
+                # cdrdao can describe a track of unknown length as a FILE
+                # starting at 0 whose length is an absolute disc offset
+                # rather than a duration. Its real start is the START line.
+                if start == 0 and trackNumber > 1:
+                    logger.debug(
+                        'track %d: FILE length %d is an absolute offset',
+                        trackNumber, length)
+                    # the length is where this track ends, so the span can
+                    # only be worked out once START has given its begin
+                    self._absoluteEnd = length - 150
+                    currentFile = File(filePath, start, length)
+                    self._sources.append(counter, absoluteOffset,
+                                         currentFile)
+                    currentLength = 0
+                    continue
+
+                currentFile = File(filePath, start, length)
                 self._sources.append(counter, absoluteOffset + currentLength,
                                      currentFile)
-                currentLength += common.msfToFrames(length)
+                currentLength += length
 
             # look for DATAFILE lines
             m = _DATAFILE_RE.search(line)
@@ -401,6 +419,14 @@ class TocFile:
                     continue
 
                 length = common.msfToFrames(m.group('length'))
+
+                # Paired with such a FILE, START is an absolute position too.
+                absoluteStart = self._absoluteEnd is not None
+                if absoluteStart:
+                    absoluteOffset = length - 150
+                    currentLength = self._absoluteEnd - absoluteOffset
+                    self._absoluteEnd = None
+
                 c, _, s = self._sources.get(absoluteOffset)
                 logger.debug('at abs offset %d, we are in source %r',
                              absoluteOffset, s)
@@ -414,7 +440,7 @@ class TocFile:
                              currentTrack.number, currentTrack.getIndex(0))
                 # store the pregapLength to add it when we index 1 for this
                 # track on the next iteration
-                pregapLength = length
+                pregapLength = 0 if absoluteStart else length
 
             # look for INDEX lines
             m = _INDEX_RE.search(line)
@@ -433,7 +459,7 @@ class TocFile:
             self._index(currentTrack, 1, absoluteOffset, pregapLength)
 
         # totalLength was added up to the penultimate track
-        self.table.leadout = totalLength + currentLength
+        self.table.leadout = absoluteOffset + currentLength
         logger.debug('parse: leadout: %r', self.table.leadout)
 
     def message(self, number, message):
