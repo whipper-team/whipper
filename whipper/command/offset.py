@@ -63,12 +63,17 @@ CD in the AccurateRip database."""
     def handle_arguments(self):
         self._offsets = []
         blocks = self.options.offsets.split(',')
-        for b in blocks:
-            if ':' in b:
-                a, b = b.split(':')
-                self._offsets.extend(list(range(int(a), int(b) + 1)))
-            else:
-                self._offsets.append(int(b))
+        try:
+            for b in blocks:
+                if ':' in b:
+                    a, b = b.split(':')
+                    self._offsets.extend(list(range(int(a), int(b) + 1)))
+                else:
+                    self._offsets.append(int(b))
+        except ValueError:
+            self.parser.error(
+                "invalid --offsets value %r: expected comma-separated "
+                "integers or a:b ranges" % self.options.offsets)
 
         logger.debug('trying with offsets %r', self._offsets)
 
